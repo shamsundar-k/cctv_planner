@@ -715,10 +715,10 @@ Recommendation: add a GitHub Actions workflow in Phase 5 to run backend tests on
 
 ### Phase 1 — Foundation (Weeks 1–3)
 
-- [ ] Initialise monorepo: pnpm workspaces, root `package.json`, `.gitignore`, `.env.example`, `.env.local` template (git-ignored)
-- [ ] Frontend: configure Vite dev server proxy (`/api/*` → `localhost:8000`, `/ws/*` → `ws://localhost:8000`)
-- [ ] Backend: FastAPI project scaffold, Beanie + MongoDB connection, Redis connection
-- [ ] Backend: Implement all Beanie document models (`User`, `InviteToken`, `CameraModel`, `Project`, `CameraInstance`, `Zone`)
+- [x] Initialise monorepo: pnpm workspaces, root `package.json`, `.gitignore`, `.env.example`, `.env.local` template (git-ignored)
+- [x] Frontend: configure Vite dev server proxy (`/api/*` → `localhost:8000`, `/ws/*` → `ws://localhost:8000`)
+- [x] Backend: FastAPI project scaffold, Beanie + MongoDB connection, Redis connection
+- [x] Backend: Implement all Beanie document models (`User`, `InviteToken`, `CameraModel`, `Project`, `CameraInstance`, `Zone`)
 - [ ] Backend: Auth routes — login, refresh, logout (JWT + Redis refresh tokens)
 - [ ] Backend: Invite routes — `POST /admin/invite`, `GET /auth/accept-invite`, `POST /auth/accept-invite`
 - [ ] Backend: First-admin seed script (reads `FIRST_ADMIN_EMAIL` + `FIRST_ADMIN_PASSWORD` from env on startup)
