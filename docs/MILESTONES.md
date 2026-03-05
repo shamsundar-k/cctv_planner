@@ -42,33 +42,33 @@
 - [x] Verify both services start (`uvicorn` + `pnpm dev`)
 
 ### M1.4 — Config & Database Connection
-- [ ] Create `app/core/config.py` — Pydantic settings model reading from `.env.local`
-- [ ] Create `app/core/database.py` — MongoDB connection via Beanie + Redis async client
-- [ ] Wire database startup/shutdown into `app/main.py` lifespan
-- [ ] Verify MongoDB Atlas connection on startup (log confirmation)
-- [ ] Verify Redis Cloud connection on startup (log confirmation)
+- [x] Create `app/core/config.py` — Pydantic settings model reading from `.env.local`
+- [x] Create `app/core/database.py` — MongoDB connection via Beanie + Redis async client
+- [x] Wire database startup/shutdown into `app/main.py` lifespan
+- [x] Verify MongoDB Atlas connection on startup (log confirmation)
+- [x] Verify Redis Cloud connection on startup (log confirmation)
 
 ### M1.5 — Beanie Document Models
-- [ ] Create `app/models/user.py` — `User` document
-- [ ] Create `app/models/invite_token.py` — `InviteToken` document
-- [ ] Create `app/models/camera_model.py` — `CameraModel` document
-- [ ] Create `app/models/project.py` — `Project` document
-- [ ] Create `app/models/camera_instance.py` — `CameraInstance` document
-- [ ] Create `app/models/zone.py` — `Zone` document
-- [ ] Register all models in Beanie initialisation
-- [ ] Write and run a seed script to insert one test document of each type
-- [ ] Verify all documents appear in MongoDB Atlas dashboard
+- [x] Create `app/models/user.py` — `User` document
+- [x] Create `app/models/invite_token.py` — `InviteToken` document
+- [x] Create `app/models/camera_model.py` — `CameraModel` document
+- [x] Create `app/models/project.py` — `Project` document
+- [x] Create `app/models/camera_instance.py` — `CameraInstance` document
+- [x] Create `app/models/zone.py` — `Zone` document
+- [x] Register all models in Beanie initialisation
+- [x] Write and run a seed script to insert one test document of each type
+- [x] Verify all documents appear in MongoDB Atlas dashboard
 
 ### M1.6 — Security Utilities
-- [ ] Create `app/core/security.py`
-- [ ] Implement `hash_password(plain: str) → str` using passlib bcrypt
-- [ ] Implement `verify_password(plain: str, hashed: str) → bool`
-- [ ] Implement `create_access_token(user_id: str, role: str) → str` (JWT, 15min TTL)
-- [ ] Implement `create_refresh_token() → str` (random 32-byte URL-safe string)
-- [ ] Implement `decode_access_token(token: str) → dict` (raises on invalid/expired)
-- [ ] Create `app/core/deps.py` — `get_current_user` FastAPI dependency (extracts + validates JWT)
-- [ ] Create `app/core/deps.py` — `require_admin` dependency (checks system_role == admin)
-- [ ] Unit test all security functions in `tests/test_security.py`
+- [x] Create `app/core/security.py`
+- [x] Implement `hash_password(plain: str) → str` using bcrypt directly (passlib incompatible with bcrypt 5.x)
+- [x] Implement `verify_password(plain: str, hashed: str) → bool`
+- [x] Implement `create_access_token(user_id: str, role: str) → str` (JWT, 15min TTL)
+- [x] Implement `create_refresh_token() → str` (random 32-byte URL-safe string)
+- [x] Implement `decode_access_token(token: str) → dict` (raises on invalid/expired)
+- [x] Create `app/core/deps.py` — `get_current_user` FastAPI dependency (extracts + validates JWT)
+- [x] Create `app/core/deps.py` — `require_admin` dependency (checks system_role == admin)
+- [x] Unit test all security functions in `tests/test_security.py`
 
 ### M1.7 — Auth Routes
 - [ ] Create `app/routers/auth.py`

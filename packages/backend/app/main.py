@@ -1,9 +1,9 @@
 from contextlib import asynccontextmanager
-
+import logging
 from fastapi import FastAPI
 
 from app.core.database import close_db, init_db
-
+logging.basicConfig(level=logging.INFO)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
