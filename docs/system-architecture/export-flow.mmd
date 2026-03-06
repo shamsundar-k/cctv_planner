@@ -1,0 +1,41 @@
+sequenceDiagram
+    actor User
+    participant FE as React Frontend
+    participant Leaflet as Leaflet Map Canvas
+    participant API as FastAPI Backend
+    participant ReportSvc as Report Service<br/>(WeasyPrint + Jinja2)
+    participant KMLSvc as KML Service<br/>(simplekml)
+    participant DB as MongoDB
+
+    Note over User, DB: PDF Report Generation
+    User->>FE: Click "Generate Report"
+    FE->>Leaflet: Capture map as base64 PNG<br/>(leaflet-image)
+    Leaflet-->>FE: map_image_base64
+
+    FE->>API: POST /api/v1/projects/{id}/report<br/>{ map_image_base64, include_coverage_stats }
+    API->>DB: Fetch Project metadata
+    API->>DB: Fetch CameraInstances[]
+    API->>DB: Fetch Zones[]
+    DB-->>API: All project data
+
+    API->>ReportSvc: generate_pdf(project, cameras, zones,<br/>map_image_base64, coverage_stats)
+    ReportSvc->>ReportSvc: Render Jinja2 HTML template<br/>(map image · camera table · coverage summary)
+    ReportSvc->>ReportSvc: WeasyPrint HTML → PDF bytes
+    ReportSvc-->>API: PDF bytes
+
+    API-->>FE: application/pdf stream<br/>Content-Disposition: attachment
+    FE->>FE: Trigger browser download<br/>{project_name}_report.pdf
+
+    Note over User, DB: KML Export
+    User->>FE: Click "Export KML"
+    FE->>API: GET /api/v1/projects/{id}/export/kml
+    API->>DB: Fetch CameraInstances + Zones
+    DB-->>API: cameras[] + zones[]
+    API->>KMLSvc: generate_kml(cameras, zones)
+    KMLSvc->>KMLSvc: Camera positions → KML Placemarks
+    KMLSvc->>KMLSvc: FOV polygons → styled KML Polygons
+    KMLSvc->>KMLSvc: Zones → KML Polygon / LineString
+    KMLSvc-->>API: .kml file bytes
+
+    API-->>FE: application/vnd.google-earth.kml+xml<br/>Content-Disposition: attachment
+    FE->>FE: Trigger browser download<br/>{project_name}.kml

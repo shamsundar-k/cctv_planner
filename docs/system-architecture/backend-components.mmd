@@ -1,0 +1,46 @@
+---
+id: 467180e0-0498-44fe-98e1-56d5b8ce4d45
+---
+flowchart TB
+    subgraph FastAPI
+        Main
+
+        subgraph Routers
+            Auth
+            Admin
+            Projects
+            Cameras
+            Zones
+            Coverage
+            Export
+        end
+
+        subgraph Services
+            GISSvc
+            WSSvc
+            ReportSvc
+            KMLSvc
+        end
+
+        subgraph Models
+            MUser
+            MInvite
+            MCamModel
+            MProject
+            MCamInst
+            MZone
+        end
+
+        subgraph Core
+            Cfg
+            DB
+            Sec
+            Deps_
+        end
+    end
+
+    Main --> Routers
+    Routers --> Services
+    Routers --> Models
+    Routers --> Core
+    Services --> Models

@@ -1,0 +1,34 @@
+flowchart TD
+    subgraph MongoDB["🍃 MongoDB — cctv_planner"]
+
+        subgraph users["Collection: users"]
+            U["User Document<br>──────────────<br>_id, email, password_hash<br>display_name, system_role<br>created_at"]
+        end
+
+        subgraph invite_tokens["Collection: invite_tokens"]
+            IT["InviteToken Document<br>──────────────<br>_id, token_hash, email<br>created_by → User._id<br>expires_at, used_at"]
+        end
+
+        subgraph camera_models["Collection: camera_models"]
+            CM["CameraModel Document<br>──────────────<br>_id, owner_id → User._id<br>name, manufacturer<br>fov_angle, max_range<br>min_range, aspect_ratio"]
+        end
+
+        subgraph projects["Collection: projects"]
+            P["Project Document<br>──────────────<br>_id, name, description<br>owner_id → User._id<br>──────────────<br>collaborators: [<br>  { user_id, role }<br>]<br>──────────────<br>base_map: {<br>  center_lat, center_lng<br>  default_zoom<br>}<br>──────────────<br>coverage_stats: {<br>  total_covered_m2<br>  overlap_geojson<br>  gap_geojson<br>  computed_at<br>}"]
+        end
+
+        subgraph camera_instances["Collection: camera_instances"]
+            CI["CameraInstance Document<br>──────────────<br>_id<br>project_id → Project._id<br>model_id → CameraModel._id<br>label, bearing, color<br>position: { lat, lng }<br>fov_geojson: { GeoJSON Polygon }<br>override_fov_angle<br>override_range<br>override_min_range<br>is_fov_visible"]
+        end
+
+        subgraph zones["Collection: zones"]
+            Z["Zone Document<br>──────────────<br>_id<br>project_id → Project._id<br>label, type, purpose<br>color<br>geojson: { GeoJSON Geometry }"]
+        end
+    end
+
+    U -.->|"created_by ref"| IT
+    U -.->|"owner_id ref"| CM
+    U -.->|"owner_id ref"| P
+    P -.->|"project_id ref"| CI
+    P -.->|"project_id ref"| Z
+    CM -.->|"model_id ref"| CI

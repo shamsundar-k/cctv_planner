@@ -1,0 +1,88 @@
+erDiagram
+    USER {
+        ObjectId _id PK
+        string email "unique, indexed"
+        string password_hash "bcrypt"
+        string display_name
+        enum system_role "admin | user"
+        datetime created_at
+    }
+
+    INVITE_TOKEN {
+        ObjectId _id PK
+        string token_hash "SHA-256, unique"
+        string email
+        ObjectId created_by FK
+        datetime expires_at "72h from creation"
+        datetime used_at "null until redeemed"
+        datetime created_at
+    }
+
+    CAMERA_MODEL {
+        ObjectId _id PK
+        ObjectId owner_id FK
+        string name
+        string manufacturer
+        float fov_angle "degrees (1–360)"
+        float max_range "metres > 0"
+        float min_range "metres >= 0"
+        float aspect_ratio "nullable"
+        string notes
+        datetime created_at
+    }
+
+    PROJECT {
+        ObjectId _id PK
+        string name
+        string description
+        ObjectId owner_id FK
+        object base_map "center_lat, center_lng, zoom"
+        object coverage_stats "cached analysis result"
+        datetime created_at
+        datetime updated_at
+    }
+
+    PROJECT_COLLABORATOR {
+        ObjectId project_id FK
+        ObjectId user_id FK
+        enum role "editor | viewer"
+    }
+
+    CAMERA_INSTANCE {
+        ObjectId _id PK
+        ObjectId project_id FK
+        ObjectId model_id FK
+        string label "e.g. CAM-01"
+        float position_lat
+        float position_lng
+        float bearing "0–360 degrees from North"
+        object fov_geojson "pre-computed GeoJSON Polygon"
+        float override_fov_angle "nullable"
+        float override_range "nullable"
+        float override_min_range "nullable"
+        boolean is_fov_visible
+        string color "hex colour"
+        datetime created_at
+        datetime updated_at
+    }
+
+    ZONE {
+        ObjectId _id PK
+        ObjectId project_id FK
+        string label
+        enum type "polygon | polyline"
+        object geojson "GeoJSON Polygon or LineString"
+        enum purpose "coverage_area | perimeter | exclusion | note"
+        string color "hex colour"
+        datetime created_at
+        datetime updated_at
+    }
+
+    USER ||--o{ INVITE_TOKEN : "admin creates"
+    USER ||--o{ CAMERA_MODEL : "owns"
+    USER ||--o{ PROJECT : "owns"
+    USER ||--o{ PROJECT_COLLABORATOR : "participates as"
+    PROJECT ||--o{ PROJECT_COLLABORATOR : "has"
+    PROJECT ||--o{ CAMERA_INSTANCE : "contains"
+    PROJECT ||--o{ ZONE : "contains"
+    CAMERA_MODEL ||--o{ CAMERA_INSTANCE : "is template for"

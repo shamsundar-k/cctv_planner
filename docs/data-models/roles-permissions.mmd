@@ -1,0 +1,16 @@
+flowchart LR
+    subgraph SystemRoles["System Roles (User.system_role)"]
+        ADMIN["🔑 admin<br>Access /admin/* routes<br>Generate invite tokens<br>Manage all users"]
+        SUSER["👤 user<br>Standard access<br>No admin routes"]
+    end
+
+    subgraph ProjectRoles["Project Roles (Project.collaborators[].role)"]
+        OWNER["👑 Owner<br>✅ View<br>✅ Edit cameras & zones<br>✅ Run coverage analysis<br>✅ Generate report & KML<br>✅ Edit project metadata<br>✅ Invite / remove collaborators<br>✅ Delete project<br>✅ Transfer ownership"]
+        EDITOR["✏️ Editor<br>✅ View<br>✅ Edit cameras & zones<br>✅ Run coverage analysis<br>✅ Generate report & KML<br>✅ Edit project metadata<br>❌ Manage collaborators<br>❌ Delete project"]
+        VIEWER["👁️ Viewer<br>✅ View<br>❌ Edit cameras & zones<br>❌ Run coverage analysis<br>✅ Generate report & KML<br>❌ Edit project metadata<br>❌ Manage collaborators<br>❌ Delete project"]
+    end
+
+    ADMIN -->|"can also be"| OWNER
+    SUSER -->|"can be assigned as"| OWNER
+    SUSER -->|"can be assigned as"| EDITOR
+    SUSER -->|"can be assigned as"| VIEWER

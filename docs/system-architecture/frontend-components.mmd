@@ -1,0 +1,50 @@
+flowchart TB
+    subgraph Browser["React SPA (Vite · TypeScript)"]
+        subgraph Pages["pages/"]
+            LoginPage[LoginPage]
+            InvitePage[AcceptInvitePage]
+            Dashboard[ProjectsDashboard]
+            MapPage[ProjectMapPage]
+        end
+
+        subgraph Components["components/"]
+            MapCanvas[MapCanvas<br/>Leaflet · leaflet-draw]
+            Toolbar[Toolbar<br/>tool mode selector]
+            LeftPanel[LeftPanel<br/>cameras · zones · layers tabs]
+            CameraEditPanel[CameraEditPanel]
+            ZoneEditPanel[ZoneEditPanel]
+            CoverageStats[CoverageStatsPanel]
+            Navbar[Navbar<br/>presence indicators]
+        end
+
+        subgraph Store["store/ (Zustand)"]
+            AuthSlice[authSlice<br/>user · access token]
+            ProjectSlice[projectSlice<br/>active project · collaborators]
+            CameraSlice[cameraSlice<br/>instances array · selected ID]
+            ZoneSlice[zoneSlice<br/>zones array · selected ID]
+            MapSlice[mapSlice<br/>active tool · layer visibility]
+            CoverageSlice[coverageSlice<br/>coverage stats · timestamp]
+        end
+
+        subgraph API["api/ (Axios + TanStack Query)"]
+            AuthAPI[authApi<br/>login · refresh · logout]
+            ProjectAPI[projectApi<br/>CRUD · collaborators]
+            CameraAPI[cameraApi<br/>place · update · delete]
+            ZoneAPI[zoneApi<br/>CRUD]
+            CoverageAPI[coverageApi<br/>recalculate]
+            ExportAPI[exportApi<br/>PDF report · KML]
+        end
+
+        subgraph Hooks["hooks/"]
+            useWS[useWebSocket<br/>connect · handle broadcasts]
+            useDebounce[useDebounce<br/>300ms FOV update delay]
+            useAuth[useAuth<br/>axios interceptor · token refresh]
+        end
+    end
+
+    Pages --> Components
+    Components --> Store
+    Components --> Hooks
+    Hooks --> API
+    API -->|HTTP /api/v1/*| Backend[(FastAPI Backend)]
+    useWS -->|WS /ws/projects/id| Backend

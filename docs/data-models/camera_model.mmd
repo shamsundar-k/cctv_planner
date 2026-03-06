@@ -1,0 +1,42 @@
+classDiagram
+    class CameraModel {
+        +str id
+        +str name
+        +str manufacturer = ""
+        +float fov_angle
+        +float min_range = 0.0
+        +float max_range
+        +Link~User~ created_by
+        +datetime created_at (UTC)
+        +Settings.name = "camera_models"
+    }
+
+    class User {
+        +str id
+    }
+
+    class CameraInstance {
+        +str id
+        +Link~Project~ project
+        +Link~CameraModel~ camera_model
+        +str label = ""
+        +float lat
+        +float lng
+        +float bearing = 0.0
+        +float? fov_angle_override
+        +float? min_range_override
+        +float? max_range_override
+        +str colour = "#3B82F6"
+        +bool visible = true
+        +dict? fov_geojson
+        +datetime created_at
+        +datetime updated_at
+    }
+
+    class Project {
+        +str id
+    }
+
+    CameraModel --> User : created_by
+    CameraInstance --> CameraModel : camera_model
+    CameraInstance --> Project : project

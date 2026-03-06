@@ -1,0 +1,49 @@
+sequenceDiagram
+    actor Admin
+    actor NewUser
+    participant FE as React Frontend
+    participant API as FastAPI Backend
+    participant DB as MongoDB
+    participant Cache as Redis
+
+    Note over Admin, Cache: Admin Login
+    Admin->>FE: Enter email + password
+    FE->>API: POST /api/v1/auth/login<br/>{ email, password }
+    API->>DB: Fetch User by email
+    DB-->>API: User document
+    API->>API: bcrypt.verify(password, hash)
+    API->>API: Sign JWT access token (15 min)
+    API->>API: Generate random refresh token (32 bytes)
+    API->>Cache: SET refresh:{hash} = user_id (TTL 7d)
+    API-->>FE: { access_token, refresh_token }
+
+    Note over Admin, Cache: Admin Generates Invite
+    Admin->>FE: POST /admin/invite { email }
+    FE->>API: POST /api/v1/admin/invite
+    API->>API: Require system_role == admin
+    API->>API: Generate 32-byte random token
+    API->>DB: Insert InviteToken { token_hash, email, expires_at }
+    API-->>FE: { invite_url, expires_at }
+    Admin->>NewUser: Share invite_url (copy-paste)
+
+    Note over NewUser, Cache: New User Registration
+    NewUser->>FE: GET /accept-invite?token=...
+    FE->>API: GET /api/v1/auth/accept-invite?token=...
+    API->>DB: Find InviteToken by SHA-256(token)
+    DB-->>API: InviteToken (validate: not expired, not used)
+    API-->>FE: { email, expires_at }
+    NewUser->>FE: Submit { display_name, password }
+    FE->>API: POST /api/v1/auth/accept-invite
+    API->>DB: Create User
+    API->>DB: Mark InviteToken.used_at = now()
+    API->>API: Sign JWT + generate refresh token
+    API->>Cache: SET refresh:{hash} = user_id (TTL 7d)
+    API-->>FE: { access_token, refresh_token }
+
+    Note over NewUser, Cache: Silent Token Refresh
+    FE->>API: POST /api/v1/auth/refresh { refresh_token }
+    API->>Cache: GET refresh:{hash}
+    Cache-->>API: user_id
+    API->>API: Rotate: delete old, issue new refresh token
+    API->>Cache: SET refresh:{new_hash} = user_id (TTL 7d)
+    API-->>FE: { access_token, refresh_token }

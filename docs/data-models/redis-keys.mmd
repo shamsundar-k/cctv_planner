@@ -1,0 +1,18 @@
+flowchart TD
+    subgraph Redis["⚡ Redis"]
+        subgraph RefreshTokens["Namespace: refresh:*"]
+            RT["refresh:{token_hash}<br>──────────────<br>Value: user_id<br>TTL: 7 days<br>Rotated on each use"]
+        end
+
+        subgraph Presence["Namespace: presence:*"]
+            PR["presence:{project_id}<br>──────────────<br>Value: Set of user_id strings<br>TTL: refreshed on WS heartbeat<br>Cleared on user_left"]
+        end
+    end
+
+    Login["POST /auth/login"] -->|"stores hash"| RT
+    Refresh["POST /auth/refresh"] -->|"validates + rotates"| RT
+    Logout["POST /auth/logout"] -->|"deletes key"| RT
+
+    WSConnect["WS connect"] -->|"SADD user_id"| PR
+    WSDisconnect["WS disconnect"] -->|"SREM user_id"| PR
+    PresenceCheck["GET active users"] -->|"SMEMBERS"| PR

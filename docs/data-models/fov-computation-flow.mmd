@@ -1,0 +1,28 @@
+sequenceDiagram
+    actor User
+    participant Frontend as React Frontend<br/>(Zustand + React Query)
+    participant API as FastAPI Backend<br/>(cameras router)
+    participant GIS as GIS Service<br/>(Shapely + pyproj)
+    participant DB as MongoDB<br/>(camera_instances)
+    participant WS as WebSocket Manager
+
+    User->>Frontend: Drops camera on map / edits bearing
+    Frontend->>Frontend: 300ms debounce
+    Frontend->>API: POST /api/v1/projects/{id}/cameras<br/>{ model_id, position, bearing, overrides }
+
+    API->>DB: Fetch CameraModel (fov_angle, max_range, min_range)
+    DB-->>API: CameraModel document
+
+    API->>GIS: compute_fov_polygon(lat, lng, bearing,<br/>fov_angle, max_range, min_range)
+    GIS->>GIS: Geodesic projection via pyproj<br/>Build 4-point polygon:<br/>Origin → Left → Arc Mid → Right
+    GIS-->>API: GeoJSON Polygon
+
+    API->>DB: Insert / Update CameraInstance<br/>{ ...fields, fov_geojson }
+    DB-->>API: Saved CameraInstance
+
+    API->>WS: broadcast camera_added / camera_updated<br/>to project room (exclude originator)
+    WS-->>Frontend: Broadcast to other connected editors
+
+    API-->>Frontend: 200 OK — full CameraInstance with fov_geojson
+    Frontend->>Frontend: Update cameraSlice in Zustand
+    Frontend->>Frontend: Re-render GeoJSON layer on Leaflet map
