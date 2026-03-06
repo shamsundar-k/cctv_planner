@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     INVITE_TOKEN_TTL_HOURS: int = 72
     FIRST_ADMIN_EMAIL: str = "admin@example.com"
     FIRST_ADMIN_PASSWORD: str = "changeme"
+    FRONTEND_BASE_URL: str = "http://localhost:5173"
 
 
 settings = Settings()

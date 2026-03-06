@@ -1,8 +1,11 @@
+"""MongoDB (Motor + Beanie) and Redis connection lifecycle: init_db, close_db, and get_redis dependency."""
+
 import logging
 
 import motor.motor_asyncio
 import redis.asyncio as aioredis
 from beanie import init_beanie
+from fastapi import HTTPException, status
 
 from app.models.camera_instance import CameraInstance
 from app.models.camera_model import CameraModel
@@ -43,3 +46,12 @@ async def close_db() -> None:
         motor_client.close()
     if redis_client:
         await redis_client.aclose()
+
+
+async def get_redis() -> aioredis.Redis:
+    if redis_client is None:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Redis not available",
+        )
+    return redis_client

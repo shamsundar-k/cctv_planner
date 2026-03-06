@@ -1,0 +1,28 @@
+classDiagram
+    class LoginRequest {
+        +String email
+        +String password
+    }
+    
+    class TokenResponse {
+        +String access_token
+        +String refresh_token
+        +String token_type
+    }
+    
+    class RefreshTokenRequest {
+        +String refresh_token
+    }
+    
+    class RegisterRequest {
+        +String email
+        +String password
+        +String full_name
+    }
+    
+    LoginRequest --> TokenResponse : produces
+    RefreshTokenRequest --> TokenResponse : produces
+    RegisterRequest --> TokenResponse : produces
+    
+    click LoginRequest call linkCallback("/home/office/DEV/cctv_planner/packages/backend/app/schemas/auth.py#L7")
+    click TokenResponse call linkCallback("/home/office/DEV/cctv_planner/packages/backend/app/schemas/auth.py#L16")

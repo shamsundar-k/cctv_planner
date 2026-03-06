@@ -71,22 +71,22 @@
 - [x] Unit test all security functions in `tests/test_security.py`
 
 ### M1.7 — Auth Routes
-- [ ] Create `app/routers/auth.py`
-- [ ] Implement `POST /api/v1/auth/login` — validate credentials, return access + refresh tokens
-- [ ] Implement `POST /api/v1/auth/refresh` — validate refresh token from Redis, return new access token
-- [ ] Implement `POST /api/v1/auth/logout` — delete refresh token from Redis
-- [ ] Store refresh token hash in Redis with 7-day TTL on login
-- [ ] Register auth router in `app/main.py`
+- [x] Create `app/routers/auth.py`
+- [x] Implement `POST /api/v1/auth/login` — validate credentials, return access + refresh tokens
+- [x] Implement `POST /api/v1/auth/refresh` — validate refresh token from Redis, return new access token
+- [x] Implement `POST /api/v1/auth/logout` — delete refresh token from Redis
+- [x] Store refresh token hash in Redis with 7-day TTL on login
+- [x] Register auth router in `app/main.py`
 - [ ] Test all three routes manually (curl or Postman)
 
 ### M1.8 — Invite Flow
-- [ ] Create `app/routers/admin.py`
-- [ ] Implement `POST /api/v1/admin/invite` — generate invite token, store hash in MongoDB, return invite URL
-- [ ] Implement `GET /api/v1/admin/users` — list all users (admin only)
-- [ ] Add invite acceptance routes to `app/routers/auth.py`
-- [ ] Implement `GET /api/v1/auth/accept-invite?token=...` — validate token, return email
-- [ ] Implement `POST /api/v1/auth/accept-invite` — create User, mark token used, return tokens
-- [ ] Register admin router in `app/main.py`
+- [x] Create `app/routers/admin.py`
+- [x] Implement `POST /api/v1/admin/invite` — generate invite token, store hash in MongoDB, return invite URL
+- [x] Implement `GET /api/v1/admin/users` — list all users (admin only)
+- [x] Add invite acceptance routes to `app/routers/auth.py`
+- [x] Implement `GET /api/v1/auth/accept-invite?token=...` — validate token, return email
+- [x] Implement `POST /api/v1/auth/accept-invite` — create User, mark token used, return tokens
+- [x] Register admin router in `app/main.py`
 - [ ] Test full invite flow manually end-to-end
 
 ### M1.9 — First Admin Seed
