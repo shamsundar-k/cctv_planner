@@ -1,48 +1,74 @@
 flowchart TB
     subgraph Browser["React SPA (Vite · TypeScript)"]
-        subgraph Pages["pages/"]
+
+        subgraph Routing["Router (App.tsx · react-router v7)"]
+            BrowserRouter[BrowserRouter]
+            PublicRoutes["Public routes\n/login  /accept-invite"]
+            ProtectedRoute[ProtectedRoute\nredirects → /login if no token]
+            PrivateRoutes["Protected routes\n/ dashboard …"]
+        end
+
+        subgraph Pages["pages/  ✅ implemented"]
             LoginPage[LoginPage]
             InvitePage[AcceptInvitePage]
-            Dashboard[ProjectsDashboard]
-            MapPage[ProjectMapPage]
+            Dashboard["ProjectsDashboard  🔜"]
+            MapPage["ProjectMapPage  🔜"]
         end
 
         subgraph Components["components/"]
-            MapCanvas[MapCanvas<br/>Leaflet · leaflet-draw]
-            Toolbar[Toolbar<br/>tool mode selector]
-            LeftPanel[LeftPanel<br/>cameras · zones · layers tabs]
-            CameraEditPanel[CameraEditPanel]
-            ZoneEditPanel[ZoneEditPanel]
-            CoverageStats[CoverageStatsPanel]
-            Navbar[Navbar<br/>presence indicators]
+            ProtectedRouteComp["ProtectedRoute  ✅"]
+            MapCanvas["MapCanvas  🔜\nLeaflet · leaflet-draw"]
+            Toolbar["Toolbar  🔜\ntool mode selector"]
+            LeftPanel["LeftPanel  🔜\ncameras · zones · layers tabs"]
+            CameraEditPanel["CameraEditPanel  🔜"]
+            ZoneEditPanel["ZoneEditPanel  🔜"]
+            CoverageStats["CoverageStatsPanel  🔜"]
+            Navbar["Navbar  🔜\npresence indicators"]
         end
 
-        subgraph Store["store/ (Zustand)"]
-            AuthSlice[authSlice<br/>user · access token]
-            ProjectSlice[projectSlice<br/>active project · collaborators]
-            CameraSlice[cameraSlice<br/>instances array · selected ID]
-            ZoneSlice[zoneSlice<br/>zones array · selected ID]
-            MapSlice[mapSlice<br/>active tool · layer visibility]
-            CoverageSlice[coverageSlice<br/>coverage stats · timestamp]
+        subgraph Store["store/ (Zustand)  ✅ implemented"]
+            AuthSlice["authSlice\nuser · accessToken · refreshToken\npersisted → localStorage"]
+            ProjectSlice["projectSlice  🔜"]
+            CameraSlice["cameraSlice  🔜"]
+            ZoneSlice["zoneSlice  🔜"]
+            MapSlice["mapSlice  🔜"]
+            CoverageSlice["coverageSlice  🔜"]
         end
 
-        subgraph API["api/ (Axios + TanStack Query)"]
-            AuthAPI[authApi<br/>login · refresh · logout]
-            ProjectAPI[projectApi<br/>CRUD · collaborators]
-            CameraAPI[cameraApi<br/>place · update · delete]
-            ZoneAPI[zoneApi<br/>CRUD]
-            CoverageAPI[coverageApi<br/>recalculate]
-            ExportAPI[exportApi<br/>PDF report · KML]
+        subgraph API["api/  ✅ implemented"]
+            ClientTS["client.ts\nAxios instance + base URL"]
+            InterceptorsTS["interceptors.ts\nrequest: attach Bearer token\nresponse: silent refresh / clearAuth"]
+            AuthAPI["authApi  🔜"]
+            ProjectAPI["projectApi  🔜"]
+            CameraAPI["cameraApi  🔜"]
+            ZoneAPI["zoneApi  🔜"]
+            CoverageAPI["coverageApi  🔜"]
+            ExportAPI["exportApi  🔜"]
         end
 
-        subgraph Hooks["hooks/"]
-            useWS[useWebSocket<br/>connect · handle broadcasts]
-            useDebounce[useDebounce<br/>300ms FOV update delay]
-            useAuth[useAuth<br/>axios interceptor · token refresh]
+        subgraph Utils["utils/  ✅ implemented"]
+            JwtUtil["jwt.ts\ndecodeJwt — base64url payload decode"]
+        end
+
+        subgraph Hooks["hooks/  🔜 planned"]
+            useWS["useWebSocket\nconnect · handle broadcasts"]
+            useDebounce["useDebounce\n300 ms FOV update delay"]
+            useAuth["useAuth\naxios interceptor · token refresh"]
         end
     end
 
+    BrowserRouter --> PublicRoutes
+    BrowserRouter --> ProtectedRoute
+    ProtectedRoute --> PrivateRoutes
+    PublicRoutes --> LoginPage
+    PublicRoutes --> InvitePage
+    PrivateRoutes --> Dashboard
+    PrivateRoutes --> MapPage
+
     Pages --> Components
+    Pages --> Store
+    Pages --> API
+    API --> Utils
     Components --> Store
     Components --> Hooks
     Hooks --> API

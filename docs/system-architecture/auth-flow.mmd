@@ -32,7 +32,7 @@ sequenceDiagram
     API->>DB: Find InviteToken by SHA-256(token)
     DB-->>API: InviteToken (validate: not expired, not used)
     API-->>FE: { email, expires_at }
-    NewUser->>FE: Submit { display_name, password }
+    NewUser->>FE: Submit { full_name, password }
     FE->>API: POST /api/v1/auth/accept-invite
     API->>DB: Create User
     API->>DB: Mark InviteToken.used_at = now()

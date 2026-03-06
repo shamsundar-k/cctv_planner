@@ -1,0 +1,52 @@
+classDiagram
+    class AuthUser {
+        +String id
+        +String email
+        +String fullName
+        +String role
+    }
+
+    class AuthState {
+        +AuthUser|null user
+        +String|null accessToken
+        +String|null refreshToken
+        +setAuth(user, accessToken, refreshToken) void
+        +setAccessToken(accessToken) void
+        +clearAuth() void
+    }
+
+    class PersistedSlice {
+        <<localStorage: cctv-auth>>
+        +AuthUser|null user
+        +String|null accessToken
+        +String|null refreshToken
+    }
+
+    class AxiosClient {
+        <<axios instance>>
+        +baseURL: VITE_API_BASE_URL
+        +Content-Type: application/json
+    }
+
+    class RequestInterceptor {
+        <<axios request interceptor>>
+        +reads accessToken from AuthState
+        +sets Authorization: Bearer token
+    }
+
+    class ResponseInterceptor {
+        <<axios response interceptor>>
+        +_retry: boolean
+        +handles 401 responses
+        +POSTs refreshToken to /auth/refresh
+        +calls setAccessToken on success
+        +calls clearAuth + redirects on failure
+    }
+
+    AuthState "1" *-- "0..1" AuthUser : contains
+    AuthState ..> PersistedSlice : partialize → persists subset
+    AxiosClient "1" *-- "1" RequestInterceptor : registers
+    AxiosClient "1" *-- "1" ResponseInterceptor : registers
+    RequestInterceptor ..> AuthState : reads accessToken
+    ResponseInterceptor ..> AuthState : calls setAccessToken / clearAuth
+    ResponseInterceptor ..> AxiosClient : retries original request
