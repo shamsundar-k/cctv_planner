@@ -1,0 +1,21 @@
+flowchart TD
+    App["App.tsx\nBrowserRouter"]
+
+    App --> Public["Public routes"]
+    App --> Guard["ProtectedRoute\nchecks authStore.accessToken\n↳ redirect /login if absent"]
+
+    Public --> Login["/login\nLoginPage"]
+    Public --> Invite["/accept-invite?token=…\nAcceptInvitePage"]
+
+    Guard --> Protected["Protected routes"]
+    Protected --> Home["/\nDashboard  🔜"]
+    Protected --> Project["/projects/:id\nProjectMapPage  🔜"]
+
+    App --> Fallback["* → Navigate to /"]
+
+    style Login      fill:#d1fae5,stroke:#6ee7b7
+    style Invite     fill:#d1fae5,stroke:#6ee7b7
+    style Guard      fill:#fef3c7,stroke:#fcd34d
+    style Home       fill:#dbeafe,stroke:#93c5fd,stroke-dasharray:4 4
+    style Project    fill:#dbeafe,stroke:#93c5fd,stroke-dasharray:4 4
+    style Fallback   fill:#f3f4f6,stroke:#d1d5db
