@@ -6,6 +6,18 @@ interface RetryableRequest extends InternalAxiosRequestConfig {
   _retry?: boolean
 }
 
+let isRefreshing = false
+let refreshSubscribers: Array<(token: string) => void> = []
+
+function subscribeTokenRefresh(cb: (token: string) => void) {
+  refreshSubscribers.push(cb)
+}
+
+function notifySubscribers(token: string) {
+  refreshSubscribers.forEach((cb) => cb(token))
+  refreshSubscribers = []
+}
+
 // Attach access token to every outgoing request
 client.interceptors.request.use((config) => {
   const token = useAuthStore.getState().accessToken
@@ -24,6 +36,16 @@ client.interceptors.response.use(
     if (error.response?.status === 401 && original && !original._retry) {
       original._retry = true
 
+      // Another request is already refreshing — queue this one
+      if (isRefreshing) {
+        return new Promise((resolve) => {
+          subscribeTokenRefresh((newToken) => {
+            original.headers.Authorization = `Bearer ${newToken}`
+            resolve(client(original))
+          })
+        })
+      }
+
       const { refreshToken, setAccessToken, clearAuth } = useAuthStore.getState()
 
       if (!refreshToken) {
@@ -32,18 +54,24 @@ client.interceptors.response.use(
         return Promise.reject(error)
       }
 
+      isRefreshing = true
+
       try {
         const { data } = await client.post<{ access_token: string }>(
           '/auth/refresh',
           { refresh_token: refreshToken },
         )
         setAccessToken(data.access_token)
+        notifySubscribers(data.access_token)
         original.headers.Authorization = `Bearer ${data.access_token}`
         return client(original)
       } catch {
         clearAuth()
+        refreshSubscribers = []
         window.location.href = '/login'
         return Promise.reject(error)
+      } finally {
+        isRefreshing = false
       }
     }
 
