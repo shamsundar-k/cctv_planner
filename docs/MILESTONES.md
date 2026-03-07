@@ -120,14 +120,14 @@
 > **Goal:** User can place cameras on a map, adjust bearing and FOV parameters, and see FOV polygons update in real time.
 
 ### M2.1 — Camera Model CRUD (Backend)
-- [ ] Create `app/schemas/camera_model.py` — request/response Pydantic schemas
-- [ ] Create `app/routers/camera_models.py`
-- [ ] Implement `GET /api/v1/camera-models` — list caller's models
-- [ ] Implement `POST /api/v1/camera-models` — create model
-- [ ] Implement `GET /api/v1/camera-models/{id}` — get single model
-- [ ] Implement `PUT /api/v1/camera-models/{id}` — update model
-- [ ] Implement `DELETE /api/v1/camera-models/{id}` — delete model
-- [ ] Register router in `app/main.py`
+- [x] Create `app/schemas/camera_model.py` — request/response Pydantic schemas
+- [x] Create `app/routers/camera_models.py`
+- [x] Implement `GET /api/v1/camera-models` — list caller's models
+- [x] Implement `POST /api/v1/camera-models` — create model
+- [x] Implement `GET /api/v1/camera-models/{id}` — get single model
+- [x] Implement `PUT /api/v1/camera-models/{id}` — update model
+- [x] Implement `DELETE /api/v1/camera-models/{id}` — delete model
+- [x] Register router in `app/main.py`
 
 ### M2.2 — Project CRUD (Backend)
 - [ ] Create `app/schemas/project.py` — request/response schemas
