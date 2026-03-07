@@ -38,7 +38,7 @@ def _token_key(raw_token: str) -> str:
 @router.post("/login", response_model=TokenResponse)
 async def login(body: LoginRequest, redis: Redis = Depends(get_redis)) -> TokenResponse:
     #console log the email and password for debugging purposes
-    logger.info(f"Login attempt: email={body.email}, password={body.password}")
+    logger.info(f"Login attempt: email={body.email}")
     
     user = await User.find_one(User.email == body.email)
     if user is None or not verify_password(body.password, user.hashed_password):

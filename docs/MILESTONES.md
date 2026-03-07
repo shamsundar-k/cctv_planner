@@ -87,32 +87,32 @@
 - [x] Implement `GET /api/v1/auth/accept-invite?token=...` — validate token, return email
 - [x] Implement `POST /api/v1/auth/accept-invite` — create User, mark token used, return tokens
 - [x] Register admin router in `app/main.py`
-- [ ] Test full invite flow manually end-to-end
+- [x] Test full invite flow manually end-to-end
 
 ### M1.9 — First Admin Seed
-- [ ] Create `app/core/seed.py` — `seed_first_admin()` function
-- [ ] On FastAPI startup: check if any admin user exists; if not, create from `FIRST_ADMIN_EMAIL` + `FIRST_ADMIN_PASSWORD` env vars
-- [ ] Log a warning if default admin password is still set to `admin123`
-- [ ] Test: fresh database → startup → admin account exists
+- [x] Create `app/core/seed.py` — `seed_first_admin()` function
+- [x] On FastAPI startup: check if any admin user exists; if not, create from `FIRST_ADMIN_EMAIL` + `FIRST_ADMIN_PASSWORD` env vars
+- [x] Log a warning if default admin password is still set to `admin123`
+- [x] Test: fresh database → startup → admin account exists
 
 ### M1.10 — Frontend Auth UI
-- [ ] Create `src/store/authSlice.ts` — Zustand slice (user, access token, set/clear)
-- [ ] Create `src/api/client.ts` — Axios instance with base URL
-- [ ] Create `src/api/interceptors.ts` — attach access token to requests; on 401, call refresh and retry
-- [ ] Create `src/pages/LoginPage.tsx` — email + password form, calls `POST /auth/login`
-- [ ] Create `src/components/ProtectedRoute.tsx` — redirects unauthenticated users to `/login`
-- [ ] Create `src/pages/AcceptInvitePage.tsx` — reads `?token=`, validates, shows registration form
-- [ ] Set up React Router in `src/main.tsx` with `/login`, `/accept-invite`, and `/` (protected) routes
-- [ ] Create placeholder `src/pages/DashboardPage.tsx` — just shows "Welcome, {name}" for now
-- [ ] Test full flow: login → dashboard; unauthenticated → redirect to login; invite link → register → login
+- [x] Create `src/store/authSlice.ts` — Zustand slice (user, access token, set/clear)
+- [x] Create `src/api/client.ts` — Axios instance with base URL
+- [x] Create `src/api/interceptors.ts` — attach access token to requests; on 401, call refresh and retry
+- [x] Create `src/pages/LoginPage.tsx` — email + password form, calls `POST /auth/login`
+- [x] Create `src/components/ProtectedRoute.tsx` — redirects unauthenticated users to `/login`
+- [x] Create `src/pages/AcceptInvitePage.tsx` — reads `?token=`, validates, shows registration form
+- [x] Set up React Router in `src/main.tsx` with `/login`, `/accept-invite`, and `/` (protected) routes
+- [x] Create placeholder `src/pages/DashboardPage.tsx` — just shows "Welcome, {name}" for now
+- [x] Test full flow: login → dashboard; unauthenticated → redirect to login; invite link → register → login
 
 ### ✅ Milestone 1 Exit Criterion
-- [ ] Admin logs in successfully
-- [ ] Admin generates an invite link via `POST /admin/invite`
-- [ ] New user registers via invite link
-- [ ] New user logs in successfully
+- [x] Admin logs in successfully
+- [x] Admin generates an invite link via `POST /admin/invite`
+- [x] New user registers via invite link
+- [x] New user logs in successfully
 - [ ] Axios interceptor silently refreshes expired access token
-- [ ] Viewer of `/` without auth is redirected to `/login`
+- [x] Viewer of `/` without auth is redirected to `/login`
 
 ---
 
