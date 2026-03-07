@@ -1,0 +1,19 @@
+meta {
+  name: list-users-no-auth
+  type: http
+  seq: 7
+}
+
+get {
+  url: http://localhost:8000/api/v1/admin/users
+  auth: none
+}
+
+assert {
+  res.status: eq 403
+  res.body.detail: contains Not authenticated
+}
+
+script:post-response {
+  console.log("Unauthenticated user list request correctly rejected with 403");
+}

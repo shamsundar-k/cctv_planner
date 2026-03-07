@@ -1,0 +1,24 @@
+meta {
+  name: accept-invite-email-exists
+  type: http
+  seq: 11
+}
+
+post {
+  url: http://localhost:8000/api/v1/auth/accept-invite
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "token": "{{invite_token_existing_email}}",
+    "full_name": "Another User",
+    "password": "AnotherPassword123"
+  }
+}
+
+assert {
+  res.status: eq 409
+  res.body.detail: contains "Email already registered"
+}

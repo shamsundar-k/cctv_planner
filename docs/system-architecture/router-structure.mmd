@@ -1,15 +1,15 @@
 flowchart TD
-    App["App.tsx\nBrowserRouter"]
+    App["App.tsx<br>BrowserRouter"]
 
     App --> Public["Public routes"]
-    App --> Guard["ProtectedRoute\nchecks authStore.accessToken\n↳ redirect /login if absent"]
+    App --> Guard["ProtectedRoute<br>checks authStore.accessToken<br>↳ redirect /login if absent"]
 
-    Public --> Login["/login\nLoginPage"]
-    Public --> Invite["/accept-invite?token=…\nAcceptInvitePage"]
+    Public --> Login["/login<br>LoginPage"]
+    Public --> Invite["/accept-invite?token=…<br>AcceptInvitePage"]
 
     Guard --> Protected["Protected routes"]
-    Protected --> Home["/\nDashboard  🔜"]
-    Protected --> Project["/projects/:id\nProjectMapPage  🔜"]
+    Protected --> Home["/<br>Dashboard  🔜"]
+    Protected --> Project["/projects/:id<br>ProjectMapPage  🔜"]
 
     App --> Fallback["* → Navigate to /"]
 

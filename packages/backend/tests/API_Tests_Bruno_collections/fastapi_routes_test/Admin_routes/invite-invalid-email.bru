@@ -1,0 +1,29 @@
+meta {
+  name: invite-invalid-email
+  type: http
+  seq: 5
+}
+
+post {
+  url: http://localhost:8000/api/v1/admin/invite
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "email": "not-a-valid-email"
+  }
+}
+
+assert {
+  res.status: eq 422
+}
+
+script:post-response {
+  console.log("Invalid email correctly rejected with 422");
+}

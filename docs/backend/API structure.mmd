@@ -1,0 +1,25 @@
+
+flowchart TD
+    A["FastAPI App<br/>CCTV Survey Planner API"] --> B["Routes at /api/v1"]
+    
+    B --> C["Health Check"]
+    B --> D["Auth Router"]
+    B --> E["Admin Router"]
+    
+    C --> C1["GET /api/v1/health<br/>Returns status ok"]
+    
+    D --> D1["Authentication Endpoints"]
+    
+    E --> E1["Admin Endpoints"]
+    
+    F["Lifespan Events"] -.-> A
+    F --> F1["startup: init_db + seed_first_admin"]
+    F --> F2["shutdown: close_db"]
+    
+    style A fill:#4A90E2,stroke:#2E5C8A,stroke-width:2px,color:#fff
+    style B fill:#7B68EE,stroke:#5A4BB3,stroke-width:2px,color:#fff
+    style C fill:#50C878,stroke:#2D7A4A,stroke-width:2px,color:#fff
+    style D fill:#FF6B6B,stroke:#CC5555,stroke-width:2px,color:#fff
+    style E fill:#FF6B6B,stroke:#CC5555,stroke-width:2px,color:#fff
+    style F fill:#FFB84D,stroke:#CC8C3D,stroke-width:2px,color:#fff
+    

@@ -1,0 +1,29 @@
+meta {
+  name: logout-success
+  type: http
+  seq: 6
+}
+
+post {
+  url: http://localhost:8000/api/v1/auth/logout
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "refresh_token": "ArJs4JY_cRlogS5n7RLrEq6TU1spgXXANcrSZSqTNGM"
+  }
+}
+
+assert {
+  res.status: eq 204
+}
+
+script:post-response {
+  console.log("Logout successful - Refresh token revoked");
+}

@@ -1,0 +1,30 @@
+meta {
+  name: invite-non-admin
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:8000/api/v1/admin/invite
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{non_admin_access_token}}
+}
+
+body:json {
+  {
+    "email": "newuser@example.com"
+  }
+}
+
+assert {
+  res.status: eq 403
+  res.body.detail: isString
+}
+
+script:post-response {
+  console.log("Non-admin invite request correctly rejected with 403");
+}

@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "fastapi_routes_test",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

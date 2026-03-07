@@ -1,0 +1,31 @@
+meta {
+  name: refresh-token-success
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:8000/api/v1/auth/refresh
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "refresh_token": "{{refresh_token}}"
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.access_token: isString
+  res.body.refresh_token: isString
+  res.body.token_type: eq bearer
+}
+
+script:post-response {
+  // Update tokens (token rotation)
+  bru.setEnvVar("access_token", res.body.access_token);
+  bru.setEnvVar("refresh_token", res.body.refresh_token);
+  console.log("Token refreshed successfully");
+}

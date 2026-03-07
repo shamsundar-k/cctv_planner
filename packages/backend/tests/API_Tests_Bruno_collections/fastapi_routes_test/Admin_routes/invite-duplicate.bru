@@ -1,0 +1,30 @@
+meta {
+  name: invite-duplicate
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:8000/api/v1/admin/invite
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "email": "user@gmail.com"
+  }
+}
+
+assert {
+  res.status: eq 409
+  res.body.detail: contains A pending invite for this email already exists
+}
+
+script:post-response {
+  console.log("Duplicate invite correctly rejected with 409");
+}

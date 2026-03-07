@@ -77,7 +77,7 @@
 - [x] Implement `POST /api/v1/auth/logout` — delete refresh token from Redis
 - [x] Store refresh token hash in Redis with 7-day TTL on login
 - [x] Register auth router in `app/main.py`
-- [ ] Test all three routes manually (curl or Postman)
+- [x] Test all three routes manually (curl or Postman)
 
 ### M1.8 — Invite Flow
 - [x] Create `app/routers/admin.py`

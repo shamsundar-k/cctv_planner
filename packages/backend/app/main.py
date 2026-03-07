@@ -8,7 +8,7 @@ from app.core.database import close_db, init_db
 from app.core.seed import seed_first_admin
 from app.routers import admin, auth
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
 
 @asynccontextmanager

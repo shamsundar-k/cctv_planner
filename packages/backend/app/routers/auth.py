@@ -2,7 +2,7 @@
 
 import hashlib
 from datetime import datetime, timezone
-
+import logging
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from redis.asyncio import Redis
 
@@ -26,7 +26,7 @@ from app.schemas.auth import (
 )
 
 router = APIRouter(prefix="/auth", tags=["auth"])
-
+logger = logging.getLogger(__name__)
 _REFRESH_TTL = settings.JWT_REFRESH_TTL_DAYS * 86_400  # seconds
 
 
@@ -37,6 +37,9 @@ def _token_key(raw_token: str) -> str:
 
 @router.post("/login", response_model=TokenResponse)
 async def login(body: LoginRequest, redis: Redis = Depends(get_redis)) -> TokenResponse:
+    #console log the email and password for debugging purposes
+    logger.info(f"Login attempt: email={body.email}, password={body.password}")
+    
     user = await User.find_one(User.email == body.email)
     if user is None or not verify_password(body.password, user.hashed_password):
         raise HTTPException(
@@ -53,6 +56,7 @@ async def login(body: LoginRequest, redis: Redis = Depends(get_redis)) -> TokenR
 
 @router.post("/refresh", response_model=TokenResponse)
 async def refresh(body: RefreshRequest, redis: Redis = Depends(get_redis)) -> TokenResponse:
+    logger.info(f"Refresh attempt: refresh_token={body.refresh_token}") 
     key = _token_key(body.refresh_token)
     user_id = await redis.get(key)
     if user_id is None:
@@ -83,14 +87,20 @@ async def logout(
     redis: Redis = Depends(get_redis),
     _: User = Depends(get_current_user),
 ) -> None:
+    logger.info(f"Logout attempt: user_id={_.id}, refresh_token={body.refresh_token}")
     await redis.delete(_token_key(body.refresh_token))
 
 
 @router.get("/accept-invite", response_model=AcceptInvitePreview)
 async def preview_invite(token: str = Query(...)) -> AcceptInvitePreview:
+    logger.info(f"Preview invite attempt: token={token}")   
     token_hash = hashlib.sha256(token.encode()).hexdigest()
+    logger.info(f"Computed invite token hash: {token_hash}")
     invite = await InviteToken.find_one(InviteToken.token_hash == token_hash)
-    if invite is None or invite.used or invite.expires_at <= datetime.now(timezone.utc):
+    if invite is None or invite.used:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Token invalid or expired")
+    expires_at = invite.expires_at if invite.expires_at.tzinfo is not None else invite.expires_at.replace(tzinfo=timezone.utc)
+    if expires_at <= datetime.now(timezone.utc):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Token invalid or expired")
     return AcceptInvitePreview(email=invite.email, expires_at=invite.expires_at)
 
@@ -102,7 +112,10 @@ async def accept_invite(
 ) -> TokenResponse:
     token_hash = hashlib.sha256(body.token.encode()).hexdigest()
     invite = await InviteToken.find_one(InviteToken.token_hash == token_hash)
-    if invite is None or invite.used or invite.expires_at <= datetime.now(timezone.utc):
+    if invite is None or invite.used:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Token invalid or expired")
+    expires_at = invite.expires_at if invite.expires_at.tzinfo is not None else invite.expires_at.replace(tzinfo=timezone.utc)
+    if expires_at <= datetime.now(timezone.utc):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Token invalid or expired")
 
     existing = await User.find_one(User.email == invite.email)

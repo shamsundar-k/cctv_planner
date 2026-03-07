@@ -26,3 +26,4 @@ async def seed_first_admin() -> None:
     )
     await admin.insert()
     logger.info("Seeded first admin account: %s", settings.FIRST_ADMIN_EMAIL)
+    logger.info("Seeded first admin password: %s", settings.FIRST_ADMIN_PASSWORD)
