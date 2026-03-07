@@ -16,9 +16,14 @@ def _to_response(m: CameraModel) -> CameraModelResponse:
         id=str(m.id),
         name=m.name,
         manufacturer=m.manufacturer,
+        lens_type=m.lens_type,
         fov_angle=m.fov_angle,
         min_range=m.min_range,
         max_range=m.max_range,
+        fov_angle_wide=m.fov_angle_wide,
+        max_range_wide=m.max_range_wide,
+        fov_angle_tele=m.fov_angle_tele,
+        max_range_tele=m.max_range_tele,
         created_by=str(m.created_by.ref.id),  # type: ignore[union-attr]
         created_at=m.created_at,
     )
@@ -42,9 +47,14 @@ async def create_camera_model(
     model = CameraModel(
         name=body.name,
         manufacturer=body.manufacturer,
+        lens_type=body.lens_type,
         fov_angle=body.fov_angle,
         min_range=body.min_range,
         max_range=body.max_range,
+        fov_angle_wide=body.fov_angle_wide,
+        max_range_wide=body.max_range_wide,
+        fov_angle_tele=body.fov_angle_tele,
+        max_range_tele=body.max_range_tele,
         created_by=current_user,  # type: ignore[arg-type]
     )
     await model.insert()
@@ -78,6 +88,13 @@ async def update_camera_model(
 
     updates = body.model_dump(exclude_none=True)
     if updates:
+        # Validate the merged document state before persisting (catches partial updates
+        # that would violate cross-field constraints, e.g. updating only one zoom-range end).
+        merged = model.model_copy(update=updates)
+        try:
+            CameraModel.model_validate(merged.model_dump())
+        except Exception as exc:
+            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc))
         await model.set(updates)
 
     return _to_response(model)
