@@ -4,7 +4,7 @@
 **Version:** 1.1
 **Last Updated:** March 2026
 **Change:** Added Stage 1 geometric coverage (tilt-aware trapezoid, varifocal lens) and Stage 2 DORI analysis (IEC EN 62676-4:2015) tasks. All FOV + DORI calculations are client-side (`fov.ts`); backend stores client-supplied `fov_geojson` verbatim.
-**Progress Updated:** 2026-03-08 — Milestone 1 complete; M2.1 (Camera Model CRUD) complete.
+**Progress Updated:** 2026-03-08 — Milestone 1 complete; M2.1 (Camera Model CRUD) complete; M2.2 (Project CRUD) complete.
 
 ---
 
@@ -131,16 +131,16 @@
 - [x] Register router in `app/main.py`
 
 ### M2.2 — Project CRUD (Backend)
-- [ ] Create `app/schemas/project.py`
-- [ ] Create `app/routers/projects.py`
-- [ ] Implement `GET /api/v1/projects`
-- [ ] Implement `POST /api/v1/projects`
-- [ ] Implement `GET /api/v1/projects/{id}` — returns full project with cameras (including `fov_geojson`) + zones
-- [ ] Implement `PUT /api/v1/projects/{id}`
-- [ ] Implement `DELETE /api/v1/projects/{id}`
-- [ ] Implement `POST /api/v1/projects/{id}/collaborators`
-- [ ] Implement `DELETE /api/v1/projects/{id}/collaborators/{user_id}`
-- [ ] Register router in `app/main.py`
+- [x] Create `app/schemas/project.py`
+- [x] Create `app/routers/projects.py`
+- [x] Implement `GET /api/v1/projects`
+- [x] Implement `POST /api/v1/projects`
+- [x] Implement `GET /api/v1/projects/{id}` — returns full project with cameras (including `fov_geojson`) + zones
+- [x] Implement `PUT /api/v1/projects/{id}`
+- [x] Implement `DELETE /api/v1/projects/{id}`
+- [x] Implement `POST /api/v1/projects/{id}/collaborators`
+- [x] Implement `DELETE /api/v1/projects/{id}/collaborators/{user_id}`
+- [x] Register router in `app/main.py`
 
 ### M2.3 — Camera Instance Routes (Backend)
 > The backend does **not** compute FOV geometry. It receives `fov_geojson` from the client and stores it.
@@ -472,7 +472,7 @@
 | Milestone | Description | Status |
 |---|---|---|
 | M1 | Foundation — Auth, Invite, DB connection | ✅ Complete |
-| M2 | Core Map — Camera placement, Stage 1 trapezoid FOV, Stage 2 DORI zones (all client-side) | 🔄 In Progress (M2.1 done) |
+| M2 | Core Map — Camera placement, Stage 1 trapezoid FOV, Stage 2 DORI zones (all client-side) | 🔄 In Progress (M2.1–M2.2 done) |
 | M3 | Zones, Collaboration, Save | ⬜ Not Started |
 | M4 | Coverage Analysis, PDF Report (with DORI table), KML Export (with DORI zones) | ⬜ Not Started |
 | M5 | Polish, Testing (Stage 1+2 unit tests), Production Deployment | ⬜ Not Started |
