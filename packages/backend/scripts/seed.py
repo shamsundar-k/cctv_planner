@@ -14,7 +14,7 @@ from beanie import init_beanie
 
 from app.core.config import settings
 from app.models.camera_instance import CameraInstance
-from app.models.camera_model import CameraModel
+from app.models.camera_model import CameraModel, CameraType, LensType, SensorType
 from app.models.invite_token import InviteToken
 from app.models.project import Project
 from app.models.user import User, SystemRole
@@ -53,11 +53,28 @@ async def seed() -> None:
 
     # 3. CameraModel
     cam_model = CameraModel(
-        name="Hikvision DS-2CD2143",
+        name="Main Entrance Camera",
         manufacturer="Hikvision",
-        fov_angle=90.0,
-        min_range=0.5,
-        max_range=30.0,
+        model_number="DS-2CD2T47G2-L",
+        camera_type=CameraType.bullet,
+        location="Building A - North Facade",
+        lens_type=LensType.motorised,
+        focal_length_min=2.8,
+        focal_length_max=12.0,
+        h_fov_min=28.0,
+        h_fov_max=97.0,
+        v_fov_min=16.0,
+        v_fov_max=54.0,
+        ir_cut_filter=True,
+        resolution_h=2560,
+        resolution_v=1440,
+        megapixels=4.0,
+        aspect_ratio="16:9",
+        sensor_size='1/2.7"',
+        sensor_type=SensorType.cmos,
+        min_illumination=0.005,
+        wdr=True,
+        wdr_db=120.0,
         created_by=user,
     )
     await cam_model.insert()
@@ -80,6 +97,9 @@ async def seed() -> None:
         lat=51.5074,
         lng=-0.1278,
         bearing=45.0,
+        height=4.0,
+        tilt_angle=30.0,
+        focal_length_chosen=6.0,
     )
     await cam_instance.insert()
     print(f"[+] CameraInstance: {cam_instance.id}  ({cam_instance.label})")

@@ -1,4 +1,10 @@
-"""Beanie document for a camera placed on a project map. Fields: project/camera_model links, label, lat/lng, bearing, FOV overrides, colour, visible, fov_geojson (computed GeoJSON), timestamps."""
+"""Beanie document for a camera placed on a project map.
+
+Installation parameters (height, tilt_angle, focal_length_chosen) capture
+the physical mounting configuration for this specific placement. The frontend
+uses these together with the linked CameraModel's lens/sensor specs to compute
+Stage 1 geometric coverage and Stage 2 DORI performance.
+"""
 
 from datetime import datetime, timezone
 
@@ -15,13 +21,16 @@ class CameraInstance(Document):
     label: str = ""
     lat: float
     lng: float
-    bearing: float = 0.0          # degrees, 0 = North
-    fov_angle_override: float | None = None   # overrides model default
-    min_range_override: float | None = None
-    max_range_override: float | None = None
-    colour: str = "#3B82F6"       # hex colour for FOV rendering
+    bearing: float = 0.0                        # degrees, 0 = North (pan direction)
+
+    # ── Installation parameters ───────────────────────────────────────────────
+    height: float = Field(default=3.0, gt=0)    # m — lens height above ground
+    tilt_angle: float = 30.0                    # ° — downward tilt from horizontal
+    focal_length_chosen: float | None = None    # mm — selected zoom; None = focal_length_min
+
+    colour: str = "#3B82F6"                     # hex colour for FOV rendering
     visible: bool = True
-    fov_geojson: dict | None = None           # computed GeoJSON Polygon
+    fov_geojson: dict | None = None             # computed GeoJSON Polygon (frontend)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
