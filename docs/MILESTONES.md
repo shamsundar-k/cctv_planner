@@ -1,9 +1,10 @@
 # CCTV Survey Planner — Milestones & Tasks
 
-**Project:** CCTV Survey Planner  
-**Version:** 1.1  
-**Last Updated:** March 2026  
+**Project:** CCTV Survey Planner
+**Version:** 1.1
+**Last Updated:** March 2026
 **Change:** Added Stage 1 geometric coverage (tilt-aware trapezoid, varifocal lens) and Stage 2 DORI analysis (IEC EN 62676-4:2015) tasks. All FOV + DORI calculations are client-side (`fov.ts`); backend stores client-supplied `fov_geojson` verbatim.
+**Progress Updated:** 2026-03-08 — Milestone 1 complete; M2.1 (Camera Model CRUD) complete.
 
 ---
 
@@ -43,76 +44,76 @@
 - [x] Verify both services start (`uvicorn` + `pnpm dev`)
 
 ### M1.4 — Config & Database Connection
-- [ ] Create `app/core/config.py` — Pydantic settings model reading from `.env.local`
-- [ ] Create `app/core/database.py` — MongoDB connection via Beanie + Redis async client
-- [ ] Wire database startup/shutdown into `app/main.py` lifespan
-- [ ] Verify MongoDB Atlas connection on startup (log confirmation)
-- [ ] Verify Redis Cloud connection on startup (log confirmation)
+- [x] Create `app/core/config.py` — Pydantic settings model reading from `.env.local`
+- [x] Create `app/core/database.py` — MongoDB connection via Beanie + Redis async client
+- [x] Wire database startup/shutdown into `app/main.py` lifespan
+- [x] Verify MongoDB Atlas connection on startup (log confirmation)
+- [x] Verify Redis Cloud connection on startup (log confirmation)
 
 ### M1.5 — Beanie Document Models
-- [ ] Create `app/models/user.py` — `User` document
-- [ ] Create `app/models/invite_token.py` — `InviteToken` document
-- [ ] Create `app/models/camera_model.py` — `CameraModel` document (varifocal + sensor fields per SPEC §5.1)
-- [ ] Create `app/models/project.py` — `Project` document
-- [ ] Create `app/models/camera_instance.py` — `CameraInstance` document (Stage 1 + Stage 2 override fields + `fov_geojson` FeatureCollection + `ir_fov_geojson` FeatureCollection or null + `dori_zones_visible`)
-- [ ] Create `app/models/zone.py` — `Zone` document
-- [ ] Register all models in Beanie initialisation
+- [x] Create `app/models/user.py` — `User` document
+- [x] Create `app/models/invite_token.py` — `InviteToken` document
+- [x] Create `app/models/camera_model.py` — `CameraModel` document (varifocal + sensor fields per SPEC §5.1)
+- [x] Create `app/models/project.py` — `Project` document
+- [x] Create `app/models/camera_instance.py` — `CameraInstance` document (Stage 1 + Stage 2 override fields + `fov_geojson` FeatureCollection + `ir_fov_geojson` FeatureCollection or null + `dori_zones_visible`)
+- [x] Create `app/models/zone.py` — `Zone` document
+- [x] Register all models in Beanie initialisation
 - [ ] Write and run a seed script to insert one test document of each type
 - [ ] Verify all documents appear in MongoDB Atlas dashboard
 
 ### M1.6 — Security Utilities
-- [ ] Create `app/core/security.py`
-- [ ] Implement `hash_password(plain: str) → str` using passlib bcrypt
-- [ ] Implement `verify_password(plain: str, hashed: str) → bool`
-- [ ] Implement `create_access_token(user_id: str, role: str) → str` (JWT, 15min TTL)
-- [ ] Implement `create_refresh_token() → str` (random 32-byte URL-safe string)
-- [ ] Implement `decode_access_token(token: str) → dict` (raises on invalid/expired)
-- [ ] Create `app/core/deps.py` — `get_current_user` FastAPI dependency
-- [ ] Create `app/core/deps.py` — `require_admin` dependency
-- [ ] Unit test all security functions in `tests/test_security.py`
+- [x] Create `app/core/security.py`
+- [x] Implement `hash_password(plain: str) → str` using passlib bcrypt
+- [x] Implement `verify_password(plain: str, hashed: str) → bool`
+- [x] Implement `create_access_token(user_id: str, role: str) → str` (JWT, 15min TTL)
+- [x] Implement `create_refresh_token() → str` (random 32-byte URL-safe string)
+- [x] Implement `decode_access_token(token: str) → dict` (raises on invalid/expired)
+- [x] Create `app/core/deps.py` — `get_current_user` FastAPI dependency
+- [x] Create `app/core/deps.py` — `require_admin` dependency
+- [x] Unit test all security functions in `tests/test_security.py`
 
 ### M1.7 — Auth Routes
-- [ ] Create `app/routers/auth.py`
-- [ ] Implement `POST /api/v1/auth/login`
-- [ ] Implement `POST /api/v1/auth/refresh`
-- [ ] Implement `POST /api/v1/auth/logout`
-- [ ] Store refresh token hash in Redis with 7-day TTL on login
-- [ ] Register auth router in `app/main.py`
-- [ ] Test all three routes manually (curl or Postman)
+- [x] Create `app/routers/auth.py`
+- [x] Implement `POST /api/v1/auth/login`
+- [x] Implement `POST /api/v1/auth/refresh`
+- [x] Implement `POST /api/v1/auth/logout`
+- [x] Store refresh token hash in Redis with 7-day TTL on login
+- [x] Register auth router in `app/main.py`
+- [x] Test all three routes manually (curl or Postman)
 
 ### M1.8 — Invite Flow
-- [ ] Create `app/routers/admin.py`
-- [ ] Implement `POST /api/v1/admin/invite`
-- [ ] Implement `GET /api/v1/admin/users`
-- [ ] Implement `GET /api/v1/auth/accept-invite?token=...`
-- [ ] Implement `POST /api/v1/auth/accept-invite`
-- [ ] Register admin router in `app/main.py`
-- [ ] Test full invite flow manually end-to-end
+- [x] Create `app/routers/admin.py`
+- [x] Implement `POST /api/v1/admin/invite`
+- [x] Implement `GET /api/v1/admin/users`
+- [x] Implement `GET /api/v1/auth/accept-invite?token=...`
+- [x] Implement `POST /api/v1/auth/accept-invite`
+- [x] Register admin router in `app/main.py`
+- [x] Test full invite flow manually end-to-end
 
 ### M1.9 — First Admin Seed
-- [ ] Create `app/core/seed.py` — `seed_first_admin()` function
-- [ ] On FastAPI startup: check if any admin user exists; if not, create from env vars
-- [ ] Log a warning if default admin password is still `admin123`
-- [ ] Test: fresh database → startup → admin account exists
+- [x] Create `app/core/seed.py` — `seed_first_admin()` function
+- [x] On FastAPI startup: check if any admin user exists; if not, create from env vars
+- [x] Log a warning if default admin password is still `admin123`
+- [x] Test: fresh database → startup → admin account exists
 
 ### M1.10 — Frontend Auth UI
-- [ ] Create `src/store/authSlice.ts`
-- [ ] Create `src/api/client.ts` — Axios instance
-- [ ] Create `src/api/interceptors.ts` — attach access token; on 401 call refresh and retry
-- [ ] Create `src/pages/LoginPage.tsx`
-- [ ] Create `src/components/ProtectedRoute.tsx`
-- [ ] Create `src/pages/AcceptInvitePage.tsx`
-- [ ] Set up React Router with `/login`, `/accept-invite`, `/` (protected) routes
-- [ ] Create placeholder `src/pages/DashboardPage.tsx`
-- [ ] Test full flow: login → dashboard; unauthenticated → redirect to login
+- [x] Create `src/store/authSlice.ts`
+- [x] Create `src/api/client.ts` — Axios instance
+- [x] Create `src/api/interceptors.ts` — attach access token; on 401 call refresh and retry
+- [x] Create `src/pages/LoginPage.tsx`
+- [x] Create `src/components/ProtectedRoute.tsx`
+- [x] Create `src/pages/AcceptInvitePage.tsx`
+- [x] Set up React Router with `/login`, `/accept-invite`, `/` (protected) routes
+- [x] Create placeholder `src/pages/DashboardPage.tsx`
+- [x] Test full flow: login → dashboard; unauthenticated → redirect to login
 
 ### ✅ Milestone 1 Exit Criterion
-- [ ] Admin logs in successfully
-- [ ] Admin generates an invite link via `POST /admin/invite`
-- [ ] New user registers via invite link
-- [ ] New user logs in successfully
-- [ ] Axios interceptor silently refreshes expired access token
-- [ ] Viewer of `/` without auth is redirected to `/login`
+- [x] Admin logs in successfully
+- [x] Admin generates an invite link via `POST /admin/invite`
+- [x] New user registers via invite link
+- [x] New user logs in successfully
+- [x] Axios interceptor silently refreshes expired access token
+- [x] Viewer of `/` without auth is redirected to `/login`
 
 ---
 
@@ -120,14 +121,14 @@
 > **Goal:** User can place cameras with varifocal, tilt, and height parameters; see the trapezoidal FOV and colour-coded DORI zones render in real time with no API round-trip; adjust any parameter and see geometry update instantly.
 
 ### M2.1 — Camera Model CRUD (Backend)
-- [ ] Create `app/schemas/camera_model.py` — request/response Pydantic schemas including all varifocal + sensor fields (`focal_length_min/max`, `h_angle_max/min`, `v_angle_max/min`, `sensor_resolution_h`, `sensor_aspect_ratio`, `ir_range`)
-- [ ] Create `app/routers/camera_models.py`
-- [ ] Implement `GET /api/v1/camera-models`
-- [ ] Implement `POST /api/v1/camera-models`
-- [ ] Implement `GET /api/v1/camera-models/{id}`
-- [ ] Implement `PUT /api/v1/camera-models/{id}`
-- [ ] Implement `DELETE /api/v1/camera-models/{id}`
-- [ ] Register router in `app/main.py`
+- [x] Create `app/schemas/camera_model.py` — request/response Pydantic schemas including all varifocal + sensor fields (`focal_length_min/max`, `h_angle_max/min`, `v_angle_max/min`, `sensor_resolution_h`, `sensor_aspect_ratio`, `ir_range`)
+- [x] Create `app/routers/camera_models.py`
+- [x] Implement `GET /api/v1/camera-models`
+- [x] Implement `POST /api/v1/camera-models`
+- [x] Implement `GET /api/v1/camera-models/{id}`
+- [x] Implement `PUT /api/v1/camera-models/{id}`
+- [x] Implement `DELETE /api/v1/camera-models/{id}`
+- [x] Register router in `app/main.py`
 
 ### M2.2 — Project CRUD (Backend)
 - [ ] Create `app/schemas/project.py`
@@ -470,8 +471,8 @@
 
 | Milestone | Description | Status |
 |---|---|---|
-| M1 | Foundation — Auth, Invite, DB connection | 🔄 In Progress |
-| M2 | Core Map — Camera placement, Stage 1 trapezoid FOV, Stage 2 DORI zones (all client-side) | ⬜ Not Started |
+| M1 | Foundation — Auth, Invite, DB connection | ✅ Complete |
+| M2 | Core Map — Camera placement, Stage 1 trapezoid FOV, Stage 2 DORI zones (all client-side) | 🔄 In Progress (M2.1 done) |
 | M3 | Zones, Collaboration, Save | ⬜ Not Started |
 | M4 | Coverage Analysis, PDF Report (with DORI table), KML Export (with DORI zones) | ⬜ Not Started |
 | M5 | Polish, Testing (Stage 1+2 unit tests), Production Deployment | ⬜ Not Started |
