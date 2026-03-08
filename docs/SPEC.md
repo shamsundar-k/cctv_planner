@@ -1,8 +1,9 @@
 # SPEC.md — CCTV Survey Planner
 
-**Version:** 1.0  
+**Version:** 1.1  
 **Date:** March 2026  
-**Status:** Approved for Implementation
+**Status:** Approved for Implementation  
+**Change:** Added Stage 1 geometric coverage (varifocal lens, tilt-aware trapezoid) and Stage 2 DORI performance analysis (IEC EN 62676-4:2015) per CCTV_Stage1_Stage2_DORI.pdf.
 
 ---
 
@@ -10,7 +11,7 @@
 
 The CCTV Survey Planner is a web-based, multi-user GIS application for security consultants, surveyors, and facility managers to plan and validate CCTV camera deployments on a 2D map before physical installation.
 
-Users place cameras on a map, configure field-of-view (FOV) parameters, draw coverage zones and perimeters, and generate PDF reports and KML exports. The core value proposition is visual confirmation of total coverage — identifying blind spots, overlaps, and perimeter gaps prior to installation.
+Users place cameras on a map, configure field-of-view (FOV) parameters, draw coverage zones and perimeters, and generate PDF reports and KML exports. The core value proposition is visual confirmation of total coverage — identifying blind spots, overlaps, and perimeter gaps prior to installation. Coverage is now expressed not only as a 2D area but also as DORI quality zones (Detection, Observation, Recognition, Identification) per IEC EN 62676-4:2015.
 
 **Primary stakeholders:** Security consultants, facility managers, survey teams.  
 **Access model:** Invite-only. Admin users create accounts; no open self-registration.
@@ -21,11 +22,12 @@ Users place cameras on a map, configure field-of-view (FOV) parameters, draw cov
 
 | Goal | Success Criterion |
 |---|---|
-| Visual FOV planning | User can place a camera and see its FOV polygon render on the map within 500ms of stopping an edit |
+| Visual FOV planning | User can place a camera and see its FOV trapezoid render on the map within 500ms of stopping an edit |
+| DORI zone visualisation | Four colour-coded DORI zone arcs (Detection / Observation / Recognition / Identification) render inside each FOV polygon immediately, computed client-side with no additional API call |
 | Multi-user collaboration | Two editors in the same project see each other's changes within 2 seconds via WebSocket |
 | Coverage analysis | "Recalculate Coverage" returns total covered area (m²), overlap zones, and uncovered sub-regions as map overlays |
-| Report generation | PDF report generated and downloaded within 10 seconds, containing map screenshot, camera table, and coverage summary |
-| KML export | KML file exports correctly and opens in Google Earth with camera placemarks and FOV polygons |
+| Report generation | PDF report generated and downloaded within 10 seconds, containing map screenshot, camera table, DORI summary per camera, and coverage summary |
+| KML export | KML file exports correctly and opens in Google Earth with camera placemarks, FOV trapezoids, and DORI zone polygons |
 | Access control | Viewer-role users receive HTTP 403 on any mutating operation; enforced server-side |
 
 ---
@@ -36,23 +38,26 @@ Users place cameras on a map, configure field-of-view (FOV) parameters, draw cov
 
 - Invite-only user authentication with JWT
 - Admin user management (invite token generation, role assignment)
-- Camera model library (per-user, private)
+- Camera model library (per-user, private) — extended to carry varifocal lens and sensor parameters
 - Project creation, management, and collaborator invitations
 - 2D map-based camera placement, drag-to-move, bearing rotation
-- Real-time FOV polygon computation (debounced, on every camera edit)
-- On-demand coverage analysis (union of FOVs, gap detection, overlap highlighting)
+- **Stage 1 — Geometric FOV:** Tilt-aware trapezoidal ground footprint computed client-side from mounting height, tilt angle, and varifocal H/V angles; rendered as a GeoJSON trapezoid on the map
+- **Stage 2 — DORI analysis:** Client-side computation of Detection / Observation / Recognition / Identification distance boundaries and zone areas per IEC EN 62676-4:2015; rendered as concentric colour-coded trapezoid sub-zones within the FOV
+- All Stage 1 and Stage 2 calculations run entirely in the browser (`src/utils/fov.ts`) — no additional backend round-trip required for parameter changes
+- The backend stores the final computed `fov_geojson` (including DORI sub-zones as a GeoJSON FeatureCollection) on save/persist — it does **not** recompute; it trusts the client-supplied geometry
+- On-demand coverage analysis (union of FOVs, gap detection, overlap highlighting) — server-side using Shapely
 - Zone/perimeter drawing tools (polygon and polyline)
 - Auto-save and manual save
 - Real-time multi-user collaboration via WebSocket
 - Role-based access control (Owner / Editor / Viewer)
-- PDF report generation (server-side, client-supplied map image)
-- KML export
+- PDF report generation (server-side, client-supplied map image + DORI stats per camera)
+- KML export (including DORI zone polygons as separate styled features)
 - Docker Compose deployment (provider-agnostic)
 
 ### Out of Scope
 
 - Open self-registration
-- 3D / height-aware FOV calculations (all coverage is flat 2D projection)
+- Server-side Stage 1 / Stage 2 recalculation per camera edit (all FOV+DORI math is client-side)
 - Video feed integration or live camera connectivity
 - AI-based camera placement optimisation
 - Mobile-native app (responsive web only)
@@ -71,6 +76,7 @@ Users place cameras on a map, configure field-of-view (FOV) parameters, draw cov
 flowchart TB
     subgraph Client ["Browser (React SPA)"]
         UI[Map Canvas · Leaflet.js]
+        FOV_CALC[fov.ts · Stage 1 + Stage 2\nAll trig runs here]
         ZS[Zustand Store]
         RQ[React Query]
         WS_C[WebSocket Client]
@@ -86,11 +92,11 @@ flowchart TB
         AuthR[Auth + Invite Router]
         AdminR[Admin Router]
         ProjectR[Projects Router]
-        CameraR[Cameras Router]
+        CameraR[Cameras Router\n— stores client-supplied fov_geojson]
         ZoneR[Zones Router]
         ExportR[Export Router\nPDF + KML]
         CoverageR[Coverage Router]
-        GIS[GIS Service\nShapely + pyproj]
+        GIS[GIS Service\nShapely + pyproj\n— coverage union only]
         WSMgr[WebSocket Manager]
         ReportSvc[Report Service\nWeasyPrint + Jinja2]
         KMLSvc[KML Service · simplekml]
@@ -101,6 +107,7 @@ flowchart TB
         Redis[(Redis\nRefresh Tokens + WS Presence)]
     end
 
+    FOV_CALC -->|computed GeoJSON| UI
     UI --> Nginx
     WS_C --> Nginx
     Nginx --> Static
@@ -116,7 +123,6 @@ flowchart TB
     ProxyAPI --> CoverageR
     ProxyWS --> WSMgr
 
-    CameraR -->|on every edit| GIS
     CoverageR -->|on demand| GIS
     GIS --> Mongo
     CameraR --> Mongo
@@ -142,50 +148,83 @@ flowchart TB
 ---
 
 **React Frontend**
-- **Responsibility:** Single-page application. Renders the map canvas, toolbar, left panel, and camera/zone editing UI. Manages all client-side state.
+- **Responsibility:** Single-page application. Renders the map canvas, toolbar, left panel, and camera/zone editing UI. Manages all client-side state. **Owns all Stage 1 and Stage 2 FOV + DORI calculations.**
 - **Technology:** React 18 + Vite, Leaflet.js, Leaflet.draw, Zustand, React Query, Axios, Tailwind CSS
 - **Interfaces:**
   - REST calls to `/api/v1/*` via Axios + React Query
   - WebSocket connection to `/ws/projects/{id}`
   - Emits map canvas as base64 PNG for report generation
+  - Emits `fov_geojson` and `ir_fov_geojson` (both FeatureCollections) to backend on camera save
 
 **Zustand store slices:**
 - `authSlice` — current user, JWT access token
 - `projectSlice` — active project metadata, collaborators
 - `cameraSlice` — camera instances array, selected camera ID
 - `zoneSlice` — zone array, selected zone ID
-- `mapSlice` — active tool, layer visibility toggles, map bounds
+- `mapSlice` — active tool, layer visibility toggles, map bounds, `irMode: boolean` (global IR mode toggle — switches all cameras between `fov_geojson` and `ir_fov_geojson` rendering)
 - `coverageSlice` — latest coverage stats result, last computed timestamp
 
 ---
 
+**`src/utils/fov.ts` — Client-Side FOV & DORI Engine**
+- **Responsibility:** All Stage 1 geometric and Stage 2 DORI calculations. Computes both `fov_geojson` (full daytime geometry) and `ir_fov_geojson` (IR-truncated geometry) in a single call. Both are stored on the camera instance. The IR mode toggle only switches which stored result is rendered — it never triggers recalculation.
+- **Technology:** Pure TypeScript; no external dependencies beyond standard `Math.*`
+- **Key exported functions:**
+
+```typescript
+// Stage 1A — Interpolate H and V angles for chosen focal length
+interpolateAngles(params: VarifocalParams): { hAngle: number; vAngle: number }
+
+// Stage 1B — Near and far ground distances from camera tilt geometry
+computeGroundDistances(H: number, tiltDeg: number, vAngleDeg: number): { dNear: number; dFar: number }
+
+// Stage 1C/D — Trapezoidal coverage area (m²) and corner coordinates
+computeTrapezoid(lat: number, lng: number, bearing: number,
+                 hAngleDeg: number, dNear: number, dFar: number): TrapezoidResult
+
+// Stage 2 — PPM at a given horizontal distance from the camera
+computePPM(d: number, H: number, hAngleDeg: number, R_H: number): number
+
+// Stage 2 — Horizontal ground distance at which a PPM threshold is achieved
+computeDORIDistance(ppmThreshold: number, H: number, hAngleDeg: number, R_H: number): number
+
+// Master function — computes and returns BOTH FeatureCollections in one pass:
+//   fov_geojson:    full daytime geometry (D_far from tilt + render distance cap)
+//   ir_fov_geojson: IR-truncated geometry (D_far additionally capped at ir_range depth)
+//                   null if model.ir_range is null
+// Each FeatureCollection contains:
+//   - feature[0]: full FOV trapezoid (Stage 1 outer boundary)
+//   - feature[1..4]: DORI sub-zone trapezoids (Identification, Recognition, Observation, Detection)
+//   - properties on each feature: zone type, distances, widths, area_m2, ppm values, is_ir_truncated
+computeFOVFeatureCollection(
+  camera: CameraInstance,
+  model: ResolvedCameraModel
+): { fov_geojson: GeoJSON.FeatureCollection; ir_fov_geojson: GeoJSON.FeatureCollection | null }
+```
+
+**Coordinate projection:** All geodesic offset calculations (projecting a point at bearing + distance from an origin lat/lng) use the standard WGS84 approximation `(lat + Δlat, lng + Δlng)` with the Haversine-compatible formula. This is sufficient accuracy for distances up to 500m. The same formula is used in `fov.ts` and in the Python backend GIS service (pyproj geodesic) — results will agree to within rounding.
+
+---
+
 **FastAPI Backend**
-- **Responsibility:** Stateless REST API and WebSocket server. Handles auth, all CRUD operations, GIS computation delegation, PDF/KML generation.
+- **Responsibility:** Stateless REST API and WebSocket server. Handles auth, all CRUD operations, stores client-supplied FOV GeoJSON, runs server-side coverage union analysis, generates PDF/KML.
 - **Technology:** Python 3.12, FastAPI, Uvicorn, Beanie (ODM), python-jose (JWT), passlib (bcrypt)
 - **Interfaces:** HTTP/1.1 REST on port 8000; WebSocket on same port at `/ws/*`
+- **Note:** The backend does **not** recompute FOV or DORI polygons on camera PUT/POST. It receives both `fov_geojson` and `ir_fov_geojson` already computed by the client and persists them as-is. The GIS service is used only for coverage union/intersection analysis (which uses `fov_geojson` outer trapezoid only).
 
 ---
 
 **GIS Service** *(internal Python module, no HTTP boundary)*
-- **Responsibility:** All geometry computation. FOV polygon generation (4-point approximation), geodesic distance/bearing calculations, coverage union and intersection analysis.
+- **Responsibility:** Coverage union and intersection analysis using Shapely. Consumes the persisted `fov_geojson` polygons; does **not** recompute them.
 - **Technology:** Shapely 2.x, pyproj
 - **Interfaces:**
-  - `compute_fov_polygon(lat, lng, bearing, fov_angle, max_range, min_range) → GeoJSON Polygon`
   - `compute_coverage_stats(fov_polygons: list[Polygon], zone_polygons: list[Polygon]) → CoverageStats`
-
-**FOV polygon algorithm (4-point):**
-1. Origin: camera position `(lat, lng)`
-2. Left vertex: geodesic point at `max_range` metres, bearing `bearing − fov_angle/2`
-3. Arc midpoint: geodesic point at `max_range` metres, bearing `bearing` (centre)
-4. Right vertex: geodesic point at `max_range` metres, bearing `bearing + fov_angle/2`
-
-If `min_range > 0`: replace origin with two near-field points at `min_range` along each bounding bearing, forming a 5-point truncated polygon.
 
 ---
 
 **WebSocket Manager** *(in-process, FastAPI)*
 - **Responsibility:** Maintains a registry of active WebSocket connections keyed by `project_id`. Broadcasts mutation events to all connected clients in a project room except the originating connection.
-- **Technology:** FastAPI WebSocket, Redis (for presence tracking only in V1 — pub/sub not required on single instance)
+- **Technology:** FastAPI WebSocket, Redis (for presence tracking only in V1)
 - **Interfaces:**
   - Inbound: connection at `/ws/projects/{id}?token={jwt}`
   - Outbound broadcast message types: `camera_updated`, `camera_added`, `camera_deleted`, `zone_updated`, `zone_added`, `zone_deleted`, `coverage_recalculated`, `user_joined`, `user_left`
@@ -193,14 +232,14 @@ If `min_range > 0`: replace origin with two near-field points at `min_range` alo
 ---
 
 **Report Service**
-- **Responsibility:** Accepts a base64 map image from the client, fetches project data from MongoDB, renders a Jinja2 HTML template, and converts to PDF via WeasyPrint.
+- **Responsibility:** Accepts a base64 map image from the client, fetches project data from MongoDB, renders a Jinja2 HTML template (including per-camera DORI table), and converts to PDF via WeasyPrint.
 - **Technology:** WeasyPrint, Jinja2
 - **Interfaces:** Called by `POST /api/v1/projects/{id}/report`. Streams PDF bytes back as `application/pdf`.
 
 ---
 
 **KML Service**
-- **Responsibility:** Fetches all cameras and zones for a project and generates a `.kml` file using simplekml. Camera positions as Placemarks, FOV polygons and zones as styled Polygon/LineString features.
+- **Responsibility:** Fetches all cameras and zones for a project and generates a `.kml` file. Exports the full `fov_geojson` FeatureCollection per camera — each DORI sub-zone as a separately styled KML Polygon feature.
 - **Technology:** simplekml
 - **Interfaces:** Called by `GET /api/v1/projects/{id}/export/kml`. Returns `application/vnd.google-earth.kml+xml`.
 
@@ -234,40 +273,63 @@ _id:            ObjectId        PK
 email:          string          unique, indexed
 password_hash:  string          bcrypt
 display_name:   string
-system_role:    enum            [admin, user]  — admin can manage users system-wide
+system_role:    enum            [admin, user]
 created_at:     datetime
 ```
-*Note: project-level roles (owner/editor/viewer) live on the Project document, not on User.*
 
 ---
 
 **InviteToken**
 ```
 _id:            ObjectId        PK
-token_hash:     string          SHA-256 hash of the raw token; indexed unique
-email:          string          intended recipient (informational only)
-created_by:     ObjectId        → User (admin who generated it)
+token_hash:     string          SHA-256 hash; indexed unique
+email:          string          intended recipient
+created_by:     ObjectId        → User
 expires_at:     datetime        72 hours from creation
-used_at:        datetime | null null until redeemed
+used_at:        datetime | null
 created_at:     datetime
 ```
-*Raw token is a cryptographically random 32-byte URL-safe string. Only the hash is stored. Admin receives the full URL: `https://{host}/accept-invite?token={raw}`.*
 
 ---
 
-**CameraModel** *(per-user template library)*
+**CameraModel** *(per-user template library — extended for Stage 1 + Stage 2)*
 ```
-_id:            ObjectId        PK
-owner_id:       ObjectId        → User; indexed
-name:           string          e.g. "Hikvision DS-2CD2143"
-manufacturer:   string
-fov_angle:      float           horizontal FOV in degrees (1–360)
-max_range:      float           metres; > 0
-min_range:      float           metres; >= 0 (0 = no blind spot)
-aspect_ratio:   float | null    optional display hint
-notes:          string
-created_at:     datetime
+_id:              ObjectId      PK
+owner_id:         ObjectId      → User; indexed
+name:             string        e.g. "Hikvision DS-2CD2143G2"
+manufacturer:     string
+
+--- Stage 1 optics ---
+focal_length_min: float         mm; minimum focal length (widest angle)
+focal_length_max: float         mm; maximum focal length (narrowest angle)
+h_angle_max:   float         degrees; horizontal FOV at focal_length_min (widest angle)
+h_angle_min:   float         degrees; horizontal FOV at focal_length_max (narrowest angle)
+v_angle_max:   float         degrees; vertical FOV at focal_length_min (widest angle)
+v_angle_min:   float         degrees; vertical FOV at focal_length_max (narrowest angle)
+
+--- Stage 2 sensor ---
+sensor_resolution_h: int        horizontal pixel count (e.g. 1920, 2560, 3840)
+sensor_aspect_ratio: float      e.g. 1.777... for 16:9
+
+--- Legacy / fixed-lens fallback ---
+fov_angle:        float | null  horizontal FOV in degrees — used only if focal_length_min
+                                == focal_length_max (fixed-lens camera)
+max_fov_render_distance: float         metres; > 0  — caps D_far for map rendering; use Detection distance (25 PPM) as a principled default
+dead_zone:               float         metres; >= 0 — near-field blind spot radius; region directly in front of camera where coverage is ineffective
+
+--- IR illumination (informational only — not used in FOV or DORI calculations) ---
+ir_range:         float | null  metres; effective IR illumination distance at which the
+                                built-in IR LEDs provide usable night-vision; null = no IR
+                                / unknown. Displayed on map as a separate reference circle
+                                overlay; does not affect trapezoid geometry or PPM values.
+
+notes:            string
+created_at:       datetime
 ```
+
+*For fixed-lens cameras, set `focal_length_min == focal_length_max` and populate `fov_angle` directly. The frontend interpolation formula collapses to the fixed value. For varifocal cameras, `fov_angle` is ignored; the frontend interpolates from the focal length range.*
+
+*`ir_range` is used to compute `ir_fov_geojson` — the IR-truncated version of the FOV trapezoid stored on each `CameraInstance`. When IR mode is active, the map renders `ir_fov_geojson` instead of `fov_geojson`. It has no effect on daytime FOV trapezoid geometry, DORI distance calculations, or coverage union analysis.*
 
 ---
 
@@ -278,48 +340,98 @@ name:           string
 description:    string
 owner_id:       ObjectId        → User; indexed
 collaborators:  [
-  {
-    user_id:    ObjectId        → User
-    role:       enum            [editor, viewer]
-  }
+  { user_id: ObjectId, role: enum [editor, viewer] }
 ]
 base_map: {
   center_lat:   float
   center_lng:   float
   default_zoom: int             (1–22)
 }
-coverage_stats: {               — cached result of last recalculation
+coverage_stats: {
   total_covered_m2:   float
   overlap_geojson:    GeoJSON FeatureCollection | null
   gap_geojson:        GeoJSON FeatureCollection | null
   computed_at:        datetime | null
 } | null
 created_at:     datetime
-updated_at:     datetime        — updated on any project mutation
+updated_at:     datetime
 ```
 
 ---
 
-**CameraInstance**
+**CameraInstance** *(placed camera on map — extended for Stage 1 + Stage 2)*
 ```
-_id:              ObjectId      PK
-project_id:       ObjectId      → Project; indexed
-model_id:         ObjectId      → CameraModel
-label:            string        e.g. "CAM-01"
+_id:                  ObjectId  PK
+project_id:           ObjectId  → Project; indexed
+model_id:             ObjectId  → CameraModel
+label:                string    e.g. "CAM-01"
 position: {
-  lat:            float
-  lng:            float
+  lat:                float
+  lng:                float
 }
-bearing:          float         degrees from North (0–360)
-fov_geojson:      GeoJSON Polygon  — pre-computed, updated on every edit
-override_fov_angle: float | null   — null = use model default
-override_range:   float | null     — null = use model default
-override_min_range: float | null
-is_fov_visible:   boolean
-color:            string        hex colour e.g. "#3388ff"
-created_at:       datetime
-updated_at:       datetime
+bearing:              float     degrees from North (0–360)
+
+--- Stage 1 instance overrides ---
+mounting_height:      float     metres above ground (default pulled from model or project default)
+tilt_angle:           float     degrees downward from horizontal (0 = horizontal, 90 = straight down)
+chosen_focal_length:  float     mm; must be within [model.focal_length_min, model.focal_length_max]
+override_h_angle:     float | null   null = interpolate from focal length
+override_v_angle:     float | null   null = interpolate from focal length
+override_fov_render_distance:   float | null   null = use model.max_fov_render_distance (caps geometry display)
+
+--- Stage 2 instance overrides ---
+override_resolution_h: int | null    null = use model.sensor_resolution_h
+
+--- Computed by client, both stored verbatim, recomputed together on any parameter change ---
+fov_geojson:          GeoJSON FeatureCollection
+                      — Full daytime geometry; D_far derived from tilt + override_fov_render_distance
+                      — Feature[0]: full FOV trapezoid (Stage 1 outer boundary)
+                      — Feature[1]: Identification zone trapezoid (≥250 PPM, or up to D_far)
+                      — Feature[2]: Recognition zone trapezoid (125–249 PPM, or remaining depth)
+                      — Feature[3]: Observation zone trapezoid (62–124 PPM, or remaining depth)
+                      — Feature[4]: Detection zone trapezoid (25–61 PPM, or remaining depth)
+                      Each feature carries a `properties` object — see Section 5.3
+
+ir_fov_geojson:       GeoJSON FeatureCollection | null
+                      — IR-truncated geometry; identical structure to fov_geojson but
+                        D_far capped at ir_range depth along camera axis
+                      — null if model.ir_range is null (camera has no IR)
+                      — DORI sub-zones also truncated to IR depth; DORIInfoPanel reads
+                        from this when IR mode is active
+                      — Recomputed together with fov_geojson on every parameter change;
+                        never recomputed on IR mode toggle (toggle just swaps which
+                        field is rendered)
+
+--- Display toggles (never trigger recomputation) ---
+is_fov_visible:       boolean
+dori_zones_visible:   boolean   show/hide DORI sub-zone colour bands
+color:                string    hex colour for the outer FOV trapezoid e.g. "#3388ff"
+created_at:           datetime
+updated_at:           datetime
 ```
+
+**Recomputation triggers** — both `fov_geojson` and `ir_fov_geojson` are recomputed together in a single `computeFOVFeatureCollection` call whenever any of the following change:
+
+| Field changed | Reason |
+|---|---|
+| `bearing` | Geometry rotates |
+| `chosen_focal_length` | H/V angles change via interpolation |
+| `mounting_height` | D_near / D_far change |
+| `tilt_angle` | D_near / D_far change |
+| `override_h_angle` / `override_v_angle` | Angles change directly |
+| `override_fov_render_distance` | D_far cap changes |
+| `override_resolution_h` | DORI distances change |
+| `position` (drag) | Coordinates of all vertices change |
+
+The following do **not** trigger recomputation:
+
+| Field changed | Reason |
+|---|---|
+| IR mode toggle (global) | Swaps rendered field between `fov_geojson` and `ir_fov_geojson` |
+| `dori_zones_visible` | Show/hide only |
+| `is_fov_visible` | Show/hide only |
+| `color` | Style property only |
+| `label` | Metadata only |
 
 ---
 
@@ -331,7 +443,7 @@ label:        string
 type:         enum              [polygon, polyline]
 geojson:      GeoJSON Geometry  Polygon or LineString
 purpose:      enum              [coverage_area, perimeter, exclusion, note]
-color:        string            hex colour
+color:        string
 created_at:   datetime
 updated_at:   datetime
 ```
@@ -347,16 +459,260 @@ updated_at:   datetime
   - `camera_instances`: on `project_id`
   - `zones`: on `project_id`
   - `projects`: on `owner_id`; sparse multikey on `collaborators.user_id`
-- **Migrations:** No migration framework in V1. Schema changes handled by Beanie model updates with optional migration scripts in `packages/backend/migrations/`.
-- **Backups:** Docker volume backup via host cron job (`mongodump`) to a mounted backup directory. Operator responsibility.
+- **Migrations:** No migration framework in V1.
+- **Backups:** Host-level `mongodump` cron job.
+
+### 5.3 `fov_geojson` and `ir_fov_geojson` FeatureCollection Structure
+
+Both `fov_geojson` and `ir_fov_geojson` share an identical 5-feature GeoJSON FeatureCollection structure. They are computed together in a single `computeFOVFeatureCollection` call in `src/utils/fov.ts` and stored verbatim by the backend. The only difference is the effective `D_far` used:
+
+- `fov_geojson` — `D_far` from tilt geometry capped by `override_fov_render_distance` or `model.max_fov_render_distance`
+- `ir_fov_geojson` — `D_far` additionally capped at the IR far ground distance derived from `model.ir_range` using the same tilt geometry formula: `D_far_ir = min(D_far_daytime, H / tan(θ − V_angle/2))` where the tilt geometry produces the ground distance at which the IR axis reaches `ir_range` slant distance
+
+The frontend switches between them purely on the global IR mode toggle — no recalculation occurs on toggle.
+
+```jsonc
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "zone": "fov_outer",
+        "d_near_m": 4.0,
+        "d_far_m": 14.9,          // ir_fov_geojson: this is the IR-capped value
+        "w_near_m": 3.9,
+        "w_far_m": 14.6,
+        "area_m2": 100.8,
+        "h_angle_deg": 52.0,
+        "v_angle_deg": 30.0,
+        "mounting_height_m": 4.0,
+        "tilt_deg": 30.0,
+        "chosen_focal_length_mm": 6.0,
+        "is_ir_truncated": false   // true in ir_fov_geojson when ir_range < daytime D_far
+      },
+      "geometry": { "type": "Polygon", "coordinates": [[...trapezoid 4 corners + close]] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone": "dori_identification",
+        "ppm_threshold": 250,
+        "d_inner_m": 4.0,
+        "d_outer_m": 9.7,
+        "area_m2": 38.2,
+        "ppm_at_inner": 329,
+        "ppm_at_outer": 250
+      },
+      "geometry": { "type": "Polygon", "coordinates": [[...]] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone": "dori_recognition",
+        "ppm_threshold": 125,
+        "d_inner_m": 9.7,
+        "d_outer_m": 14.9,
+        "area_m2": 62.6,
+        "ppm_at_inner": 250,
+        "ppm_at_outer": 125
+      },
+      "geometry": { "type": "Polygon", "coordinates": [[...]] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone": "dori_observation",
+        "ppm_threshold": 62,
+        "d_inner_m": 14.9,
+        "d_outer_m": 14.9,
+        "area_m2": 0,
+        "note": "extends beyond d_far — entire footprint meets observation"
+      },
+      "geometry": null
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone": "dori_detection",
+        "ppm_threshold": 25,
+        "d_inner_m": 14.9,
+        "d_outer_m": 14.9,
+        "area_m2": 0,
+        "note": "extends beyond d_far — entire footprint meets detection"
+      },
+      "geometry": null
+    }
+  ]
+}
+```
+
+*When a DORI boundary distance exceeds `d_far`, the zone geometry is `null` and a `note` property records the limiting factor. The frontend renders only features with non-null geometry. `DORIInfoPanel` reads distances and areas from whichever FeatureCollection is currently active (day or IR mode) — no extra calculation required.*
 
 ---
 
-## 6. API & Integration Contracts
+## 6. Stage 1 & Stage 2 Calculation Specification
+
+This section is the authoritative reference for the mathematics implemented in `src/utils/fov.ts`. The backend does **not** implement these calculations.
+
+### 6.1 Stage 1 — Geometric Coverage Calculation
+
+#### Step 1A — Angle Interpolation (Varifocal)
+
+For a chosen focal length `f` within `[f_min, f_max]`:
+
+```
+H_angle = h_angle_max − [(f − f_min) / (f_max − f_min)] × (h_angle_max − h_angle_min)
+V_angle = v_angle_max − [(f − f_min) / (f_max − f_min)] × (v_angle_max − v_angle_min)
+```
+
+Where `h_angle_max` / `v_angle_max` are the angles at `f_min` (widest), and `h_angle_min` / `v_angle_min` are at `f_max` (narrowest). For fixed-lens cameras `f_min == f_max`, so `H_angle = h_angle_max` and `V_angle = v_angle_max` directly.
+
+If `override_h_angle` or `override_v_angle` are set on the instance, they replace the interpolated values entirely.
+
+#### Step 1B — Ground Distances (Tilt Geometry)
+
+With mounting height `H` (metres) and downward tilt `θ` (degrees):
+
+```
+D_near = H / tan(θ + V_angle/2)     # closest illuminated ground point
+D_far  = H / tan(θ − V_angle/2)     # furthest illuminated ground point
+```
+
+**Validity guard:** `θ > V_angle / 2` must hold; otherwise the camera's upper FOV boundary points at or above the horizon and `D_far` is infinite. If this condition is not met, the frontend must display a validation warning ("Tilt angle too shallow — camera sees sky") and clamp `D_far` to `override_fov_render_distance` or `model.max_fov_render_distance` as a fallback display value.
+
+If `override_fov_render_distance` is set, `D_far = min(D_far, override_fov_render_distance)` is applied after tilt geometry.
+
+#### Step 1C — Widths at Near and Far Edges
+
+```
+W_near = 2 × D_near × tan(H_angle / 2)
+W_far  = 2 × D_far  × tan(H_angle / 2)
+```
+
+#### Step 1D — Trapezoidal Coverage Area
+
+```
+Area = 0.5 × (W_near + W_far) × (D_far − D_near)    [m²]
+```
+
+#### Step 1E — Map Coordinates of Trapezoid Corners
+
+The four corners of the trapezoid on the map are geodesically projected from the camera position `(lat, lng)` using the camera's `bearing`:
+
+```
+Corner NL (near-left):  project (lat, lng) at bearing (bearing − H_angle/2), distance D_near
+Corner NR (near-right): project (lat, lng) at bearing (bearing + H_angle/2), distance D_near
+Corner FL (far-left):   project (lat, lng) at bearing (bearing − H_angle/2), distance D_far
+Corner FR (far-right):  project (lat, lng) at bearing (bearing + H_angle/2), distance D_far
+```
+
+GeoJSON Polygon vertex order: `[NL, NR, FR, FL, NL]` (closed ring).
+
+Geodesic projection formula (WGS84 approximation, adequate for <500m):
+```typescript
+const R = 6378137; // Earth radius in metres
+const δ = distance / R;
+const latRad = toRad(lat);
+const lngRad = toRad(lng);
+const bearRad = toRad(bearing);
+
+const lat2 = Math.asin(
+  Math.sin(latRad) * Math.cos(δ) +
+  Math.cos(latRad) * Math.sin(δ) * Math.cos(bearRad)
+);
+const lng2 = lngRad + Math.atan2(
+  Math.sin(bearRad) * Math.sin(δ) * Math.cos(latRad),
+  Math.cos(δ) − Math.sin(latRad) * Math.sin(lat2)
+);
+return { lat: toDeg(lat2), lng: toDeg(lng2) };
+```
+
+### 6.2 Stage 2 — DORI Performance Analysis (IEC EN 62676-4:2015)
+
+#### DORI Thresholds
+
+| Level | PPM Threshold | Capability |
+|---|---|---|
+| Detection | ≥ 25 PPM | Presence of person/vehicle determinable |
+| Observation | ≥ 62 PPM | Clothing, direction of travel visible |
+| Recognition | ≥ 125 PPM | Same individual matched; plates may be readable |
+| Identification | ≥ 250 PPM | Positive ID beyond reasonable doubt; clear facial features |
+
+#### Step 2A — PPM at Horizontal Distance `d`
+
+Slant distance accounts for mounting height:
+
+```
+D_slant(d) = sqrt(d² + H²)
+
+PPM(d) = R_H / [2 × D_slant(d) × tan(H_angle / 2)]
+```
+
+#### Step 2B — DORI Horizontal Distance for Each Threshold
+
+Rearranging the PPM formula:
+
+```
+D_slant_DORI = R_H / (2 × PPM_threshold × tan(H_angle / 2))
+D_horiz_DORI = sqrt(D_slant_DORI² − H²)
+```
+
+Computed for PPM_threshold ∈ {250, 125, 62, 25}.
+
+#### Step 2C — Clamping DORI Distances to Geometric Footprint
+
+Each `D_horiz_DORI` is clamped to `D_far`:
+
+```
+D_identification = min(D_horiz at 250 PPM, D_far)
+D_recognition    = min(D_horiz at 125 PPM, D_far)
+D_observation    = min(D_horiz at  62 PPM, D_far)
+D_detection      = min(D_horiz at  25 PPM, D_far)
+```
+
+If `D_horiz_DORI > D_far`, the zone extends beyond the geometric footprint. The entire footprint meets that DORI level — the zone geometry is `null` in `fov_geojson`, and the properties carry the `"note"` field.
+
+#### Step 2D — DORI Zone Trapezoid Coordinates
+
+Each DORI zone occupies the annular strip between two distances. Its four corners are projected identically to Step 1E, substituting `D_inner` and `D_outer`:
+
+```
+W_inner = 2 × D_inner × tan(H_angle / 2)
+W_outer = 2 × D_outer × tan(H_angle / 2)
+A_zone  = 0.5 × (W_inner + W_outer) × (D_outer − D_inner)
+```
+
+Zone strips (inner → outer):
+
+| Zone | D_inner | D_outer |
+|---|---|---|
+| Identification | D_near | D_identification |
+| Recognition | D_identification | D_recognition |
+| Observation | D_recognition | D_observation |
+| Detection | D_observation | D_detection |
+
+Where D_near comes from Step 1B.
+
+#### Step 2E — DORI Colour Coding (Frontend Rendering)
+
+| Zone | Fill Colour | Opacity |
+|---|---|---|
+| Identification | `#1a237e` (deep blue) | 0.55 |
+| Recognition | `#388e3c` (green) | 0.45 |
+| Observation | `#f57c00` (amber) | 0.40 |
+| Detection | `#c62828` (red) | 0.30 |
+| FOV outer boundary | Per-camera `color` | stroke only, no fill |
+
+These are defaults; the Layers tab may expose a global DORI palette toggle (monochrome vs. colour).
+
+---
+
+## 7. API & Integration Contracts
 
 All REST endpoints prefixed `/api/v1`. All requests/responses in JSON unless noted. All protected endpoints require `Authorization: Bearer {access_token}` header.
 
-### 6.1 Authentication & Invite
+### 7.1 Authentication & Invite
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
@@ -364,7 +720,7 @@ All REST endpoints prefixed `/api/v1`. All requests/responses in JSON unless not
 | POST | `/auth/refresh` | None | Refresh token → new access token |
 | POST | `/auth/logout` | Required | Invalidate refresh token in Redis |
 | GET | `/auth/accept-invite` | None | Validate invite token, return token metadata |
-| POST | `/auth/accept-invite` | None | Complete registration (set display_name + password) |
+| POST | `/auth/accept-invite` | None | Complete registration |
 
 **POST `/auth/login`**
 ```json
@@ -373,14 +729,7 @@ Response: { "access_token": "string", "refresh_token": "string", "token_type": "
 Errors:   401 invalid credentials
 ```
 
-**POST `/auth/accept-invite`**
-```json
-Request:  { "token": "string", "display_name": "string", "password": "string" }
-Response: { "access_token": "string", "refresh_token": "string", "token_type": "bearer" }
-Errors:   400 token invalid or expired | 409 email already registered
-```
-
-### 6.2 Admin
+### 7.2 Admin
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
@@ -388,14 +737,7 @@ Errors:   400 token invalid or expired | 409 email already registered
 | POST | `/admin/invite` | Admin | Generate invite token |
 | DELETE | `/admin/users/{user_id}` | Admin | Deactivate user |
 
-**POST `/admin/invite`**
-```json
-Request:  { "email": "string" }
-Response: { "invite_url": "string", "expires_at": "ISO8601 datetime" }
-Errors:   403 not admin | 409 pending invite already exists for email
-```
-
-### 6.3 Camera Models
+### 7.3 Camera Models
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
@@ -405,55 +747,37 @@ Errors:   403 not admin | 409 pending invite already exists for email
 | PUT | `/camera-models/{id}` | Required | Update model |
 | DELETE | `/camera-models/{id}` | Required | Delete model |
 
-**POST/PUT `/camera-models`**
+**POST/PUT `/camera-models` request:**
 ```json
-Request: {
+{
   "name": "string",
   "manufacturer": "string",
-  "fov_angle": "float (1–360)",
-  "max_range": "float (>0)",
-  "min_range": "float (>=0)",
-  "aspect_ratio": "float | null",
+  "focal_length_min": "float (mm)",
+  "focal_length_max": "float (mm)",
+  "h_angle_max": "float (degrees, 1–180)",
+  "h_angle_min": "float (degrees, 1–180)",
+  "v_angle_max": "float (degrees, 1–180)",
+  "v_angle_min": "float (degrees, 1–180)",
+  "sensor_resolution_h": "int (pixels, e.g. 1920)",
+  "sensor_aspect_ratio": "float (e.g. 1.7778 for 16:9)",
+  "max_fov_render_distance": "float (metres, >0)",
+  "dead_zone": "float (metres, >=0)",
+  "ir_range": "float | null (metres, >0 — null if no IR or unknown)",
+  "fov_angle": "float | null  (fixed-lens only)",
   "notes": "string"
 }
-Response: CameraModel document
-Errors: 404 not found | 403 not owner
 ```
 
-### 6.4 Projects
+### 7.4 Projects
+
+*(Unchanged from v1.0 — see previous section)*
+
+### 7.5 Cameras
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| GET | `/projects` | Required | List projects where caller is owner or collaborator |
-| POST | `/projects` | Required | Create project |
-| GET | `/projects/{id}` | Required | Full project: metadata + cameras + zones |
-| PUT | `/projects/{id}` | Owner/Editor | Update project metadata |
-| DELETE | `/projects/{id}` | Owner | Delete project and all children |
-| POST | `/projects/{id}/collaborators` | Owner | Add collaborator |
-| DELETE | `/projects/{id}/collaborators/{user_id}` | Owner | Remove collaborator |
-
-**GET `/projects/{id}`**
-```json
-Response: {
-  "project": { ...Project fields... },
-  "cameras": [ ...CameraInstance[] with fov_geojson... ],
-  "zones": [ ...Zone[]... ]
-}
-```
-
-**POST `/projects/{id}/collaborators`**
-```json
-Request:  { "user_id": "string", "role": "editor | viewer" }
-Response: Updated collaborators array
-Errors:   404 user not found | 409 already collaborator
-```
-
-### 6.5 Cameras
-
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| POST | `/projects/{id}/cameras` | Owner/Editor | Place camera; computes FOV inline |
-| PUT | `/projects/{id}/cameras/{cam_id}` | Owner/Editor | Update camera; recomputes FOV inline |
+| POST | `/projects/{id}/cameras` | Owner/Editor | Place camera; stores client-supplied fov_geojson |
+| PUT | `/projects/{id}/cameras/{cam_id}` | Owner/Editor | Update camera; stores updated fov_geojson |
 | DELETE | `/projects/{id}/cameras/{cam_id}` | Owner/Editor | Remove camera |
 
 **POST/PUT camera request:**
@@ -463,41 +787,36 @@ Errors:   404 user not found | 409 already collaborator
   "label": "string",
   "position": { "lat": "float", "lng": "float" },
   "bearing": "float (0–360)",
-  "override_fov_angle": "float | null",
-  "override_range": "float | null",
-  "override_min_range": "float | null",
+  "mounting_height": "float (metres)",
+  "tilt_angle": "float (degrees, 0–89)",
+  "chosen_focal_length": "float (mm)",
+  "override_h_angle": "float | null",
+  "override_v_angle": "float | null",
+  "override_fov_render_distance": "float | null",
+  "override_resolution_h": "int | null",
   "is_fov_visible": "boolean",
-  "color": "hex string"
+  "dori_zones_visible": "boolean",
+  "color": "hex string",
+  "fov_geojson": "GeoJSON FeatureCollection (daytime — computed by client)",
+  "ir_fov_geojson": "GeoJSON FeatureCollection | null (IR-truncated — computed by client; null if model.ir_range is null)"
 }
 ```
-**Response:** Full `CameraInstance` including computed `fov_geojson`.  
-**Side effect:** WebSocket broadcast `camera_updated` / `camera_added` to project room.
 
-### 6.6 Zones
+**Response:** Full `CameraInstance` document including stored `fov_geojson` and `ir_fov_geojson`.  
+**Backend behaviour:** Backend validates that `fov_geojson` is a valid GeoJSON FeatureCollection and `ir_fov_geojson` is a valid FeatureCollection or null (schema check only — no recomputation). Stores both as-is.  
+**Side effect:** WebSocket broadcast `camera_updated` / `camera_added` to project room — payload includes both `fov_geojson` and `ir_fov_geojson` so remote clients render immediately without recalculating.
+
+### 7.6 Zones
+
+*(Unchanged from v1.0)*
+
+### 7.7 Coverage Analysis
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| POST | `/projects/{id}/zones` | Owner/Editor | Create zone |
-| PUT | `/projects/{id}/zones/{zone_id}` | Owner/Editor | Update zone |
-| DELETE | `/projects/{id}/zones/{zone_id}` | Owner/Editor | Delete zone |
+| POST | `/projects/{id}/coverage` | Owner/Editor | Run server-side union/gap analysis on stored fov_geojson geometries |
 
-**POST/PUT zone request:**
-```json
-{
-  "label": "string",
-  "type": "polygon | polyline",
-  "geojson": "GeoJSON Geometry object",
-  "purpose": "coverage_area | perimeter | exclusion | note",
-  "color": "hex string"
-}
-```
-**Side effect:** WebSocket broadcast `zone_updated` / `zone_added` to project room.
-
-### 6.7 Coverage Analysis
-
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| POST | `/projects/{id}/coverage` | Owner/Editor | Run coverage analysis; stores result on project |
+The backend extracts `feature[0]` (the outer FOV trapezoid) from each camera's `fov_geojson` FeatureCollection and passes these to `compute_coverage_stats()` in the GIS Service. DORI sub-zone features are not used in coverage union analysis.
 
 **Response:**
 ```json
@@ -508,348 +827,195 @@ Errors:   404 user not found | 409 already collaborator
   "computed_at": "ISO8601 datetime"
 }
 ```
-**Side effect:** Stores result in `project.coverage_stats`. WebSocket broadcast `coverage_recalculated` with full stats to project room.
 
-### 6.8 Export & Reports
+### 7.8 Export & Reports
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| POST | `/projects/{id}/report` | Required (any role) | Generate PDF report |
-| GET | `/projects/{id}/export/kml` | Required (any role) | Download KML file |
+| POST | `/projects/{id}/report` | Any role | Generate PDF report (includes DORI table per camera) |
+| GET | `/projects/{id}/export/kml` | Any role | Download KML (includes DORI sub-zones as styled features) |
 
 **POST `/projects/{id}/report` request:**
 ```json
 {
   "map_image_base64": "string (PNG, base64-encoded)",
-  "include_coverage_stats": "boolean"
-}
-```
-**Response:** `application/pdf` stream, `Content-Disposition: attachment; filename="{project_name}_report.pdf"`
-
-### 6.9 WebSocket
-
-**Endpoint:** `WS /ws/projects/{id}?token={access_token}`
-
-**Connection auth:** JWT validated on upgrade handshake. Invalid token → close with code 4001.
-
-**Broadcast message envelope:**
-```json
-{
-  "type": "camera_updated | camera_added | camera_deleted | zone_updated | zone_added | zone_deleted | coverage_recalculated | user_joined | user_left",
-  "project_id": "string",
-  "actor_user_id": "string",
-  "payload": { ...type-specific data... }
+  "include_coverage_stats": "boolean",
+  "include_dori_table": "boolean"
 }
 ```
 
-**Client behaviour:** On receiving a broadcast, client merges payload into Zustand store and Leaflet re-renders affected layers. No REST refetch required for camera/zone events (payload contains full updated document).
+**PDF report content additions (v1.1):**
+- Per-camera DORI summary table: Identification distance (m), Recognition distance (m), Observation distance (m), Detection distance (m), Identification zone area (m²), total FOV area (m²)
+- Footer note: *"DORI distances computed per IEC EN 62676-4:2015 using slant-distance PPM formula. Results are design-guide estimates; actual performance may vary with lighting, compression, and lens quality."*
+
+**KML export additions (v1.1):**
+- Each DORI sub-zone (Identification, Recognition, Observation, Detection) exported as a separate styled KML Polygon placemark, colour-coded per the DORI palette, grouped under a `<Folder>` named after the camera label.
+
+### 7.9 WebSocket
+
+*(Unchanged from v1.0 — broadcast envelope and message types are the same)*
 
 ---
 
-## 7. Authentication & Authorisation
+## 8. Authentication & Authorisation
 
-### Auth Mechanism
-
-- **Access token:** JWT (HS256), signed with `JWT_SECRET` env var. TTL: 15 minutes. Contains `sub` (user_id), `system_role`, `exp`.
-- **Refresh token:** Cryptographically random 32-byte string. Stored as SHA-256 hash in Redis with 7-day TTL. Rotated on each use.
-- **Invite token:** Cryptographically random 32-byte URL-safe string. SHA-256 hash stored in MongoDB. TTL: 72 hours. Single-use (marked `used_at` on redemption).
-- **WebSocket auth:** Access token passed as query parameter `?token=...` on the upgrade request. Validated server-side before connection is accepted.
-
-### Roles & Permissions Matrix
-
-| Action | Owner | Editor | Viewer |
-|---|---|---|---|
-| View project (read cameras, zones) | ✅ | ✅ | ✅ |
-| Place / edit / delete camera | ✅ | ✅ | ❌ |
-| Create / edit / delete zone | ✅ | ✅ | ❌ |
-| Run coverage analysis | ✅ | ✅ | ❌ |
-| Generate PDF report | ✅ | ✅ | ✅ |
-| Export KML | ✅ | ✅ | ✅ |
-| Edit project metadata | ✅ | ✅ | ❌ |
-| Invite / remove collaborators | ✅ | ❌ | ❌ |
-| Delete project | ✅ | ❌ | ❌ |
-| Transfer ownership | ✅ | ❌ | ❌ |
-
-**System roles:**
-- `admin` — can access `/admin/*` routes (invite generation, user management)
-- `user` — standard access, no admin routes
-
-All permission checks are enforced server-side. The frontend hides disallowed UI elements as a UX courtesy only — the backend is the authoritative enforcement point.
+*(Unchanged from v1.0 — roles and permissions matrix is the same)*
 
 ---
 
-## 8. Non-Functional Requirements
+## 9. Non-Functional Requirements
 
 | Concern | Requirement | Approach |
 |---|---|---|
-| FOV render latency | FOV polygon visible within 500ms of user stopping a camera edit | 300ms debounce on frontend; GIS computation target <100ms server-side for single camera |
-| Coverage analysis | Response within 5 seconds for projects with up to 50 cameras and 20 zones | Shapely operations are synchronous in FastAPI async endpoint via `run_in_executor`; acceptable at this scale |
-| WebSocket broadcast | Change visible to other users within 2 seconds | In-process broadcast on same FastAPI instance; no queuing needed at V1 scale |
-| API availability | Best-effort; no SLA for V1 | Single VM with Docker Compose restart policies (`unless-stopped`) |
-| Security | Passwords bcrypt-hashed (cost factor 12). JWTs short-lived (15min). HTTPS enforced in production. No sensitive data in logs | passlib[bcrypt], HTTPS via host-level TLS or Nginx SSL termination |
-| Input validation | All API inputs validated with Pydantic v2 models | FastAPI + Pydantic v2 with strict types and field constraints |
-| Scalability | Support <50 concurrent users, <200 projects | Single-instance deployment sufficient; no horizontal scaling required in V1 |
-| Browser support | Latest two versions of Chrome, Firefox, Safari, Edge | Vite build targets `es2020`; Leaflet.js is broadly compatible |
+| FOV + DORI render latency | Full trapezoid + DORI zones visible within 500ms of user stopping a parameter edit | 300ms debounce; all math in `fov.ts` is synchronous and <1ms per camera |
+| No round-trip for FOV edits | Changing bearing, focal length, tilt, height, or resolution must **not** trigger an API call — only a debounced PUT on save | `fov.ts` runs in-browser; API called only to persist, not to compute |
+| IR mode toggle latency | Switching IR mode on/off must be instantaneous — no recalculation, no API call | Both `fov_geojson` and `ir_fov_geojson` already stored on the instance; toggle swaps which is rendered |
+| Coverage analysis | Response within 5 seconds for up to 50 cameras and 20 zones | Shapely `unary_union` via `run_in_executor` in FastAPI |
+| WebSocket broadcast | Change visible to other users within 2 seconds | In-process broadcast; full `fov_geojson` FeatureCollection included in `camera_updated` payload so remote clients re-render immediately without recomputing |
+| API availability | Best-effort; no SLA for V1 | Docker Compose `unless-stopped` restart policies |
+| Security | bcrypt cost 12; JWTs 15min; HTTPS in production | passlib[bcrypt], Nginx SSL |
+| Input validation | All API inputs validated with Pydantic v2 | Field constraints: tilt 0–89°, focal length within model bounds, resolution >0 |
+| Scalability | <50 concurrent users, <200 projects | Single-instance deployment |
+| Browser support | Latest two versions of Chrome, Firefox, Safari, Edge | Vite `es2020` target |
 
 ---
 
-## 9. Infrastructure & Deployment
+## 10. Infrastructure & Deployment
 
-### Docker Compose Services
+*(Unchanged from v1.0 — Docker Compose, env vars, monorepo structure, CI/CD)*
 
-```yaml
-services:
-  nginx:       # Nginx Alpine; serves /dist, proxies /api and /ws
-  backend:     # Python 3.12 slim; uvicorn on port 8000
-  mongodb:     # MongoDB 7; volume: ./data/mongo
-  redis:       # Redis 7 Alpine; volume: ./data/redis
+**Monorepo structure addition:**
 ```
-
-All services on a shared internal Docker network (`cctv_net`). Only Nginx exposes an external port (80, optionally 443).
-
-### Environments
-
-| Environment | Description |
-|---|---|
-| `development` | Services run natively on the developer's machine — no Docker. See below. |
-| `production` | `docker-compose.yml` — built React `/dist` served by Nginx, Uvicorn with 2 workers |
-
-#### Development Environment (Native)
-
-No Docker is used in development. Each service is run directly on the developer's machine:
-
-| Service | How to run | Default port |
-|---|---|---|
-| MongoDB | Local install or MongoDB Atlas free tier (cloud) | 27017 |
-| Redis | Local install or Redis Cloud free tier (cloud) | 6379 |
-| FastAPI backend | `uvicorn app.main:app --reload` from `packages/backend` | 8000 |
-| React frontend | `pnpm dev` from `packages/frontend` (Vite dev server) | 5173 |
-
-Nginx is **not** used in development. The Vite dev server proxies `/api/*` and `/ws/*` to FastAPI directly via its built-in proxy config:
-
-```ts
-// packages/frontend/vite.config.ts
-server: {
-  proxy: {
-    '/api': 'http://localhost:8000',
-    '/ws': { target: 'ws://localhost:8000', ws: true }
-  }
-}
+packages/frontend/src/
+  utils/
+    fov.ts          ← Stage 1 + Stage 2 calculation engine (new)
+    geo.ts          ← geodesic projection helpers (new)
+  components/
+    camera/
+      CameraEditPanel.tsx    ← extended with varifocal + tilt + height + DORI display
+      DORIInfoPanel.tsx      ← per-camera DORI distances and zone area summary (new)
+  store/
+    cameraSlice.ts           ← extended with new CameraInstance fields
 ```
-
-This replicates Nginx's routing behaviour exactly, so frontend code requires no changes between environments.
-
-**Developer prerequisites:**
-- Node.js ≥ 18 + pnpm
-- Python 3.12 + pip
-- MongoDB running locally or Atlas connection string
-- Redis running locally or Redis Cloud connection string
-
-A `.env.local` file in `packages/backend` overrides any production env vars for local development. This file is git-ignored.
-
-### Environment Variables (`.env`)
-
-```
-# Backend
-MONGO_URI=mongodb://mongodb:27017/cctv_planner
-REDIS_URL=redis://redis:6379/0
-JWT_SECRET=<random 64-char secret>
-JWT_ACCESS_TTL_MINUTES=15
-JWT_REFRESH_TTL_DAYS=7
-INVITE_TOKEN_TTL_HOURS=72
-FIRST_ADMIN_EMAIL=admin@example.com      # seeded on first startup
-FIRST_ADMIN_PASSWORD=<set on first run>
-
-# Frontend (Vite build-time)
-VITE_API_BASE_URL=/api/v1
-VITE_WS_BASE_URL=/ws
-VITE_STADIA_MAPS_API_KEY=<key>
-```
-
-`.env.example` committed to repo with all keys and placeholder values. `.env` git-ignored.
-
-### Monorepo Structure
-
-```
-/
-├── packages/
-│   ├── frontend/          # React + Vite app
-│   │   ├── src/
-│   │   │   ├── components/
-│   │   │   ├── pages/
-│   │   │   ├── store/     # Zustand slices
-│   │   │   ├── hooks/     # useWebSocket, useDebounce, etc.
-│   │   │   ├── api/       # Axios + React Query hooks
-│   │   │   └── utils/
-│   │   ├── index.html
-│   │   └── vite.config.ts
-│   └── backend/           # FastAPI app
-│       ├── app/
-│       │   ├── routers/   # auth, admin, projects, cameras, zones, coverage, export
-│       │   ├── models/    # Beanie documents
-│       │   ├── schemas/   # Pydantic request/response models
-│       │   ├── services/  # gis, report, kml, websocket_manager
-│       │   ├── core/      # config, security, deps
-│       │   └── main.py
-│       ├── migrations/
-│       └── tests/
-├── docker-compose.yml
-├── nginx/
-│   └── nginx.conf
-├── pnpm-workspace.yaml
-└── package.json           # root scripts
-```
-
-### CI/CD
-
-No CI/CD pipeline required for V1. Deployment is manual:
-1. SSH to VM
-2. `git pull`
-3. `docker compose build && docker compose up -d`
-
-Recommendation: add a GitHub Actions workflow in Phase 5 to run backend tests on push to `main`.
 
 ---
 
-## 10. Implementation Plan
+## 11. Implementation Plan
 
 ### Phase 1 — Foundation (Weeks 1–3)
 
-- [x] Initialise monorepo: pnpm workspaces, root `package.json`, `.gitignore`, `.env.example`, `.env.local` template (git-ignored)
-- [x] Frontend: configure Vite dev server proxy (`/api/*` → `localhost:8000`, `/ws/*` → `ws://localhost:8000`)
-- [x] Backend: FastAPI project scaffold, Beanie + MongoDB connection, Redis connection
-- [x] Backend: Implement all Beanie document models (`User`, `InviteToken`, `CameraModel`, `Project`, `CameraInstance`, `Zone`)
-- [ ] Backend: Auth routes — login, refresh, logout (JWT + Redis refresh tokens)
-- [ ] Backend: Invite routes — `POST /admin/invite`, `GET /auth/accept-invite`, `POST /auth/accept-invite`
-- [ ] Backend: First-admin seed script (reads `FIRST_ADMIN_EMAIL` + `FIRST_ADMIN_PASSWORD` from env on startup)
-- [ ] Backend: Admin routes — list users, deactivate user
-- [ ] Frontend: React + Vite scaffold, Tailwind CSS, React Router, Axios, React Query, Zustand
-- [ ] Frontend: Login page and auth flow (access + refresh token handling, axios interceptor for refresh)
-- [ ] Frontend: Accept-invite page (token validation + registration form)
-- [ ] Docker Compose: all four services running locally
-
-**Phase 1 exit criterion:** Admin can log in, generate an invite link, new user can register via link, and both can log in. All four services (FastAPI, MongoDB, Redis, Vite dev server) run natively without errors.
-
----
+*(Unchanged)*
 
 ### Phase 2 — Core Map Features (Weeks 4–6)
 
-- [ ] Backend: Camera model CRUD (`/camera-models` routes)
-- [ ] Backend: Project CRUD (`/projects` routes, including full project GET with cameras + zones)
-- [ ] Backend: Camera instance routes — POST and PUT with inline GIS FOV computation
-- [ ] Backend: GIS Service module — `compute_fov_polygon()` with 4-point algorithm + pyproj geodesic
+- [ ] Backend: Camera model CRUD (`/camera-models` routes) — updated schema with varifocal + sensor fields
+- [ ] Backend: Project CRUD (`/projects` routes)
+- [ ] Backend: Camera instance routes — POST and PUT accepting and storing client-supplied `fov_geojson` (no backend recomputation)
+- [ ] **Frontend: `src/utils/geo.ts` — geodesic projection helper (`projectPoint(lat, lng, bearing, distance) → {lat, lng}`)**
+- [ ] **Frontend: `src/utils/fov.ts` — Stage 1 implementation: `interpolateAngles`, `computeGroundDistances`, `computeTrapezoid`, `buildTrapezoidGeoJSON`**
+- [ ] **Frontend: `src/utils/fov.ts` — Stage 2 implementation: `computePPM`, `computeDORIDistance`, `buildDORIFeatures`**
+- [ ] **Frontend: `src/utils/fov.ts` — `computeFOVFeatureCollection` master function combining Stage 1 + Stage 2 output**
 - [ ] Frontend: Project dashboard (list, create, open project)
 - [ ] Frontend: Map canvas with Leaflet.js + Stadia Maps tiles
-- [ ] Frontend: Camera model management UI (left panel "Models" tab)
-- [ ] Frontend: Place camera on map click → POST camera → render FOV GeoJSON layer
-- [ ] Frontend: Drag camera to reposition → debounced PUT → updated FOV layer
-- [ ] Frontend: Rotation handle on FOV arc → bearing update → debounced PUT
-- [ ] Frontend: Camera edit panel (label, model swap, bearing input, overrides, colour, visibility toggle)
-- [ ] Frontend: Per-camera and global FOV visibility toggles
-- [ ] Frontend: Camera list in left panel ("Cameras" tab)
+- [ ] Frontend: Camera model management UI — updated form with varifocal focal range, H/V angle range, sensor resolution, aspect ratio fields
+- [ ] Frontend: Place camera on map → call `computeFOVFeatureCollection` immediately → render trapezoid + DORI sub-zones → POST camera with fov_geojson
+- [ ] Frontend: Drag camera to reposition → recompute fov_geojson client-side → re-render immediately → debounced PUT
+- [ ] Frontend: Bearing rotation handle → recompute → re-render → debounced PUT
+- [ ] **Frontend: Camera edit panel — add mounting height input, tilt angle input, focal length slider (with live H/V angle readout), DORI zone toggle**
+- [ ] **Frontend: `DORIInfoPanel.tsx` — displays computed Identification / Recognition / Observation / Detection distances and zone areas for selected camera**
+- [ ] Frontend: Per-camera and global FOV visibility toggles; global DORI zone visibility toggle
+- [ ] Frontend: Camera list in left panel
+- [ ] **Frontend: `src/utils/fov.ts` unit tests — validate Stage 1 and Stage 2 outputs against the worked example in CCTV_Stage1_Stage2_DORI.pdf (H=4m, θ=30°, f=6mm, R_H=2560)**
 
-**Phase 2 exit criterion:** User can create a project, place multiple cameras, adjust their bearing and FOV parameters, and see FOV polygons update on the map in real time.
-
----
+**Phase 2 exit criterion:** User can place a camera with varifocal parameters, mounting height, and tilt angle; see the trapezoidal FOV and four colour-coded DORI zone bands render in real time on the map with no API round-trip; adjust focal length via a slider and see the geometry update instantly.
 
 ### Phase 3 — Zones, Collaboration & Save (Weeks 7–9)
 
-- [ ] Backend: Zone CRUD routes
-- [ ] Backend: WebSocket manager — room registry, broadcast on camera/zone mutations
-- [ ] Backend: Collaborator management routes (add, remove)
-- [ ] Backend: Project role enforcement middleware
-- [ ] Frontend: Polygon drawing tool (Leaflet.draw integration)
-- [ ] Frontend: Polyline drawing tool
-- [ ] Frontend: Zone label, colour, purpose editing; zone list in left panel
-- [ ] Frontend: Layers tab — global show/hide toggles for FOVs, zones; basemap style
-- [ ] Frontend: WebSocket hook — connect on project open, apply broadcast events to Zustand store
-- [ ] Frontend: Presence indicators (avatar initials in navbar for active collaborators)
-- [ ] Frontend: Auto-save (debounced push on change) + manual Save button with confirmation
-- [ ] Frontend: Collaborator management UI (invite by user lookup, role assignment)
-
-**Phase 3 exit criterion:** Two users editing the same project simultaneously see each other's camera and zone changes in real time. Viewer users cannot mutate.
-
----
+*(Unchanged — zone drawing, WebSocket, save)*
 
 ### Phase 4 — Coverage Analysis, Reports & Export (Weeks 10–11)
 
-- [ ] Backend: Coverage analysis route (`POST /projects/{id}/coverage`) — Shapely union, intersection with coverage_area zones, gap detection
-- [ ] Backend: GIS Service — `compute_coverage_stats()` implementation
-- [ ] Backend: Report Service — Jinja2 HTML template, WeasyPrint PDF generation
-- [ ] Backend: KML Service — simplekml export of cameras, FOV polygons, zones
-- [ ] Frontend: "Recalculate Coverage" button → POST coverage → render overlap + gap GeoJSON layers
-- [ ] Frontend: Coverage stats display (total m², computed timestamp)
-- [ ] Frontend: "Generate Report" button → canvas export → POST report → download PDF
-- [ ] Frontend: "Export KML" button → GET KML → download file
+- [ ] Backend: Coverage analysis — extract `feature[0]` (outer trapezoid) from each camera's `fov_geojson`; run Shapely union/gap analysis
+- [ ] Backend: Report Service — Jinja2 template updated with per-camera DORI table (Identification / Recognition / Observation / Detection distances and zone areas extracted from `fov_geojson` feature properties)
+- [ ] Backend: KML Service — export each camera's DORI sub-zone features as styled KML Polygons in a per-camera `<Folder>`; use DORI colour palette
+- [ ] Frontend: "Recalculate Coverage" → POST → render gap/overlap overlays
+- [ ] Frontend: Coverage stats display
+- [ ] Frontend: "Generate Report" → canvas export → POST with `include_dori_table: true`
+- [ ] Frontend: "Export KML" button
 
-**Phase 4 exit criterion:** User can run coverage analysis and see gap/overlap overlays on the map. PDF report downloads with map image, camera table, and coverage summary. KML opens correctly in Google Earth.
-
----
+**Phase 4 exit criterion:** PDF report contains per-camera DORI distance table. KML opens in Google Earth showing colour-coded DORI zones per camera.
 
 ### Phase 5 — Polish & Hardening (Week 12)
 
-- [ ] Full responsive layout review (tablet-friendly minimum)
-- [ ] Loading indicators on all async operations (map load, FOV update, coverage analysis, report generation)
-- [ ] Error states: API failure toasts, WebSocket reconnect logic with backoff
-- [ ] Frontend input validation (bearing range, FOV angle bounds, required fields)
-- [ ] Backend: unit tests for GIS Service (`compute_fov_polygon`, `compute_coverage_stats`) with known geodesic fixtures
-- [ ] Backend: integration tests for auth flow, camera CRUD, coverage endpoint
-- [ ] Performance test: project with 50 cameras — verify FOV compute <100ms per camera, coverage analysis <5s
-- [ ] Production Docker Compose review: restart policies, resource limits, log rotation
-- [ ] Security review: rate limiting on auth endpoints (e.g. `slowapi`), CORS config, input length limits
-- [ ] `README.md`: native dev setup (MongoDB, Redis, uvicorn, pnpm dev), env config, first-admin seed, production deployment instructions
-
-**Phase 5 exit criterion:** Application passes integration tests, handles errors gracefully, and is deployable to a fresh VM via documented steps.
+- [ ] Full responsive layout review
+- [ ] Loading indicators, error toasts, WebSocket reconnect
+- [ ] Frontend input validation: tilt > V_angle/2 guard with user-visible warning; focal length within model bounds; mounting height > 0
+- [ ] **`src/utils/fov.ts` unit tests: validate against all worked example values from CCTV_Stage1_Stage2_DORI.pdf Section 5 (D_near=4.0m, D_far=14.9m, W_near=3.9m, W_far=14.6m, Area=100.8m², D_identification=9.7m, D_recognition=14.9m, D_identification_area=38.2m², D_recognition_area=62.6m²)**
+- [ ] Backend: integration tests for auth, camera CRUD, coverage endpoint
+- [ ] Performance: 50-camera project; verify `computeFOVFeatureCollection` completes <5ms per camera in browser
+- [ ] Production Docker Compose, security review, README
 
 ---
 
-## 11. Open Questions & Risks
+## 12. Open Questions & Risks
 
 | # | Question / Risk | Owner | Status |
 |---|---|---|---|
-| 1 | **Stadia Maps free tier limits** — If tile request volume exceeds free tier, map tiles will be throttled or blocked. Monitor usage; upgrade plan or switch provider if needed. | Ops | Open |
-| 2 | **WeasyPrint system dependencies** — WeasyPrint requires `libpango`, `libcairo`, and other system libs. Docker image must be based on Debian/Ubuntu slim, not Alpine. Verify in Phase 4. | Backend dev | Open |
-| 3 | **Leaflet canvas CORS on report generation** — Stadia Maps provides CORS headers, so `leaflet-image` canvas capture should work. Verify empirically in Phase 4; fallback is a backend tile proxy. | Frontend dev | Open |
-| 4 | **WebSocket scaling** — In-process WebSocket manager works for single-VM V1. If the app ever scales to multiple backend instances, a Redis pub/sub fanout layer will be required. Not needed for V1. | Architect | Accepted for V1 |
-| 5 | **FOV accuracy caveat** — The 4-point polygon approximation slightly understates coverage at arc edges, particularly at FOV angles >120°. Document in report footer as a planning-tool caveat. | Product | Accepted |
-| 6 | **MongoDB backup** — No automated backup solution specified. Host-level `mongodump` cron job recommended; responsibility lies with the operator deploying the VM. | Ops | Open |
+| 1 | **Stadia Maps free tier limits** | Ops | Open |
+| 2 | **WeasyPrint system dependencies** — Debian/Ubuntu slim base required | Backend dev | Open |
+| 3 | **Leaflet canvas CORS on report generation** — Stadia Maps provides CORS headers; verify in Phase 4 | Frontend dev | Open |
+| 4 | **WebSocket scaling** — In-process manager sufficient for single VM V1 | Architect | Accepted for V1 |
+| 5 | **FOV accuracy caveat** — Trapezoidal approximation (4 corner points, no arc sweep) slightly understates lateral coverage at high H-angles; acceptable for survey planning. Document in report footer. | Product | Accepted |
+| 6 | **MongoDB backup** — Host-level mongodump cron | Ops | Open |
+| 7 | **Tilt angle validity guard** — If `θ ≤ V_angle/2`, D_far is infinite. Frontend must warn the user and cap D_far at `max_fov_render_distance`. | Frontend dev | Open |
+| 8 | **DORI disclaimer in reports** — Stage 2 PPM formula uses slant distance and a simplified sensor model; sensor quality, IR cut, compression, and scene lighting are not captured. Report footer must carry the IEC EN 62676-4:2015 disclaimer. | Product | Accepted |
+| 9 | **`fov_geojson` payload size** — A FeatureCollection of 5 features per camera at 4–8 vertices each is ~2–4 KB JSON. For 50 cameras that is ~200 KB in the project GET response and WebSocket broadcast payload. Acceptable at V1 scale. | Architect | Accepted for V1 |
 
 ---
 
-## 12. Assumptions
+## 13. Assumptions
 
-- The application will be deployed on a single VM with Docker Compose. No horizontal scaling, load balancing, or Kubernetes is required for V1.
-- Stadia Maps free tier is sufficient for expected tile request volume at <50 users.
-- SMTP / email delivery is explicitly not required. Invite links are distributed by the admin manually (copy-paste).
-- All FOV calculations are 2D flat projections. Elevation, mounting height, and vertical tilt are not modelled.
-- The team is comfortable with Python (FastAPI) for the backend and React for the frontend.
-- `pnpm` is available on all developer machines. Node.js ≥18 and Python 3.12 required.
-- MongoDB and Redis are run in Docker containers; no managed cloud database services are required.
-- The first admin user is bootstrapped via environment variables on first startup; no separate admin-creation CLI is needed.
-- Browser support is limited to the latest two versions of Chrome, Firefox, Safari, and Edge. IE and legacy browsers are not supported.
-- The FOV polygon 4-point approximation is acceptable for all practical survey purposes (FOV angles 40°–180°).
+- All FOV and DORI calculations are 2D flat projections on the ground plane. The trapezoidal model correctly accounts for mounting height and tilt angle in determining D_near and D_far, but lateral geometry is still a horizontal-plane projection.
+- The geodesic projection approximation used in `fov.ts` is accurate to within 0.1% for distances up to 500m from the camera.
+- Varifocal angle interpolation is linear in focal length — consistent with the IEC reference document formula and adequate for survey planning.
+- The application will be deployed on a single VM with Docker Compose.
+- Stadia Maps free tier is sufficient for expected tile volume at <50 users.
+- SMTP delivery is not required; invite links are distributed manually.
+- `pnpm` ≥ 8, Node.js ≥ 18, Python 3.12 required on developer machines.
+- Browser support: latest two versions of Chrome, Firefox, Safari, Edge.
 
 ---
 
-## 13. Glossary
+## 14. Glossary
 
 | Term | Definition |
 |---|---|
 | FOV | Field of View — the angular extent of a camera's coverage, expressed in degrees |
 | Bearing | Direction the camera faces, in degrees clockwise from North (0–360) |
-| FOV Polygon | A GeoJSON Polygon approximating the camera's 2D coverage area on the map |
-| Near-field blind spot | The region immediately in front of a camera within `min_range` metres where coverage is ineffective |
-| Coverage analysis | Server-side computation of the union of all FOV polygons, identification of overlapping zones, and detection of gaps within defined coverage-area zones |
-| CameraModel | A reusable template defining a camera's optical parameters (FOV angle, max/min range) |
-| CameraInstance | A specific camera placed on the map within a project, referencing a CameraModel and carrying a position and bearing |
-| Zone | A user-drawn polygon or polyline on the map, annotated with a purpose (coverage area, perimeter, exclusion, note) |
-| WGS84 | World Geodetic System 1984 — the coordinate reference system used for all lat/lng values (EPSG:4326) |
-| Geodesic | The shortest path between two points on the Earth's surface; used for accurate distance and bearing calculations via pyproj |
-| Stadia Maps | The selected map tile provider (CORS-friendly, free tier) replacing raw OpenStreetMap tiles |
-| Invite token | A single-use, time-limited cryptographic token that allows a new user to register. Generated by an admin; distributed manually |
-| Last-write-wins | Concurrent edit resolution strategy: the most recent write to the database is accepted without conflict detection |
-| Beanie | Async Python ODM (Object-Document Mapper) for MongoDB, built on Pydantic v2 |
-| WeasyPrint | Python library that converts HTML/CSS to PDF, used for report generation |
-| simplekml | Python library for generating KML files for use in Google Earth and other GIS tools |
-| Zustand | Lightweight React state management library used for all client-side application state |
-| React Query | Data-fetching and caching library for React, used to manage API calls and server state |
+| FOV Trapezoid | A GeoJSON Polygon with four corners representing the tilt-aware trapezoidal ground footprint of the camera (Stage 1 output) |
+| Dead zone | The region within `dead_zone` metres of the camera where coverage is ineffective — the near-field blind spot directly in front of the lens |
+| IR range | The effective illumination depth of the camera's built-in IR LEDs along the camera axis, in metres. Used to compute `ir_fov_geojson` — an IR-truncated version of the FOV trapezoid. When IR mode is active, the map renders `ir_fov_geojson` instead of `fov_geojson`, showing the reduced nighttime coverage footprint. Does not affect daytime DORI calculations. |
+| IR mode | A global map toggle in the Layers tab. When on, all cameras render their `ir_fov_geojson` (IR-truncated trapezoid + DORI zones). When off, all cameras render their `fov_geojson` (full daytime geometry). Switching never triggers recalculation. |
+| Tilt angle (θ) | Downward rotation of the camera from horizontal; 0° = horizontal, 90° = straight down |
+| Mounting height (H) | Perpendicular height of the camera lens above the ground plane, in metres |
+| D_near / D_far | Horizontal ground distances to the near and far edges of the camera's trapezoidal coverage footprint |
+| D_slant | Straight-line distance from the camera lens to a ground target; accounts for mounting height |
+| DORI | Detection, Observation, Recognition, Identification — IEC EN 62676-4:2015 standard for surveillance camera performance levels |
+| PPM | Pixels Per Metre — number of horizontal image pixels corresponding to 1 metre of physical width at the target distance |
+| IEC EN 62676-4:2015 | International standard defining DORI PPM thresholds for visible-light surveillance cameras |
+| Identification | ≥ 250 PPM — positive identification of an individual beyond reasonable doubt |
+| Recognition | ≥ 125 PPM — same individual can be matched; licence plates may be readable |
+| Observation | ≥ 62 PPM — clothing colour, direction of travel visible |
+| Detection | ≥ 25 PPM — presence of a person or vehicle determinable |
+| Varifocal lens | A lens with adjustable focal length, allowing the field of view to be changed |
+| H_angle / V_angle | Horizontal / vertical field-of-view angle at the chosen focal length |
+| fov.ts | Frontend utility module containing all Stage 1 and Stage 2 calculations |
+| `fov_geojson` | The GeoJSON FeatureCollection stored on each `CameraInstance`, containing the outer FOV trapezoid and up to four DORI sub-zone trapezoids. Computed client-side; stored server-side verbatim. |
+| Coverage analysis | Server-side computation using the outer FOV trapezoids — union, gap detection, and overlap identification across all cameras in a project |
+| WGS84 | World Geodetic System 1984 — coordinate reference system for all lat/lng values (EPSG:4326) |
+| Stadia Maps | Selected map tile provider (CORS-friendly, free tier) |
+| Beanie | Async Python ODM for MongoDB, built on Pydantic v2 |
+| WeasyPrint | Python HTML/CSS → PDF library used for report generation |
+| simplekml | Python library for generating KML files |
+| Zustand | React state management library |
+| React Query | Data-fetching and caching library for React |
