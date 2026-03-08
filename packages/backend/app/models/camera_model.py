@@ -25,23 +25,16 @@ class CameraType(str, Enum):
     fixed_dome = "fixed_dome"
     ptz = "ptz"
     bullet = "bullet"
-    box = "box"
-    fisheye = "fisheye"
-    multisensor = "multisensor"
 
 
 class LensType(str, Enum):
     fixed = "fixed"
     varifocal = "varifocal"
-    motorised = "motorised"
     optical_zoom = "optical_zoom"
 
 
 class SensorType(str, Enum):
     cmos = "cmos"
-    ccd = "ccd"
-    bsi_cmos = "bsi_cmos"
-    starvis = "starvis"
 
 
 class CameraModel(Document):

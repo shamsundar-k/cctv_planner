@@ -46,7 +46,6 @@ The core value proposition is visual confirmation of total coverage — enabling
 
 ### Out of Scope (Current Version)
 
-- **3D / height-aware calculations** — Elevation, mounting height, and vertical tilt are explicitly excluded. All coverage is calculated as a flat 2D projection.
 - Video feed integration or live camera connectivity
 - AI-based camera placement optimisation
 - Mobile-native app (responsive web only)
@@ -79,7 +78,7 @@ The application follows a classic three-tier architecture with a clear separatio
 
 - **Stateless REST API** for project CRUD operations.
 - **WebSocket or Server-Sent Events (SSE)** for real-time multi-user collaboration within a project (live cursor/camera position updates).
-- **GIS geometry computations** (FOV polygon generation, area intersection) performed server-side to keep client logic lightweight and results consistent.
+- **GIS geometry computations** (FOV polygon generation, area intersection) performed client-side
 - **Base map tiles** served from OpenStreetMap (Tile CDN) — no self-hosting required.
 
 ---
