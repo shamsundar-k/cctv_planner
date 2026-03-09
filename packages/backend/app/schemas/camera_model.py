@@ -25,6 +25,7 @@ class CameraModelCreate(BaseModel):
     v_fov_max: float = Field(gt=0, lt=180)          # ° at wide end
     lens_type: LensType = LensType.fixed
     ir_cut_filter: bool = True
+    ir_range: float | None = Field(None, gt=0)      # m — effective IR illumination range
 
     # Sensor
     resolution_h: int = Field(gt=0)
@@ -83,6 +84,7 @@ class CameraModelUpdate(BaseModel):
     v_fov_max: float | None = Field(None, gt=0, lt=180)
     lens_type: LensType | None = None
     ir_cut_filter: bool | None = None
+    ir_range: float | None = Field(None, gt=0)
 
     # Sensor
     resolution_h: int | None = Field(None, gt=0)
@@ -142,6 +144,7 @@ class CameraModelResponse(BaseModel):
     v_fov_max: float
     lens_type: LensType
     ir_cut_filter: bool
+    ir_range: float | None
 
     # Sensor
     resolution_h: int
