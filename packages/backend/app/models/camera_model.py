@@ -15,7 +15,7 @@ Standard Reference: IEC EN 62676-4:2015
 from datetime import datetime, timezone
 from enum import Enum
 
-from beanie import Document, Link
+from beanie import Document, Link, Index
 from pydantic import Field, model_validator
 
 from .user import User
@@ -59,6 +59,7 @@ class CameraModel(Document):
     v_fov_max: float = Field(gt=0, lt=180)          # ° — V-FOV at wide end
     lens_type: LensType = LensType.fixed
     ir_cut_filter: bool = True
+    ir_range: float | None = Field(None, gt=0)        # m — effective IR illumination range
 
     # ── Sensor ────────────────────────────────────────────────────────────────
     resolution_h: int = Field(gt=0)                 # pixels — horizontal
@@ -107,3 +108,9 @@ class CameraModel(Document):
 
     class Settings:
         name = "camera_models"
+        indexes = [
+            ("manufacturer", "model_number"),  # Compound unique index
+        ]
+        indexes_to_create = [
+            Index(("manufacturer", "model_number"), unique=True)
+        ]

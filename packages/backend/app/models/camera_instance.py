@@ -30,7 +30,8 @@ class CameraInstance(Document):
 
     colour: str = "#3B82F6"                     # hex colour for FOV rendering
     visible: bool = True
-    fov_geojson: dict | None = None             # computed GeoJSON Polygon (frontend)
+    fov_visible_geojson: dict | None = None             # computed GeoJSON Polygon (frontend)
+    fov_ir_geojson: dict | None = None  
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
