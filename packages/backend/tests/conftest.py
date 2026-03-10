@@ -6,26 +6,61 @@ fetched once per module and reused across tests in that module.
 """
 
 import pytest_asyncio
-from httpx import ASGITransport, AsyncClient
+from httpx import AsyncClient
+import pytest
+import subprocess
+import time
+import httpx
+import logging
+
+import motor.motor_asyncio
 
 from app.core.config import settings
 from app.core.security import create_access_token, hash_password
 from app.main import app
 from app.models.user import User
 
+logger = logging.getLogger(__name__)
+
+
+@pytest.fixture(scope="session", autouse=True)
+def start_server():
+    """Start the real FastAPI server."""
+    logger.info("🚀 Starting server...")
+    
+    process = subprocess.Popen(
+        ["uvicorn", "app.main:app", "--port", "8000"],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    
+    # Wait for server to be ready
+    for attempt in range(30):
+        try:
+            httpx.get("http://127.0.0.1:8000/docs")
+            logger.info("✓ Server is ready!")
+            break
+        except httpx.ConnectError:
+            if attempt == 29:
+                process.terminate()
+                raise RuntimeError("Server failed to start")
+            time.sleep(1)
+    
+    yield process
+    
+    logger.info("🛑 Stopping server...")
+    process.terminate()
+    process.wait(timeout=5)
 
 @pytest_asyncio.fixture(scope="module")
 async def client():
-    """Module-scoped async HTTP test client.
-
-    Using AsyncClient as a context manager triggers the FastAPI lifespan,
-    which initialises MongoDB (Beanie) and seeds the first admin user.
-    Requires MONGO_URI and REDIS_URL to be set in the environment.
-    """
-    async with AsyncClient(
-        transport=ASGITransport(app=app), base_url="http://test"
+    """HTTP client pointing to the running server."""
+    async with httpx.AsyncClient(
+        base_url="http://127.0.0.1:8000",
+        timeout=10.0,
     ) as ac:
         yield ac
+
 
 
 @pytest_asyncio.fixture(scope="module")
@@ -34,6 +69,7 @@ async def admin_tokens(client: AsyncClient) -> dict:
 
     Shape: {"access_token": str, "refresh_token": str, "token_type": "bearer"}
     """
+    logger.debug("Logging in as admin")
     resp = await client.post(
         "/api/v1/auth/login",
         json={
@@ -55,6 +91,7 @@ async def regular_user_token() -> str:
 
     Yields the Bearer token string. The user is deleted after the module.
     """
+    logger.debug("Creating regular user")
     user = User(
         email="test-regular-user@example.com",
         full_name="Test Regular User",

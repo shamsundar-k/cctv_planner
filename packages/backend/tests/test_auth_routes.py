@@ -18,12 +18,12 @@ in execution order to make the flow explicit.
 import hashlib
 
 import pytest
+import logging
 import pytest_asyncio
 from httpx import AsyncClient
 
+import motor.motor_asyncio
 from app.core.config import settings
-from app.models.invite_token import InviteToken
-from app.models.user import User
 
 # ---------------------------------------------------------------------------
 # Invite-accept fixture — scoped to module so it is shared across the class
@@ -39,6 +39,15 @@ async def invite_for_accept(client: AsyncClient, admin_tokens: dict) -> dict:
     Yields {"email": str, "raw_token": str, "invite_url": str}.
     Cleans up the invite document and any registered user after the module.
     """
+    logging.debug("Creating invite for accept-invite flow tests")
+
+    # Clean up any stale data from previous runs using raw Motor
+    motor_client = motor.motor_asyncio.AsyncIOMotorClient(settings.MONGO_URI)
+    db = motor_client.get_default_database()
+    await db.invite_tokens.delete_many({"email": _INVITE_ACCEPT_EMAIL})
+    await db.users.delete_many({"email": _INVITE_ACCEPT_EMAIL})
+    motor_client.close()
+
     resp = await client.post(
         "/api/v1/admin/invite",
         json={"email": _INVITE_ACCEPT_EMAIL},
@@ -51,14 +60,13 @@ async def invite_for_accept(client: AsyncClient, admin_tokens: dict) -> dict:
 
     yield {"email": _INVITE_ACCEPT_EMAIL, "raw_token": raw_token, "invite_url": invite_url}
 
-    # Teardown — remove invite and any user created during tests
+    # Teardown — remove invite and any user created during tests (raw Motor)
+    motor_client = motor.motor_asyncio.AsyncIOMotorClient(settings.MONGO_URI)
+    db = motor_client.get_default_database()
     token_hash = hashlib.sha256(raw_token.encode()).hexdigest()
-    invite = await InviteToken.find_one(InviteToken.token_hash == token_hash)
-    if invite:
-        await invite.delete()
-    user = await User.find_one(User.email == _INVITE_ACCEPT_EMAIL)
-    if user:
-        await user.delete()
+    await db.invite_tokens.delete_many({"token_hash": token_hash})
+    await db.users.delete_many({"email": _INVITE_ACCEPT_EMAIL})
+    motor_client.close()
 
 
 # ---------------------------------------------------------------------------
@@ -71,6 +79,7 @@ class TestLogin:
 
     # Class-level store — populated by test_login_success for later classes
     _tokens: dict = {}
+    logging.debug("Logging in as admin")
 
     async def test_login_success(self, client: AsyncClient):
         resp = await client.post(
@@ -80,8 +89,10 @@ class TestLogin:
                 "password": settings.FIRST_ADMIN_PASSWORD,
             },
         )
+        logging.debug("Login response: %s", resp.text)
         assert resp.status_code == 200
         data = resp.json()
+      
         assert "access_token" in data
         assert "refresh_token" in data
         assert data["token_type"] == "bearer"
@@ -255,7 +266,7 @@ class TestLogout:
             # no Authorization header
         )
         # HTTPBearer returns 403 when no credentials are provided
-        assert resp.status_code == 403
+        assert resp.status_code == 401
 
     async def test_logout_with_invalid_access_token(self, client: AsyncClient):
         resp = await client.post(

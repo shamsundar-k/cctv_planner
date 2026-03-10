@@ -15,7 +15,7 @@ Standard Reference: IEC EN 62676-4:2015
 from datetime import datetime, timezone
 from enum import Enum
 
-from beanie import Document, Link, Index
+from beanie import Document, Link
 from pydantic import Field, model_validator
 
 from .user import User
@@ -108,9 +108,4 @@ class CameraModel(Document):
 
     class Settings:
         name = "camera_models"
-        indexes = [
-            ("manufacturer", "model_number"),  # Compound unique index
-        ]
-        indexes_to_create = [
-            Index(("manufacturer", "model_number"), unique=True)
-        ]
+

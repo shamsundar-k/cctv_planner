@@ -25,6 +25,7 @@ from app.schemas.auth import (
     TokenResponse,
 )
 
+
 router = APIRouter(prefix="/auth", tags=["auth"])
 logger = logging.getLogger(__name__)
 _REFRESH_TTL = settings.JWT_REFRESH_TTL_DAYS * 86_400  # seconds
@@ -46,6 +47,7 @@ async def login(body: LoginRequest, redis: Redis = Depends(get_redis)) -> TokenR
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",
         )
+    logger.info(f"User found: {user}")
 
     access_token = create_access_token(str(user.id), user.system_role.value)
     refresh_token = create_refresh_token()

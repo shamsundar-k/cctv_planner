@@ -39,10 +39,6 @@ uv run pytest -k "test_name"           # Run a single test by name
 
 ## Environment Setup
 
-Copy `.env.example` to `.env` in the repo root. Required services:
-- **MongoDB** — set `MONGO_URI` (Atlas or local)
-- **Redis** — set `REDIS_URL`
-- **Stadia Maps** — set `VITE_STADIA_MAPS_API_KEY` for the map tile provider
 
 The Vite dev server proxies `/api/*` to `http://localhost:8000` and `/ws/*` to `ws://localhost:8000`, so no CORS config is needed during development.
 
@@ -61,7 +57,7 @@ The Vite dev server proxies `/api/*` to `http://localhost:8000` and `/ws/*` to `
 - **Database**: MongoDB via Motor (async driver) + Beanie ODM for document models
 - **Cache/sessions**: Redis (asyncio)
 - **Auth**: JWT access/refresh tokens via `python-jose`; bcrypt password hashing via `passlib`
-- **Geospatial**: `pyproj` (coordinate projection) + `shapely` (geometry calculations) for camera FOV and coverage computations
+FOV and coverage computations
 - **Export**: `weasyprint` for PDF reports, `simplekml` for KML export
 - **Config**: `pydantic-settings` reads all config from environment variables
 - **Tests**: `pytest` + `pytest-asyncio` + `httpx` (async test client)
