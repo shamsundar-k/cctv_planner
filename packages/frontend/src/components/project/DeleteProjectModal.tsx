@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useDeleteProject, type Project } from '../../api/projects'
+import { useToast } from '../ui/Toast'
 
 interface DeleteProjectModalProps {
   project: Project
@@ -42,6 +43,7 @@ export default function DeleteProjectModal({ project, onClose }: DeleteProjectMo
   const [submitError, setSubmitError] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
   const { mutateAsync: deleteProject, isPending } = useDeleteProject()
+  const showToast = useToast()
 
   useEffect(() => {
     inputRef.current?.focus()
@@ -60,9 +62,11 @@ export default function DeleteProjectModal({ project, onClose }: DeleteProjectMo
     setSubmitError('')
     try {
       await deleteProject(project.id)
+      showToast(`"${project.name}" deleted`, 'success')
       onClose()
     } catch {
       setSubmitError('Failed to delete project. Please try again.')
+      showToast('Failed to delete project', 'error')
     }
   }
 

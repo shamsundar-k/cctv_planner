@@ -14,6 +14,11 @@ export interface Project {
   description: string
   owner_id: string
   collaborators: Collaborator[]
+  center_lat: number | null
+  center_lng: number | null
+  default_zoom: number | null
+  camera_count: number
+  zone_count: number
   created_at: string
   updated_at: string
 }
@@ -21,11 +26,17 @@ export interface Project {
 export interface CreateProjectDTO {
   name: string
   description?: string
+  center_lat?: number | null
+  center_lng?: number | null
+  default_zoom?: number | null
 }
 
 export interface UpdateProjectDTO {
   name?: string
   description?: string
+  center_lat?: number | null
+  center_lng?: number | null
+  default_zoom?: number | null
 }
 
 // ── Query keys ─────────────────────────────────────────────────────────────────

@@ -68,7 +68,7 @@ type ModalState =
 export default function DashboardPage() {
   const user = useAuthStore((s) => s.user)
   const { filterType, sortBy, searchQuery } = useProjectStore()
-  const { data: projects = [], isLoading, isError, isFetching, refetch } = useProjects()
+  const { data: projects = [], isLoading, isError, isFetching, refetch, dataUpdatedAt } = useProjects()
   const [modal, setModal] = useState<ModalState>({ type: 'none' })
 
   const filtered = useMemo(
@@ -97,6 +97,7 @@ export default function DashboardPage() {
           onCreateClick={() => setModal({ type: 'create' })}
           onRefresh={() => refetch()}
           isFetching={isFetching}
+          dataUpdatedAt={dataUpdatedAt}
         />
 
         {isError && (

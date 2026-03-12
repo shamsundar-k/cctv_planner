@@ -3,7 +3,6 @@
 from datetime import datetime, timezone
 
 from beanie import PydanticObjectId
-from beanie.operators import In
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.core.deps import get_current_user
@@ -58,13 +57,18 @@ def _require_owner(project: Project, user: User) -> None:
 
 # ── Serialisers ────────────────────────────────────────────────────────────────
 
-def _to_project_response(p: Project) -> ProjectResponse:
+def _to_project_response(p: Project, camera_count: int = 0, zone_count: int = 0) -> ProjectResponse:
     return ProjectResponse(
         id=str(p.id),
         name=p.name,
         description=p.description,
         owner_id=_owner_id(p),
         collaborators=[CollaboratorResponse(**c) for c in p.collaborators],
+        center_lat=p.center_lat,
+        center_lng=p.center_lng,
+        default_zoom=p.default_zoom,
+        camera_count=camera_count,
+        zone_count=zone_count,
         created_at=p.created_at,
         updated_at=p.updated_at,
     )
@@ -109,23 +113,36 @@ async def list_projects(
     current_user: User = Depends(get_current_user),
 ) -> list[ProjectResponse]:
     user_id_str = str(current_user.id)
+    is_admin = current_user.system_role == "admin"
 
-    # Projects owned by user
-    owned = await Project.find(
-        Project.owner.id == current_user.id  # type: ignore[union-attr]
-    ).to_list()
+    if is_admin:
+        # Admin sees all projects
+        projects = await Project.find_all().to_list()
+    else:
+        # Regular user: owned + collaborated projects
+        owned = await Project.find(
+            Project.owner.id == current_user.id  # type: ignore[union-attr]
+        ).to_list()
+        all_projects = await Project.find_all().to_list()
+        collaborated = [
+            p for p in all_projects
+            if not _is_owner(p, current_user) and any(
+                c.get("user_id") == user_id_str for c in p.collaborators
+            )
+        ]
+        projects = owned + collaborated
 
-    # Projects where user is a collaborator (stored as dict list)
-    # We fetch all and filter in Python to avoid complex MongoDB query on mixed list[dict]
-    all_projects = await Project.find_all().to_list()
-    collaborated = [
-        p for p in all_projects
-        if not _is_owner(p, current_user) and any(
-            c.get("user_id") == user_id_str for c in p.collaborators
-        )
-    ]
-
-    return [_to_project_response(p) for p in owned + collaborated]
+    # Fetch counts per project (<100 projects per spec so N queries is acceptable)
+    result = []
+    for p in projects:
+        cam_count = await CameraInstance.find(
+            CameraInstance.project.id == p.id  # type: ignore[union-attr]
+        ).count()
+        zone_count = await Zone.find(
+            Zone.project.id == p.id  # type: ignore[union-attr]
+        ).count()
+        result.append(_to_project_response(p, cam_count, zone_count))
+    return result
 
 
 @router.post("", response_model=ProjectResponse, status_code=status.HTTP_201_CREATED)
@@ -136,6 +153,9 @@ async def create_project(
     project = Project(
         name=body.name,
         description=body.description,
+        center_lat=body.center_lat,
+        center_lng=body.center_lng,
+        default_zoom=body.default_zoom,
         owner=current_user,  # type: ignore[arg-type]
     )
     await project.insert()
@@ -159,7 +179,7 @@ async def get_project(
         Zone.project.id == project.id  # type: ignore[union-attr]
     ).to_list()
 
-    base = _to_project_response(project)
+    base = _to_project_response(project, len(cameras), len(zones))
     return ProjectDetailResponse(
         **base.model_dump(),
         cameras=[_to_camera_summary(c) for c in cameras],
@@ -183,7 +203,15 @@ async def update_project(
         updates["updated_at"] = datetime.now(timezone.utc)
         await project.set(updates)
 
-    return _to_project_response(project)
+    # Re-fetch counts after update
+    cam_count = await CameraInstance.find(
+        CameraInstance.project.id == project.id  # type: ignore[union-attr]
+    ).count()
+    zone_count = await Zone.find(
+        Zone.project.id == project.id  # type: ignore[union-attr]
+    ).count()
+
+    return _to_project_response(project, cam_count, zone_count)
 
 
 @router.delete("/{project_id}", status_code=status.HTTP_204_NO_CONTENT)
