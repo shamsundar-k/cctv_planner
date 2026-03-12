@@ -17,6 +17,11 @@ function formatRelativeTime(dateStr: string): string {
   return `${months} month${months !== 1 ? 's' : ''} ago`
 }
 
+function formatCoord(val: number, type: 'lat' | 'lng'): string {
+  const dir = type === 'lat' ? (val >= 0 ? 'N' : 'S') : val >= 0 ? 'E' : 'W'
+  return `${Math.abs(val).toFixed(4)}° ${dir}`
+}
+
 interface ProjectCardProps {
   project: Project
   onEdit: (project: Project) => void
@@ -47,7 +52,7 @@ function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
     padding: 24,
     display: 'flex',
     flexDirection: 'column',
-    gap: 12,
+    gap: 10,
     boxShadow: hovered
       ? '0 10px 15px rgba(0,0,0,0.15)'
       : '0 4px 6px rgba(0,0,0,0.1)',
@@ -55,6 +60,8 @@ function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
     transition: 'all 200ms ease',
     cursor: 'default',
   }
+
+  const hasLocation = project.center_lat !== null && project.center_lng !== null
 
   return (
     <div
@@ -110,7 +117,7 @@ function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
                 border: '1px solid #e0e0e0',
                 borderRadius: 6,
                 boxShadow: '0 10px 15px rgba(0,0,0,0.15)',
-                minWidth: 140,
+                minWidth: 160,
                 zIndex: 10,
               }}
             >
@@ -120,20 +127,46 @@ function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
                 onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'none')}
                 onClick={() => { setMenuOpen(false); onEdit(project) }}
               >
-                Edit
+                Edit Project
               </button>
               <button
+                style={{ display: 'block', width: '100%', textAlign: 'left', background: 'none', border: 'none', padding: '10px 14px', fontSize: 14, color: '#666666', cursor: 'not-allowed', opacity: 0.6 }}
+                disabled
+                title="Archive coming soon"
+              >
+                Archive Project
+              </button>
+              <div style={{ borderTop: '1px solid #f0f0f0', margin: '4px 0' }} />
+              <button
                 style={{ display: 'block', width: '100%', textAlign: 'left', background: 'none', border: 'none', padding: '10px 14px', fontSize: 14, color: '#dd0000', cursor: 'pointer' }}
-                onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = '#f5f5f5')}
+                onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = '#fff5f5')}
                 onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'none')}
                 onClick={() => { setMenuOpen(false); onDelete(project) }}
               >
-                Delete
+                Delete Project
               </button>
             </div>
           )}
         </div>
       </div>
+
+      {/* Metadata row: cameras + zones */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 13, color: '#666666' }}>
+        <span title={`${project.camera_count} camera${project.camera_count !== 1 ? 's' : ''}`}>
+          📷 {project.camera_count} camera{project.camera_count !== 1 ? 's' : ''}
+        </span>
+        <span style={{ color: '#d0d0d0' }}>|</span>
+        <span title={`${project.zone_count} zone${project.zone_count !== 1 ? 's' : ''}`}>
+          📝 {project.zone_count} zone{project.zone_count !== 1 ? 's' : ''}
+        </span>
+      </div>
+
+      {/* Location row */}
+      {hasLocation && (
+        <div style={{ fontSize: 13, color: '#666666' }}>
+          📍 {formatCoord(project.center_lat!, 'lat')}, {formatCoord(project.center_lng!, 'lng')}
+        </div>
+      )}
 
       {/* Description */}
       {project.description ? (
@@ -147,18 +180,19 @@ function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
             WebkitLineClamp: 2,
             WebkitBoxOrient: 'vertical',
             overflow: 'hidden',
+            flexGrow: 1,
           }}
         >
           {project.description}
         </p>
       ) : (
-        <p style={{ fontSize: 14, color: '#999999', margin: 0, fontStyle: 'italic' }}>
+        <p style={{ fontSize: 14, color: '#999999', margin: 0, fontStyle: 'italic', flexGrow: 1 }}>
           No description
         </p>
       )}
 
       {/* Timestamps */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginTop: 'auto' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <span style={{ fontSize: 12, color: '#777777' }}>
           Created: {formatRelativeTime(project.created_at)}
         </span>

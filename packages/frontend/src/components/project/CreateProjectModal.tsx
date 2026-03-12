@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useCreateProject } from '../../api/projects'
+import { useToast } from '../ui/Toast'
 
 interface CreateProjectModalProps {
   onClose: () => void
@@ -55,9 +56,13 @@ const HINT: React.CSSProperties = {
 export default function CreateProjectModal({ onClose }: CreateProjectModalProps) {
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
+  const [lat, setLat] = useState('')
+  const [lng, setLng] = useState('')
+  const [zoom, setZoom] = useState('15')
   const [submitError, setSubmitError] = useState('')
   const nameRef = useRef<HTMLInputElement>(null)
   const { mutateAsync: createProject, isPending } = useCreateProject()
+  const showToast = useToast()
 
   useEffect(() => {
     nameRef.current?.focus()
@@ -70,17 +75,33 @@ export default function CreateProjectModal({ onClose }: CreateProjectModalProps)
 
   const nameValid = name.trim().length >= 1 && name.trim().length <= 100
   const descValid = description.length <= 500
-  const canSubmit = nameValid && descValid && !isPending
+  const latNum = lat !== '' ? parseFloat(lat) : null
+  const lngNum = lng !== '' ? parseFloat(lng) : null
+  const zoomNum = zoom !== '' ? parseInt(zoom, 10) : 15
+  const latValid = lat === '' || (!isNaN(latNum!) && latNum! >= -90 && latNum! <= 90)
+  const lngValid = lng === '' || (!isNaN(lngNum!) && lngNum! >= -180 && lngNum! <= 180)
+  const zoomValid = !isNaN(zoomNum) && zoomNum >= 1 && zoomNum <= 22
+  const canSubmit = nameValid && descValid && latValid && lngValid && zoomValid && !isPending
+
+  const hasLocation = lat !== '' && lng !== ''
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!canSubmit) return
     setSubmitError('')
     try {
-      await createProject({ name: name.trim(), description: description.trim() || undefined })
+      await createProject({
+        name: name.trim(),
+        description: description.trim() || undefined,
+        center_lat: latNum,
+        center_lng: lngNum,
+        default_zoom: hasLocation ? zoomNum : null,
+      })
+      showToast('Project created successfully', 'success')
       onClose()
     } catch {
       setSubmitError('Failed to create project. Please try again.')
+      showToast('Failed to create project', 'error')
     }
   }
 
@@ -146,7 +167,7 @@ export default function CreateProjectModal({ onClose }: CreateProjectModalProps)
                 maxLength={500}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Brief description of the survey project..."
-                rows={4}
+                rows={3}
                 style={{
                   ...INPUT,
                   resize: 'vertical',
@@ -157,6 +178,73 @@ export default function CreateProjectModal({ onClose }: CreateProjectModalProps)
                 onBlur={(e) => (e.currentTarget.style.borderColor = '#d0d0d0')}
               />
               <span style={HINT}>{description.length}/500 characters</span>
+            </div>
+
+            {/* Base Map Location */}
+            <div>
+              <label style={{ ...LABEL, fontSize: 14, marginBottom: 4 }}>
+                Base Map Location <span style={{ color: '#777777', fontWeight: 400 }}>(optional)</span>
+              </label>
+              <span style={{ ...HINT, display: 'block', marginBottom: 10, marginTop: 0 }}>
+                Set the initial map view when this project is opened
+              </span>
+              <div style={{ display: 'flex', gap: 10 }}>
+                <div style={{ flex: 1 }}>
+                  <label htmlFor="create-lat" style={{ ...HINT, display: 'block', marginBottom: 4, marginTop: 0 }}>Latitude</label>
+                  <input
+                    id="create-lat"
+                    type="number"
+                    value={lat}
+                    step="any"
+                    min="-90"
+                    max="90"
+                    onChange={(e) => setLat(e.target.value)}
+                    placeholder="40.7128"
+                    style={{
+                      ...INPUT,
+                      borderColor: lat !== '' && !latValid ? '#dd0000' : '#d0d0d0',
+                    }}
+                    onFocus={(e) => (e.currentTarget.style.borderColor = '#0066cc')}
+                    onBlur={(e) => (e.currentTarget.style.borderColor = lat !== '' && !latValid ? '#dd0000' : '#d0d0d0')}
+                  />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label htmlFor="create-lng" style={{ ...HINT, display: 'block', marginBottom: 4, marginTop: 0 }}>Longitude</label>
+                  <input
+                    id="create-lng"
+                    type="number"
+                    value={lng}
+                    step="any"
+                    min="-180"
+                    max="180"
+                    onChange={(e) => setLng(e.target.value)}
+                    placeholder="-74.0060"
+                    style={{
+                      ...INPUT,
+                      borderColor: lng !== '' && !lngValid ? '#dd0000' : '#d0d0d0',
+                    }}
+                    onFocus={(e) => (e.currentTarget.style.borderColor = '#0066cc')}
+                    onBlur={(e) => (e.currentTarget.style.borderColor = lng !== '' && !lngValid ? '#dd0000' : '#d0d0d0')}
+                  />
+                </div>
+                <div style={{ width: 90 }}>
+                  <label htmlFor="create-zoom" style={{ ...HINT, display: 'block', marginBottom: 4, marginTop: 0 }}>Zoom (1–22)</label>
+                  <input
+                    id="create-zoom"
+                    type="number"
+                    value={zoom}
+                    min="1"
+                    max="22"
+                    onChange={(e) => setZoom(e.target.value)}
+                    style={{
+                      ...INPUT,
+                      borderColor: !zoomValid ? '#dd0000' : '#d0d0d0',
+                    }}
+                    onFocus={(e) => (e.currentTarget.style.borderColor = '#0066cc')}
+                    onBlur={(e) => (e.currentTarget.style.borderColor = !zoomValid ? '#dd0000' : '#d0d0d0')}
+                  />
+                </div>
+              </div>
             </div>
 
             {submitError && (

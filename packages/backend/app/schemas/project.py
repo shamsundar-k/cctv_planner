@@ -10,11 +10,17 @@ from app.models.project import CollaboratorRole
 class ProjectCreate(BaseModel):
     name: str
     description: str = ""
+    center_lat: float | None = None
+    center_lng: float | None = None
+    default_zoom: int | None = None
 
 
 class ProjectUpdate(BaseModel):
     name: str | None = None
     description: str | None = None
+    center_lat: float | None = None
+    center_lng: float | None = None
+    default_zoom: int | None = None
 
 
 class CollaboratorAdd(BaseModel):
@@ -61,6 +67,11 @@ class ProjectResponse(BaseModel):
     description: str
     owner_id: str
     collaborators: list[CollaboratorResponse]
+    center_lat: float | None = None
+    center_lng: float | None = None
+    default_zoom: int | None = None
+    camera_count: int = 0
+    zone_count: int = 0
     created_at: datetime
     updated_at: datetime
 

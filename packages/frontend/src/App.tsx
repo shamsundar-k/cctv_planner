@@ -4,9 +4,11 @@ import AcceptInvitePage from './pages/AcceptInvitePage'
 import ProtectedRoute from './components/ProtectedRoute'
 import PublicOnlyRoute from './components/PublicOnlyRoute'
 import DashboardPage from './pages/DashboardPage'
+import { ToastProvider } from './components/ui/Toast'
 
 function App() {
   return (
+    <ToastProvider>
     <BrowserRouter>
       <Routes>
         {/* Public-only routes — redirect to / if already logged in */}
@@ -24,6 +26,7 @@ function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
+    </ToastProvider>
   )
 }
 

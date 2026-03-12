@@ -24,6 +24,10 @@ class Project(Document):
     owner: Link[User]
     collaborators: list[dict] = Field(default_factory=list)
     # Each entry: {"user_id": str, "role": CollaboratorRole}
+    # Optional base map location
+    center_lat: float | None = None
+    center_lng: float | None = None
+    default_zoom: int | None = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 

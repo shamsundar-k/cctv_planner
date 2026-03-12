@@ -23,6 +23,17 @@ interface ProjectToolbarProps {
   onCreateClick: () => void
   onRefresh: () => void
   isFetching: boolean
+  dataUpdatedAt?: number
+}
+
+function formatUpdatedAt(ts: number): string {
+  const diffMs = Date.now() - ts
+  const mins = Math.floor(diffMs / 60000)
+  if (mins < 1) return 'just now'
+  if (mins < 60) return `${mins} minute${mins !== 1 ? 's' : ''} ago`
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return `${hours} hour${hours !== 1 ? 's' : ''} ago`
+  return 'over a day ago'
 }
 
 export default function ProjectToolbar({
@@ -32,6 +43,7 @@ export default function ProjectToolbar({
   onCreateClick,
   onRefresh,
   isFetching,
+  dataUpdatedAt,
 }: ProjectToolbarProps) {
   const { filterType, sortBy, searchQuery, setFilterType, setSortBy, setSearchQuery } =
     useProjectStore()
@@ -41,6 +53,14 @@ export default function ProjectToolbar({
   const [spinning, setSpinning] = useState(false)
   const [localSearch, setLocalSearch] = useState(searchQuery)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const isTypingRef = useRef(false)
+
+  // Sync localSearch when searchQuery changes externally (e.g. from Navbar)
+  useEffect(() => {
+    if (!isTypingRef.current) {
+      setLocalSearch(searchQuery)
+    }
+  }, [searchQuery])
   const filterRef = useRef<HTMLDivElement>(null)
   const sortRef = useRef<HTMLDivElement>(null)
 
@@ -67,9 +87,13 @@ export default function ProjectToolbar({
   }, [onCreateClick])
 
   function handleSearchChange(value: string) {
+    isTypingRef.current = true
     setLocalSearch(value)
     if (debounceRef.current) clearTimeout(debounceRef.current)
-    debounceRef.current = setTimeout(() => setSearchQuery(value), 300)
+    debounceRef.current = setTimeout(() => {
+      setSearchQuery(value)
+      isTypingRef.current = false
+    }, 300)
   }
 
   function handleRefresh() {
@@ -322,6 +346,7 @@ export default function ProjectToolbar({
       {/* Metadata line */}
       <p style={{ fontSize: 14, color: '#666666', marginTop: 12 }}>
         {filteredCount} project{filteredCount !== 1 ? 's' : ''}
+        {dataUpdatedAt ? ` · Updated ${formatUpdatedAt(dataUpdatedAt)}` : ''}
       </p>
     </div>
   )
