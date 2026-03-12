@@ -18,7 +18,6 @@ import motor.motor_asyncio
 from app.core.config import settings
 from app.core.security import create_access_token, hash_password
 from app.main import app
-from app.models.user import User
 
 logger = logging.getLogger(__name__)
 
@@ -85,19 +84,38 @@ async def admin_tokens(client: AsyncClient) -> dict:
 async def regular_user_token() -> str:
     """Create a temporary regular user and return their access token.
 
-    The user is inserted directly into the DB (bypassing the invite flow)
-    so that non-admin / non-authenticated scenarios can be tested without
-    standing up the full invite acceptance flow.
+    Uses raw Motor because Beanie is not initialized in the test process.
+    The user is inserted directly into the DB so that non-admin scenarios 
+    can be tested without standing up the full invite flow.
 
     Yields the Bearer token string. The user is deleted after the module.
     """
     logger.debug("Creating regular user")
-    user = User(
-        email="test-regular-user@example.com",
-        full_name="Test Regular User",
-        hashed_password=hash_password("TestPassword123!"),
-    )
-    await user.insert()
-    token = create_access_token(str(user.id), "user")
+    
+    motor_client = motor.motor_asyncio.AsyncIOMotorClient(settings.MONGO_URI)
+    db = motor_client.get_default_database()
+    col = db["users"]
+
+    from bson import ObjectId
+    user_id = ObjectId()
+    email = "test-regular-user@example.com"
+    
+    from datetime import datetime, timezone
+    user_doc = {
+        "_id": user_id,
+        "email": email,
+        "full_name": "Test Regular User",
+        "hashed_password": hash_password("TestPassword123!"),
+        "system_role": "user",
+        "created_at": datetime.now(timezone.utc),
+    }
+    
+    await col.insert_one(user_doc)
+    
+    # We need a token for this user. We can use the app's utility.
+    token = create_access_token(str(user_id), "user")
+    
     yield token
-    await user.delete()
+    
+    await col.delete_one({"_id": user_id})
+    motor_client.close()

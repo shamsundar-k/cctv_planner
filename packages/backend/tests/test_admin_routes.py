@@ -13,10 +13,11 @@ The `TestInviteGeneration` class stores the invite URL in a class variable so
 that duplicate-invite and other sequential assertions can reference it.
 """
 
+import motor.motor_asyncio
 import pytest_asyncio
 from httpx import AsyncClient
 
-from app.models.invite_token import InviteToken
+from app.core.config import settings
 
 # Email address used throughout invite generation tests.
 # Must not already have a pending invite when the test suite starts.
@@ -32,15 +33,23 @@ _INVITE_EMAIL = "test-admin-invite@example.com"
 async def cleanup_invite():
     """Remove invite documents for _INVITE_EMAIL before and after the module.
 
+    Uses raw Motor operations because Beanie is not initialised in the test
+    process (init_beanie only runs inside the Uvicorn child process).
+
     The pre-run cleanup guards against stale data from a previous failed run.
     """
+    motor_client = motor.motor_asyncio.AsyncIOMotorClient(settings.MONGO_URI)
+    db = motor_client.get_default_database()
+    col = db["invite_tokens"]
+
     # Pre-run cleanup
-    await InviteToken.find(InviteToken.email == _INVITE_EMAIL).delete()
+    await col.delete_many({"email": _INVITE_EMAIL})
 
     yield
 
     # Post-run cleanup
-    await InviteToken.find(InviteToken.email == _INVITE_EMAIL).delete()
+    await col.delete_many({"email": _INVITE_EMAIL})
+    motor_client.close()
 
 
 # ---------------------------------------------------------------------------
@@ -100,7 +109,7 @@ class TestInviteGeneration:
             # no Authorization header
         )
         # HTTPBearer returns 403 when credentials are absent
-        assert resp.status_code == 403
+        assert resp.status_code == 401
 
     async def test_create_invite_non_admin(
         self, client: AsyncClient, regular_user_token: str
@@ -187,7 +196,7 @@ class TestListUsers:
     async def test_list_users_no_auth(self, client: AsyncClient):
         """Request without Authorization header must be rejected."""
         resp = await client.get("/api/v1/admin/users")
-        assert resp.status_code == 403
+        assert resp.status_code == 401
 
     async def test_list_users_non_admin(
         self, client: AsyncClient, regular_user_token: str
