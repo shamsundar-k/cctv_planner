@@ -1,0 +1,29 @@
+classDiagram
+    class AuthUser {
+        +string id
+        +string email
+        +string fullName
+        +role: "admin" | "user"
+    }
+
+    class AuthState {
+        +AuthUser | null user
+        +string | null accessToken
+        +string | null refreshToken
+        +setAuth(user, accessToken, refreshToken) void
+        +setAccessToken(accessToken) void
+        +clearAuth() void
+    }
+
+    class ZustandPersist {
+        +name: "cctv-auth"
+        +partialize: user, accessToken, refreshToken
+    }
+
+    class useAuthStore {
+        <<Zustand Store>>
+    }
+
+    AuthState --> AuthUser : contains
+    useAuthStore --> AuthState : implements
+    useAuthStore --> ZustandPersist : wrapped with

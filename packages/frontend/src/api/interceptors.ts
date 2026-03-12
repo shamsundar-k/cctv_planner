@@ -46,7 +46,7 @@ client.interceptors.response.use(
         })
       }
 
-      const { refreshToken, setAccessToken, clearAuth } = useAuthStore.getState()
+      const { refreshToken, setTokens, clearAuth } = useAuthStore.getState()
 
       if (!refreshToken) {
         clearAuth()
@@ -57,11 +57,11 @@ client.interceptors.response.use(
       isRefreshing = true
 
       try {
-        const { data } = await client.post<{ access_token: string }>(
+        const { data } = await client.post<{ access_token: string; refresh_token: string }>(
           '/auth/refresh',
           { refresh_token: refreshToken },
         )
-        setAccessToken(data.access_token)
+        setTokens(data.access_token, data.refresh_token)
         notifySubscribers(data.access_token)
         original.headers.Authorization = `Bearer ${data.access_token}`
         return client(original)

@@ -17,9 +17,11 @@
 ---
 
 ## Milestone 1 — Foundation
+>
 > **Goal:** Auth works end-to-end. Admin can log in, generate an invite, new user can register and log in.
 
 ### M1.1 — Project Scaffold
+
 - [x] Create monorepo root folder (`cctv-survey-planner`)
 - [x] Initialise git (`git init`)
 - [x] Create `pnpm-workspace.yaml`
@@ -28,12 +30,14 @@
 - [x] Create `.env.example` with all required keys
 
 ### M1.2 — Frontend Scaffold
+
 - [x] Scaffold React + Vite + TypeScript app in `packages/frontend`
 - [x] Install dependencies (Leaflet, Axios, React Query, Zustand, React Router)
 - [x] Configure Tailwind CSS
 - [x] Configure Vite proxy (`/api` → `localhost:8000`, `/ws` → `ws://localhost:8000`)
 
 ### M1.3 — Backend Scaffold
+
 - [x] Initialise UV project in `packages/backend`
 - [x] Pin Python 3.12 (`uv python pin 3.12`)
 - [x] Create virtual environment (`uv venv`)
@@ -44,6 +48,7 @@
 - [x] Verify both services start (`uvicorn` + `pnpm dev`)
 
 ### M1.4 — Config & Database Connection
+
 - [x] Create `app/core/config.py` — Pydantic settings model reading from `.env.local`
 - [x] Create `app/core/database.py` — MongoDB connection via Beanie + Redis async client
 - [x] Wire database startup/shutdown into `app/main.py` lifespan
@@ -51,6 +56,7 @@
 - [x] Verify Redis Cloud connection on startup (log confirmation)
 
 ### M1.5 — Beanie Document Models
+
 - [x] Create `app/models/user.py` — `User` document
 - [x] Create `app/models/invite_token.py` — `InviteToken` document
 - [x] Create `app/models/camera_model.py` — `CameraModel` document (varifocal + sensor fields per SPEC §5.1)
@@ -62,6 +68,7 @@
 - [ ] Verify all documents appear in MongoDB Atlas dashboard
 
 ### M1.6 — Security Utilities
+
 - [x] Create `app/core/security.py`
 - [x] Implement `hash_password(plain: str) → str` using passlib bcrypt
 - [x] Implement `verify_password(plain: str, hashed: str) → bool`
@@ -73,6 +80,7 @@
 - [x] Unit test all security functions in `tests/test_security.py`
 
 ### M1.7 — Auth Routes
+
 - [x] Create `app/routers/auth.py`
 - [x] Implement `POST /api/v1/auth/login`
 - [x] Implement `POST /api/v1/auth/refresh`
@@ -82,6 +90,7 @@
 - [x] Test all three routes manually (curl or Postman)
 
 ### M1.8 — Invite Flow
+
 - [x] Create `app/routers/admin.py`
 - [x] Implement `POST /api/v1/admin/invite`
 - [x] Implement `GET /api/v1/admin/users`
@@ -91,12 +100,14 @@
 - [x] Test full invite flow manually end-to-end
 
 ### M1.9 — First Admin Seed
+
 - [x] Create `app/core/seed.py` — `seed_first_admin()` function
 - [x] On FastAPI startup: check if any admin user exists; if not, create from env vars
 - [x] Log a warning if default admin password is still `admin123`
 - [x] Test: fresh database → startup → admin account exists
 
 ### M1.10 — Frontend Auth UI
+
 - [x] Create `src/store/authSlice.ts`
 - [x] Create `src/api/client.ts` — Axios instance
 - [x] Create `src/api/interceptors.ts` — attach access token; on 401 call refresh and retry
@@ -108,6 +119,7 @@
 - [x] Test full flow: login → dashboard; unauthenticated → redirect to login
 
 ### ✅ Milestone 1 Exit Criterion
+
 - [x] Admin logs in successfully
 - [x] Admin generates an invite link via `POST /admin/invite`
 - [x] New user registers via invite link
@@ -118,9 +130,11 @@
 ---
 
 ## Milestone 2 — Core Map Features + FOV & DORI Engine
+>
 > **Goal:** User can place cameras with varifocal, tilt, and height parameters; see the trapezoidal FOV and colour-coded DORI zones render in real time with no API round-trip; adjust any parameter and see geometry update instantly.
 
 ### M2.1 — Camera Model CRUD (Backend)
+
 - [x] Create `app/schemas/camera_model.py` — request/response Pydantic schemas including all varifocal + sensor fields (`focal_length_min/max`, `h_angle_max/min`, `v_angle_max/min`, `sensor_resolution_h`, `sensor_aspect_ratio`, `ir_range`)
 - [x] Create `app/routers/camera_models.py`
 - [x] Implement `GET /api/v1/camera-models`
@@ -129,8 +143,10 @@
 - [x] Implement `PUT /api/v1/camera-models/{id}`
 - [x] Implement `DELETE /api/v1/camera-models/{id}`
 - [x] Register router in `app/main.py`
+- [ ] Test the camera model CRUD
 
 ### M2.2 — Project CRUD (Backend)
+
 - [x] Create `app/schemas/project.py`
 - [x] Create `app/routers/projects.py`
 - [x] Implement `GET /api/v1/projects`
@@ -141,8 +157,10 @@
 - [x] Implement `POST /api/v1/projects/{id}/collaborators`
 - [x] Implement `DELETE /api/v1/projects/{id}/collaborators/{user_id}`
 - [x] Register router in `app/main.py`
+- [ ] Test the project CRUD
 
 ### M2.3 — Camera Instance Routes (Backend)
+>
 > The backend does **not** compute FOV geometry. It receives `fov_geojson` from the client and stores it.
 
 - [ ] Create `app/schemas/camera_instance.py` — request schema includes all Stage 1 + Stage 2 override fields plus `fov_geojson: dict` (GeoJSON FeatureCollection), `ir_fov_geojson: dict | None`, `dori_zones_visible: bool`
@@ -154,6 +172,7 @@
 - [ ] Register router in `app/main.py`
 
 ### M2.4 — Geodesic Projection Helper (Frontend)
+>
 > Foundation utility required by all FOV geometry code.
 
 - [ ] Create `src/utils/geo.ts`
@@ -162,6 +181,7 @@
 - [ ] Write unit tests: project north 1000m from (0,0) → expect lat ≈ 0.008993°, lng = 0; project east 1000m → expect lat = 0, lng ≈ 0.008993°
 
 ### M2.5 — Stage 1 Geometric FOV Engine (Frontend)
+
 - [ ] Create `src/utils/fov.ts`
 - [ ] Implement `interpolateAngles(params: VarifocalParams): { hAngle: number; vAngle: number }` — linear interpolation per SPEC §6.1 Step 1A; collapses correctly for fixed-lens cameras
 - [ ] Implement `computeGroundDistances(H: number, tiltDeg: number, vAngleDeg: number): { dNear: number; dFar: number }` — tilt geometry per SPEC §6.1 Step 1B
@@ -172,6 +192,7 @@
 - [ ] Write unit tests validating Stage 1 against worked example (SPEC §6.1): H=4m, θ=30°, V=30°, H_angle=52°, f=6mm → D_near=4.0m, D_far=14.9m, W_near=3.9m, W_far=14.6m, Area=100.8m²
 
 ### M2.6 — Stage 2 DORI Engine (Frontend)
+
 - [ ] In `src/utils/fov.ts`:
 - [ ] Implement `computePPM(d: number, H: number, hAngleDeg: number, R_H: number): number` — slant-distance PPM formula per SPEC §6.2 Step 2A
 - [ ] Implement `computeDORIDistance(ppmThreshold: number, H: number, hAngleDeg: number, R_H: number): number` — horizontal DORI boundary distance per SPEC §6.2 Step 2B
@@ -180,18 +201,21 @@
 - [ ] Write unit tests validating Stage 2 against worked example (SPEC §6.2): R_H=2560, H=4m, H_angle=52° → D_identification=9.7m, D_recognition=14.9m, D_observation=clamped to 14.9m (beyond D_far), identification_area=38.2m², recognition_area=62.6m²
 
 ### M2.7 — Master FOV Feature Collection Builder (Frontend)
+
 - [ ] Implement `resolveModelParams(instance: CameraInstance, model: CameraModel): ResolvedCameraModel` — merges overrides onto model defaults
 - [ ] Implement `computeFOVFeatureCollection(instance: CameraInstance, model: CameraModel): { fov_geojson: GeoJSON.FeatureCollection; ir_fov_geojson: GeoJSON.FeatureCollection | null }` — computes both daytime and IR-truncated FeatureCollections in one pass; `ir_fov_geojson` is null if `model.ir_range` is null; applies `maxRange` cap to `dFar` for daytime; additionally caps `dFar` at IR depth for `ir_fov_geojson`
 - [ ] Ensure function is pure (no side effects) and returns within 5ms for any valid input
 - [ ] Export all public types: `VarifocalParams`, `ResolvedCameraModel`, `DORIDistances`, `TrapezoidResult`
 
 ### M2.8 — Project Dashboard (Frontend)
+
 - [ ] Create `src/api/projects.ts` — React Query hooks (`useProjects`, `useProject`, `useCreateProject`)
 - [ ] Create `src/pages/DashboardPage.tsx` — project list, create button
 - [ ] Create `src/components/CreateProjectModal.tsx`
 - [ ] Route `/projects/:id` → `ProjectPage` (scaffold)
 
 ### M2.9 — Map Canvas (Frontend)
+
 - [ ] Install and configure Leaflet.js in `src/pages/ProjectPage.tsx`
 - [ ] Render Stadia Maps tile layer using `VITE_STADIA_MAPS_API_KEY`
 - [ ] Create `src/store/mapSlice.ts` — active tool, layer visibility toggles including `showDORIZones: boolean`, `irMode: boolean` (global IR mode — switches all cameras between `fov_geojson` and `ir_fov_geojson`)
@@ -201,6 +225,7 @@
 - [ ] Create `src/components/layout/BottomToolbar.tsx`
 
 ### M2.10 — Camera Placement, Rendering & Editing (Frontend)
+
 - [ ] Create `src/store/cameraSlice.ts` — cameras array (with all new fields), selected camera ID
 - [ ] Create `src/api/cameras.ts` — React Query hooks (`usePlaceCamera`, `useUpdateCamera`, `useDeleteCamera`)
 - [ ] Implement "Place Camera" tool — map click → model selector popup → call `computeFOVFeatureCollection` → render immediately → `POST /cameras` with both `fov_geojson` and `ir_fov_geojson`
@@ -239,6 +264,7 @@
 - [ ] Populate Cameras tab in left panel
 
 ### ✅ Milestone 2 Exit Criterion
+
 - [ ] User can create a project and open it
 - [ ] User can place a camera with varifocal model (focal length range, H/V angles, sensor resolution), mounting height, and tilt angle
 - [ ] Trapezoidal FOV and four DORI sub-zone bands render on the map immediately on placement — no additional API call made
@@ -252,9 +278,11 @@
 ---
 
 ## Milestone 3 — Zones, Collaboration & Save
+>
 > **Goal:** Zone drawing works. Two users editing the same project see each other's changes in real time, including updated FOV trapezoids and DORI zones.
 
 ### M3.1 — Zone Routes (Backend)
+
 - [ ] Create `app/schemas/zone.py`
 - [ ] Create `app/routers/zones.py`
 - [ ] Implement `POST /api/v1/projects/{id}/zones`
@@ -264,6 +292,7 @@
 - [ ] Register router in `app/main.py`
 
 ### M3.2 — WebSocket Manager (Backend)
+
 - [ ] Create `app/services/websocket_manager.py` — room registry keyed by `project_id`
 - [ ] Implement `connect`, `disconnect`, `broadcast`
 - [ ] Store presence set in Redis
@@ -274,6 +303,7 @@
 - [ ] Register WebSocket router in `app/main.py`
 
 ### M3.3 — Zone Drawing (Frontend)
+
 - [ ] Install Leaflet.draw
 - [ ] Create `src/store/zoneSlice.ts`
 - [ ] Create `src/api/zones.ts`
@@ -284,6 +314,7 @@
 - [ ] Populate Zones tab in left panel
 
 ### M3.4 — Real-Time Collaboration (Frontend)
+
 - [ ] Create `src/hooks/useProjectWebSocket.ts` — connect on project open, reconnect with backoff
 - [ ] Handle `camera_updated` — merge updated camera (including new `fov_geojson`) into Zustand store; re-render FOV trapezoid + DORI sub-zones on map
 - [ ] Handle `camera_added`, `camera_deleted` — update store and map
@@ -292,16 +323,19 @@
 - [ ] Create `src/components/layout/PresenceIndicators.tsx`
 
 ### M3.5 — Save & Auto-Save (Frontend)
+
 - [ ] Auto-save on camera/zone mutation (changes persisted via REST; `project.updated_at` updated)
 - [ ] Manual Save button in Navbar
 - [ ] Last-saved timestamp in Navbar
 - [ ] Unsaved changes indicator
 
 ### M3.6 — Collaborator Management (Frontend)
+
 - [ ] Create `src/components/project/CollaboratorsModal.tsx`
 - [ ] Connect to collaborator add/remove endpoints
 
 ### ✅ Milestone 3 Exit Criterion
+
 - [ ] User can draw polygons and polylines on the map
 - [ ] Two editors in the same project see each other's camera changes (including updated DORI zones) within 2 seconds
 - [ ] Presence indicators show active collaborators
@@ -311,9 +345,11 @@
 ---
 
 ## Milestone 4 — Coverage Analysis, Reports & Export
+>
 > **Goal:** Coverage analysis renders on the map. PDF report includes DORI table per camera. KML opens in Google Earth with colour-coded DORI zones.
 
 ### M4.1 — Coverage Analysis (Backend)
+
 - [ ] Extend `app/services/gis.py` — implement `compute_coverage_stats(fov_polygons, zone_polygons) → CoverageStats`
 - [ ] Extract `feature[0]` (outer FOV trapezoid) from each camera's `fov_geojson` FeatureCollection — this is the geometry used for union/gap analysis; DORI sub-zones are excluded
 - [ ] Compute union of outer FOV polygons (Shapely `unary_union`)
@@ -327,6 +363,7 @@
 - [ ] Write unit tests with known fixture inputs
 
 ### M4.2 — Coverage Analysis (Frontend)
+
 - [ ] Add "Recalculate Coverage" button to BottomToolbar or Layers tab
 - [ ] Call `POST /projects/{id}/coverage`; show loading indicator
 - [ ] Render `overlap_geojson` overlay layer
@@ -335,6 +372,7 @@
 - [ ] Handle `coverage_recalculated` WebSocket event
 
 ### M4.3 — Report Service (Backend)
+
 - [ ] Create `app/services/report.py`
 - [ ] Update Jinja2 HTML report template (`app/templates/report.html`):
   - Project name, description, date, author
@@ -350,6 +388,7 @@
 - [ ] Stream PDF bytes as `application/pdf`
 
 ### M4.4 — KML Export (Backend)
+
 - [ ] Create `app/services/kml.py`
 - [ ] For each camera, create a KML `<Folder>` named after the camera label containing:
   - Camera position as `<Placemark>` with `<Point>` (name, model, bearing, chosen focal length, mounting height, tilt)
@@ -364,6 +403,7 @@
 - [ ] Register export router in `app/main.py`
 
 ### M4.5 — Report & Export (Frontend)
+
 - [ ] Add "Generate Report" button
 - [ ] Capture map canvas as base64 PNG
 - [ ] Call `POST /projects/{id}/report` with `include_dori_table: true`; trigger file download
@@ -372,6 +412,7 @@
 - [ ] Handle errors with toast notifications
 
 ### ✅ Milestone 4 Exit Criterion
+
 - [ ] "Recalculate Coverage" renders gap and overlap overlays (using outer FOV trapezoids)
 - [ ] Coverage stats display correctly
 - [ ] PDF report downloads with map screenshot, per-camera table, **DORI distances and zone areas per camera**, and coverage summary
@@ -381,9 +422,11 @@
 ---
 
 ## Milestone 5 — Polish & Hardening
+>
 > **Goal:** Application is production-ready, tested, and deployable to a fresh VM.
 
 ### M5.1 — Error Handling & Loading States
+
 - [ ] Loading spinners on all async operations
 - [ ] Error toast notifications for all API failures
 - [ ] WebSocket reconnect with exponential backoff
@@ -391,6 +434,7 @@
 - [ ] 404 and 500 error pages in React
 
 ### M5.2 — Input Validation
+
 - [ ] **Frontend: tilt angle guard — display "Camera sees sky" warning when `tilt ≤ v_angle / 2`; disable save until resolved or max_fov_render_distance override is set**
 - [ ] **Frontend: focal length within `[model.focal_length_min, model.focal_length_max]`**
 - [ ] **Frontend: mounting height > 0 m**
@@ -400,6 +444,7 @@
 - [ ] Backend: rate limiting on auth endpoints (`slowapi`, 10 req/min on login)
 
 ### M5.3 — Testing
+
 - [ ] **`src/utils/fov.test.ts` — Stage 1 unit tests:**
   - `interpolateAngles`: verify H_angle=52° and V_angle=30° for worked example (f=6mm, f_min=2.8mm, f_max=12mm, h_angle_max=97°/v_angle_max=54°, h_angle_min=28°/v_angle_min=16°) — note worked example uses datasheet-corrected 52°/30°
   - `computeGroundDistances`: D_near=4.0m, D_far=14.9m for H=4m, θ=30°, V=30°
@@ -420,12 +465,14 @@
 - [ ] All tests pass
 
 ### M5.4 — Performance
+
 - [ ] **Browser performance: run `computeFOVFeatureCollection` 50 times in a loop (computing both `fov_geojson` and `ir_fov_geojson` per call); verify total time < 250ms (5ms per camera budget)**
 - [ ] Test project with 50 cameras — verify map renders all FOV trapezoids + DORI zones without frame drops
 - [ ] Test coverage analysis with 50 cameras and 20 zones — verify backend response < 5 seconds
 - [ ] Profile Shapely operations if slow
 
 ### M5.5 — Security Review
+
 - [ ] Confirm CORS config allows only the frontend origin in production
 - [ ] Confirm input length limits are set
 - [ ] Confirm no sensitive data in logs
@@ -433,12 +480,14 @@
 - [ ] Confirm `JWT_SECRET` is a strong random value in production `.env`
 
 ### M5.6 — Responsive Layout
+
 - [ ] Review layout on tablet viewport (768px minimum)
 - [ ] Left panel collapses to icon bar on small screens
 - [ ] Bottom toolbar scrolls horizontally on narrow screens
 - [ ] Camera edit panel + DORIInfoPanel scrollable on small viewports
 
 ### M5.7 — Production Docker Compose
+
 - [ ] Write `docker-compose.yml` with four services: `nginx`, `backend`, `mongodb`, `redis`
 - [ ] Write `nginx/nginx.conf` — serve `/dist`, proxy `/api/*`, upgrade `/ws/*`
 - [ ] Write `packages/backend/Dockerfile` (Python 3.12 slim — Debian/Ubuntu base for WeasyPrint system deps)
@@ -448,6 +497,7 @@
 - [ ] Test full production stack locally with `docker compose up`
 
 ### M5.8 — Documentation
+
 - [ ] Write `README.md`:
   - Prerequisites (Node ≥18, pnpm, Python 3.12, UV, MongoDB, Redis)
   - Local dev setup
@@ -458,6 +508,7 @@
   - **FOV + DORI calculation notes: how Stage 1 and Stage 2 work, where `fov.ts` lives, how to run unit tests**
 
 ### ✅ Milestone 5 Exit Criterion
+
 - [ ] All unit tests pass including all Stage 1 and Stage 2 fixture checks from the DORI PDF worked example
 - [ ] Application handles errors gracefully throughout
 - [ ] Tilt guard displays clearly in the UI and prevents nonsensical geometry
