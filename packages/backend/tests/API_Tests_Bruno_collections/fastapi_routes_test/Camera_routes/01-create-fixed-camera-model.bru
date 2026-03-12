@@ -1,0 +1,47 @@
+meta {
+  name: create-fixed-camera-model
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8000/api/v1/camera-models
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "name": "Bruno-Test-Cam-Fixed",
+    "manufacturer": "Acme Corp",
+    "model_number": "ACM-F100",
+    "camera_type": "bullet",
+    "focal_length_min": 4.0,
+    "focal_length_max": 4.0,
+    "h_fov_min": 90.0,
+    "h_fov_max": 90.0,
+    "v_fov_min": 50.0,
+    "v_fov_max": 50.0,
+    "lens_type": "fixed",
+    "resolution_h": 1920,
+    "resolution_v": 1080,
+    "ir_range": 30.0
+  }
+}
+
+assert {
+  res.status: eq 201
+  res.body.id: isString
+  res.body.name: eq "Bruno-Test-Cam-Fixed"
+  res.body.lens_type: eq "fixed"
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setEnvVar("fixed_camera_model_id", res.body.id);
+  }
+}

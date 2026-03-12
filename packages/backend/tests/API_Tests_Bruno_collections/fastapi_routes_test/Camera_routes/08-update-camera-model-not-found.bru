@@ -1,0 +1,25 @@
+meta {
+  name: update-camera-model-not-found
+  type: http
+  seq: 8
+}
+
+put {
+  url: http://localhost:8000/api/v1/camera-models/000000000000000000000001
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "name": "Ghost Camera Update"
+  }
+}
+
+assert {
+  res.status: eq 404
+}

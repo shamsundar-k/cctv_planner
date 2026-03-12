@@ -1,0 +1,32 @@
+meta {
+  name: update-camera-model-success
+  type: http
+  seq: 7
+}
+
+put {
+  url: http://localhost:8000/api/v1/camera-models/{{varifocal_camera_model_id}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "name": "Bruno-Test-Cam-Varifocal-Updated",
+    "manufacturer": "NewBrand",
+    "model_number": "NB-999",
+    "wdr_db": 130.0
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.name: eq "Bruno-Test-Cam-Varifocal-Updated"
+  res.body.manufacturer: eq "NewBrand"
+  res.body.model_number: eq "NB-999"
+  res.body.wdr_db: eq 130.0
+}

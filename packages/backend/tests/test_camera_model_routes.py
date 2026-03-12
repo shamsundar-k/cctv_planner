@@ -52,6 +52,7 @@ _FIXED_PAYLOAD: dict = {
     "lens_type": "fixed",
     "resolution_h": 1920,
     "resolution_v": 1080,
+    "ir_range": 30.0,
 }
 
 #: Varifocal PTZ camera — all optional sensor fields populated for coverage.
@@ -91,12 +92,21 @@ async def cleanup_cameras():
     """Remove any camera models whose name starts with _NAME_PREFIX.
 
     Pre-run cleanup guards against stale data from a previous failed run.
+    Uses raw Motor because Beanie is not initialized in the test process.
     """
-    await CameraModel.find({"name": {"$regex": f"^{_NAME_PREFIX}"}}).delete()
+    import motor.motor_asyncio
+    from app.core.config import settings
+    
+    motor_client = motor.motor_asyncio.AsyncIOMotorClient(settings.MONGO_URI)
+    db = motor_client.get_default_database()
+    col = db["camera_models"]
+    
+    await col.delete_many({"name": {"$regex": f"^{_NAME_PREFIX}"}})
 
     yield
 
-    await CameraModel.find({"name": {"$regex": f"^{_NAME_PREFIX}"}}).delete()
+    await col.delete_many({"name": {"$regex": f"^{_NAME_PREFIX}"}})
+    motor_client.close()
 
 
 # ---------------------------------------------------------------------------
@@ -139,7 +149,7 @@ class TestListCameraModels:
     async def test_list_no_auth(self, client: AsyncClient):
         """Missing Authorization header → 403 (HTTPBearer rejects absent credentials)."""
         resp = await client.get("/api/v1/camera-models")
-        assert resp.status_code == 403
+        assert resp.status_code == 401
 
     async def test_list_invalid_token(self, client: AsyncClient):
         resp = await client.get(

@@ -1,0 +1,21 @@
+meta {
+  name: get-camera-model-success
+  type: http
+  seq: 5
+}
+
+get {
+  url: http://localhost:8000/api/v1/camera-models/{{fixed_camera_model_id}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.id: eq {{fixed_camera_model_id}}
+  res.body.name: eq "Bruno-Test-Cam-Fixed"
+}

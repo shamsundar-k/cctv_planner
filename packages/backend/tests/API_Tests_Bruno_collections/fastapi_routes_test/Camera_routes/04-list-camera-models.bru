@@ -1,0 +1,20 @@
+meta {
+  name: list-camera-models
+  type: http
+  seq: 4
+}
+
+get {
+  url: http://localhost:8000/api/v1/camera-models
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+}

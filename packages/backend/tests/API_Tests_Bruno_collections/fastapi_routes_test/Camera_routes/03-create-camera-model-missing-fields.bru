@@ -1,0 +1,25 @@
+meta {
+  name: create-camera-model-missing-fields
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:8000/api/v1/camera-models
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "name": "Incomplete Camera"
+  }
+}
+
+assert {
+  res.status: eq 422
+}
