@@ -1,0 +1,15 @@
+meta {
+  name: list-projects-no-auth
+  type: http
+  seq: 4
+}
+
+get {
+  url: http://localhost:8000/api/v1/projects
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 401
+}

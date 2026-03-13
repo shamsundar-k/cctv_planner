@@ -1,0 +1,31 @@
+meta {
+  name: update-project-success
+  type: http
+  seq: 7
+}
+
+put {
+  url: http://localhost:8000/api/v1/projects/{{project_id}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "name": "Bruno-Test-Project-Updated",
+    "description": "Updated description",
+    "default_zoom": 18
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.id: eq {{project_id}}
+  res.body.name: eq "Bruno-Test-Project-Updated"
+  res.body.description: eq "Updated description"
+  res.body.default_zoom: eq 18
+}

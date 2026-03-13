@@ -1,0 +1,25 @@
+meta {
+  name: create-project-missing-name
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:8000/api/v1/projects
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "description": "Missing required name field"
+  }
+}
+
+assert {
+  res.status: eq 422
+}

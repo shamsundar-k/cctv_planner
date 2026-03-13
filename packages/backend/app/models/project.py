@@ -9,21 +9,12 @@ from pydantic import Field
 from .user import User
 
 
-class CollaboratorRole(str, Enum):
-    editor = "editor"
-    viewer = "viewer"
-
-
-class Collaborator(Link[User]):
-    role: CollaboratorRole = CollaboratorRole.viewer
 
 
 class Project(Document):
     name: str
     description: str = ""
     owner: Link[User]
-    collaborators: list[dict] = Field(default_factory=list)
-    # Each entry: {"user_id": str, "role": CollaboratorRole}
     # Optional base map location
     center_lat: float | None = None
     center_lng: float | None = None

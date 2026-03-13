@@ -34,15 +34,8 @@ def _is_owner(project: Project, user: User) -> bool:
     return project.owner.ref.id == user.id  # type: ignore[union-attr]
 
 
-def _collaborator_role(project: Project, user: User) -> CollaboratorRole | None:
-    for entry in project.collaborators:
-        if entry.get("user_id") == str(user.id):
-            return entry.get("role")
-    return None
-
-
 def _can_access(project: Project, user: User) -> bool:
-    return _is_owner(project, user) or _collaborator_role(project, user) is not None
+    return _is_owner(project, user) 
 
 
 def _require_access(project: Project, user: User) -> None:
@@ -63,7 +56,6 @@ def _to_project_response(p: Project, camera_count: int = 0, zone_count: int = 0)
         name=p.name,
         description=p.description,
         owner_id=_owner_id(p),
-        collaborators=[CollaboratorResponse(**c) for c in p.collaborators],
         center_lat=p.center_lat,
         center_lng=p.center_lng,
         default_zoom=p.default_zoom,
@@ -123,14 +115,7 @@ async def list_projects(
         owned = await Project.find(
             Project.owner.id == current_user.id  # type: ignore[union-attr]
         ).to_list()
-        all_projects = await Project.find_all().to_list()
-        collaborated = [
-            p for p in all_projects
-            if not _is_owner(p, current_user) and any(
-                c.get("user_id") == user_id_str for c in p.collaborators
-            )
-        ]
-        projects = owned + collaborated
+        projects = owned
 
     # Fetch counts per project (<100 projects per spec so N queries is acceptable)
     result = []
@@ -232,54 +217,3 @@ async def delete_project(
         Zone.project.id == project.id  # type: ignore[union-attr]
     ).delete()
     await project.delete()
-
-
-@router.post("/{project_id}/collaborators", response_model=ProjectResponse)
-async def add_collaborator(
-    project_id: PydanticObjectId,
-    body: CollaboratorAdd,
-    current_user: User = Depends(get_current_user),
-) -> ProjectResponse:
-    project = await Project.get(project_id)
-    if project is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
-    _require_owner(project, current_user)
-
-    # Verify the target user exists
-    target_user = await User.get(PydanticObjectId(body.user_id))
-    if target_user is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-
-    if body.user_id == str(current_user.id):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Owner cannot be added as collaborator")
-
-    # Update existing entry or append
-    collaborators = list(project.collaborators)
-    for entry in collaborators:
-        if entry.get("user_id") == body.user_id:
-            entry["role"] = body.role
-            break
-    else:
-        collaborators.append({"user_id": body.user_id, "role": body.role})
-
-    await project.set({"collaborators": collaborators, "updated_at": datetime.now(timezone.utc)})
-    return _to_project_response(project)
-
-
-@router.delete("/{project_id}/collaborators/{user_id}", response_model=ProjectResponse)
-async def remove_collaborator(
-    project_id: PydanticObjectId,
-    user_id: str,
-    current_user: User = Depends(get_current_user),
-) -> ProjectResponse:
-    project = await Project.get(project_id)
-    if project is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
-    _require_owner(project, current_user)
-
-    collaborators = [c for c in project.collaborators if c.get("user_id") != user_id]
-    if len(collaborators) == len(project.collaborators):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Collaborator not found")
-
-    await project.set({"collaborators": collaborators, "updated_at": datetime.now(timezone.utc)})
-    return _to_project_response(project)

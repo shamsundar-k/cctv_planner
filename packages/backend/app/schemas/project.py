@@ -23,14 +23,6 @@ class ProjectUpdate(BaseModel):
     default_zoom: int | None = None
 
 
-class CollaboratorAdd(BaseModel):
-    user_id: str
-    role: CollaboratorRole = CollaboratorRole.viewer
-
-
-class CollaboratorResponse(BaseModel):
-    user_id: str
-    role: CollaboratorRole
 
 
 class CameraInstanceSummary(BaseModel):
@@ -66,7 +58,6 @@ class ProjectResponse(BaseModel):
     name: str
     description: str
     owner_id: str
-    collaborators: list[CollaboratorResponse]
     center_lat: float | None = None
     center_lng: float | None = None
     default_zoom: int | None = None

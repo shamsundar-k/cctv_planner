@@ -1,16 +1,21 @@
-
 flowchart TD
     A["FastAPI App<br/>CCTV Survey Planner API"] --> B["Routes at /api/v1"]
     
     B --> C["Health Check"]
     B --> D["Auth Router"]
     B --> E["Admin Router"]
+    B --> G["Camera Models Router"]
+    B --> H["Projects Router"]
     
     C --> C1["GET /api/v1/health<br/>Returns status ok"]
     
     D --> D1["Authentication Endpoints"]
     
     E --> E1["Admin Endpoints"]
+    
+    G --> G1["Camera Models Endpoints"]
+    
+    H --> H1["Projects Endpoints"]
     
     F["Lifespan Events"] -.-> A
     F --> F1["startup: init_db + seed_first_admin"]
@@ -22,4 +27,6 @@ flowchart TD
     style D fill:#FF6B6B,stroke:#CC5555,stroke-width:2px,color:#fff
     style E fill:#FF6B6B,stroke:#CC5555,stroke-width:2px,color:#fff
     style F fill:#FFB84D,stroke:#CC8C3D,stroke-width:2px,color:#fff
+    style G fill:#FF6B6B,stroke:#CC5555,stroke-width:2px,color:#fff
+    style H fill:#FF6B6B,stroke:#CC5555,stroke-width:2px,color:#fff
     

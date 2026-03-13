@@ -1,0 +1,83 @@
+graph TD
+    Client((Client))
+    
+    %% Create Camera
+    subgraph POST_ROUTE ["POST /api/cameras (Create)"]
+        POST_REQ["Request<br/><i>Body: {Schema:CameraModelCreate}</i>"]
+        subgraph POST_RES ["Responses"]
+            POST_201["✅ 201 Created<br/><i>Type: {Schema:CameraModelResponse}</i>"]
+            POST_400["❌ 400 Bad Request<br/><i>Type: { error }</i>"]
+            POST_401["❌ 401 Unauthorized<br/><i>Type: { error }</i>"]
+        end
+        POST_REQ --> POST_201
+        POST_REQ --> POST_400
+        POST_REQ --> POST_401
+    end
+
+    %% List Cameras
+    subgraph GET_ALL_ROUTE ["GET /api/cameras (List)"]
+        GET_ALL_REQ["Request<br/><i>Query: ?limit=10&page=1</i>"]
+        subgraph GET_ALL_RES ["Responses"]
+            GET_ALL_200["✅ 200 OK<br/><i>Type: [ cameras ]</i>"]
+            GET_ALL_401["❌ 401 Unauthorized<br/><i>Type: { error }</i>"]
+        end
+        GET_ALL_REQ --> GET_ALL_200
+        GET_ALL_REQ --> GET_ALL_401
+    end
+
+    %% Get Single Camera
+    subgraph GET_ONE_ROUTE ["GET /api/cameras/:id (Detail)"]
+        GET_ONE_REQ["Request<br/><i>Params: { id }</i>"]
+        subgraph GET_ONE_RES ["Responses"]
+            GET_ONE_200["✅ 200 OK<br/><i>Type: { camera }</i>"]
+            GET_ONE_401["❌ 401 Unauthorized<br/><i>Type: { error }</i>"]
+            GET_ONE_404["❌ 404 Not Found<br/><i>Type: { error }</i>"]
+        end
+        GET_ONE_REQ --> GET_ONE_200
+        GET_ONE_REQ --> GET_ONE_401
+        GET_ONE_REQ --> GET_ONE_404
+    end
+
+    %% Update Camera
+    subgraph PUT_ROUTE ["PUT /api/cameras/:id (Update)"]
+        PUT_REQ["Request<br/><i>Params: { id }<br/>Body: { updates }</i>"]
+        subgraph PUT_RES ["Responses"]
+            PUT_200["✅ 200 OK<br/><i>Type: { camera }</i>"]
+            PUT_400["❌ 400 Bad Request<br/><i>Type: { error }</i>"]
+            PUT_401["❌ 401 Unauthorized<br/><i>Type: { error }</i>"]
+            PUT_404["❌ 404 Not Found<br/><i>Type: { error }</i>"]
+        end
+        PUT_REQ --> PUT_200
+        PUT_REQ --> PUT_400
+        PUT_REQ --> PUT_401
+        PUT_REQ --> PUT_404
+    end
+
+    %% Delete Camera
+    subgraph DEL_ROUTE ["DELETE /api/cameras/:id (Delete)"]
+        DEL_REQ["Request<br/><i>Params: { id }</i>"]
+        subgraph DEL_RES ["Responses"]
+            DEL_204["✅ 204 No Content<br/><i>Type: None</i>"]
+            DEL_401["❌ 401 Unauthorized<br/><i>Type: { error }</i>"]
+            DEL_404["❌ 404 Not Found<br/><i>Type: { error }</i>"]
+        end
+        DEL_REQ --> DEL_204
+        DEL_REQ --> DEL_401
+        DEL_REQ --> DEL_404
+    end
+
+    %% Root Connections
+    Client -->|1. Create| POST_REQ
+    Client -->|2. List| GET_ALL_REQ
+    Client -->|3. Get| GET_ONE_REQ
+    Client -->|4. Update| PUT_REQ
+    Client -->|5. Delete| DEL_REQ
+
+    %% Styling
+    classDef success fill:#d4edda,stroke:#28a745,stroke-width:2px,color:#155724;
+    classDef error fill:#f8d7da,stroke:#dc3545,stroke-width:2px,color:#721c24;
+    classDef reqNode fill:#e2e3e5,stroke:#383d41,stroke-width:2px,color:#383d41;
+
+    class POST_201,GET_ALL_200,GET_ONE_200,PUT_200,DEL_204 success;
+    class POST_400,POST_401,GET_ALL_401,GET_ONE_401,GET_ONE_404,PUT_400,PUT_401,PUT_404,DEL_401,DEL_404 error;
+    class POST_REQ,GET_ALL_REQ,GET_ONE_REQ,PUT_REQ,DEL_REQ reqNode;
