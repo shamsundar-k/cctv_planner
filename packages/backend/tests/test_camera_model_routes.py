@@ -326,7 +326,7 @@ class TestCreateCameraModel:
             "/api/v1/camera-models",
             json=_FIXED_PAYLOAD,
         )
-        assert resp.status_code == 403
+        assert resp.status_code == 401
 
     async def test_create_invalid_token(self, client: AsyncClient):
         resp = await client.post(
@@ -387,7 +387,7 @@ class TestGetCameraModel:
     async def test_get_no_auth(self, client: AsyncClient):
         model_id = TestCreateCameraModel._fixed_model_id
         resp = await client.get(f"/api/v1/camera-models/{model_id}")
-        assert resp.status_code == 403
+        assert resp.status_code == 401
 
     async def test_get_invalid_token(self, client: AsyncClient):
         model_id = TestCreateCameraModel._fixed_model_id
@@ -507,7 +507,7 @@ class TestUpdateCameraModel:
             f"/api/v1/camera-models/{model_id}",
             json={"name": "No Auth Update"},
         )
-        assert resp.status_code == 403
+        assert resp.status_code == 401
 
     async def test_update_invalid_token(self, client: AsyncClient):
         model_id = TestCreateCameraModel._fixed_model_id
@@ -559,7 +559,7 @@ class TestDeleteCameraModel:
     async def test_delete_no_auth(self, client: AsyncClient):
         model_id = TestCreateCameraModel._fixed_model_id
         resp = await client.delete(f"/api/v1/camera-models/{model_id}")
-        assert resp.status_code == 403
+        assert resp.status_code == 401
 
     async def test_delete_invalid_token(self, client: AsyncClient):
         model_id = TestCreateCameraModel._fixed_model_id

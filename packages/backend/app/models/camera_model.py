@@ -17,6 +17,7 @@ from enum import Enum
 
 from beanie import Document, Link
 from pydantic import Field, model_validator
+from pymongo import ASCENDING, IndexModel
 
 from .user import User
 
@@ -59,18 +60,18 @@ class CameraModel(Document):
     v_fov_max: float = Field(gt=0, lt=180)          # ° — V-FOV at wide end
     lens_type: LensType = LensType.fixed
     ir_cut_filter: bool = True
-    ir_range: float | None = Field(None, gt=0)        # m — effective IR illumination range
+    ir_range: float = Field(default=0.0, ge=0)        # m — effective IR illumination range; 0 = no IR
 
     # ── Sensor ────────────────────────────────────────────────────────────────
     resolution_h: int = Field(gt=0)                 # pixels — horizontal
     resolution_v: int = Field(gt=0)                 # pixels — vertical
-    megapixels: float | None = Field(None, gt=0)
-    aspect_ratio: str | None = None                 # e.g. "16:9"
+    megapixels: float = Field(gt=0)                 # e.g. 2.0 for 1920×1080
+    aspect_ratio: str                               # e.g. "16:9" — required for frontend layout
     sensor_size: str | None = None                  # e.g. '1/2.8"'
     sensor_type: SensorType = SensorType.cmos
-    min_illumination: float | None = Field(None, ge=0)  # lux
+    min_illumination: float = Field(default=0.0, ge=0)  # lux — 0 = can see in darkness
     wdr: bool = False
-    wdr_db: float | None = Field(None, gt=0)        # dB
+    wdr_db: float | None = Field(None, gt=0)        # dB — only set if wdr=True
 
     # ── Metadata ──────────────────────────────────────────────────────────────
     created_by: Link[User]
@@ -78,6 +79,27 @@ class CameraModel(Document):
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     @model_validator(mode="after")
+    def _calculate_and_validate(self) -> "CameraModel":
+        # Auto-calculate megapixels from resolution if not provided
+        if not self.megapixels:
+            exact_mp = (self.resolution_h * self.resolution_v) / 1_000_000
+            # Round to nearest standard camera MP value
+            standard_mp = [
+                0.3, 0.5, 1, 2, 3, 5, 8, 12, 13, 16, 20, 24, 32, 48, 64
+            ]
+            self.megapixels = min(standard_mp, key=lambda x: abs(x - exact_mp))
+
+        # Auto-calculate aspect ratio if not provided
+        if not self.aspect_ratio:
+            from math import gcd
+            g = gcd(self.resolution_h, self.resolution_v)
+            h_ratio = self.resolution_h // g
+            v_ratio = self.resolution_v // g
+            self.aspect_ratio = f"{h_ratio}:{v_ratio}"
+
+        # Call lens geometry validation
+        return self._validate_lens_geometry()
+
     def _validate_lens_geometry(self) -> "CameraModel":
         if self.focal_length_max < self.focal_length_min:
             raise ValueError(
@@ -108,4 +130,10 @@ class CameraModel(Document):
 
     class Settings:
         name = "camera_models"
+        indexes = [
+            IndexModel(
+                [("name", ASCENDING), ("created_by.$id", ASCENDING)],
+                unique=True,
+            )
+        ]
 

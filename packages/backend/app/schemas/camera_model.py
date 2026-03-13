@@ -25,20 +25,41 @@ class CameraModelCreate(BaseModel):
     v_fov_max: float = Field(gt=0, lt=180)          # ° at wide end
     lens_type: LensType = LensType.fixed
     ir_cut_filter: bool = True
-    ir_range: float | None = Field(None, gt=0)      # m — effective IR illumination range
+    ir_range: float = Field(default=0.0, ge=0)      # m — effective IR illumination range; 0 = no IR
 
     # Sensor
     resolution_h: int = Field(gt=0)
     resolution_v: int = Field(gt=0)
-    megapixels: float | None = Field(None, gt=0)
-    aspect_ratio: str | None = None
+    megapixels: float | None = Field(None, gt=0)  # Auto-calculated if not provided
+    aspect_ratio: str | None = None  # Auto-calculated if not provided
     sensor_size: str | None = None
     sensor_type: SensorType = SensorType.cmos
-    min_illumination: float | None = Field(None, ge=0)
+    min_illumination: float = Field(default=0.0, ge=0)
     wdr: bool = False
     wdr_db: float | None = Field(None, gt=0)
 
     @model_validator(mode="after")
+    def _calculate_and_validate(self) -> "CameraModelCreate":
+        # Auto-calculate megapixels from resolution if not provided
+        if not self.megapixels:
+            exact_mp = (self.resolution_h * self.resolution_v) / 1_000_000
+            # Round to nearest standard camera MP value
+            standard_mp = [
+                0.3, 0.5, 1, 2, 3, 5, 8, 12, 13, 16, 20, 24, 32, 48, 64
+            ]
+            self.megapixels = min(standard_mp, key=lambda x: abs(x - exact_mp))
+
+        # Auto-calculate aspect ratio if not provided
+        if not self.aspect_ratio:
+            from math import gcd
+            g = gcd(self.resolution_h, self.resolution_v)
+            h_ratio = self.resolution_h // g
+            v_ratio = self.resolution_v // g
+            self.aspect_ratio = f"{h_ratio}:{v_ratio}"
+
+        # Call lens geometry validation
+        return self._validate_lens_geometry()
+
     def _validate_lens_geometry(self) -> "CameraModelCreate":
         if self.focal_length_max < self.focal_length_min:
             raise ValueError("focal_length_max must be >= focal_length_min.")
@@ -95,7 +116,7 @@ class CameraModelUpdate(BaseModel):
     sensor_type: SensorType | None = None
     min_illumination: float | None = Field(None, ge=0)
     wdr: bool | None = None
-    wdr_db: float | None = Field(None, gt=0)
+    wdr_db: float | None = Field(None, gt=0)  # Only applies when wdr=True
 
     @model_validator(mode="after")
     def _validate_partial_lens_geometry(self) -> "CameraModelUpdate":
@@ -144,16 +165,16 @@ class CameraModelResponse(BaseModel):
     v_fov_max: float
     lens_type: LensType
     ir_cut_filter: bool
-    ir_range: float | None
+    ir_range: float
 
     # Sensor
     resolution_h: int
     resolution_v: int
-    megapixels: float | None
-    aspect_ratio: str | None
+    megapixels: float
+    aspect_ratio: str
     sensor_size: str | None
     sensor_type: SensorType
-    min_illumination: float | None
+    min_illumination: float
     wdr: bool
     wdr_db: float | None
 

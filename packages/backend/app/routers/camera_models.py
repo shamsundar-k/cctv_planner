@@ -4,13 +4,24 @@ from datetime import datetime, timezone
 
 from beanie import PydanticObjectId
 from fastapi import APIRouter, Depends, HTTPException, status
+from pymongo.errors import DuplicateKeyError
 
 from app.core.deps import get_current_user
 from app.models.camera_model import CameraModel
 from app.models.user import User
 from app.schemas.camera_model import CameraModelCreate, CameraModelResponse, CameraModelUpdate
+import logging
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/camera-models", tags=["camera-models"])
+
+
+def _created_by_id(created_by) -> str:
+    """Return the user ID string regardless of whether created_by is a
+    populated User document or an unresolved Beanie Link (DBRef)."""
+    if isinstance(created_by, User):
+        return str(created_by.id)
+    return str(created_by.ref.id)  # Link object returned when not fetched
 
 
 def _to_response(m: CameraModel) -> CameraModelResponse:
@@ -30,6 +41,7 @@ def _to_response(m: CameraModel) -> CameraModelResponse:
         v_fov_max=m.v_fov_max,
         lens_type=m.lens_type,
         ir_cut_filter=m.ir_cut_filter,
+        ir_range=m.ir_range,
         resolution_h=m.resolution_h,
         resolution_v=m.resolution_v,
         megapixels=m.megapixels,
@@ -39,7 +51,7 @@ def _to_response(m: CameraModel) -> CameraModelResponse:
         min_illumination=m.min_illumination,
         wdr=m.wdr,
         wdr_db=m.wdr_db,
-        created_by=str(m.created_by.ref.id),  # type: ignore[union-attr]
+        created_by=_created_by_id(m.created_by),
         created_at=m.created_at,
         updated_at=m.updated_at,
     )
@@ -75,6 +87,7 @@ async def create_camera_model(
         v_fov_max=body.v_fov_max,
         lens_type=body.lens_type,
         ir_cut_filter=body.ir_cut_filter,
+        ir_range = body.ir_range,
         resolution_h=body.resolution_h,
         resolution_v=body.resolution_v,
         megapixels=body.megapixels,
@@ -86,7 +99,15 @@ async def create_camera_model(
         wdr_db=body.wdr_db,
         created_by=current_user,  # type: ignore[arg-type]
     )
-    await model.insert()
+    
+    
+    try:
+        await model.insert()
+    except DuplicateKeyError:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="You already have a camera model with this name",
+        )
     return _to_response(model)
 
 
@@ -98,7 +119,7 @@ async def get_camera_model(
     model = await CameraModel.get(model_id)
     if model is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Camera model not found")
-    if model.created_by.ref.id != current_user.id:  # type: ignore[union-attr]
+    if _created_by_id(model.created_by) != str(current_user.id):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
     return _to_response(model)
 
@@ -112,7 +133,7 @@ async def update_camera_model(
     model = await CameraModel.get(model_id)
     if model is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Camera model not found")
-    if model.created_by.ref.id != current_user.id:  # type: ignore[union-attr]
+    if _created_by_id(model.created_by) != str(current_user.id):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
 
     updates = body.model_dump(exclude_none=True)
@@ -137,7 +158,7 @@ async def delete_camera_model(
     model = await CameraModel.get(model_id)
     if model is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Camera model not found")
-    if model.created_by.ref.id != current_user.id:  # type: ignore[union-attr]
+    if _created_by_id(model.created_by) != str(current_user.id):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
 
     await model.delete()
