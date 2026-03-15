@@ -4,7 +4,6 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
-from app.models.project import CollaboratorRole
 
 
 class ProjectCreate(BaseModel):
@@ -36,7 +35,8 @@ class CameraInstanceSummary(BaseModel):
     focal_length_chosen: float | None
     colour: str
     visible: bool
-    fov_geojson: dict | None
+    fov_visible_geojson: dict | None
+    fov_ir_geojson: dict | None
     camera_model_id: str
     created_at: datetime
     updated_at: datetime

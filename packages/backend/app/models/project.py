@@ -1,14 +1,12 @@
 """Beanie document for survey projects. Fields: name, description, owner (User link), collaborators (list of {user_id, role}), created_at, updated_at."""
 
 from datetime import datetime, timezone
-from enum import Enum
 
 from beanie import Document, Link
 from pydantic import Field
+from pymongo import ASCENDING, IndexModel
 
 from .user import User
-
-
 
 
 class Project(Document):
@@ -24,3 +22,9 @@ class Project(Document):
 
     class Settings:
         name = "projects"
+        indexes = [
+            IndexModel(
+                [("owner.$id", ASCENDING), ("name", ASCENDING)],
+                unique=True,
+            )
+        ]

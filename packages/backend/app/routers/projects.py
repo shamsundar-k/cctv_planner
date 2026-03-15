@@ -1,4 +1,4 @@
-"""Project router: CRUD for survey projects, plus collaborator management."""
+"""Project router: CRUD for survey projects."""
 
 from datetime import datetime, timezone
 
@@ -7,13 +7,11 @@ from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.core.deps import get_current_user
 from app.models.camera_instance import CameraInstance
-from app.models.project import CollaboratorRole, Project
+from app.models.project import Project
 from app.models.user import User
 from app.models.zone import Zone
 from app.schemas.project import (
     CameraInstanceSummary,
-    CollaboratorAdd,
-    CollaboratorResponse,
     ProjectCreate,
     ProjectDetailResponse,
     ProjectResponse,
@@ -27,11 +25,17 @@ router = APIRouter(prefix="/projects", tags=["projects"])
 # ── Access helpers ─────────────────────────────────────────────────────────────
 
 def _owner_id(project: Project) -> str:
-    return str(project.owner.ref.id)  # type: ignore[union-attr]
+    owner = project.owner
+    if isinstance(owner, User):
+        return str(owner.id)
+    return str(owner.ref.id)  # type: ignore[union-attr]
 
 
 def _is_owner(project: Project, user: User) -> bool:
-    return project.owner.ref.id == user.id  # type: ignore[union-attr]
+    owner = project.owner
+    if isinstance(owner, User):
+        return owner.id == user.id
+    return owner.ref.id == user.id  # type: ignore[union-attr]
 
 
 def _can_access(project: Project, user: User) -> bool:
@@ -66,6 +70,14 @@ def _to_project_response(p: Project, camera_count: int = 0, zone_count: int = 0)
     )
 
 
+def _camera_model_id(cam: CameraInstance) -> str:
+    from app.models.camera_model import CameraModel
+    cm = cam.camera_model
+    if isinstance(cm, CameraModel):
+        return str(cm.id)
+    return str(cm.ref.id)  # type: ignore[union-attr]
+
+
 def _to_camera_summary(cam: CameraInstance) -> CameraInstanceSummary:
     return CameraInstanceSummary(
         id=str(cam.id),
@@ -78,8 +90,9 @@ def _to_camera_summary(cam: CameraInstance) -> CameraInstanceSummary:
         focal_length_chosen=cam.focal_length_chosen,
         colour=cam.colour,
         visible=cam.visible,
-        fov_geojson=cam.fov_geojson,
-        camera_model_id=str(cam.camera_model.ref.id),  # type: ignore[union-attr]
+        fov_visible_geojson=cam.fov_visible_geojson,
+        fov_ir_geojson=cam.fov_ir_geojson,
+        camera_model_id=_camera_model_id(cam),
         created_at=cam.created_at,
         updated_at=cam.updated_at,
     )
@@ -135,6 +148,16 @@ async def create_project(
     body: ProjectCreate,
     current_user: User = Depends(get_current_user),
 ) -> ProjectResponse:
+    existing = await Project.find_one(
+        Project.owner.id == current_user.id,  # type: ignore[union-attr]
+        Project.name == body.name,
+    )
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"A project named '{body.name}' already exists.",
+        )
+
     project = Project(
         name=body.name,
         description=body.description,
