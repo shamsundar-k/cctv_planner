@@ -60,7 +60,7 @@
 
 ## Milestone 4 — AdminDashboard Component
 
-- [ ] Create `packages/frontend/src/components/admin/AdminDashboard.jsx`
+- [ ] Create `packages/frontend/src/components/admin/AdminDashboard.tsx`
 
 - [ ] **Overview Tab**
   - [ ] Stat cards: Total Users, Total Projects, Total Cameras
