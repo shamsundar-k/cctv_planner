@@ -113,7 +113,7 @@ export default function UserMenu({ onClose }: UserMenuProps) {
           style={itemStyle}
           onMouseEnter={(e) => ((e.target as HTMLElement).style.background = '#f5f5f5')}
           onMouseLeave={(e) => ((e.target as HTMLElement).style.background = 'none')}
-          onClick={() => { navigate('/admin/users'); onClose() }}
+          onClick={() => { navigate('/admin/manage'); onClose() }}
         >
           Manage Users
         </button>

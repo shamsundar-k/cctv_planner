@@ -4,6 +4,7 @@ import AcceptInvitePage from './pages/AcceptInvitePage'
 import ProtectedRoute from './components/ProtectedRoute'
 import PublicOnlyRoute from './components/PublicOnlyRoute'
 import DashboardPage from './pages/DashboardPage'
+import AdminPage from './pages/AdminPage'
 import { ToastProvider } from './components/ui/Toast'
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
         {/* Protected routes */}
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<DashboardPage />} />
+          <Route path="/admin/manage" element={<AdminPage />} />
         </Route>
 
         {/* Fallback */}
