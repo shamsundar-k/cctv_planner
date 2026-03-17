@@ -9,52 +9,52 @@
 
 ## Milestone 1 — Project Setup & File Structure
 
-- [ ] Create directory `packages/frontend/src/components/admin/`
-- [ ] Create directory `packages/frontend/src/pages/` (if not exists)
-- [ ] Create directory `packages/frontend/src/api/` (if not exists)
-- [ ] Verify dependencies installed: `@tanstack/react-query`, `axios`, `lucide-react`
+- [x] Create directory `packages/frontend/src/components/admin/`
+- [x] Create directory `packages/frontend/src/pages/` (if not exists)
+- [x] Create directory `packages/frontend/src/api/` (if not exists)
+- [x] Verify dependencies installed: `@tanstack/react-query`, `axios`, `lucide-react`
 
 ---
 
 ## Milestone 2 — Backend API Verification
 
-- [ ] **Users endpoint**
-  - [ ] Verify `GET /api/v1/admin/users` returns `{ users: [...] }`
-  - [ ] Confirm response fields: `id`, `email`, `full_name`, `system_role`, `created_at`
-  - [ ] Verify admin JWT authentication is enforced
+- [x] **Users endpoint**
+  - [x] Verify `GET /api/v1/admin/users` returns `{ users: [...] }`
+  - [x] Confirm response fields: `id`, `email`, `full_name`, `system_role`, `created_at`
+  - [x] Verify admin JWT authentication is enforced
 
-- [ ] **Projects endpoint**
-  - [ ] Verify `GET /api/v1/projects` returns `{ projects: [...] }`
-  - [ ] Confirm response fields: `id`, `name`, `owner_id`, `camera_count`, `created_at`
+- [x] **Projects endpoint**
+  - [x] Verify `GET /api/v1/projects` returns `{ projects: [...] }`
+  - [x] Confirm response fields: `id`, `name`, `owner_id`, `camera_count`, `created_at`
 
-- [ ] **Invite endpoint**
-  - [ ] Verify `POST /api/v1/admin/invite` accepts `{ email: string }`
-  - [ ] Confirm response includes `invite_url`, `token`, `expires_at`
-  - [ ] Verify 72-hour token TTL is set server-side
+- [x] **Invite endpoint**
+  - [x] Verify `POST /api/v1/admin/invite` accepts `{ email: string }`
+  - [x] Confirm response includes `invite_url`, `token`, `expires_at`
+  - [x] Verify 72-hour token TTL is set server-side
 
-- [ ] **Delete endpoints**
-  - [ ] Verify `DELETE /api/v1/admin/users/{user_id}` returns `{ success: true }`
-  - [ ] Verify `DELETE /api/v1/projects/{project_id}` returns `{ success: true }`
+- [x] **Delete endpoints**
+  - [x] Verify `DELETE /api/v1/admin/users/{user_id}` returns `{ success: true }`
+  - [x] Verify `DELETE /api/v1/projects/{project_id}` returns `{ success: true }`
 
-- [ ] **Security**
-  - [ ] Server-side admin role check (`system_role === 'admin'`) on all endpoints
-  - [ ] Rate limiting applied to invite and delete endpoints
-  - [ ] Audit logging enabled for admin actions
+- [x] **Security**
+  - [x] Server-side admin role check (`system_role === 'admin'`) on all endpoints
+  - [x] Rate limiting applied to invite and delete endpoints
+  - [x] Audit logging enabled for admin actions
 
 ---
 
 ## Milestone 3 — API Hooks
 
-- [ ] Create `packages/frontend/src/api/admin.ts`
-  - [ ] `useAdminUsers()` — `GET /api/v1/admin/users`
-  - [ ] `useAdminProjects()` — `GET /api/v1/projects`
-  - [ ] `useGenerateInvite()` — `POST /api/v1/admin/invite`
-  - [ ] `useDeleteUser()` — `DELETE /api/v1/admin/users/{id}`
-  - [ ] `useDeleteProject()` — `DELETE /api/v1/projects/{id}`
-  - [ ] Configure query caching & stale time
-  - [ ] Add optimistic updates with rollback on error
-  - [ ] Add retry logic
-  - [ ] Add debounced search hooks: `useSearchUsers()`, `useSearchProjects()`
+- [x] Create `packages/frontend/src/api/admin.ts`
+  - [x] `useAdminUsers()` — `GET /api/v1/admin/users`
+  - [x] `useAdminProjects()` — `GET /api/v1/projects`
+  - [x] `useGenerateInvite()` — `POST /api/v1/admin/invite`
+  - [x] `useDeleteUser()` — `DELETE /api/v1/admin/users/{id}`
+  - [x] `useDeleteProject()` — `DELETE /api/v1/projects/{id}`
+  - [x] Configure query caching & stale time
+  - [x] Add optimistic updates with rollback on error
+  - [x] Add retry logic
+  - [x] Add debounced search hooks: `useSearchUsers()`, `useSearchProjects()`
 
 ---
 
