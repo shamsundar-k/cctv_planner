@@ -60,28 +60,28 @@
 
 ## Milestone 4 — AdminDashboard Component
 
-- [ ] Create `packages/frontend/src/components/admin/AdminDashboard.tsx`
+- [x] Create `packages/frontend/src/components/admin/AdminDashboard.tsx`
 
-- [ ] **Overview Tab**
-  - [ ] Stat cards: Total Users, Total Projects, Total Cameras
-  - [ ] Quick invite generation form with email validation
-  - [ ] Success toast on invite generation with auto-copy
+- [x] **Overview Tab**
+  - [x] Stat cards: Total Users, Total Projects, Total Cameras
+  - [x] Quick invite generation form with email validation
+  - [x] Success toast on invite generation with auto-copy
 
-- [ ] **Users Tab**
-  - [ ] Search/filter by email or display name (debounced)
-  - [ ] User table: avatar, name, email, role badge, project count, created date
-  - [ ] Delete button with confirmation modal
+- [x] **Users Tab**
+  - [x] Search/filter by email or display name (debounced)
+  - [x] User table: avatar, name, email, role badge, project count, created date
+  - [x] Delete button with confirmation modal
 
 - [ ] **Projects Tab**
   - [ ] Search/filter by project name or owner (debounced)
   - [ ] Project cards: name, owner, camera count, collaborator count, created date
   - [ ] View button (link to project) and Delete button with confirmation modal
 
-- [ ] **Invite History Tab**
-  - [ ] List all generated invites
-  - [ ] Full invite URL with copy-to-clipboard button
-  - [ ] Expiry countdown with visual progress bar
-  - [ ] Exact expiration timestamps
+- [x] **Invite History Tab**
+  - [x] List all generated invites
+  - [x] Full invite URL with copy-to-clipboard button
+  - [x] Expiry countdown with visual progress bar
+  - [x] Exact expiration timestamps
 
 - [ ] **Delete Confirmation Modal**
   - [ ] Show item name in confirmation text

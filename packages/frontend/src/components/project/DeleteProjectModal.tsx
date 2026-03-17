@@ -7,37 +7,6 @@ interface DeleteProjectModalProps {
   onClose: () => void
 }
 
-const OVERLAY: React.CSSProperties = {
-  position: 'fixed',
-  inset: 0,
-  background: 'rgba(0,0,0,0.5)',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  zIndex: 200,
-}
-
-const MODAL: React.CSSProperties = {
-  background: '#ffffff',
-  borderRadius: 8,
-  boxShadow: '0 20px 25px rgba(0,0,0,0.2)',
-  width: 560,
-  display: 'flex',
-  flexDirection: 'column',
-}
-
-const INPUT: React.CSSProperties = {
-  width: '100%',
-  padding: '8px 12px',
-  border: '1px solid #d0d0d0',
-  borderRadius: 6,
-  fontSize: 14,
-  color: '#1a1a1a',
-  background: '#ffffff',
-  outline: 'none',
-  boxSizing: 'border-box',
-}
-
 export default function DeleteProjectModal({ project, onClose }: DeleteProjectModalProps) {
   const [confirmText, setConfirmText] = useState('')
   const [submitError, setSubmitError] = useState('')
@@ -71,53 +40,44 @@ export default function DeleteProjectModal({ project, onClose }: DeleteProjectMo
   }
 
   return (
-    <div style={OVERLAY} onMouseDown={(e) => { if (e.target === e.currentTarget) onClose() }}>
-      <div style={MODAL} role="dialog" aria-modal="true" aria-labelledby="delete-modal-title">
+    <div
+      className="fixed inset-0 bg-black/60 flex items-center justify-center z-[200]"
+      onMouseDown={(e) => { if (e.target === e.currentTarget) onClose() }}
+    >
+      <div
+        className="bg-slate-800 border border-slate-700 rounded-xl shadow-2xl w-[560px] flex flex-col"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="delete-modal-title"
+      >
         {/* Header */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '20px 24px',
-            borderBottom: '1px solid #e0e0e0',
-          }}
-        >
-          <h2 id="delete-modal-title" style={{ fontSize: 18, fontWeight: 700, color: '#1a1a1a', margin: 0 }}>
+        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-700">
+          <h2 id="delete-modal-title" className="text-lg font-bold text-slate-100 m-0">
             Delete Project
           </h2>
           <button
             onClick={onClose}
             aria-label="Close"
-            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 20, color: '#666', lineHeight: 1 }}
+            className="bg-transparent border-none cursor-pointer text-xl text-slate-400 hover:text-slate-200 leading-none transition-colors"
           >
             ✕
           </button>
         </div>
 
         {/* Body */}
-        <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div className="px-6 py-6 flex flex-col gap-4">
           {/* Warning */}
-          <div
-            style={{
-              display: 'flex',
-              gap: 12,
-              padding: 16,
-              background: '#fff8f0',
-              border: '1px solid #ffcc88',
-              borderRadius: 6,
-            }}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, marginTop: 1 }}>
-              <path d="M12 2L2 21h20L12 2z" fill="#ff9900" />
+          <div className="flex gap-3 p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="shrink-0 mt-0.5">
+              <path d="M12 2L2 21h20L12 2z" fill="#f59e0b" />
               <path d="M12 9v5" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" />
               <circle cx="12" cy="17" r="1" fill="#ffffff" />
             </svg>
             <div>
-              <p style={{ fontSize: 14, fontWeight: 600, color: '#1a1a1a', margin: '0 0 4px' }}>
+              <p className="text-sm font-semibold text-slate-100 m-0 mb-1">
                 Permanently delete &ldquo;{project.name}&rdquo;?
               </p>
-              <p style={{ fontSize: 14, color: '#666666', margin: 0, lineHeight: 1.6 }}>
+              <p className="text-sm text-slate-400 m-0 leading-relaxed">
                 This action cannot be undone. All cameras, zones, and reports associated with this
                 project will be permanently deleted.
               </p>
@@ -128,10 +88,10 @@ export default function DeleteProjectModal({ project, onClose }: DeleteProjectMo
           <div>
             <label
               htmlFor="delete-confirm"
-              style={{ fontSize: 14, color: '#1a1a1a', display: 'block', marginBottom: 8, lineHeight: 1.6 }}
+              className="text-sm text-slate-300 block mb-2 leading-relaxed"
             >
               Type the project name to confirm:{' '}
-              <strong>{project.name}</strong>
+              <strong className="text-slate-100">{project.name}</strong>
             </label>
             <input
               ref={inputRef}
@@ -140,64 +100,34 @@ export default function DeleteProjectModal({ project, onClose }: DeleteProjectMo
               value={confirmText}
               onChange={(e) => setConfirmText(e.target.value)}
               placeholder={project.name}
-              style={{
-                ...INPUT,
-                borderColor: confirmText.length > 0 && !confirmed ? '#dd0000' : '#d0d0d0',
-              }}
-              onFocus={(e) => (e.currentTarget.style.borderColor = '#0066cc')}
-              onBlur={(e) =>
-                (e.currentTarget.style.borderColor =
-                  confirmText.length > 0 && !confirmed ? '#dd0000' : '#d0d0d0')
-              }
               onKeyDown={(e) => { if (e.key === 'Enter') handleDelete() }}
+              className={`w-full px-3 py-2 border rounded-md text-sm text-slate-100 bg-slate-700 placeholder-slate-500 outline-none transition-colors ${
+                confirmText.length > 0 && !confirmed
+                  ? 'border-red-500'
+                  : 'border-slate-600 focus:border-blue-500'
+              }`}
             />
           </div>
 
           {submitError && (
-            <p style={{ fontSize: 14, color: '#dd0000', margin: 0 }}>{submitError}</p>
+            <p className="text-sm text-red-400 m-0">{submitError}</p>
           )}
         </div>
 
         {/* Footer */}
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            gap: 12,
-            padding: '16px 24px',
-            borderTop: '1px solid #e0e0e0',
-          }}
-        >
+        <div className="flex justify-end gap-3 px-6 py-4 border-t border-slate-700">
           <button
             onClick={onClose}
-            style={{
-              height: 36,
-              padding: '0 16px',
-              background: '#ffffff',
-              color: '#1a1a1a',
-              border: '1px solid #d0d0d0',
-              borderRadius: 6,
-              fontSize: 14,
-              fontWeight: 600,
-              cursor: 'pointer',
-            }}
+            className="h-9 px-4 bg-slate-700 hover:bg-slate-600 text-slate-200 border border-slate-600 rounded-md text-sm font-semibold cursor-pointer transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={handleDelete}
             disabled={!canDelete}
-            style={{
-              height: 36,
-              padding: '0 20px',
-              background: canDelete ? '#dd0000' : '#cccccc',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: 6,
-              fontSize: 14,
-              fontWeight: 600,
-              cursor: canDelete ? 'pointer' : 'not-allowed',
-            }}
+            className={`h-9 px-5 border-none rounded-md text-sm font-semibold text-white transition-colors ${
+              canDelete ? 'bg-red-600 hover:bg-red-700 cursor-pointer' : 'bg-slate-600 cursor-not-allowed opacity-50'
+            }`}
           >
             {isPending ? 'Deleting…' : 'Delete Project'}
           </button>

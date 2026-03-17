@@ -7,52 +7,10 @@ interface EditProjectModalProps {
   onClose: () => void
 }
 
-const OVERLAY: React.CSSProperties = {
-  position: 'fixed',
-  inset: 0,
-  background: 'rgba(0,0,0,0.5)',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  zIndex: 200,
-}
-
-const MODAL: React.CSSProperties = {
-  background: '#ffffff',
-  borderRadius: 8,
-  boxShadow: '0 20px 25px rgba(0,0,0,0.2)',
-  width: 600,
-  maxHeight: '90vh',
-  overflowY: 'auto',
-  display: 'flex',
-  flexDirection: 'column',
-}
-
-const LABEL: React.CSSProperties = {
-  fontSize: 14,
-  fontWeight: 500,
-  color: '#1a1a1a',
-  marginBottom: 6,
-  display: 'block',
-}
-
-const INPUT: React.CSSProperties = {
-  width: '100%',
-  padding: '8px 12px',
-  border: '1px solid #d0d0d0',
-  borderRadius: 6,
-  fontSize: 14,
-  color: '#1a1a1a',
-  background: '#ffffff',
-  outline: 'none',
-  boxSizing: 'border-box',
-}
-
-const HINT: React.CSSProperties = {
-  fontSize: 12,
-  color: '#777777',
-  marginTop: 4,
-}
+const inputCls = (invalid: boolean) =>
+  `w-full px-3 py-2 border rounded-md text-sm text-slate-100 bg-slate-700 placeholder-slate-500 outline-none transition-colors ${
+    invalid ? 'border-red-500' : 'border-slate-600 focus:border-blue-500'
+  }`
 
 export default function EditProjectModal({ project, onClose }: EditProjectModalProps) {
   const [name, setName] = useState(project.name)
@@ -122,25 +80,25 @@ export default function EditProjectModal({ project, onClose }: EditProjectModalP
   }
 
   return (
-    <div style={OVERLAY} onMouseDown={(e) => { if (e.target === e.currentTarget) onClose() }}>
-      <div style={MODAL} role="dialog" aria-modal="true" aria-labelledby="edit-modal-title">
+    <div
+      className="fixed inset-0 bg-black/60 flex items-center justify-center z-[200]"
+      onMouseDown={(e) => { if (e.target === e.currentTarget) onClose() }}
+    >
+      <div
+        className="bg-slate-800 border border-slate-700 rounded-xl shadow-2xl w-[600px] max-h-[90vh] overflow-y-auto flex flex-col"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="edit-modal-title"
+      >
         {/* Header */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '20px 24px',
-            borderBottom: '1px solid #e0e0e0',
-          }}
-        >
-          <h2 id="edit-modal-title" style={{ fontSize: 18, fontWeight: 700, color: '#1a1a1a', margin: 0 }}>
+        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-700">
+          <h2 id="edit-modal-title" className="text-lg font-bold text-slate-100 m-0">
             Edit Project
           </h2>
           <button
             onClick={onClose}
             aria-label="Close"
-            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 20, color: '#666', lineHeight: 1 }}
+            className="bg-transparent border-none cursor-pointer text-xl text-slate-400 hover:text-slate-200 leading-none transition-colors"
           >
             ✕
           </button>
@@ -148,11 +106,11 @@ export default function EditProjectModal({ project, onClose }: EditProjectModalP
 
         {/* Form */}
         <form onSubmit={handleSubmit}>
-          <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <div className="px-6 py-6 flex flex-col gap-5">
             {/* Name */}
             <div>
-              <label htmlFor="edit-name" style={LABEL}>
-                Project Name <span style={{ color: '#dd0000' }}>*</span>
+              <label htmlFor="edit-name" className="block text-sm font-medium text-slate-300 mb-1.5">
+                Project Name <span className="text-red-400">*</span>
               </label>
               <input
                 ref={nameRef}
@@ -161,20 +119,15 @@ export default function EditProjectModal({ project, onClose }: EditProjectModalP
                 value={name}
                 maxLength={100}
                 onChange={(e) => setName(e.target.value)}
-                style={{
-                  ...INPUT,
-                  borderColor: name.length > 0 && !nameValid ? '#dd0000' : '#d0d0d0',
-                }}
-                onFocus={(e) => (e.currentTarget.style.borderColor = '#0066cc')}
-                onBlur={(e) => (e.currentTarget.style.borderColor = name.length > 0 && !nameValid ? '#dd0000' : '#d0d0d0')}
+                className={inputCls(name.length > 0 && !nameValid)}
               />
-              <span style={HINT}>1–100 characters (required)</span>
+              <span className="text-xs text-slate-500 mt-1 block">1–100 characters (required)</span>
             </div>
 
             {/* Description */}
             <div>
-              <label htmlFor="edit-desc" style={LABEL}>
-                Description <span style={{ color: '#777777', fontWeight: 400 }}>(optional)</span>
+              <label htmlFor="edit-desc" className="block text-sm font-medium text-slate-300 mb-1.5">
+                Description <span className="text-slate-500 font-normal">(optional)</span>
               </label>
               <textarea
                 id="edit-desc"
@@ -182,29 +135,22 @@ export default function EditProjectModal({ project, onClose }: EditProjectModalP
                 maxLength={500}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={3}
-                style={{
-                  ...INPUT,
-                  resize: 'vertical',
-                  fontFamily: 'inherit',
-                  lineHeight: 1.6,
-                }}
-                onFocus={(e) => (e.currentTarget.style.borderColor = '#0066cc')}
-                onBlur={(e) => (e.currentTarget.style.borderColor = '#d0d0d0')}
+                className="w-full px-3 py-2 border border-slate-600 focus:border-blue-500 rounded-md text-sm text-slate-100 bg-slate-700 placeholder-slate-500 outline-none transition-colors resize-y font-[inherit] leading-relaxed"
               />
-              <span style={HINT}>{description.length}/500 characters</span>
+              <span className="text-xs text-slate-500 mt-1 block">{description.length}/500 characters</span>
             </div>
 
             {/* Base Map Location */}
             <div>
-              <label style={{ ...LABEL, fontSize: 14, marginBottom: 4 }}>
-                Base Map Location <span style={{ color: '#777777', fontWeight: 400 }}>(optional)</span>
+              <label className="block text-sm font-medium text-slate-300 mb-1">
+                Base Map Location <span className="text-slate-500 font-normal">(optional)</span>
               </label>
-              <span style={{ ...HINT, display: 'block', marginBottom: 10, marginTop: 0 }}>
+              <span className="text-xs text-slate-500 block mb-2.5">
                 Set the initial map view when this project is opened
               </span>
-              <div style={{ display: 'flex', gap: 10 }}>
-                <div style={{ flex: 1 }}>
-                  <label htmlFor="edit-lat" style={{ ...HINT, display: 'block', marginBottom: 4, marginTop: 0 }}>Latitude</label>
+              <div className="flex gap-2.5">
+                <div className="flex-1">
+                  <label htmlFor="edit-lat" className="text-xs text-slate-500 block mb-1">Latitude</label>
                   <input
                     id="edit-lat"
                     type="number"
@@ -214,16 +160,11 @@ export default function EditProjectModal({ project, onClose }: EditProjectModalP
                     max="90"
                     onChange={(e) => setLat(e.target.value)}
                     placeholder="40.7128"
-                    style={{
-                      ...INPUT,
-                      borderColor: lat !== '' && !latValid ? '#dd0000' : '#d0d0d0',
-                    }}
-                    onFocus={(e) => (e.currentTarget.style.borderColor = '#0066cc')}
-                    onBlur={(e) => (e.currentTarget.style.borderColor = lat !== '' && !latValid ? '#dd0000' : '#d0d0d0')}
+                    className={inputCls(lat !== '' && !latValid)}
                   />
                 </div>
-                <div style={{ flex: 1 }}>
-                  <label htmlFor="edit-lng" style={{ ...HINT, display: 'block', marginBottom: 4, marginTop: 0 }}>Longitude</label>
+                <div className="flex-1">
+                  <label htmlFor="edit-lng" className="text-xs text-slate-500 block mb-1">Longitude</label>
                   <input
                     id="edit-lng"
                     type="number"
@@ -233,16 +174,11 @@ export default function EditProjectModal({ project, onClose }: EditProjectModalP
                     max="180"
                     onChange={(e) => setLng(e.target.value)}
                     placeholder="-74.0060"
-                    style={{
-                      ...INPUT,
-                      borderColor: lng !== '' && !lngValid ? '#dd0000' : '#d0d0d0',
-                    }}
-                    onFocus={(e) => (e.currentTarget.style.borderColor = '#0066cc')}
-                    onBlur={(e) => (e.currentTarget.style.borderColor = lng !== '' && !lngValid ? '#dd0000' : '#d0d0d0')}
+                    className={inputCls(lng !== '' && !lngValid)}
                   />
                 </div>
-                <div style={{ width: 90 }}>
-                  <label htmlFor="edit-zoom" style={{ ...HINT, display: 'block', marginBottom: 4, marginTop: 0 }}>Zoom (1–22)</label>
+                <div className="w-[90px]">
+                  <label htmlFor="edit-zoom" className="text-xs text-slate-500 block mb-1">Zoom (1–22)</label>
                   <input
                     id="edit-zoom"
                     type="number"
@@ -250,63 +186,32 @@ export default function EditProjectModal({ project, onClose }: EditProjectModalP
                     min="1"
                     max="22"
                     onChange={(e) => setZoom(e.target.value)}
-                    style={{
-                      ...INPUT,
-                      borderColor: !zoomValid ? '#dd0000' : '#d0d0d0',
-                    }}
-                    onFocus={(e) => (e.currentTarget.style.borderColor = '#0066cc')}
-                    onBlur={(e) => (e.currentTarget.style.borderColor = !zoomValid ? '#dd0000' : '#d0d0d0')}
+                    className={inputCls(!zoomValid)}
                   />
                 </div>
               </div>
             </div>
 
             {submitError && (
-              <p style={{ fontSize: 14, color: '#dd0000', margin: 0 }}>{submitError}</p>
+              <p className="text-sm text-red-400 m-0">{submitError}</p>
             )}
           </div>
 
           {/* Footer */}
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-              gap: 12,
-              padding: '16px 24px',
-              borderTop: '1px solid #e0e0e0',
-            }}
-          >
+          <div className="flex justify-end gap-3 px-6 py-4 border-t border-slate-700">
             <button
               type="button"
               onClick={onClose}
-              style={{
-                height: 36,
-                padding: '0 16px',
-                background: '#ffffff',
-                color: '#1a1a1a',
-                border: '1px solid #d0d0d0',
-                borderRadius: 6,
-                fontSize: 14,
-                fontWeight: 600,
-                cursor: 'pointer',
-              }}
+              className="h-9 px-4 bg-slate-700 hover:bg-slate-600 text-slate-200 border border-slate-600 rounded-md text-sm font-semibold cursor-pointer transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={!canSubmit}
-              style={{
-                height: 36,
-                padding: '0 20px',
-                background: canSubmit ? '#0066cc' : '#cccccc',
-                color: '#ffffff',
-                border: 'none',
-                borderRadius: 6,
-                fontSize: 14,
-                fontWeight: 600,
-                cursor: canSubmit ? 'pointer' : 'not-allowed',
-              }}
+              className={`h-9 px-5 border-none rounded-md text-sm font-semibold text-white transition-colors ${
+                canSubmit ? 'bg-blue-600 hover:bg-blue-700 cursor-pointer' : 'bg-slate-600 cursor-not-allowed opacity-50'
+              }`}
             >
               {isPending ? 'Saving…' : 'Save Changes'}
             </button>

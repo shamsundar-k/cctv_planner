@@ -86,10 +86,10 @@ export default function DashboardPage() {
   const pageTitle = isAdmin ? 'All Projects' : 'My Projects'
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5]">
+    <div className="min-h-screen bg-slate-900">
       <Navbar />
 
-      <main style={{ maxWidth: 1600, margin: '0 auto', padding: '40px' }}>
+      <main className="max-w-[1600px] mx-auto px-10 py-10">
         <ProjectToolbar
           pageTitle={pageTitle}
           filteredCount={filtered.length}
@@ -101,11 +101,11 @@ export default function DashboardPage() {
         />
 
         {isError && (
-          <p style={{ color: '#dd0000', fontSize: 14, marginBottom: 24 }}>
+          <p className="text-sm text-red-400 mb-6">
             Failed to load projects.{' '}
             <button
               onClick={() => refetch()}
-              style={{ color: '#0066cc', cursor: 'pointer', background: 'none', border: 'none', fontSize: 14, padding: 0 }}
+              className="text-blue-400 hover:text-blue-300 cursor-pointer bg-transparent border-none text-sm p-0"
             >
               Retry
             </button>

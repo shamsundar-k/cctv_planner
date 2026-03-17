@@ -113,123 +113,40 @@ export default function ProjectToolbar({
         { value: 'archived', label: 'Archived' },
       ]
 
-  const btnBase: React.CSSProperties = {
-    height: 36,
-    padding: '0 14px',
-    border: '1px solid #d0d0d0',
-    borderRadius: 6,
-    fontSize: 14,
-    background: '#ffffff',
-    color: '#1a1a1a',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    gap: 6,
-    whiteSpace: 'nowrap',
-  }
-
-  const dropdownMenu: React.CSSProperties = {
-    position: 'absolute',
-    top: 'calc(100% + 4px)',
-    left: 0,
-    background: '#ffffff',
-    border: '1px solid #e0e0e0',
-    borderRadius: 6,
-    boxShadow: '0 10px 15px rgba(0,0,0,0.15)',
-    minWidth: 200,
-    zIndex: 50,
-  }
-
-  const menuItem = (active: boolean): React.CSSProperties => ({
-    display: 'flex',
-    alignItems: 'center',
-    gap: 8,
-    width: '100%',
-    textAlign: 'left',
-    background: 'none',
-    border: 'none',
-    padding: '10px 14px',
-    fontSize: 14,
-    color: '#1a1a1a',
-    cursor: 'pointer',
-    fontWeight: active ? 600 : 400,
-  })
+  const btnCls = 'h-9 px-3.5 border border-slate-600 rounded-md text-sm bg-slate-800 text-slate-300 cursor-pointer flex items-center gap-1.5 whitespace-nowrap hover:bg-slate-700 hover:text-slate-100 transition-colors'
+  const dropdownCls = 'absolute top-[calc(100%+4px)] left-0 bg-slate-800 border border-slate-700 rounded-lg shadow-2xl min-w-[200px] z-50 py-1'
+  const menuItemCls = (active: boolean) => `flex items-center gap-2 w-full text-left bg-transparent border-none px-3.5 py-2.5 text-sm text-slate-300 cursor-pointer hover:bg-slate-700 hover:text-slate-100 transition-colors ${active ? 'font-semibold' : 'font-normal'}`
 
   return (
-    <div style={{ marginBottom: 32 }}>
+    <div className="mb-8">
       {/* Title row */}
-      <h1 style={{ fontSize: 32, fontWeight: 700, color: '#1a1a1a', marginBottom: 20 }}>
-        {pageTitle}
-      </h1>
+      <h1 className="text-[32px] font-bold text-slate-100 mb-5">{pageTitle}</h1>
 
       {/* Controls row */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+      <div className="flex items-center gap-3 flex-wrap">
         {/* Create button */}
         <button
           onClick={onCreateClick}
-          style={{
-            height: 36,
-            padding: '0 16px',
-            background: '#0066cc',
-            color: '#ffffff',
-            border: 'none',
-            borderRadius: 6,
-            fontSize: 14,
-            fontWeight: 600,
-            cursor: 'pointer',
-          }}
-          onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = '#0052a3')}
-          onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = '#0066cc')}
+          className="h-9 px-4 bg-blue-600 hover:bg-blue-700 text-white border-none rounded-md text-sm font-semibold cursor-pointer transition-colors"
           title="Create Project (Ctrl+N)"
         >
           + Create Project
         </button>
 
         {/* Search */}
-        <div style={{ position: 'relative' }}>
+        <div className="relative">
           <input
             type="text"
             value={localSearch}
             placeholder="Search projects..."
             onChange={(e) => handleSearchChange(e.target.value)}
-            style={{
-              height: 36,
-              width: 260,
-              padding: '0 32px 0 12px',
-              border: '1px solid #d0d0d0',
-              borderRadius: 6,
-              fontSize: 14,
-              background: '#f9f9f9',
-              color: '#1a1a1a',
-              outline: 'none',
-              boxSizing: 'border-box',
-            }}
-            onFocus={(e) => {
-              e.currentTarget.style.borderColor = '#0066cc'
-              e.currentTarget.style.background = '#ffffff'
-            }}
-            onBlur={(e) => {
-              e.currentTarget.style.borderColor = '#d0d0d0'
-              e.currentTarget.style.background = '#f9f9f9'
-            }}
+            className="h-9 w-64 pl-3 pr-8 border border-slate-600 rounded-md text-sm bg-slate-700 text-slate-100 placeholder-slate-400 outline-none focus:border-blue-500 transition-colors"
           />
           {localSearch && (
             <button
               onClick={() => handleSearchChange('')}
               aria-label="Clear search"
-              style={{
-                position: 'absolute',
-                right: 8,
-                top: '50%',
-                transform: 'translateY(-50%)',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: '#999',
-                fontSize: 16,
-                lineHeight: 1,
-                padding: 0,
-              }}
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-slate-400 hover:text-slate-200 text-base leading-none p-0"
             >
               ✕
             </button>
@@ -237,27 +154,23 @@ export default function ProjectToolbar({
         </div>
 
         {/* Filter dropdown */}
-        <div ref={filterRef} style={{ position: 'relative' }}>
+        <div ref={filterRef} className="relative">
           <button
-            style={btnBase}
+            className={btnCls}
             onClick={() => { setFilterOpen((o) => !o); setSortOpen(false) }}
-            onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = '#f5f5f5')}
-            onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = '#ffffff')}
           >
             Filter: {filterOptions.find((o) => o.value === filterType)?.label ?? 'All Projects'}
-            <span style={{ fontSize: 10, marginLeft: 2 }}>▼</span>
+            <span className="text-[10px] ml-0.5">▼</span>
           </button>
           {filterOpen && (
-            <div style={dropdownMenu}>
+            <div className={dropdownCls}>
               {filterOptions.map((opt) => (
                 <button
                   key={opt.value}
-                  style={menuItem(filterType === opt.value)}
-                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = '#f5f5f5')}
-                  onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'none')}
+                  className={menuItemCls(filterType === opt.value)}
                   onClick={() => { setFilterType(opt.value); setFilterOpen(false) }}
                 >
-                  <span style={{ width: 16, color: '#0066cc' }}>{filterType === opt.value ? '✓' : ''}</span>
+                  <span className="w-4 text-sky-400">{filterType === opt.value ? '✓' : ''}</span>
                   {opt.label}
                 </button>
               ))}
@@ -266,27 +179,23 @@ export default function ProjectToolbar({
         </div>
 
         {/* Sort dropdown */}
-        <div ref={sortRef} style={{ position: 'relative' }}>
+        <div ref={sortRef} className="relative">
           <button
-            style={btnBase}
+            className={btnCls}
             onClick={() => { setSortOpen((o) => !o); setFilterOpen(false) }}
-            onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = '#f5f5f5')}
-            onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = '#ffffff')}
           >
             Sort: {SORT_LABELS[sortBy]}
-            <span style={{ fontSize: 10, marginLeft: 2 }}>▼</span>
+            <span className="text-[10px] ml-0.5">▼</span>
           </button>
           {sortOpen && (
-            <div style={dropdownMenu}>
+            <div className={dropdownCls}>
               {(Object.entries(SORT_LABELS) as [SortBy, string][]).map(([value, label]) => (
                 <button
                   key={value}
-                  style={menuItem(sortBy === value)}
-                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = '#f5f5f5')}
-                  onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'none')}
+                  className={menuItemCls(sortBy === value)}
                   onClick={() => { setSortBy(value); setSortOpen(false) }}
                 >
-                  <span style={{ width: 16, color: '#0066cc' }}>{sortBy === value ? '✓' : ''}</span>
+                  <span className="w-4 text-sky-400">{sortBy === value ? '✓' : ''}</span>
                   {label}
                 </button>
               ))}
@@ -298,28 +207,7 @@ export default function ProjectToolbar({
         <button
           onClick={handleRefresh}
           aria-label="Refresh projects"
-          style={{
-            width: 36,
-            height: 36,
-            background: 'transparent',
-            border: '1px solid #d0d0d0',
-            borderRadius: 6,
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#666',
-          }}
-          onMouseEnter={(e) => {
-            const el = e.currentTarget as HTMLElement
-            el.style.background = '#f5f5f5'
-            el.style.color = '#0066cc'
-          }}
-          onMouseLeave={(e) => {
-            const el = e.currentTarget as HTMLElement
-            el.style.background = 'transparent'
-            el.style.color = '#666'
-          }}
+          className="w-9 h-9 bg-transparent border border-slate-600 rounded-md cursor-pointer flex items-center justify-center text-slate-400 hover:bg-slate-700 hover:text-sky-400 transition-colors"
         >
           <svg
             width="16"
@@ -344,7 +232,7 @@ export default function ProjectToolbar({
       </div>
 
       {/* Metadata line */}
-      <p style={{ fontSize: 14, color: '#666666', marginTop: 12 }}>
+      <p className="text-sm text-slate-500 mt-3">
         {filteredCount} project{filteredCount !== 1 ? 's' : ''}
         {dataUpdatedAt ? ` · Updated ${formatUpdatedAt(dataUpdatedAt)}` : ''}
       </p>

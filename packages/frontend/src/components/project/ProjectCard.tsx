@@ -30,7 +30,6 @@ interface ProjectCardProps {
 
 function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
   const navigate = useNavigate()
-  const [hovered, setHovered] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
@@ -45,102 +44,46 @@ function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
     return () => document.removeEventListener('mousedown', handleClick)
   }, [menuOpen])
 
-  const cardStyle: React.CSSProperties = {
-    background: '#ffffff',
-    border: '1px solid #e0e0e0',
-    borderRadius: 8,
-    padding: 24,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 10,
-    boxShadow: hovered
-      ? '0 10px 15px rgba(0,0,0,0.15)'
-      : '0 4px 6px rgba(0,0,0,0.1)',
-    transform: hovered ? 'translateY(-4px)' : 'translateY(0)',
-    transition: 'all 200ms ease',
-    cursor: 'default',
-  }
-
   const hasLocation = project.center_lat !== null && project.center_lng !== null
 
   return (
-    <div
-      style={cardStyle}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
+    <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 flex flex-col gap-2.5 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-200 cursor-default">
       {/* Header row */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
+      <div className="flex items-start justify-between gap-2">
         <h3
-          style={{
-            fontSize: 18,
-            fontWeight: 600,
-            color: '#1a1a1a',
-            margin: 0,
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            flex: 1,
-          }}
+          className="text-lg font-semibold text-slate-100 m-0 overflow-hidden text-ellipsis whitespace-nowrap flex-1"
           title={project.name}
         >
           {project.name}
         </h3>
 
         {/* More menu (···) */}
-        <div ref={menuRef} style={{ position: 'relative', flexShrink: 0 }}>
+        <div ref={menuRef} className="relative shrink-0">
           <button
             aria-label="More options"
             onClick={() => setMenuOpen((o) => !o)}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              fontSize: 18,
-              color: '#666',
-              padding: '0 4px',
-              lineHeight: 1,
-              borderRadius: 4,
-            }}
-            onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = '#f5f5f5')}
-            onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'none')}
+            className="bg-transparent border-none cursor-pointer text-lg text-slate-400 hover:text-slate-200 px-1 leading-none rounded hover:bg-slate-700 transition-colors"
           >
             ···
           </button>
           {menuOpen && (
-            <div
-              style={{
-                position: 'absolute',
-                top: 'calc(100% + 4px)',
-                right: 0,
-                background: '#fff',
-                border: '1px solid #e0e0e0',
-                borderRadius: 6,
-                boxShadow: '0 10px 15px rgba(0,0,0,0.15)',
-                minWidth: 160,
-                zIndex: 10,
-              }}
-            >
+            <div className="absolute top-[calc(100%+4px)] right-0 bg-slate-800 border border-slate-700 rounded-lg shadow-2xl min-w-[160px] z-10 py-1">
               <button
-                style={{ display: 'block', width: '100%', textAlign: 'left', background: 'none', border: 'none', padding: '10px 14px', fontSize: 14, color: '#1a1a1a', cursor: 'pointer' }}
-                onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = '#f5f5f5')}
-                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'none')}
+                className="block w-full text-left bg-transparent border-none px-3.5 py-2.5 text-sm text-slate-300 cursor-pointer hover:bg-slate-700 hover:text-slate-100 transition-colors"
                 onClick={() => { setMenuOpen(false); onEdit(project) }}
               >
                 Edit Project
               </button>
               <button
-                style={{ display: 'block', width: '100%', textAlign: 'left', background: 'none', border: 'none', padding: '10px 14px', fontSize: 14, color: '#666666', cursor: 'not-allowed', opacity: 0.6 }}
+                className="block w-full text-left bg-transparent border-none px-3.5 py-2.5 text-sm text-slate-600 cursor-not-allowed opacity-60"
                 disabled
                 title="Archive coming soon"
               >
                 Archive Project
               </button>
-              <div style={{ borderTop: '1px solid #f0f0f0', margin: '4px 0' }} />
+              <div className="border-t border-slate-700 my-1" />
               <button
-                style={{ display: 'block', width: '100%', textAlign: 'left', background: 'none', border: 'none', padding: '10px 14px', fontSize: 14, color: '#dd0000', cursor: 'pointer' }}
-                onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = '#fff5f5')}
-                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'none')}
+                className="block w-full text-left bg-transparent border-none px-3.5 py-2.5 text-sm text-red-400 cursor-pointer hover:bg-slate-700 transition-colors"
                 onClick={() => { setMenuOpen(false); onDelete(project) }}
               >
                 Delete Project
@@ -151,11 +94,11 @@ function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
       </div>
 
       {/* Metadata row: cameras + zones */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 13, color: '#666666' }}>
+      <div className="flex items-center gap-3 text-[13px] text-slate-400">
         <span title={`${project.camera_count} camera${project.camera_count !== 1 ? 's' : ''}`}>
           📷 {project.camera_count} camera{project.camera_count !== 1 ? 's' : ''}
         </span>
-        <span style={{ color: '#d0d0d0' }}>|</span>
+        <span className="text-slate-700">|</span>
         <span title={`${project.zone_count} zone${project.zone_count !== 1 ? 's' : ''}`}>
           📝 {project.zone_count} zone{project.zone_count !== 1 ? 's' : ''}
         </span>
@@ -163,97 +106,43 @@ function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
 
       {/* Location row */}
       {hasLocation && (
-        <div style={{ fontSize: 13, color: '#666666' }}>
+        <div className="text-[13px] text-slate-400">
           📍 {formatCoord(project.center_lat!, 'lat')}, {formatCoord(project.center_lng!, 'lng')}
         </div>
       )}
 
       {/* Description */}
       {project.description ? (
-        <p
-          style={{
-            fontSize: 14,
-            color: '#666666',
-            margin: 0,
-            lineHeight: 1.6,
-            display: '-webkit-box',
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden',
-            flexGrow: 1,
-          }}
-        >
+        <p className="text-sm text-slate-400 m-0 leading-relaxed line-clamp-2 grow">
           {project.description}
         </p>
       ) : (
-        <p style={{ fontSize: 14, color: '#999999', margin: 0, fontStyle: 'italic', flexGrow: 1 }}>
-          No description
-        </p>
+        <p className="text-sm text-slate-600 m-0 italic grow">No description</p>
       )}
 
       {/* Timestamps */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <span style={{ fontSize: 12, color: '#777777' }}>
-          Created: {formatRelativeTime(project.created_at)}
-        </span>
-        <span style={{ fontSize: 12, color: '#777777' }}>
-          Modified: {formatRelativeTime(project.updated_at)}
-        </span>
+      <div className="flex flex-col gap-0.5">
+        <span className="text-xs text-slate-500">Created: {formatRelativeTime(project.created_at)}</span>
+        <span className="text-xs text-slate-500">Modified: {formatRelativeTime(project.updated_at)}</span>
       </div>
 
       {/* Action buttons */}
-      <div style={{ display: 'flex', gap: 8, paddingTop: 4 }}>
+      <div className="flex gap-2 pt-1">
         <button
           onClick={() => navigate(`/projects/${project.id}`)}
-          style={{
-            flex: 1,
-            height: 34,
-            background: '#0066cc',
-            color: '#ffffff',
-            border: 'none',
-            borderRadius: 6,
-            fontSize: 14,
-            fontWeight: 600,
-            cursor: 'pointer',
-          }}
-          onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = '#0052a3')}
-          onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = '#0066cc')}
+          className="flex-1 h-[34px] bg-blue-600 hover:bg-blue-700 text-white border-none rounded-md text-sm font-semibold cursor-pointer transition-colors"
         >
           Open
         </button>
         <button
           onClick={() => onEdit(project)}
-          style={{
-            flex: 1,
-            height: 34,
-            background: '#ffffff',
-            color: '#1a1a1a',
-            border: '1px solid #d0d0d0',
-            borderRadius: 6,
-            fontSize: 14,
-            fontWeight: 600,
-            cursor: 'pointer',
-          }}
-          onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = '#f5f5f5')}
-          onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = '#ffffff')}
+          className="flex-1 h-[34px] bg-slate-700 hover:bg-slate-600 text-slate-200 border border-slate-600 rounded-md text-sm font-semibold cursor-pointer transition-colors"
         >
           Edit
         </button>
         <button
           onClick={() => onDelete(project)}
-          style={{
-            flex: 1,
-            height: 34,
-            background: '#ffffff',
-            color: '#dd0000',
-            border: '1px solid #dd0000',
-            borderRadius: 6,
-            fontSize: 14,
-            fontWeight: 600,
-            cursor: 'pointer',
-          }}
-          onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = '#fff0f0')}
-          onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = '#ffffff')}
+          className="flex-1 h-[34px] bg-transparent hover:bg-red-500/10 text-red-400 border border-red-500/50 rounded-md text-sm font-semibold cursor-pointer transition-colors"
         >
           Delete
         </button>

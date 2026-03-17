@@ -21,14 +21,17 @@ export interface AdminProject {
 }
 
 export interface InviteResponse {
+  id: string
   invite_url: string
-  token: string
   expires_at: string
 }
 
-export interface InviteRecord extends InviteResponse {
+export interface AdminInvite {
+  id: string
   email: string
+  invited_by_email: string
   created_at: string
+  expires_at: string
 }
 
 // ── Query keys ─────────────────────────────────────────────────────────────────
@@ -45,8 +48,8 @@ export function useAdminUsers() {
   return useQuery({
     queryKey: adminKeys.users,
     queryFn: async (): Promise<AdminUser[]> => {
-      const res = await client.get<{ users: AdminUser[] }>('/admin/users')
-      return res.data.users
+      const res = await client.get<AdminUser[]>('/admin/users')
+      return res.data
     },
     staleTime: 2 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
@@ -58,12 +61,25 @@ export function useAdminProjects() {
   return useQuery({
     queryKey: adminKeys.projects,
     queryFn: async (): Promise<AdminProject[]> => {
-      const res = await client.get<{ projects: AdminProject[] }>('/projects')
-      return res.data.projects
+      const res = await client.get<AdminProject[]>('/projects')
+      return res.data
     },
     staleTime: 2 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
     retry: 2,
+  })
+}
+
+export function useAdminInvites() {
+  return useQuery({
+    queryKey: adminKeys.invites,
+    queryFn: async (): Promise<AdminInvite[]> => {
+      const res = await client.get<AdminInvite[]>('/admin/invites')
+      return res.data
+    },
+    staleTime: 1 * 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+    retry: 1,
   })
 }
 
@@ -128,6 +144,32 @@ export function useDeleteProject() {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: adminKeys.projects })
+    },
+    retry: 0,
+  })
+}
+
+export function useRevokeInvite() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (inviteId: string): Promise<void> => {
+      await client.delete(`/admin/invites/${inviteId}`)
+    },
+    onMutate: async (inviteId) => {
+      await queryClient.cancelQueries({ queryKey: adminKeys.invites })
+      const snapshot = queryClient.getQueryData<AdminInvite[]>(adminKeys.invites)
+      queryClient.setQueryData<AdminInvite[]>(adminKeys.invites, (prev) =>
+        prev ? prev.filter((i) => i.id !== inviteId) : [],
+      )
+      return { snapshot }
+    },
+    onError: (_err, _inviteId, context) => {
+      if (context?.snapshot) {
+        queryClient.setQueryData(adminKeys.invites, context.snapshot)
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: adminKeys.invites })
     },
     retry: 0,
   })
