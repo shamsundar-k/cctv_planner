@@ -28,9 +28,13 @@ export default function Navbar() {
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [searchFocused, setSearchQuery])
 
-  const initials = user?.fullName
-    ? user.fullName.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
-    : '??'
+  //get initial from full name. If full name not present use the first letter of email address
+  let initials = "??"
+  if (user?.fullName) {
+    initials = user.fullName.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
+  } else if (user?.email) {
+    initials = user.email.split('@')[0].split(' ').map((n) => n[0]).join('').slice(0, 1).toUpperCase()
+  }
 
   return (
     <header className="sticky top-0 z-[100] h-16 bg-slate-800 border-b border-slate-700 shadow-md flex items-center px-10 gap-6">
@@ -63,9 +67,8 @@ export default function Navbar() {
           onChange={(e) => setSearchQuery(e.target.value)}
           onFocus={() => setSearchFocused(true)}
           onBlur={() => setSearchFocused(false)}
-          className={`w-full h-9 px-3 text-sm rounded-md outline-none bg-slate-700 text-slate-100 placeholder-slate-400 transition-colors border ${
-            searchFocused ? 'border-blue-500' : 'border-slate-600'
-          }`}
+          className={`w-full h-9 px-3 text-sm rounded-md outline-none bg-slate-700 text-slate-100 placeholder-slate-400 transition-colors border ${searchFocused ? 'border-blue-500' : 'border-slate-600'
+            }`}
         />
       </div>
 

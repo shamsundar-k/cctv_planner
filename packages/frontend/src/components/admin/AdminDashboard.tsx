@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { Link } from 'react-router'
+import { useAdminCameras } from '../../api/cameras'
 import {
   useSearchUsers,
   useSearchProjects,
@@ -40,6 +42,7 @@ export default function AdminDashboard() {
   const { data: filteredProjects = [], isLoading: projectsLoading } = useSearchProjects(projectSearch)
   const { data: allProjects = [] } = useAdminProjects()
   const { data: adminInvites = [], isLoading: invitesLoading } = useAdminInvites()
+  const { data: cameraModels = [] } = useAdminCameras()
 
   const generateInvite = useGenerateInvite()
   const deleteUser = useDeleteUser()
@@ -91,6 +94,15 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-slate-900 px-10 py-8 font-sans">
       {/* Header */}
       <div className="mb-8">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-200 transition-colors mb-3 no-underline"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M15 19l-7-7 7-7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          Back to Dashboard
+        </Link>
         <h1 className="text-[28px] font-bold text-slate-100 m-0">Admin Dashboard</h1>
         <p className="text-sm text-slate-500 mt-1.5 mb-0">
           Manage users, projects, and invitations
@@ -106,8 +118,14 @@ export default function AdminDashboard() {
           icon="👥"
         />
         <StatCard label="Total Projects" value={allProjects.length} color="#06b6d4" icon="📁" />
-        <StatCard label="Total Cameras" value={totalCameras} color="#a855f7" icon="📷" />
+        <StatCard label="Cameras Placed" value={totalCameras} color="#a855f7" icon="📷" />
         <StatCard label="Active Invites" value={invitesLoading ? '—' : adminInvites.length} color="#10b981" icon="✉️" />
+        <Link
+          to="/admin/manage/cameras"
+          className="no-underline"
+        >
+          <StatCard label="Camera Models" value={cameraModels.length} color="#f59e0b" icon="🎥" />
+        </Link>
       </div>
 
       {/* Tab nav */}

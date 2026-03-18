@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useToast } from '../ui/Toast'
 import Spinner from './Spinner'
-import { formatDate } from './utils'
 
 interface LatestInvite {
   id: string

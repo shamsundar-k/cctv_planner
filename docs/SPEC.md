@@ -24,7 +24,6 @@ Users place cameras on a map, configure field-of-view (FOV) parameters, draw cov
 |---|---|
 | Visual FOV planning | User can place a camera and see its FOV trapezoid render on the map within 500ms of stopping an edit |
 | DORI zone visualisation | Four colour-coded DORI zone arcs (Detection / Observation / Recognition / Identification) render inside each FOV polygon immediately, computed client-side with no additional API call |
-| Multi-user collaboration | Two editors in the same project see each other's changes within 2 seconds via WebSocket |
 | Coverage analysis | "Recalculate Coverage" returns total covered area (m²), overlap zones, and uncovered sub-regions as map overlays |
 | Report generation | PDF report generated and downloaded within 10 seconds, containing map screenshot, camera table, DORI summary per camera, and coverage summary |
 | KML export | KML file exports correctly and opens in Google Earth with camera placemarks, FOV trapezoids, and DORI zone polygons |
@@ -48,11 +47,9 @@ Users place cameras on a map, configure field-of-view (FOV) parameters, draw cov
 - On-demand coverage analysis (union of FOVs, gap detection, overlap highlighting) — server-side using Shapely
 - Zone/perimeter drawing tools (polygon and polyline)
 - Auto-save and manual save
-- Real-time multi-user collaboration via WebSocket
 - Role-based access control (Owner / Editor / Viewer)
 - PDF report generation (server-side, client-supplied map image + DORI stats per camera)
 - KML export (including DORI zone polygons as separate styled features)
-- Docker Compose deployment (provider-agnostic)
 
 ### Out of Scope
 
@@ -64,99 +61,24 @@ Users place cameras on a map, configure field-of-view (FOV) parameters, draw cov
 - Offline / PWA mode
 - Undo/redo history
 - Shared global camera model library
-- SMTP email delivery (invite links are copy-paste, no email sending required)
 
 ---
 
 ## 4. Architecture
 
-### 4.1 Architecture Diagram
+### 4.1 Component Descriptions
 
-```mermaid
-flowchart TB
-    subgraph Client ["Browser (React SPA)"]
-        UI[Map Canvas · Leaflet.js]
-        FOV_CALC[fov.ts · Stage 1 + Stage 2\nAll trig runs here]
-        ZS[Zustand Store]
-        RQ[React Query]
-        WS_C[WebSocket Client]
-    end
+- **React Frontend**
 
-    subgraph Nginx ["Nginx (port 80/443)"]
-        Static[Serve /dist static build]
-        ProxyAPI[Proxy /api/* → backend:8000]
-        ProxyWS[Upgrade /ws/* → backend:8000]
-    end
-
-    subgraph Backend ["FastAPI (Python 3.12)"]
-        AuthR[Auth + Invite Router]
-        AdminR[Admin Router]
-        ProjectR[Projects Router]
-        CameraR[Cameras Router\n— stores client-supplied fov_geojson]
-        ZoneR[Zones Router]
-        ExportR[Export Router\nPDF + KML]
-        CoverageR[Coverage Router]
-        GIS[GIS Service\nShapely + pyproj\n— coverage union only]
-        WSMgr[WebSocket Manager]
-        ReportSvc[Report Service\nWeasyPrint + Jinja2]
-        KMLSvc[KML Service · simplekml]
-    end
-
-    subgraph Data ["Data Layer"]
-        Mongo[(MongoDB\nBeanie ODM)]
-        Redis[(Redis\nRefresh Tokens + WS Presence)]
-    end
-
-    FOV_CALC -->|computed GeoJSON| UI
-    UI --> Nginx
-    WS_C --> Nginx
-    Nginx --> Static
-    Nginx --> ProxyAPI
-    Nginx --> ProxyWS
-
-    ProxyAPI --> AuthR
-    ProxyAPI --> AdminR
-    ProxyAPI --> ProjectR
-    ProxyAPI --> CameraR
-    ProxyAPI --> ZoneR
-    ProxyAPI --> ExportR
-    ProxyAPI --> CoverageR
-    ProxyWS --> WSMgr
-
-    CoverageR -->|on demand| GIS
-    GIS --> Mongo
-    CameraR --> Mongo
-    ProjectR --> Mongo
-    ZoneR --> Mongo
-    AuthR --> Mongo
-    AuthR --> Redis
-    AdminR --> Mongo
-    WSMgr --> Redis
-    ReportSvc --> Mongo
-    KMLSvc --> Mongo
-```
-
-### 4.2 Component Descriptions
-
----
-
-**Nginx**
-- **Responsibility:** Reverse proxy and static asset server. Terminates HTTP, serves the compiled React build from `/dist`, proxies `/api/*` to FastAPI, and upgrades `/ws/*` connections to WebSocket.
-- **Technology:** Nginx (Alpine Docker image)
-- **Interfaces:** Ingress on port 80 (443 if TLS terminated here). Upstream: `backend:8000`.
-
----
-
-**React Frontend**
 - **Responsibility:** Single-page application. Renders the map canvas, toolbar, left panel, and camera/zone editing UI. Manages all client-side state. **Owns all Stage 1 and Stage 2 FOV + DORI calculations.**
 - **Technology:** React 18 + Vite, Leaflet.js, Leaflet.draw, Zustand, React Query, Axios, Tailwind CSS
 - **Interfaces:**
   - REST calls to `/api/v1/*` via Axios + React Query
-  - WebSocket connection to `/ws/projects/{id}`
   - Emits map canvas as base64 PNG for report generation
   - Emits `fov_geojson` and `ir_fov_geojson` (both FeatureCollections) to backend on camera save
 
 **Zustand store slices:**
+
 - `authSlice` — current user, JWT access token
 - `projectSlice` — active project metadata, collaborators
 - `cameraSlice` — camera instances array, selected camera ID
@@ -167,6 +89,7 @@ flowchart TB
 ---
 
 **`src/utils/fov.ts` — Client-Side FOV & DORI Engine**
+
 - **Responsibility:** All Stage 1 geometric and Stage 2 DORI calculations. Computes both `fov_geojson` (full daytime geometry) and `ir_fov_geojson` (IR-truncated geometry) in a single call. Both are stored on the camera instance. The IR mode toggle only switches which stored result is rendered — it never triggers recalculation.
 - **Technology:** Pure TypeScript; no external dependencies beyond standard `Math.*`
 - **Key exported functions:**
@@ -207,6 +130,7 @@ computeFOVFeatureCollection(
 ---
 
 **FastAPI Backend**
+
 - **Responsibility:** Stateless REST API and WebSocket server. Handles auth, all CRUD operations, stores client-supplied FOV GeoJSON, runs server-side coverage union analysis, generates PDF/KML.
 - **Technology:** Python 3.12, FastAPI, Uvicorn, Beanie (ODM), python-jose (JWT), passlib (bcrypt)
 - **Interfaces:** HTTP/1.1 REST on port 8000; WebSocket on same port at `/ws/*`
@@ -215,6 +139,7 @@ computeFOVFeatureCollection(
 ---
 
 **GIS Service** *(internal Python module, no HTTP boundary)*
+
 - **Responsibility:** Coverage union and intersection analysis using Shapely. Consumes the persisted `fov_geojson` polygons; does **not** recompute them.
 - **Technology:** Shapely 2.x, pyproj
 - **Interfaces:**
@@ -223,6 +148,7 @@ computeFOVFeatureCollection(
 ---
 
 **WebSocket Manager** *(in-process, FastAPI)*
+
 - **Responsibility:** Maintains a registry of active WebSocket connections keyed by `project_id`. Broadcasts mutation events to all connected clients in a project room except the originating connection.
 - **Technology:** FastAPI WebSocket, Redis (for presence tracking only in V1)
 - **Interfaces:**
@@ -232,6 +158,7 @@ computeFOVFeatureCollection(
 ---
 
 **Report Service**
+
 - **Responsibility:** Accepts a base64 map image from the client, fetches project data from MongoDB, renders a Jinja2 HTML template (including per-camera DORI table), and converts to PDF via WeasyPrint.
 - **Technology:** WeasyPrint, Jinja2
 - **Interfaces:** Called by `POST /api/v1/projects/{id}/report`. Streams PDF bytes back as `application/pdf`.
@@ -239,6 +166,7 @@ computeFOVFeatureCollection(
 ---
 
 **KML Service**
+
 - **Responsibility:** Fetches all cameras and zones for a project and generates a `.kml` file. Exports the full `fov_geojson` FeatureCollection per camera — each DORI sub-zone as a separately styled KML Polygon feature.
 - **Technology:** simplekml
 - **Interfaces:** Called by `GET /api/v1/projects/{id}/export/kml`. Returns `application/vnd.google-earth.kml+xml`.
@@ -246,6 +174,7 @@ computeFOVFeatureCollection(
 ---
 
 **MongoDB**
+
 - **Responsibility:** Primary persistent store for all application data.
 - **Technology:** MongoDB 7.x, Beanie async ODM
 - **Collections:** `users`, `invite_tokens`, `camera_models`, `projects`, `camera_instances`, `zones`
@@ -253,6 +182,7 @@ computeFOVFeatureCollection(
 ---
 
 **Redis**
+
 - **Responsibility:** JWT refresh token store (with TTL) and WebSocket presence set (user IDs per project room).
 - **Technology:** Redis 7.x
 - **Key patterns:**
@@ -268,6 +198,7 @@ computeFOVFeatureCollection(
 ---
 
 **User**
+
 ```
 _id:            ObjectId        PK
 email:          string          unique, indexed
@@ -280,6 +211,7 @@ created_at:     datetime
 ---
 
 **InviteToken**
+
 ```
 _id:            ObjectId        PK
 token_hash:     string          SHA-256 hash; indexed unique
@@ -293,6 +225,7 @@ created_at:     datetime
 ---
 
 **CameraModel** *(per-user template library — extended for Stage 1 + Stage 2)*
+
 ```
 _id:              ObjectId      PK
 owner_id:         ObjectId      → User; indexed
@@ -334,6 +267,7 @@ created_at:       datetime
 ---
 
 **Project**
+
 ```
 _id:            ObjectId        PK
 name:           string
@@ -360,6 +294,7 @@ updated_at:     datetime
 ---
 
 **CameraInstance** *(placed camera on map — extended for Stage 1 + Stage 2)*
+
 ```
 _id:                  ObjectId  PK
 project_id:           ObjectId  → Project; indexed
@@ -436,6 +371,7 @@ The following do **not** trigger recomputation:
 ---
 
 **Zone**
+
 ```
 _id:          ObjectId          PK
 project_id:   ObjectId          → Project; indexed
@@ -610,6 +546,7 @@ Corner FR (far-right):  project (lat, lng) at bearing (bearing + H_angle/2), dis
 GeoJSON Polygon vertex order: `[NL, NR, FR, FL, NL]` (closed ring).
 
 Geodesic projection formula (WGS84 approximation, adequate for <500m):
+
 ```typescript
 const R = 6378137; // Earth radius in metres
 const δ = distance / R;
@@ -723,6 +660,7 @@ All REST endpoints prefixed `/api/v1`. All requests/responses in JSON unless not
 | POST | `/auth/accept-invite` | None | Complete registration |
 
 **POST `/auth/login`**
+
 ```json
 Request:  { "email": "string", "password": "string" }
 Response: { "access_token": "string", "refresh_token": "string", "token_type": "bearer" }
@@ -748,6 +686,7 @@ Errors:   401 invalid credentials
 | DELETE | `/camera-models/{id}` | Required | Delete model |
 
 **POST/PUT `/camera-models` request:**
+
 ```json
 {
   "name": "string",
@@ -781,6 +720,7 @@ Errors:   401 invalid credentials
 | DELETE | `/projects/{id}/cameras/{cam_id}` | Owner/Editor | Remove camera |
 
 **POST/PUT camera request:**
+
 ```json
 {
   "model_id": "ObjectId string",
@@ -819,6 +759,7 @@ Errors:   401 invalid credentials
 The backend extracts `feature[0]` (the outer FOV trapezoid) from each camera's `fov_geojson` FeatureCollection and passes these to `compute_coverage_stats()` in the GIS Service. DORI sub-zone features are not used in coverage union analysis.
 
 **Response:**
+
 ```json
 {
   "total_covered_m2": "float",
@@ -836,6 +777,7 @@ The backend extracts `feature[0]` (the outer FOV trapezoid) from each camera's `
 | GET | `/projects/{id}/export/kml` | Any role | Download KML (includes DORI sub-zones as styled features) |
 
 **POST `/projects/{id}/report` request:**
+
 ```json
 {
   "map_image_base64": "string (PNG, base64-encoded)",
@@ -845,10 +787,12 @@ The backend extracts `feature[0]` (the outer FOV trapezoid) from each camera's `
 ```
 
 **PDF report content additions (v1.1):**
+
 - Per-camera DORI summary table: Identification distance (m), Recognition distance (m), Observation distance (m), Detection distance (m), Identification zone area (m²), total FOV area (m²)
 - Footer note: *"DORI distances computed per IEC EN 62676-4:2015 using slant-distance PPM formula. Results are design-guide estimates; actual performance may vary with lighting, compression, and lens quality."*
 
 **KML export additions (v1.1):**
+
 - Each DORI sub-zone (Identification, Recognition, Observation, Detection) exported as a separate styled KML Polygon placemark, colour-coded per the DORI palette, grouped under a `<Folder>` named after the camera label.
 
 ### 7.9 WebSocket
@@ -885,6 +829,7 @@ The backend extracts `feature[0]` (the outer FOV trapezoid) from each camera's `
 *(Unchanged from v1.0 — Docker Compose, env vars, monorepo structure, CI/CD)*
 
 **Monorepo structure addition:**
+
 ```
 packages/frontend/src/
   utils/

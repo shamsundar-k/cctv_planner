@@ -6,7 +6,7 @@ from beanie import PydanticObjectId
 from fastapi import APIRouter, Depends, HTTPException, status
 from pymongo.errors import DuplicateKeyError
 
-from app.core.deps import get_current_user
+from app.core.deps import get_current_user, require_admin
 from app.models.camera_model import CameraModel
 from app.models.user import User
 from app.schemas.camera_model import CameraModelCreate, CameraModelResponse, CameraModelUpdate
@@ -61,16 +61,15 @@ def _to_response(m: CameraModel) -> CameraModelResponse:
 async def list_camera_models(
     current_user: User = Depends(get_current_user),
 ) -> list[CameraModelResponse]:
-    models = await CameraModel.find(
-        CameraModel.created_by.id == current_user.id  # type: ignore[union-attr]
-    ).to_list()
+    """List all camera models. All authenticated users can read; write operations require admin."""
+    models = await CameraModel.find_all().to_list()
     return [_to_response(m) for m in models]
 
 
 @router.post("", response_model=CameraModelResponse, status_code=status.HTTP_201_CREATED)
 async def create_camera_model(
     body: CameraModelCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_admin),
 ) -> CameraModelResponse:
     model = CameraModel(
         name=body.name,
@@ -119,8 +118,6 @@ async def get_camera_model(
     model = await CameraModel.get(model_id)
     if model is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Camera model not found")
-    if _created_by_id(model.created_by) != str(current_user.id):
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
     return _to_response(model)
 
 
@@ -128,13 +125,11 @@ async def get_camera_model(
 async def update_camera_model(
     model_id: PydanticObjectId,
     body: CameraModelUpdate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_admin),
 ) -> CameraModelResponse:
     model = await CameraModel.get(model_id)
     if model is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Camera model not found")
-    if _created_by_id(model.created_by) != str(current_user.id):
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
 
     updates = body.model_dump(exclude_none=True)
     if updates:
@@ -153,12 +148,9 @@ async def update_camera_model(
 @router.delete("/{model_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_camera_model(
     model_id: PydanticObjectId,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_admin),
 ) -> None:
     model = await CameraModel.get(model_id)
     if model is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Camera model not found")
-    if _created_by_id(model.created_by) != str(current_user.id):
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
-
     await model.delete()
