@@ -11,7 +11,7 @@ function CameraTypeLabel({ type }: { type: CameraModel['camera_type'] }) {
 }
 
 function LensTypeBadge({ type }: { type: CameraModel['lens_type'] }) {
-  const map = { fixed: 'Fixed', varifocal: 'Varifocal', optical_zoom: 'Optical Zoom' }
+  const map = { fixed: 'Fixed', varifocal: 'Varifocal', }
   return (
     <span className="px-2 py-0.5 text-[11px] font-semibold rounded-full bg-slate-700 text-slate-300">
       {map[type] ?? type}

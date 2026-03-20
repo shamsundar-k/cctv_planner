@@ -4,7 +4,7 @@ import client from './client'
 // ── Types ──────────────────────────────────────────────────────────────────────
 
 export type CameraType = 'fixed_dome' | 'ptz' | 'bullet'
-export type LensType = 'fixed' | 'varifocal' | 'optical_zoom'
+export type LensType = 'fixed' | 'varifocal'
 export type SensorType = 'cmos'
 
 export interface CameraModel {
