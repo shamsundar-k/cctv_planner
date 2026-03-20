@@ -2,7 +2,7 @@
 
 from datetime import datetime, timezone
 
-from beanie import Document, Link
+from beanie import Document, Link, PydanticObjectId
 from pydantic import Field
 from pymongo import ASCENDING, IndexModel
 
@@ -17,6 +17,7 @@ class Project(Document):
     center_lat: float | None = None
     center_lng: float | None = None
     default_zoom: int | None = None
+    imported_camera_model_ids: list[PydanticObjectId] = Field(default_factory=list)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 

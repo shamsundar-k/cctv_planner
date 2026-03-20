@@ -7,6 +7,7 @@ import DashboardPage from './pages/DashboardPage'
 import AdminPage from './pages/AdminPage'
 import AdminCamerasPage from './pages/AdminCamerasPage'
 import AdminCameraEditPage from './pages/AdminCameraEditPage'
+import ProjectManagePage from './pages/ProjectManagePage'
 import { ToastProvider } from './components/ui/Toast'
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
           <Route path="/admin/manage" element={<AdminPage />} />
           <Route path="/admin/manage/cameras" element={<AdminCamerasPage />} />
           <Route path="/admin/manage/cameras/:id" element={<AdminCameraEditPage />} />
+          <Route path="/project/manage/:id" element={<ProjectManagePage />} />
         </Route>
 
         {/* Fallback */}

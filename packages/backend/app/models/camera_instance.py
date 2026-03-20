@@ -28,6 +28,10 @@ class CameraInstance(Document):
     tilt_angle: float = 30.0                    # ° — downward tilt from horizontal
     focal_length_chosen: float | None = None    # mm — selected zoom; None = focal_length_min
 
+    # ── DORI parameters ───────────────────────────────────────────────────────
+    target_distance: float | None = None        # m — distance to surveillance target; None = unset
+    target_height: float = Field(default=1.5, gt=0)  # m — height of target subject (IEC EN 62676-4)
+
     colour: str = "#3B82F6"                     # hex colour for FOV rendering
     visible: bool = True
     fov_visible_geojson: dict | None = None             # computed GeoJSON Polygon (frontend)

@@ -135,6 +135,12 @@ function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
           Open
         </button>
         <button
+          onClick={() => navigate(`/project/manage/${project.id}`)}
+          className="flex-1 h-[34px] bg-slate-700 hover:bg-slate-600 text-slate-200 border border-slate-600 rounded-md text-sm font-semibold cursor-pointer transition-colors"
+        >
+          Manage
+        </button>
+        <button
           onClick={() => onEdit(project)}
           className="flex-1 h-[34px] bg-slate-700 hover:bg-slate-600 text-slate-200 border border-slate-600 rounded-md text-sm font-semibold cursor-pointer transition-colors"
         >

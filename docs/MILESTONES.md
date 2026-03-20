@@ -64,8 +64,8 @@
 - [x] Create `app/models/camera_instance.py` — `CameraInstance` document (Stage 1 + Stage 2 override fields + `fov_geojson` FeatureCollection + `ir_fov_geojson` FeatureCollection or null + `dori_zones_visible`)
 - [x] Create `app/models/zone.py` — `Zone` document
 - [x] Register all models in Beanie initialisation
-- [ ] Write and run a seed script to insert one test document of each type
-- [ ] Verify all documents appear in MongoDB Atlas dashboard
+- [x] Write and run a seed script to insert one test document of each type
+- [x] Verify all documents appear in MongoDB Atlas dashboard
 
 ### M1.6 — Security Utilities
 
@@ -157,7 +157,7 @@
 - [x] Implement `POST /api/v1/projects/{id}/collaborators`
 - [x] Implement `DELETE /api/v1/projects/{id}/collaborators/{user_id}`
 - [x] Register router in `app/main.py`
-- [ ] Test the project CRUD
+- [x] Test the project CRUD
 
 ### M2.3 — Camera Instance Routes (Backend)
 >
@@ -209,9 +209,9 @@
 
 ### M2.8 — Project Dashboard (Frontend)
 
-- [ ] Create `src/api/projects.ts` — React Query hooks (`useProjects`, `useProject`, `useCreateProject`)
-- [ ] Create `src/pages/DashboardPage.tsx` — project list, create button
-- [ ] Create `src/components/CreateProjectModal.tsx`
+- [x] Create `src/api/projects.ts` — React Query hooks (`useProjects`, `useProject`, `useCreateProject`)
+- [x] Create `src/pages/DashboardPage.tsx` — project list, create button
+- [x] Create `src/components/CreateProjectModal.tsx`
 - [ ] Route `/projects/:id` → `ProjectPage` (scaffold)
 
 ### M2.9 — Map Canvas (Frontend)
@@ -220,7 +220,6 @@
 - [ ] Render Stadia Maps tile layer using `VITE_STADIA_MAPS_API_KEY`
 - [ ] Create `src/store/mapSlice.ts` — active tool, layer visibility toggles including `showDORIZones: boolean`, `irMode: boolean` (global IR mode — switches all cameras between `fov_geojson` and `ir_fov_geojson`)
 - [ ] Create `src/components/map/MapCanvas.tsx`
-- [ ] Create `src/components/layout/Navbar.tsx`
 - [ ] Create `src/components/layout/LeftPanel.tsx` — tabbed panel scaffold
 - [ ] Create `src/components/layout/BottomToolbar.tsx`
 

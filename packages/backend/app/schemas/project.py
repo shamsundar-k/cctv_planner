@@ -4,6 +4,8 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
+from app.schemas.camera_model import CameraModelResponse
+
 
 
 class ProjectCreate(BaseModel):
@@ -37,6 +39,8 @@ class CameraInstanceSummary(BaseModel):
     visible: bool
     fov_visible_geojson: dict | None
     fov_ir_geojson: dict | None
+    target_distance: float | None
+    target_height: float
     camera_model_id: str
     created_at: datetime
     updated_at: datetime
@@ -53,6 +57,11 @@ class ZoneSummary(BaseModel):
     updated_at: datetime
 
 
+class ImportedCameraItem(BaseModel):
+    camera_model: CameraModelResponse
+    placed_count: int
+
+
 class ProjectResponse(BaseModel):
     id: str
     name: str
@@ -63,6 +72,7 @@ class ProjectResponse(BaseModel):
     default_zoom: int | None = None
     camera_count: int = 0
     zone_count: int = 0
+    imported_camera_model_count: int = 0
     created_at: datetime
     updated_at: datetime
 

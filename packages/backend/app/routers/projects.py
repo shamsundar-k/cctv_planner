@@ -10,8 +10,11 @@ from app.models.camera_instance import CameraInstance
 from app.models.project import Project
 from app.models.user import User
 from app.models.zone import Zone
+from app.models.camera_model import CameraModel
+from app.schemas.camera_model import CameraModelResponse
 from app.schemas.project import (
     CameraInstanceSummary,
+    ImportedCameraItem,
     ProjectCreate,
     ProjectDetailResponse,
     ProjectResponse,
@@ -65,13 +68,13 @@ def _to_project_response(p: Project, camera_count: int = 0, zone_count: int = 0)
         default_zoom=p.default_zoom,
         camera_count=camera_count,
         zone_count=zone_count,
+        imported_camera_model_count=len(p.imported_camera_model_ids),
         created_at=p.created_at,
         updated_at=p.updated_at,
     )
 
 
 def _camera_model_id(cam: CameraInstance) -> str:
-    from app.models.camera_model import CameraModel
     cm = cam.camera_model
     if isinstance(cm, CameraModel):
         return str(cm.id)
@@ -92,6 +95,8 @@ def _to_camera_summary(cam: CameraInstance) -> CameraInstanceSummary:
         visible=cam.visible,
         fov_visible_geojson=cam.fov_visible_geojson,
         fov_ir_geojson=cam.fov_ir_geojson,
+        target_distance=cam.target_distance,
+        target_height=cam.target_height,
         camera_model_id=_camera_model_id(cam),
         created_at=cam.created_at,
         updated_at=cam.updated_at,
@@ -240,3 +245,118 @@ async def delete_project(
         Zone.project.id == project.id  # type: ignore[union-attr]
     ).delete()
     await project.delete()
+
+
+# ── Camera-model import sub-resource ───────────────────────────────────────────
+
+def _to_camera_model_response(cm: CameraModel) -> CameraModelResponse:
+    return CameraModelResponse(
+        id=str(cm.id),
+        name=cm.name,
+        manufacturer=cm.manufacturer,
+        model_number=cm.model_number,
+        camera_type=cm.camera_type,
+        location=cm.location,
+        notes=cm.notes,
+        focal_length_min=cm.focal_length_min,
+        focal_length_max=cm.focal_length_max,
+        h_fov_min=cm.h_fov_min,
+        h_fov_max=cm.h_fov_max,
+        v_fov_min=cm.v_fov_min,
+        v_fov_max=cm.v_fov_max,
+        lens_type=cm.lens_type,
+        ir_cut_filter=cm.ir_cut_filter,
+        ir_range=cm.ir_range,
+        resolution_h=cm.resolution_h,
+        resolution_v=cm.resolution_v,
+        megapixels=cm.megapixels,
+        aspect_ratio=cm.aspect_ratio,
+        sensor_size=cm.sensor_size,
+        sensor_type=cm.sensor_type,
+        min_illumination=cm.min_illumination,
+        wdr=cm.wdr,
+        wdr_db=cm.wdr_db,
+        created_by=str(cm.created_by),
+        created_at=cm.created_at,
+        updated_at=cm.updated_at,
+    )
+
+
+@router.get("/{project_id}/camera-models", response_model=list[ImportedCameraItem])
+async def list_imported_cameras(
+    project_id: PydanticObjectId,
+    current_user: User = Depends(get_current_user),
+) -> list[ImportedCameraItem]:
+    project = await Project.get(project_id)
+    if project is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
+    _require_access(project, current_user)
+
+    result = []
+    for model_id in project.imported_camera_model_ids:
+        cm = await CameraModel.get(model_id)
+        if cm is None:
+            continue
+        placed_count = await CameraInstance.find(
+            CameraInstance.project.id == project.id,  # type: ignore[union-attr]
+            CameraInstance.camera_model.id == model_id,  # type: ignore[union-attr]
+        ).count()
+        result.append(ImportedCameraItem(
+            camera_model=_to_camera_model_response(cm),
+            placed_count=placed_count,
+        ))
+    return result
+
+
+@router.post("/{project_id}/camera-models/{model_id}", response_model=ImportedCameraItem, status_code=status.HTTP_201_CREATED)
+async def add_imported_camera(
+    project_id: PydanticObjectId,
+    model_id: PydanticObjectId,
+    current_user: User = Depends(get_current_user),
+) -> ImportedCameraItem:
+    project = await Project.get(project_id)
+    if project is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
+    _require_owner(project, current_user)
+
+    cm = await CameraModel.get(model_id)
+    if cm is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Camera model not found")
+
+    if model_id in project.imported_camera_model_ids:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Camera model already imported")
+
+    project.imported_camera_model_ids.append(model_id)
+    project.updated_at = datetime.now(timezone.utc)
+    await project.save()
+
+    return ImportedCameraItem(camera_model=_to_camera_model_response(cm), placed_count=0)
+
+
+@router.delete("/{project_id}/camera-models/{model_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def remove_imported_camera(
+    project_id: PydanticObjectId,
+    model_id: PydanticObjectId,
+    current_user: User = Depends(get_current_user),
+) -> None:
+    project = await Project.get(project_id)
+    if project is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
+    _require_owner(project, current_user)
+
+    if model_id not in project.imported_camera_model_ids:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Camera model not imported")
+
+    placed_count = await CameraInstance.find(
+        CameraInstance.project.id == project.id,  # type: ignore[union-attr]
+        CameraInstance.camera_model.id == model_id,  # type: ignore[union-attr]
+    ).count()
+    if placed_count > 0:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Cannot remove: {placed_count} camera instance(s) use this model in the project",
+        )
+
+    project.imported_camera_model_ids.remove(model_id)
+    project.updated_at = datetime.now(timezone.utc)
+    await project.save()
