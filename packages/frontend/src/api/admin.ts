@@ -44,7 +44,7 @@ export const adminKeys = {
 
 // ── Hooks ──────────────────────────────────────────────────────────────────────
 
-export function useAdminUsers() {
+export function useAllUsers() {
   return useQuery({
     queryKey: adminKeys.users,
     queryFn: async (): Promise<AdminUser[]> => {
@@ -57,7 +57,7 @@ export function useAdminUsers() {
   })
 }
 
-export function useAdminProjects() {
+export function useAllProjects() {
   return useQuery({
     queryKey: adminKeys.projects,
     queryFn: async (): Promise<AdminProject[]> => {
@@ -70,7 +70,7 @@ export function useAdminProjects() {
   })
 }
 
-export function useAdminInvites() {
+export function useAllInvites() {
   return useQuery({
     queryKey: adminKeys.invites,
     queryFn: async (): Promise<AdminInvite[]> => {
@@ -188,7 +188,7 @@ function useDebounce<T>(value: T, delay = 300): T {
 
 export function useSearchUsers(query: string) {
   const debouncedQuery = useDebounce(query)
-  const { data: users = [], ...rest } = useAdminUsers()
+  const { data: users = [], ...rest } = useAllUsers()
 
   const results = useMemo(() => {
     const q = debouncedQuery.trim().toLowerCase()
@@ -205,7 +205,7 @@ export function useSearchUsers(query: string) {
 
 export function useSearchProjects(query: string) {
   const debouncedQuery = useDebounce(query)
-  const { data: projects = [], ...rest } = useAdminProjects()
+  const { data: projects = [], ...rest } = useAllProjects()
 
   const results = useMemo(() => {
     const q = debouncedQuery.trim().toLowerCase()

@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
-import { useAdminCameras } from '../../api/cameras'
+import { useAllCameras } from '../../api/cameras'
 import {
   useSearchUsers,
   useSearchProjects,
-  useAdminProjects,
-  useAdminInvites,
+  useAllProjects,
+  useAllInvites,
   useGenerateInvite,
   useDeleteUser,
   useDeleteProject,
@@ -40,9 +40,9 @@ export default function AdminDashboard() {
 
   const { data: filteredUsers = [], isLoading: usersLoading } = useSearchUsers(userSearch)
   const { data: filteredProjects = [], isLoading: projectsLoading } = useSearchProjects(projectSearch)
-  const { data: allProjects = [] } = useAdminProjects()
-  const { data: adminInvites = [], isLoading: invitesLoading } = useAdminInvites()
-  const { data: cameraModels = [] } = useAdminCameras()
+  const { data: allProjects = [] } = useAllProjects()
+  const { data: adminInvites = [], isLoading: invitesLoading } = useAllInvites()
+  const { data: cameraModels = [] } = useAllCameras()
 
   const generateInvite = useGenerateInvite()
   const deleteUser = useDeleteUser()

@@ -5,7 +5,6 @@ import EmptyState from './EmptyState'
 interface ProjectListProps {
   projects: Project[]
   isLoading: boolean
-  onEdit: (project: Project) => void
   onDelete: (project: Project) => void
   onCreateClick: () => void
 }
@@ -19,7 +18,6 @@ function SkeletonCard() {
 export default function ProjectList({
   projects,
   isLoading,
-  onEdit,
   onDelete,
   onCreateClick,
 }: ProjectListProps) {
@@ -48,7 +46,6 @@ export default function ProjectList({
         <ProjectCard
           key={project.id}
           project={project}
-          onEdit={onEdit}
           onDelete={onDelete}
         />
       ))}

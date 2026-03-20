@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import Navbar from '../components/layout/Navbar'
 import { useAuthStore } from '../store/authSlice'
-import { useAdminCamera, useCreateCamera, useUpdateCamera, type CameraModelCreate } from '../api/cameras'
+import { useCamera, useCreateCamera, useUpdateCamera, type CameraModelCreate } from '../api/cameras'
 import { useToast } from '../components/ui/Toast'
 import { SENSOR_FORMATS, isStandardSensorFormat } from '../constants/sensorFormats'
 
@@ -184,7 +184,7 @@ export default function AdminCameraEditPage() {
   const navigate = useNavigate()
   const showToast = useToast()
 
-  const { data: existing, isLoading } = useAdminCamera(id ?? '')
+  const { data: existing, isLoading } = useCamera(id ?? '')
   const createCamera = useCreateCamera()
   const updateCamera = useUpdateCamera()
 

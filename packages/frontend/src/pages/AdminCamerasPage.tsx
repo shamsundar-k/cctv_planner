@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import Navbar from '../components/layout/Navbar'
 import { useAuthStore } from '../store/authSlice'
-import { useAdminCameras, useDeleteCamera, type CameraModel } from '../api/cameras'
+import { useAllCameras, useDeleteCamera, type CameraModel } from '../api/cameras'
 import { useToast } from '../components/ui/Toast'
 
 function CameraTypeLabel({ type }: { type: CameraModel['camera_type'] }) {
@@ -61,7 +61,7 @@ export default function AdminCamerasPage() {
   const navigate = useNavigate()
   const showToast = useToast()
 
-  const { data: cameras = [], isLoading } = useAdminCameras()
+  const { data: cameras = [], isLoading } = useAllCameras()
   const deleteCamera = useDeleteCamera()
 
   const [search, setSearch] = useState('')

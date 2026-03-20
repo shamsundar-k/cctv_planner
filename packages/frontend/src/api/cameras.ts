@@ -59,7 +59,7 @@ export const cameraKeys = {
 
 // ── Hooks ──────────────────────────────────────────────────────────────────────
 
-export function useAdminCameras() {
+export function useAllCameras() {
   return useQuery({
     queryKey: cameraKeys.all,
     queryFn: async (): Promise<CameraModel[]> => {
@@ -71,7 +71,7 @@ export function useAdminCameras() {
   })
 }
 
-export function useAdminCamera(id: string) {
+export function useCamera(id: string) {
   return useQuery({
     queryKey: cameraKeys.detail(id),
     queryFn: async (): Promise<CameraModel> => {

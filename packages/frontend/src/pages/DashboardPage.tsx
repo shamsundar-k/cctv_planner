@@ -6,7 +6,6 @@ import Navbar from '../components/layout/Navbar'
 import ProjectToolbar from '../components/project/ProjectToolbar'
 import ProjectList from '../components/project/ProjectList'
 import CreateProjectModal from '../components/project/CreateProjectModal'
-import EditProjectModal from '../components/project/EditProjectModal'
 import DeleteProjectModal from '../components/project/DeleteProjectModal'
 
 function applyFiltersAndSort(
@@ -62,7 +61,6 @@ function applyFiltersAndSort(
 type ModalState =
   | { type: 'none' }
   | { type: 'create' }
-  | { type: 'edit'; project: Project }
   | { type: 'delete'; project: Project }
 
 export default function DashboardPage() {
@@ -115,7 +113,6 @@ export default function DashboardPage() {
         <ProjectList
           projects={filtered}
           isLoading={isLoading}
-          onEdit={(project) => setModal({ type: 'edit', project })}
           onDelete={(project) => setModal({ type: 'delete', project })}
           onCreateClick={() => setModal({ type: 'create' })}
         />
@@ -123,9 +120,6 @@ export default function DashboardPage() {
 
       {modal.type === 'create' && (
         <CreateProjectModal onClose={() => setModal({ type: 'none' })} />
-      )}
-      {modal.type === 'edit' && (
-        <EditProjectModal project={modal.project} onClose={() => setModal({ type: 'none' })} />
       )}
       {modal.type === 'delete' && (
         <DeleteProjectModal project={modal.project} onClose={() => setModal({ type: 'none' })} />

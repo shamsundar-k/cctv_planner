@@ -1,3 +1,4 @@
+import 'leaflet/dist/leaflet.css'
 import { useState, useEffect, useRef } from 'react'
 import type { Map as LeafletMap, Marker as LeafletMarker } from 'leaflet'
 import type { Project, UpdateProjectDTO } from '../../../api/projects'
@@ -8,8 +9,8 @@ interface MapLocationTabProps {
   project: Project
 }
 
-const DEFAULT_LAT = 51.505
-const DEFAULT_LNG = -0.09
+const DEFAULT_LAT = 12.9716
+const DEFAULT_LNG = 77.5946
 const DEFAULT_ZOOM = 13
 
 export default function MapLocationTab({ project }: MapLocationTabProps) {
@@ -50,10 +51,15 @@ export default function MapLocationTab({ project }: MapLocationTabProps) {
       const map = L.map(containerRef.current!).setView([initLat, initLng], initZoom)
       mapRef.current = map
 
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
-        maxZoom: 19,
-      }).addTo(map)
+      const stadiaKey = import.meta.env.VITE_STADIA_MAPS_API_KEY
+      L.tileLayer(
+        `https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png${stadiaKey ? `?api_key=${stadiaKey}` : ''}`,
+        {
+          attribution:
+            '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+          maxZoom: 20,
+        },
+      ).addTo(map)
 
       const marker = L.marker([initLat, initLng], { draggable: true }).addTo(map)
       markerRef.current = marker

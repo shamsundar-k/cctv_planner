@@ -24,11 +24,10 @@ function formatCoord(val: number, type: 'lat' | 'lng'): string {
 
 interface ProjectCardProps {
   project: Project
-  onEdit: (project: Project) => void
   onDelete: (project: Project) => void
 }
 
-function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
+function ProjectCard({ project, onDelete }: ProjectCardProps) {
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
@@ -68,12 +67,6 @@ function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
           </button>
           {menuOpen && (
             <div className="absolute top-[calc(100%+4px)] right-0 bg-slate-800 border border-slate-700 rounded-lg shadow-2xl min-w-[160px] z-10 py-1">
-              <button
-                className="block w-full text-left bg-transparent border-none px-3.5 py-2.5 text-sm text-slate-300 cursor-pointer hover:bg-slate-700 hover:text-slate-100 transition-colors"
-                onClick={() => { setMenuOpen(false); onEdit(project) }}
-              >
-                Edit Project
-              </button>
               <button
                 className="block w-full text-left bg-transparent border-none px-3.5 py-2.5 text-sm text-slate-600 cursor-not-allowed opacity-60"
                 disabled
@@ -139,12 +132,6 @@ function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
           className="flex-1 h-[34px] bg-slate-700 hover:bg-slate-600 text-slate-200 border border-slate-600 rounded-md text-sm font-semibold cursor-pointer transition-colors"
         >
           Manage
-        </button>
-        <button
-          onClick={() => onEdit(project)}
-          className="flex-1 h-[34px] bg-slate-700 hover:bg-slate-600 text-slate-200 border border-slate-600 rounded-md text-sm font-semibold cursor-pointer transition-colors"
-        >
-          Edit
         </button>
         <button
           onClick={() => onDelete(project)}
