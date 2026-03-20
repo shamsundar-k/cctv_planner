@@ -14,11 +14,13 @@ TestCreateCameraModel stores the IDs of created models in class variables so
 later test classes (Get, Update, Delete) can reference them without
 re-creating.  Tests within each class are numbered where ordering matters.
 
-Ownership / authorisation rules under test
--------------------------------------------
-- Unauthenticated requests (no Authorization header) → 403  (HTTPBearer)
-- Requests with an invalid/expired JWT              → 401  (get_current_user)
-- Requests by a user who does not own the model     → 403  (router-level check)
+Authorisation rules under test
+--------------------------------
+- Any authenticated user can GET (list or single).
+- Only admins can POST, PUT, DELETE.
+- Unauthenticated requests (no Authorization header) → 401
+- Requests with an invalid/expired JWT              → 401
+- Requests by a regular (non-admin) user on write endpoints → 403
 """
 
 import pytest_asyncio
@@ -125,29 +127,19 @@ class TestListCameraModels:
         assert resp.status_code == 200
         assert isinstance(resp.json(), list)
 
-    async def test_list_scoped_to_current_user(
-        self, client: AsyncClient, admin_tokens: dict, regular_user_token: str
+    async def test_list_regular_user_success(
+        self, client: AsyncClient, regular_user_token: str
     ):
-        """Each user sees only their own models — no cross-user leakage."""
-        admin_resp = await client.get(
-            "/api/v1/camera-models",
-            headers={"Authorization": f"Bearer {admin_tokens['access_token']}"},
-        )
-        assert admin_resp.status_code == 200
-        admin_ids = {m["id"] for m in admin_resp.json()}
-
-        user_resp = await client.get(
+        """Regular (non-admin) users can list camera models."""
+        resp = await client.get(
             "/api/v1/camera-models",
             headers={"Authorization": f"Bearer {regular_user_token}"},
         )
-        assert user_resp.status_code == 200
-        user_ids = {m["id"] for m in user_resp.json()}
-
-        # The two sets must be completely disjoint.
-        assert admin_ids.isdisjoint(user_ids)
+        assert resp.status_code == 200
+        assert isinstance(resp.json(), list)
 
     async def test_list_no_auth(self, client: AsyncClient):
-        """Missing Authorization header → 403 (HTTPBearer rejects absent credentials)."""
+        """Missing Authorization header → 401."""
         resp = await client.get("/api/v1/camera-models")
         assert resp.status_code == 401
 
@@ -320,8 +312,19 @@ class TestCreateCameraModel:
         )
         assert resp.status_code == 422
 
+    async def test_create_regular_user_forbidden(
+        self, client: AsyncClient, regular_user_token: str
+    ):
+        """Non-admin users must not be able to create camera models → 403."""
+        resp = await client.post(
+            "/api/v1/camera-models",
+            json=_FIXED_PAYLOAD,
+            headers={"Authorization": f"Bearer {regular_user_token}"},
+        )
+        assert resp.status_code == 403
+
     async def test_create_no_auth(self, client: AsyncClient):
-        """Missing Authorization header → 403."""
+        """Missing Authorization header → 401."""
         resp = await client.post(
             "/api/v1/camera-models",
             json=_FIXED_PAYLOAD,
@@ -345,7 +348,7 @@ class TestCreateCameraModel:
 class TestGetCameraModel:
     """GET /api/v1/camera-models/{model_id}"""
 
-    async def test_get_own_model_success(
+    async def test_get_model_success(
         self, client: AsyncClient, admin_tokens: dict
     ):
         model_id = TestCreateCameraModel._fixed_model_id
@@ -360,6 +363,20 @@ class TestGetCameraModel:
         assert data["id"] == model_id
         assert data["name"] == _FIXED_PAYLOAD["name"]
 
+    async def test_get_regular_user_success(
+        self, client: AsyncClient, regular_user_token: str
+    ):
+        """Regular (non-admin) users can fetch a single camera model."""
+        model_id = TestCreateCameraModel._fixed_model_id
+        assert model_id, "TestCreateCameraModel tests must run first"
+
+        resp = await client.get(
+            f"/api/v1/camera-models/{model_id}",
+            headers={"Authorization": f"Bearer {regular_user_token}"},
+        )
+        assert resp.status_code == 200
+        assert resp.json()["id"] == model_id
+
     async def test_get_not_found(self, client: AsyncClient, admin_tokens: dict):
         """A valid-format but non-existent ObjectId must return 404."""
         fake_id = "000000000000000000000001"
@@ -369,20 +386,6 @@ class TestGetCameraModel:
         )
         assert resp.status_code == 404
         assert "not found" in resp.json()["detail"].lower()
-
-    async def test_get_another_users_model_forbidden(
-        self, client: AsyncClient, regular_user_token: str
-    ):
-        """A user who does not own the model must receive 403."""
-        model_id = TestCreateCameraModel._fixed_model_id
-        assert model_id, "TestCreateCameraModel tests must run first"
-
-        resp = await client.get(
-            f"/api/v1/camera-models/{model_id}",
-            headers={"Authorization": f"Bearer {regular_user_token}"},
-        )
-        assert resp.status_code == 403
-        assert "access denied" in resp.json()["detail"].lower()
 
     async def test_get_no_auth(self, client: AsyncClient):
         model_id = TestCreateCameraModel._fixed_model_id
@@ -486,20 +489,20 @@ class TestUpdateCameraModel:
         )
         assert resp.status_code == 404
 
-    async def test_update_another_users_model_forbidden(
+    
+    async def test_update_regular_user_forbidden(
         self, client: AsyncClient, regular_user_token: str
     ):
-        """A user who does not own the model must receive 403."""
+        """Non-admin users must not be able to update camera models → 403."""
         model_id = TestCreateCameraModel._fixed_model_id
         assert model_id, "TestCreateCameraModel tests must run first"
 
         resp = await client.put(
             f"/api/v1/camera-models/{model_id}",
-            json={"name": "Stolen Update"},
+            json={"name": "Regular User Update"},
             headers={"Authorization": f"Bearer {regular_user_token}"},
         )
         assert resp.status_code == 403
-        assert "access denied" in resp.json()["detail"].lower()
 
     async def test_update_no_auth(self, client: AsyncClient):
         model_id = TestCreateCameraModel._fixed_model_id
@@ -542,10 +545,12 @@ class TestDeleteCameraModel:
         )
         assert resp.status_code == 404
 
-    async def test_delete_another_users_model_forbidden(
+
+
+    async def test_delete_regular_user_forbidden(
         self, client: AsyncClient, regular_user_token: str
     ):
-        """Non-owner delete attempt must return 403 and leave the model intact."""
+        """Non-admin users must not be able to delete camera models → 403."""
         model_id = TestCreateCameraModel._fixed_model_id
         assert model_id, "TestCreateCameraModel tests must run first"
 
@@ -554,7 +559,6 @@ class TestDeleteCameraModel:
             headers={"Authorization": f"Bearer {regular_user_token}"},
         )
         assert resp.status_code == 403
-        assert "access denied" in resp.json()["detail"].lower()
 
     async def test_delete_no_auth(self, client: AsyncClient):
         model_id = TestCreateCameraModel._fixed_model_id
