@@ -1,3 +1,25 @@
+/*
+ * FILE SUMMARY — src/components/project/manage/BasicInfoTab.tsx
+ *
+ * "Basic Info" tab in the Project Settings page. Allows editing the project
+ * name and description.
+ *
+ * BasicInfoTab({ project }) — Renders a simple form with:
+ *   - A required "Name" text input, initially populated from `project.name`.
+ *   - An optional "Description" textarea, initially populated from
+ *     `project.description`.
+ *   - A "Save Changes" button that is disabled when there are no unsaved
+ *     changes (`isDirty` is false), the name is empty, or a save is in
+ *     progress.
+ *
+ * handleSave() — Builds an UpdateProjectDTO containing only the changed
+ *   fields, then calls the useUpdateProject mutation. Shows a success or error
+ *   toast via useToast().
+ *
+ * The form state is re-synchronised from `project` props whenever the server
+ * data changes (useEffect on project.name / project.description), so it
+ * reflects any externally updated values.
+ */
 import { useState, useEffect } from 'react'
 import type { Project, UpdateProjectDTO } from '../../../api/projects'
 import { useUpdateProject } from '../../../api/projects'

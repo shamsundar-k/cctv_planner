@@ -1,3 +1,26 @@
+/*
+ * FILE SUMMARY — src/components/layout/UserMenu.tsx
+ *
+ * Dropdown menu that appears when the user clicks their avatar in the Navbar.
+ *
+ * UserMenu({ onClose }) — Renders an absolute-positioned dropdown panel
+ *   anchored below the avatar button. Contains:
+ *   - A profile header showing the user's full name and email address.
+ *   - Navigation items: "My Profile", "Settings", "Help & Documentation"
+ *     (all navigate to their respective routes).
+ *   - "Manage Users" link, shown only when the logged-in user has role
+ *     "admin". Navigates to /admin/manage.
+ *   - A "Logout" button that calls clearAuth() to wipe the auth store and
+ *     redirects the user to /login.
+ *
+ * handleLogout() — Clears the Zustand auth state and navigates to /login.
+ *
+ * Internal behaviour:
+ *   - A mousedown listener closes the menu when the user clicks outside it.
+ *   - An Escape keydown listener also closes the menu.
+ *   - Both listeners are registered on mount and cleaned up on unmount.
+ *   - `onClose` prop must be called by the parent (Navbar) to hide the menu.
+ */
 import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router'
 import { useAuthStore } from '../../store/authSlice'

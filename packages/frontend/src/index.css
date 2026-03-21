@@ -1,1 +1,9 @@
+/*
+ * FILE SUMMARY — src/index.css
+ *
+ * Global CSS entry point. Contains a single directive:
+ *   @import "tailwindcss" — pulls in all Tailwind CSS v4 base styles, utility
+ *   classes, and component styles. This file is imported by main.tsx so
+ *   Tailwind styles are available to every component in the application.
+ */
 @import "tailwindcss";

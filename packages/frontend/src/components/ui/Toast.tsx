@@ -1,3 +1,31 @@
+/*
+ * FILE SUMMARY — src/components/ui/Toast.tsx
+ *
+ * Context-based toast notification system. Provides a global mechanism for
+ * displaying short-lived, dismissable alerts anywhere in the component tree.
+ *
+ * ToastProvider({ children }) — Context provider that wraps the application
+ *   (mounted in App.tsx). Maintains the list of active toasts in local state.
+ *   Each toast auto-dismisses after 3500 ms. Renders a <ToastContainer> fixed
+ *   to the bottom-right of the screen.
+ *
+ * useToast() — Custom hook that returns the `showToast` function from context.
+ *   Components call showToast(message, type?) to queue a new notification.
+ *   Throws if used outside a <ToastProvider>.
+ *
+ * showToast(message, type?) — Callable returned by useToast(). Accepts a
+ *   message string and an optional ToastType ('success' | 'error' | 'info',
+ *   defaults to 'info'). Adds a new ToastItem to the queue with a unique id.
+ *
+ * ToastContainer({ toasts, onDismiss }) — Internal component. Renders the
+ *   fixed overlay container. Returns null when the queue is empty; otherwise
+ *   renders a column of <ToastMessage> elements.
+ *
+ * ToastMessage({ toast, onDismiss }) — Internal component. Renders a single
+ *   toast with a coloured icon, message text, and a dismiss button. Uses a
+ *   requestAnimationFrame-triggered CSS slide-in transition on mount.
+ *   Calls onDismiss(id) when the dismiss button is clicked.
+ */
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
 
 // ── Types ───────────────────────────────────────────────────────────────────

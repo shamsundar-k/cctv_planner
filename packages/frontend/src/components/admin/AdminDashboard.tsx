@@ -1,3 +1,32 @@
+/*
+ * FILE SUMMARY — src/components/admin/AdminDashboard.tsx
+ *
+ * Main admin panel container. Orchestrates all admin data fetching, mutations,
+ * and sub-tab rendering.
+ *
+ * AdminDashboard() — Top-level admin component that:
+ *   - Fetches users (useSearchUsers), projects (useSearchProjects,
+ *     useAllProjects), invites (useAllInvites), and camera models
+ *     (useAllCameras) to populate stats and tab content.
+ *   - Renders a row of <StatCard>s showing total users, projects, cameras
+ *     placed, active invites, and camera models.
+ *   - Renders a tab navigation bar (Overview | Users | Projects | Active
+ *     Invites) and displays the matching tab component.
+ *   - Manages state for: active tab, per-tab search strings, delete modal
+ *     state, the most recently generated invite, and clipboard copy tracking.
+ *
+ * handleGenerateInvite(email) — Calls the useGenerateInvite mutation, stores
+ *   the resulting invite URL in latestCreatedInvite state, and shows a success
+ *   toast.
+ *
+ * handleConfirmDelete() — Reads the open delete modal state and dispatches the
+ *   correct mutation (deleteUser, deleteProject, or revokeInvite). Shows a
+ *   success or error toast and closes the modal.
+ *
+ * handleCopyInvite(url, id) — Writes the invite URL to the clipboard, sets
+ *   the copiedId state for 2 s to show a "Copied" confirmation, and shows a
+ *   toast.
+ */
 import { useState } from 'react'
 import { Link } from 'react-router'
 import { useAllCameras } from '../../api/cameras'

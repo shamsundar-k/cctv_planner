@@ -1,3 +1,42 @@
+/*
+ * FILE SUMMARY — src/api/admin.ts
+ *
+ * TanStack Query hooks and utilities for admin-only API endpoints. All hooks
+ * use the shared Axios client and the `adminKeys` cache-key namespace.
+ *
+ * useAllUsers() — Query hook; fetches the full list of registered users from
+ *   GET /admin/users. Stale after 2 min, evicted after 10 min.
+ *
+ * useAllProjects() — Query hook; fetches all projects from GET /projects for
+ *   the admin overview. Stale after 2 min, evicted after 10 min.
+ *
+ * useAllInvites() — Query hook; fetches active invite records from
+ *   GET /admin/invites. Stale after 1 min, evicted after 5 min.
+ *
+ * useGenerateInvite() — Mutation hook; POSTs { email } to /admin/invite to
+ *   create a new invite link. Returns the InviteResponse (id, invite_url,
+ *   expires_at). On success, invalidates the invites query.
+ *
+ * useDeleteUser() — Mutation hook; sends DELETE /admin/users/:id. Uses
+ *   optimistic update: removes the user from cache immediately, rolls back on
+ *   error, then invalidates the users query on settle.
+ *
+ * useDeleteProject() — Mutation hook; sends DELETE /projects/:id. Uses
+ *   optimistic update against the admin projects cache, rolls back on error.
+ *
+ * useRevokeInvite() — Mutation hook; sends DELETE /admin/invites/:id. Uses
+ *   optimistic update: removes the invite from cache immediately, rolls back on
+ *   error, then invalidates invites on settle.
+ *
+ * useDebounce<T>(value, delay) — Internal hook; delays propagation of a value
+ *   by `delay` ms (default 300 ms) to debounce user input.
+ *
+ * useSearchUsers(query) — Composite hook; wraps useAllUsers() and filters
+ *   results client-side by email or full_name using a debounced query string.
+ *
+ * useSearchProjects(query) — Composite hook; wraps useAllProjects() and
+ *   filters results client-side by project name using a debounced query string.
+ */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useState } from 'react'
 import client from './client'

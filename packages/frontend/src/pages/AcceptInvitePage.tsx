@@ -1,3 +1,27 @@
+/*
+ * FILE SUMMARY — src/pages/AcceptInvitePage.tsx
+ *
+ * Invite acceptance page shown at /accept-invite?token=<JWT>. Allows a new
+ * user to create their account using a valid invite link.
+ *
+ * AcceptInvitePage() — Manages a multi-stage flow:
+ *   - 'loading'   — On mount, validates the token from the URL query string
+ *                   via GET /auth/accept-invite?token=…. Displays "Validating
+ *                   invite…".
+ *   - 'invalid'   — If the token is absent or the API returns an error, shows
+ *                   the invalidMsg explaining why the link cannot be used.
+ *   - 'form'      — Token is valid; shows the registration form pre-filled
+ *                   with the invite's email (disabled field) and fields for
+ *                   full name, password, and confirm password.
+ *   - 'submitting' — The form is being submitted; the button shows "Creating
+ *                    account…" and is disabled.
+ *
+ * handleSubmit(e) — Validates that passwords match and are at least 8 chars,
+ *   then POSTs to /auth/accept-invite with the token, full_name, and password.
+ *   On success, decodes the returned JWT, builds the AuthUser object, calls
+ *   setAuth(), and navigates to /.
+ *   On failure, shows an inline error and returns to the 'form' stage.
+ */
 import { useEffect, useState, type FormEvent } from 'react'
 import { useNavigate, useSearchParams } from 'react-router'
 import client from '../api/interceptors'

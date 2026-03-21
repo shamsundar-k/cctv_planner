@@ -1,3 +1,23 @@
+/*
+ * FILE SUMMARY — src/App.css
+ *
+ * Custom CSS styles and animations used by the Vite scaffold. These are
+ * supplementary to Tailwind and cover:
+ *
+ *   #root — Sets max-width, auto margins, padding, and centered text for the
+ *     top-level React root container.
+ *
+ *   .logo / .logo:hover / .logo.react:hover — Sizing and drop-shadow hover
+ *     effects for the Vite and React logo images.
+ *
+ *   @keyframes logo-spin — Defines a continuous 360° CSS rotation animation
+ *     used by the React logo (only when the user has no reduced-motion
+ *     preference).
+ *
+ *   .card — Adds padding to card-style containers.
+ *
+ *   .read-the-docs — Muted grey colour for the "Read the docs" hint text.
+ */
 #root {
   max-width: 1280px;
   margin: 0 auto;

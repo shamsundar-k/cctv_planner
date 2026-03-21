@@ -1,3 +1,17 @@
+/*
+ * FILE SUMMARY — src/components/project/EmptyState.tsx
+ *
+ * Illustrated empty-state panel shown when the user has no projects (or no
+ * projects match the current filter/search).
+ *
+ * EmptyState({ onCreateClick }) — Renders a centred card containing:
+ *   - A decorative SVG target/crosshair icon at reduced opacity.
+ *   - A heading "No Projects Yet" and a descriptive paragraph explaining the
+ *     purpose of the application.
+ *   - A "+" Create Project button that calls the `onCreateClick` prop to open
+ *     the CreateProjectModal in DashboardPage.
+ *   - A "View Documentation" link (currently a placeholder "#" href).
+ */
 interface EmptyStateProps {
   onCreateClick: () => void
 }

@@ -1,3 +1,24 @@
+/*
+ * FILE SUMMARY — src/pages/LoginPage.tsx
+ *
+ * Login page shown to unauthenticated users at /login. Accessible only via
+ * the PublicOnlyRoute guard (authenticated users are redirected to /).
+ *
+ * LoginPage() — Renders a centred card with:
+ *   - App logo and brand name.
+ *   - Email and password inputs with autocomplete hints.
+ *   - An inline error message when credentials are invalid.
+ *   - A "Sign in" button that is disabled while the request is in flight.
+ *
+ * handleSubmit(e) — Submits the credentials to POST /auth/login via the Axios
+ *   client. On success:
+ *     • Decodes the returned access_token using decodeJwt() to extract the
+ *       user's id and role without an extra API call.
+ *     • Calls setAuth() on the Zustand auth store to persist the user and both
+ *       tokens.
+ *     • Navigates to the dashboard (/).
+ *   On failure, sets an "Invalid email or password." error message.
+ */
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router'
 import client from '../api/interceptors'

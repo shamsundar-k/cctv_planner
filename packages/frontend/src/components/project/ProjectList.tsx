@@ -1,3 +1,22 @@
+/*
+ * FILE SUMMARY — src/components/project/ProjectList.tsx
+ *
+ * Responsive grid of project cards with loading skeleton and empty state.
+ *
+ * ProjectList({ projects, isLoading, onDelete, onCreateClick }) — Renders one
+ *   of three states:
+ *   - Loading: a grid of 6 <SkeletonCard> components (pulsing placeholder
+ *     boxes) while the project data is being fetched.
+ *   - Empty: the <EmptyState> component when the filtered project array has no
+ *     entries. Passes `onCreateClick` so the empty state can offer a create
+ *     button.
+ *   - Populated: a CSS grid with `auto-fill` columns (min 450 px) containing
+ *     one <ProjectCard> per project. Each card receives the project data and
+ *     the `onDelete` callback.
+ *
+ * SkeletonCard() — Internal component that renders a fixed-height animated
+ *   skeleton placeholder matching the approximate dimensions of a ProjectCard.
+ */
 import type { Project } from '../../api/projects'
 import ProjectCard from './ProjectCard'
 import EmptyState from './EmptyState'

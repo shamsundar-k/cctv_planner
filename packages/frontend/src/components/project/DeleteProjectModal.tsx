@@ -1,3 +1,25 @@
+/*
+ * FILE SUMMARY — src/components/project/DeleteProjectModal.tsx
+ *
+ * Confirmation modal for permanently deleting a project. Requires the user to
+ * type the project name exactly before the delete action is enabled.
+ *
+ * DeleteProjectModal({ project, onClose }) — Renders a fixed-overlay modal
+ *   with:
+ *   - An amber warning banner explaining that all cameras, zones, and reports
+ *     associated with the project will be permanently deleted.
+ *   - A text input that the user must fill with the exact project name. The
+ *     input border turns red when the typed text does not match.
+ *   - A "Delete Project" button (red) that is disabled until the confirmation
+ *     text matches the project name and no mutation is pending.
+ *   - A "Cancel" button and Escape key handler that call `onClose`.
+ *   - Pressing Enter while focused on the confirmation input also triggers
+ *     deletion when valid.
+ *
+ * handleDelete() — Calls the useDeleteProject mutation with `project.id`. On
+ *   success, shows a toast and calls `onClose`. On failure, sets an inline
+ *   error message and shows an error toast.
+ */
 import { useEffect, useRef, useState } from 'react'
 import { useDeleteProject, type Project } from '../../api/projects'
 import { useToast } from '../ui/Toast'

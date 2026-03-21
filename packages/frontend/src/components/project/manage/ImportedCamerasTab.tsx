@@ -1,3 +1,39 @@
+/*
+ * FILE SUMMARY — src/components/project/manage/ImportedCamerasTab.tsx
+ *
+ * "Imported Cameras" tab in the Project Settings page. Dual-pane interface
+ * for managing which camera models are associated with a project.
+ *
+ * ImportedCamerasTab({ projectId }) — Renders two sections:
+ *   1. "Project Cameras" — lists camera models already imported into this
+ *      project, each showing name, manufacturer, type badge, resolution/FOV
+ *      specs, placed count, an info button, and a remove button (disabled when
+ *      placed_count > 0 because placed cameras cannot be removed).
+ *   2. "Browse Camera Models" — shows the global catalogue with a search
+ *      input. Each model card has an info button and an "Add to Project" /
+ *      "Added" indicator. Only models not yet imported show the add button.
+ *
+ * handleAdd(model) — Calls useAddCameraToProject. Shows success, info (409
+ *   already-added), or error toast.
+ *
+ * handleRemove(modelId, modelName, placedCount) — Guards against removing a
+ *   model that has placed instances. Calls useRemoveCameraFromProject. Shows
+ *   success or error toast. Clears the detail modal if the removed model was
+ *   open.
+ *
+ * CameraDetailModal({ model, onClose }) — Internal modal displaying all
+ *   camera specs (manufacturer, resolution, FOV range, IR, WDR, sensor, etc.)
+ *   in a two-column label/value grid.
+ *
+ * TypeBadge({ type }) — Internal badge component mapping camera type strings
+ *   to colour-coded pill labels (Fixed Dome / PTZ / Bullet).
+ *
+ * hfovLabel(min, max) — Internal helper; returns "X°" for fixed FOV or
+ *   "X°–Y°" range for varifocal.
+ *
+ * InfoIcon / TrashIcon / PlusIcon / CheckIcon — Minimal SVG icon components
+ *   used within card action buttons.
+ */
 import { useState } from 'react'
 import type { CameraModel } from '../../../api/cameras'
 import { useAllCameras } from '../../../api/cameras'
