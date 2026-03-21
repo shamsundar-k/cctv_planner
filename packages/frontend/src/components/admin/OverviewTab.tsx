@@ -1,3 +1,23 @@
+/*
+ * FILE SUMMARY — src/components/admin/OverviewTab.tsx
+ *
+ * Overview tab panel in the admin dashboard. Shows a system summary and an
+ * invite generation form.
+ *
+ * OverviewTab(props) — Renders two side-by-side cards in a responsive grid:
+ *   1. System Summary card: displays a table of key metrics (total users,
+ *      total projects, total cameras, active invites) sourced from props.
+ *      Shows "…" while the corresponding data is loading.
+ *   2. Generate Invite Link card: provides an email input and a submit button.
+ *      On successful invite generation, shows the new invite URL inline with a
+ *      one-click copy button (which tracks copied state via `copiedId`).
+ *
+ * handleSubmit(e) — Validates the email input (non-empty, valid format), then
+ *   calls the `onGenerateInvite` prop. Shows an error toast on failure and
+ *   clears the input on success.
+ *
+ * Exports LatestInvite type (re-exported for use in AdminDashboard).
+ */
 import { useState } from 'react'
 import { useToast } from '../ui/Toast'
 import Spinner from './Spinner'

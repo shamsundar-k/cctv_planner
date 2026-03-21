@@ -1,3 +1,40 @@
+/*
+ * FILE SUMMARY — src/api/projects.ts
+ *
+ * TanStack Query hooks for project CRUD operations and camera-model
+ * associations. All hooks use the shared Axios client and the `projectKeys`
+ * cache-key namespace.
+ *
+ * useProject(id) — Query hook; fetches a single project from
+ *   GET /projects/:id. Only enabled when `id` is truthy. Stale after 5 min.
+ *
+ * useProjects() — Query hook; fetches the full list of projects the current
+ *   user can see from GET /projects. Stale after 5 min, evicted after 10 min.
+ *
+ * useCreateProject() — Mutation hook; POSTs a CreateProjectDTO to /projects.
+ *   On success, invalidates the projects list cache.
+ *
+ * useUpdateProject() — Mutation hook; sends PUT /projects/:projectId with an
+ *   UpdateProjectDTO partial update. On success, invalidates the projects list
+ *   cache.
+ *
+ * useDeleteProject() — Mutation hook; sends DELETE /projects/:projectId. On
+ *   success, invalidates the projects list cache.
+ *
+ * useImportedCameras(projectId) — Query hook; fetches the list of camera
+ *   models imported into a project from GET /projects/:id/camera-models.
+ *   Returns ImportedCameraItem[] (camera_model + placed_count). Stale after
+ *   2 min.
+ *
+ * useAddCameraToProject() — Mutation hook; POSTs to
+ *   /projects/:projectId/camera-models/:modelId to associate a camera model
+ *   with a project. On success, invalidates the project's imported cameras and
+ *   the projects list.
+ *
+ * useRemoveCameraFromProject() — Mutation hook; sends DELETE to
+ *   /projects/:projectId/camera-models/:modelId. On success, invalidates the
+ *   project's imported cameras and the projects list.
+ */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { AxiosError } from 'axios'
 import client from './client'

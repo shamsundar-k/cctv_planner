@@ -1,3 +1,28 @@
+/*
+ * FILE SUMMARY — src/api/cameras.ts
+ *
+ * TanStack Query hooks for the global camera-model catalogue. All hooks use
+ * the shared Axios client and the `cameraKeys` cache-key namespace.
+ *
+ * useAllCameras() — Query hook; fetches the full catalogue from
+ *   GET /camera-models. Stale after 2 min, evicted after 10 min. Used by the
+ *   admin camera list page and the ImportedCamerasTab.
+ *
+ * useCamera(id) — Query hook; fetches a single camera model from
+ *   GET /camera-models/:id. Only enabled when `id` is truthy and not "new".
+ *   Stale after 2 min.
+ *
+ * useCreateCamera() — Mutation hook; POSTs a CameraModelCreate payload to
+ *   /camera-models. On success, invalidates the full camera list cache.
+ *
+ * useUpdateCamera() — Mutation hook; sends PUT /camera-models/:id with a
+ *   CameraModelUpdate partial payload. On success, invalidates the list cache
+ *   and writes the updated model directly into the detail cache entry.
+ *
+ * useDeleteCamera() — Mutation hook; sends DELETE /camera-models/:id. Uses
+ *   optimistic update: removes the camera from the list cache immediately,
+ *   rolls back on error, then invalidates the list on settle.
+ */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import client from './client'
 

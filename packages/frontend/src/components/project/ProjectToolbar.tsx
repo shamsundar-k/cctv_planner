@@ -1,3 +1,34 @@
+/*
+ * FILE SUMMARY — src/components/project/ProjectToolbar.tsx
+ *
+ * Toolbar rendered above the project list on the DashboardPage. Provides
+ * project creation, search, filter, sort, and refresh controls.
+ *
+ * ProjectToolbar({ pageTitle, filteredCount, isAdmin, onCreateClick,
+ *   onRefresh, isFetching, dataUpdatedAt }) — Renders:
+ *   - Page title heading (e.g. "All Projects" or "My Projects").
+ *   - "+ Create Project" button (also triggered by Ctrl+N / Cmd+N keyboard
+ *     shortcut) — calls `onCreateClick`.
+ *   - A local debounced search input (300 ms) that syncs with the Zustand
+ *     `searchQuery` store. Includes a clear (✕) button when non-empty.
+ *     Syncs from the Navbar search input via a store subscription.
+ *   - Filter dropdown — shows "All Projects", "Only Mine" (admin only), and
+ *     "Archived". Updates `filterType` in the project store.
+ *   - Sort dropdown — lists all six SortBy options with their human-readable
+ *     labels. Updates `sortBy` in the project store.
+ *   - Refresh button — calls `onRefresh` and animates the icon for 600 ms.
+ *     Also spins while `isFetching` is true.
+ *   - Metadata line showing the filtered project count and last-updated time.
+ *
+ * formatUpdatedAt(ts) — Internal helper; converts a timestamp to a relative
+ *   time string (e.g. "just now", "5 minutes ago") for the metadata line.
+ *
+ * handleSearchChange(value) — Internal handler; updates the local search state
+ *   immediately for instant UI feedback and debounces the store update.
+ *
+ * handleRefresh() — Internal handler; calls `onRefresh` and triggers a brief
+ *   spinner animation on the refresh button icon.
+ */
 import { useEffect, useRef, useState } from 'react'
 import { useProjectStore } from '../../store/projectSlice'
 import type { FilterType, SortBy } from '../../store/projectSlice'

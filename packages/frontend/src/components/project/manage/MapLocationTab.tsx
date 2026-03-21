@@ -1,3 +1,27 @@
+/*
+ * FILE SUMMARY — src/components/project/manage/MapLocationTab.tsx
+ *
+ * "Map Location" tab in the Project Settings page. Provides an interactive
+ * Leaflet map for setting the project's default centre point and zoom level.
+ *
+ * MapLocationTab({ project }) — Renders:
+ *   - A short instruction paragraph.
+ *   - An interactive Leaflet map (380 px tall) initialised at the project's
+ *     stored coordinates or default Bangalore coordinates (12.9716, 77.5946).
+ *   - A draggable marker that the user can reposition. Clicking anywhere on
+ *     the map also moves the marker to that point.
+ *   - A coordinate and zoom readout showing the current lat/lng/zoom values.
+ *   - A "Save Location" button, enabled only when the values differ from the
+ *     saved project values (`isDirty` is true).
+ *
+ * Leaflet is dynamically imported inside a useEffect to avoid SSR issues.
+ * Marker icon URLs are patched to use unpkg CDN assets (Leaflet default icon
+ * workaround for bundler environments). Map and marker refs are cleaned up on
+ * component unmount to prevent memory leaks.
+ *
+ * handleSave() — Calls the useUpdateProject mutation with the current lat,
+ *   lng, and zoom values. Shows a success or error toast.
+ */
 import 'leaflet/dist/leaflet.css'
 import { useState, useEffect, useRef } from 'react'
 import type { Map as LeafletMap, Marker as LeafletMarker } from 'leaflet'

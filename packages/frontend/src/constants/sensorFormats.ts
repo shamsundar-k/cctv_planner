@@ -1,3 +1,23 @@
+/*
+ * FILE SUMMARY — src/constants/sensorFormats.ts
+ *
+ * Lookup tables and helpers for optical sensor format strings used when
+ * creating or editing camera models.
+ *
+ * SENSOR_FORMATS — ReadonlyArray<SensorFormat>. An ordered list of standard
+ *   optical formats (e.g. '1/4"', '1/3"', '1"') mapped to their physical
+ *   sensor width in millimetres. Includes a trailing "Custom" entry (widthMm
+ *   = 0) for non-standard sizes.
+ *
+ * SENSOR_FORMAT_MAP — ReadonlyMap<string, number>. A pre-built Map derived
+ *   from SENSOR_FORMATS for O(1) look-ups: optical format string → sensor
+ *   width in mm.
+ *
+ * isStandardSensorFormat(value) — Returns true if `value` matches a key in
+ *   SENSOR_FORMAT_MAP (i.e., it is one of the predefined standard formats).
+ *   Used in AdminCameraEditPage to determine whether the stored sensor_size
+ *   string is a standard option or a custom entry.
+ */
 // =============================================================================
 // SENSOR FORMAT LOOKUP  (optical format → physical sensor width in mm)
 // Source: standard imaging sensor dimensions

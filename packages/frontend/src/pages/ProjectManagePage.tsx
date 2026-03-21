@@ -1,3 +1,26 @@
+/*
+ * FILE SUMMARY — src/pages/ProjectManagePage.tsx
+ *
+ * Project settings page rendered at /project/manage/:id. Provides a tabbed
+ * interface for editing project details, map location, and imported cameras.
+ *
+ * ProjectManagePage() — Reads the project id from the URL params and fetches
+ *   the project via useProject(id). Handles three states:
+ *   - Loading: shows animated skeleton placeholders for the header and tabs.
+ *   - Error / not found: shows a "Project not found" message with a link back
+ *     to the dashboard.
+ *   - Loaded: renders the full tabbed settings UI.
+ *
+ * Tab navigation — Three tabs are available (type Tab = 'basic' | 'map' |
+ *   'cameras'), each rendering the corresponding sub-component:
+ *   - 'basic'   → <BasicInfoTab project={project} />
+ *   - 'map'     → <MapLocationTab project={project} />
+ *   - 'cameras' → <ImportedCamerasTab projectId={project.id} />
+ *
+ * A breadcrumb "← Dashboard" link navigates back to /.
+ * The page title shows the project name.
+ * If `id` is absent from params, the user is immediately redirected to /.
+ */
 import { useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router'
 import Navbar from '../components/layout/Navbar'
