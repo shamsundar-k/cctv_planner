@@ -1,3 +1,25 @@
+/*
+ * FILE SUMMARY — src/components/layout/Navbar.tsx
+ *
+ * Top navigation bar rendered on every authenticated page.
+ *
+ * Navbar() — Sticky header component that renders:
+ *   - App logo (SVG camera icon) and "CCTV Planner" brand name on the left.
+ *   - A centred search bar (400 px wide) bound to the `searchQuery` field in
+ *     the Zustand project store. Supports Ctrl+K (or Cmd+K) to focus the
+ *     input and Escape to clear and blur it. Changes propagate immediately to
+ *     the project list via setSearchQuery().
+ *   - A notification bell icon placeholder on the right (not yet functional).
+ *   - A user avatar button showing the user's initials (derived from
+ *     `fullName` or the first character of their email if no name is set).
+ *     Clicking the avatar toggles the <UserMenu> dropdown.
+ *   - A help icon link on the far right.
+ *
+ * Internal behaviour:
+ *   - Keyboard event listener for Ctrl+K and Escape is added on mount and
+ *     cleaned up on unmount.
+ *   - Avatar initials are computed inline from the auth store's user object.
+ */
 import { useEffect, useRef, useState } from 'react'
 import { useAuthStore } from '../../store/authSlice'
 import { useProjectStore } from '../../store/projectSlice'

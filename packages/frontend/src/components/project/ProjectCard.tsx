@@ -1,3 +1,29 @@
+/*
+ * FILE SUMMARY — src/components/project/ProjectCard.tsx
+ *
+ * Individual project card displayed in the dashboard grid.
+ *
+ * ProjectCard({ project, onDelete }) — Memoised card component (React.memo)
+ *   that renders all relevant information for a single project:
+ *   - Project name with a "···" overflow menu button.
+ *   - Camera count and zone count metadata.
+ *   - Map centre coordinates (shown only when center_lat/center_lng are set).
+ *   - Project description (or "No description" italic placeholder).
+ *   - Relative timestamps for created_at and updated_at.
+ *   - Three action buttons: "Open" (navigates to /projects/:id), "Manage"
+ *     (navigates to /project/manage/:id), and "Delete" (calls `onDelete`).
+ *
+ * The overflow menu (···) offers "Archive Project" (disabled placeholder) and
+ * "Delete Project" (calls `onDelete` and closes menu). Clicking outside the
+ * menu closes it via a mousedown listener.
+ *
+ * formatRelativeTime(dateStr) — Internal helper; converts an ISO date string
+ *   to a human-readable relative time string (e.g. "3 minutes ago", "2 days
+ *   ago", "just now").
+ *
+ * formatCoord(val, type) — Internal helper; formats a latitude or longitude
+ *   number as "DD.DDDD° N/S/E/W" for display in the location row.
+ */
 import { memo, useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router'
 import type { Project } from '../../api/projects'

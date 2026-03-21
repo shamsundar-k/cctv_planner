@@ -1,3 +1,25 @@
+/*
+ * FILE SUMMARY — src/components/admin/UsersTab.tsx
+ *
+ * Users tab panel in the admin dashboard. Displays a searchable table of all
+ * registered users.
+ *
+ * UsersTab({ users, usersLoading, userSearch, onSearchChange, onDeleteUser })
+ *   — Renders:
+ *   - A <SearchInput> for filtering users by name or email (controlled via
+ *     `userSearch` / `onSearchChange` props, debounced upstream).
+ *   - A user count badge showing how many results match the current search.
+ *   - A table with columns: User (avatar + name), Email, Role (badge),
+ *     Joined date, and an Actions column.
+ *   - Skeleton placeholder rows (4 rows × 5 cells) while `usersLoading` is
+ *     true.
+ *   - An empty-state row when the filtered list is empty.
+ *   - For each user row, a "Delete" button that calls `onDeleteUser(id, name)`
+ *     to open the confirmation modal in AdminDashboard.
+ *
+ * Avatar initials are rendered using `getInitials()` from admin/utils.ts.
+ * Join date is formatted using `formatDate()` from admin/utils.ts.
+ */
 import type { AdminUser } from '../../api/admin'
 import SearchInput from './SearchInput'
 import { formatDate, getInitials } from './utils'

@@ -1,3 +1,31 @@
+/*
+ * FILE SUMMARY — src/pages/DashboardPage.tsx
+ *
+ * Main project dashboard page rendered at /. Lists all accessible projects
+ * with filtering, sorting, searching, and create/delete capabilities.
+ *
+ * DashboardPage() — Composes the full dashboard layout:
+ *   - <Navbar> at the top.
+ *   - <ProjectToolbar> for create, search, filter, sort, and refresh.
+ *   - An optional inline error message with a "Retry" button when the projects
+ *     query fails.
+ *   - <ProjectList> rendering the filtered/sorted project cards.
+ *   - Conditionally renders <CreateProjectModal> or <DeleteProjectModal>
+ *     based on the `modal` state.
+ *
+ * applyFiltersAndSort(projects, { searchQuery, filterType, sortBy,
+ *   currentUserId }) — Pure helper function that:
+ *   - Filters projects by a case-insensitive name search.
+ *   - Applies "mine" filter (owner_id === currentUserId) when filterType is
+ *     "mine". "archived" filtering is handled server-side (not implemented).
+ *   - Sorts the result by one of six SortBy keys (modified desc/asc, name
+ *     asc/desc, created desc/asc).
+ *   Returns the filtered and sorted array. Memoised with useMemo.
+ *
+ * Modal state is a union type: { type: 'none' } | { type: 'create' } |
+ * { type: 'delete'; project: Project }. Opening create or delete modals sets
+ * the appropriate modal state; closing resets to 'none'.
+ */
 import { useMemo, useState } from 'react'
 import { useAuthStore } from '../store/authSlice'
 import { useProjectStore } from '../store/projectSlice'

@@ -1,3 +1,36 @@
+/*
+ * FILE SUMMARY — src/pages/AdminCamerasPage.tsx
+ *
+ * Admin camera model catalogue page rendered at /admin/manage/cameras. Lists
+ * all global camera models with search, edit, and delete capabilities.
+ *
+ * AdminCamerasPage() — Guard + list page for admin users:
+ *   - Redirects non-admin users to / via a useEffect guard (same pattern as
+ *     AdminPage).
+ *   - Fetches all camera models via useAllCameras().
+ *   - Provides a local search input that filters models by name, manufacturer,
+ *     or model number (case-insensitive, no debounce).
+ *   - Renders skeleton cards while loading, an empty-state message when no
+ *     models exist or match the search, or a responsive grid of camera cards.
+ *   - Each card shows: name, manufacturer/model number, lens type badge, specs
+ *     grid (type, resolution, H-FOV, focal length, IR range if set), optional
+ *     notes, and action buttons.
+ *   - "Edit" button navigates to /admin/manage/cameras/:id.
+ *   - "Delete" button opens the <DeleteConfirmModal>.
+ *
+ * CameraTypeLabel({ type }) — Internal component; maps the camera_type enum
+ *   value to a human-readable label string.
+ *
+ * LensTypeBadge({ type }) — Internal component; renders a small pill badge
+ *   with the lens type label (Fixed / Varifocal).
+ *
+ * DeleteConfirmModal({ camera, onConfirm, onCancel, isDeleting }) — Internal
+ *   confirmation dialog for deleting a camera model. Displays the model name
+ *   and warns that the action cannot be undone.
+ *
+ * handleDelete() — Calls the useDeleteCamera mutation for deleteTarget. Shows
+ *   success or error toast and clears the deleteTarget state on completion.
+ */
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import Navbar from '../components/layout/Navbar'

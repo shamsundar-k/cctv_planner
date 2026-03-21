@@ -1,3 +1,28 @@
+/*
+ * FILE SUMMARY — src/components/project/CreateProjectModal.tsx
+ *
+ * Modal dialog for creating a new CCTV survey project.
+ *
+ * CreateProjectModal({ onClose }) — Renders a fixed-overlay modal with a form
+ *   containing the following fields:
+ *   - Project Name (required, 1–100 characters).
+ *   - Description (optional, max 500 characters with live character count).
+ *   - Base Map Location (optional): Latitude (–90 to 90), Longitude (–180 to
+ *     180), and Zoom level (1–22). All three are validated client-side.
+ *
+ * handleSubmit(e) — Validates all fields, then calls the useCreateProject
+ *   mutation. On success, shows a "Project created successfully" toast and
+ *   calls `onClose`. On failure, sets an inline error message and shows an
+ *   error toast.
+ *
+ * inputCls(invalid) — Inline helper that returns the appropriate Tailwind
+ *   input class string, with a red border when the field is invalid.
+ *
+ * The modal auto-focuses the name field on open. Pressing Escape closes it.
+ * Clicking the backdrop (outside the dialog) also closes it.
+ * The "Create Project" button is disabled until all validation passes and no
+ * mutation is in flight.
+ */
 import { useEffect, useRef, useState } from 'react'
 import { useCreateProject } from '../../api/projects'
 import { useToast } from '../ui/Toast'
