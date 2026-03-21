@@ -17,18 +17,18 @@ The map view is the primary working screen — a full-application shell composed
 
 ### Tasks
 
-- [ ] Create `ProjectMapViewPage` route at `/projects/:id` (replace any placeholder)
-- [ ] Implement top-level CSS grid / flex layout:
+- [x] Create `ProjectMapViewPage` route at `/projects/:id` (replace any placeholder)
+- [x] Implement top-level CSS grid / flex layout:
   - Navbar fixed at top
   - Bottom toolbar fixed at bottom
   - Workspace row fills remaining height (`calc(100vh - navbar - toolbar)`)
   - Left sidebar (default 236px) + map canvas (flex-1) side by side
-- [ ] Stub `<Navbar>` with logo placeholder, project name placeholder, save button placeholder, user avatar placeholder
-- [ ] Stub `<LeftSidebar>` with three tab buttons (Cameras, Layers, Models); no tab content yet
-- [ ] Stub `<MapCanvas>` rendering a plain Leaflet map centred on `project.center_lat/lng` at `project.default_zoom`
-- [ ] Stub `<BottomToolbar>` with labelled buttons in correct groups (no actions wired)
-- [ ] Stub `<RightEditPanel>` rendered but hidden (`display:none` or zero-width)
-- [ ] Sidebar collapse toggle: clicking the edge button shrinks sidebar to icon rail (44px); expand restores 236px; persisted in component state
+- [x] Stub `<Navbar>` with logo placeholder, project name placeholder, save button placeholder, user avatar placeholder
+- [x] Stub `<LeftSidebar>` with three tab buttons (Cameras, Layers, Models); no tab content yet
+- [x] Stub `<MapCanvas>` rendering a plain Leaflet map centred on `project.center_lat/lng` at `project.default_zoom`
+- [x] Stub `<BottomToolbar>` with labelled buttons in correct groups (no actions wired)
+- [x] Stub `<RightEditPanel>` rendered but hidden (`display:none` or zero-width)
+- [x] Sidebar collapse toggle: clicking the edge button shrinks sidebar to icon rail (44px); expand restores 236px; persisted in component state
 
 ### Acceptance Criteria
 - All five regions visible and correctly sized in a 1280px+ viewport
@@ -44,17 +44,17 @@ The map view is the primary working screen — a full-application shell composed
 
 ### Tasks
 
-- [ ] **Project name input**
+- [x] **Project name input**
   - Render project name as a `<span>` by default
   - On click, replace with `<input>` pre-filled with current name
   - On `Enter` or blur: validate (non-empty, ≤ 100 chars) → call `PUT /projects/:id` → revert to span
   - On `Escape`: cancel edit, revert to original name
-- [ ] **Save button**
+- [x] **Save button**
   - Idle state: "Save" label + last-saved timestamp ("Saved 3 min ago" — formatted relative time, refreshed every 30s)
   - Pending state: spinner icon, button disabled
   - Unsaved indicator: small dot/asterisk on button when local state differs from last save
   - On click: trigger manual save of all dirty camera/zone state
-- [ ] **User menu**
+- [x] **User menu**
   - Avatar button opens dropdown: Profile link, Exit Project (→ dashboard), Logout
   - Closes on outside click or `Escape`
 

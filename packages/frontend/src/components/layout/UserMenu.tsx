@@ -4,9 +4,11 @@ import { useAuthStore } from '../../store/authSlice'
 
 interface UserMenuProps {
   onClose: () => void
+  /** If provided, an "Exit Project" item is shown that navigates to this path. */
+  exitProjectPath?: string
 }
 
-export default function UserMenu({ onClose }: UserMenuProps) {
+export default function UserMenu({ onClose, exitProjectPath }: UserMenuProps) {
   const navigate = useNavigate()
   const menuRef = useRef<HTMLDivElement>(null)
   const user = useAuthStore((s) => s.user)
@@ -40,7 +42,7 @@ export default function UserMenu({ onClose }: UserMenuProps) {
   return (
     <div
       ref={menuRef}
-      className="absolute top-[calc(100%+8px)] right-0 bg-slate-800 border border-slate-700 rounded-lg shadow-2xl min-w-[200px] z-[200]"
+      className="absolute top-[calc(100%+8px)] right-0 bg-slate-800 border border-slate-700 rounded-lg shadow-2xl min-w-[200px] z-[1000]"
     >
       <div className="px-4 pt-3 pb-2">
         <div className="text-sm font-semibold text-slate-100">{user?.fullName}</div>
@@ -50,6 +52,11 @@ export default function UserMenu({ onClose }: UserMenuProps) {
       <button className={itemCls} onClick={() => { navigate('/profile'); onClose() }}>
         My Profile
       </button>
+      {exitProjectPath && (
+        <button className={itemCls} onClick={() => { navigate(exitProjectPath); onClose() }}>
+          Exit Project
+        </button>
+      )}
       <button className={itemCls} onClick={() => { navigate('/settings'); onClose() }}>
         Settings
       </button>
