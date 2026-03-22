@@ -116,7 +116,7 @@ export default function MapNavbar({ projectId, projectName, onSave }: MapNavbarP
   }, [isSaving, onSave, markSaved, showToast])
 
   return (
-    <header className="h-12 shrink-0 bg-slate-800 border-b border-slate-700 flex items-center px-4 gap-3 z-[100]">
+    <header className="h-12 shrink-0 bg-slate-800 border-b border-slate-700 flex items-center px-4 gap-3 relative z-[100]">
       {/* Logo */}
       <div className="flex items-center gap-2 shrink-0">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
