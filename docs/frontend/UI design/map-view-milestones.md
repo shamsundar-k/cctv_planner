@@ -74,7 +74,7 @@ The map view is the primary working screen — a full-application shell composed
 
 #### Cameras Tab
 - [ ] Fetch camera instances for the project (`GET /projects/:id/cameras`)
-- [ ] Render list rows: colour dot · label · model name · visibility toggle icon
+- [ ] Render list rows: colour dot · label · visibility toggle icon
 - [ ] Clicking a row selects the camera → sets `selectedCameraId` in global/local state → triggers Right Edit Panel open
 - [ ] Selected row is highlighted
 - [ ] Visibility toggle icon hides/shows the camera's FOV polygon and icon on the map (local UI state, not persisted until save)
