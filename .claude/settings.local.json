@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(find:*)",
-      "Bash(pnpm build:*)"
+      "Bash(pnpm build:*)",
+      "Bash(xargs grep:*)",
+      "Bash(grep -r \"cameraInstances\\\\|POST.*cameras\\\\|PUT.*cameras\\\\|DELETE.*cameras\" C:Developmentcctv_plannerpackagesfrontendsrc --include=*.ts --include=*.tsx)"
     ]
   }
 }

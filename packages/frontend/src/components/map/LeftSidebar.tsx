@@ -244,7 +244,8 @@ const CAMERA_TYPE_LABELS: Record<string, string> = {
 
 function ModelsTab({ projectId }: { projectId: string }) {
   const { data: importedItems, isLoading } = useImportedCameras(projectId)
-  const { selectedModelId, setSelectedModel } = useMapViewStore()
+  const { selectedModelId, setSelectedModel, activeTool } = useMapViewStore()
+  const isPlacing = activeTool === 'place-camera'
 
   if (isLoading) {
     return (
@@ -273,44 +274,64 @@ function ModelsTab({ projectId }: { projectId: string }) {
   }
 
   return (
-    <ul className="flex flex-col gap-0.5">
-      {importedItems.map(({ camera_model }) => {
-        const isSelected = camera_model.id === selectedModelId
-        const typeLabel = CAMERA_TYPE_LABELS[camera_model.camera_type] ?? camera_model.camera_type
+    <div className="flex flex-col gap-2">
+      {isPlacing && (
+        <div className="rounded-md bg-blue-900/40 border border-blue-700/50 px-2.5 py-2 text-xs text-blue-300 leading-snug">
+          {selectedModelId
+            ? 'Click on the map to place a camera'
+            : 'Select a model below to start placing'}
+        </div>
+      )}
+      <ul className="flex flex-col gap-0.5">
+        {importedItems.map(({ camera_model }) => {
+          const isSelected = camera_model.id === selectedModelId
+          const typeLabel = CAMERA_TYPE_LABELS[camera_model.camera_type] ?? camera_model.camera_type
 
-        return (
-          <li key={camera_model.id}>
-            <button
-              onClick={() => setSelectedModel(isSelected ? null : camera_model.id)}
-              className={`w-full flex flex-col gap-0.5 px-2 py-1.5 rounded border-none cursor-pointer text-left transition-colors ${
-                isSelected
-                  ? 'bg-blue-600/30 text-slate-100'
-                  : 'bg-transparent text-slate-300 hover:bg-slate-700/50 hover:text-slate-100'
-              }`}
-            >
-              <span className="text-xs font-medium truncate leading-tight">
-                {camera_model.name}
-              </span>
-              <div className="flex items-center gap-1.5">
-                <span className="text-[10px] text-slate-400 truncate leading-tight">
-                  {camera_model.manufacturer}
+          return (
+            <li key={camera_model.id}>
+              <button
+                onClick={() => setSelectedModel(isSelected ? null : camera_model.id)}
+                className={`w-full flex items-center gap-2 px-2 py-1.5 rounded border-none cursor-pointer text-left transition-colors ${
+                  isSelected
+                    ? 'bg-blue-600/30 text-slate-100'
+                    : 'bg-transparent text-slate-300 hover:bg-slate-700/50 hover:text-slate-100'
+                }`}
+              >
+                {/* Armed indicator */}
+                <span className={`shrink-0 w-3.5 h-3.5 rounded-full border-2 transition-colors ${
+                  isSelected ? 'border-blue-400 bg-blue-500' : 'border-slate-600'
+                }`} />
+                <span className="flex flex-col gap-0.5 min-w-0">
+                  <span className="text-xs font-medium truncate leading-tight">
+                    {camera_model.name}
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] text-slate-400 truncate leading-tight">
+                      {camera_model.manufacturer}
+                    </span>
+                    <span className="text-[10px] px-1 py-px rounded bg-slate-700 text-slate-400 shrink-0">
+                      {typeLabel}
+                    </span>
+                  </div>
                 </span>
-                <span className="text-[10px] px-1 py-px rounded bg-slate-700 text-slate-400 shrink-0">
-                  {typeLabel}
-                </span>
-              </div>
-            </button>
-          </li>
-        )
-      })}
-    </ul>
+              </button>
+            </li>
+          )
+        })}
+      </ul>
+    </div>
   )
 }
 
 // ── Main component ──────────────────────────────────────────────────────────────
 
 export default function LeftSidebar({ projectId, collapsed, onToggleCollapse }: LeftSidebarProps) {
-  const [activeTab, setActiveTab] = useState<TabId>('cameras')
+  const [manualTab, setManualTab] = useState<TabId>('cameras')
+  const activeTool = useMapViewStore((s) => s.activeTool)
+
+  // When Place Camera is active, always show Models tab; otherwise use manual selection
+  const activeTab: TabId = activeTool === 'place-camera' ? 'models' : manualTab
+  const setActiveTab = (tab: TabId) => setManualTab(tab)
 
   return (
     <aside

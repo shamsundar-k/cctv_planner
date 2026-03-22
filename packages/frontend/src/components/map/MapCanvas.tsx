@@ -3,6 +3,8 @@ import { useEffect, useRef } from 'react'
 import type { Map as LeafletMap, TileLayer } from 'leaflet'
 import { useMapViewStore, type BasemapStyle } from '../../store/mapViewSlice'
 
+const CROSSHAIR_TOOLS = new Set(['place-camera'])
+
 const DEFAULT_LAT = 12.9716
 const DEFAULT_LNG = 77.5946
 const DEFAULT_ZOOM = 13
@@ -22,14 +24,18 @@ interface MapCanvasProps {
   centerLat?: number | null
   centerLng?: number | null
   defaultZoom?: number | null
+  onMapReady?: (map: LeafletMap) => void
 }
 
-export default function MapCanvas({ centerLat, centerLng, defaultZoom }: MapCanvasProps) {
+export default function MapCanvas({ centerLat, centerLng, defaultZoom, onMapReady }: MapCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<LeafletMap | null>(null)
   const tileLayerRef = useRef<TileLayer | null>(null)
+  const onMapReadyRef = useRef(onMapReady)
+  onMapReadyRef.current = onMapReady
 
   const basemapStyle = useMapViewStore((s) => s.basemapStyle)
+  const activeTool = useMapViewStore((s) => s.activeTool)
 
   // Initialise map once
   useEffect(() => {
@@ -47,6 +53,7 @@ export default function MapCanvas({ centerLat, centerLng, defaultZoom }: MapCanv
       }).setView([lat, lng], zoom)
 
       mapRef.current = map
+      onMapReadyRef.current?.(map)
 
       const stadiaKey = import.meta.env.VITE_STADIA_MAPS_API_KEY
       const tileLayer = L.tileLayer(buildTileUrl(basemapStyle, stadiaKey), {
@@ -72,6 +79,12 @@ export default function MapCanvas({ centerLat, centerLng, defaultZoom }: MapCanv
     const stadiaKey = import.meta.env.VITE_STADIA_MAPS_API_KEY
     tileLayerRef.current.setUrl(buildTileUrl(basemapStyle, stadiaKey))
   }, [basemapStyle])
+
+  // Update map cursor based on active tool
+  useEffect(() => {
+    if (!mapRef.current) return
+    mapRef.current.getContainer().style.cursor = CROSSHAIR_TOOLS.has(activeTool) ? 'crosshair' : ''
+  }, [activeTool])
 
   return (
     <div

@@ -1,5 +1,8 @@
+import { useEffect } from 'react'
+import { useMapViewStore, type ActiveTool } from '../../store/mapViewSlice'
+
 type ToolGroup = {
-  tools: { id: string; label: string; icon: React.ReactNode }[]
+  tools: { id: ActiveTool; label: string; icon: React.ReactNode }[]
 }
 
 const TOOL_GROUPS: ToolGroup[] = [
@@ -118,21 +121,41 @@ const TOOL_GROUPS: ToolGroup[] = [
 ]
 
 export default function BottomToolbar() {
+  const activeTool = useMapViewStore((s) => s.activeTool)
+  const setActiveTool = useMapViewStore((s) => s.setActiveTool)
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setActiveTool('pan')
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [setActiveTool])
+
   return (
     <div className="h-12 shrink-0 bg-slate-800 border-t border-slate-700 flex items-center px-4 gap-1 z-[100]">
       {TOOL_GROUPS.map((group, gi) => (
         <div key={gi} className="flex items-center gap-1">
           {gi > 0 && <div className="w-px h-6 bg-slate-600 mx-1" />}
-          {group.tools.map((tool) => (
-            <button
-              key={tool.id}
-              title={tool.label}
-              className="flex items-center gap-1.5 h-8 px-2.5 rounded-md border-none bg-transparent text-slate-400 hover:bg-slate-700 hover:text-slate-100 cursor-pointer text-xs font-medium transition-colors whitespace-nowrap"
-            >
-              {tool.icon}
-              <span>{tool.label}</span>
-            </button>
-          ))}
+          {group.tools.map((tool) => {
+            const isActive = activeTool === tool.id
+            return (
+              <button
+                key={tool.id}
+                title={tool.label}
+                onClick={() => setActiveTool(tool.id)}
+                className={[
+                  'flex items-center gap-1.5 h-8 px-2.5 rounded-md border-none cursor-pointer text-xs font-medium transition-colors whitespace-nowrap',
+                  isActive
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-transparent text-slate-400 hover:bg-slate-700 hover:text-slate-100',
+                ].join(' ')}
+              >
+                {tool.icon}
+                <span>{tool.label}</span>
+              </button>
+            )
+          })}
         </div>
       ))}
     </div>

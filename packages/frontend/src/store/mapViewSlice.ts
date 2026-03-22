@@ -1,11 +1,15 @@
 import { create } from 'zustand'
 
 export type BasemapStyle = 'alidade_smooth' | 'alidade_smooth_dark' | 'stamen_toner'
+export type ActiveTool = 'pan' | 'select' | 'place-camera' | 'draw-polygon' | 'draw-line' | 'measure' | 'delete'
 
 interface MapViewState {
   // Save / dirty state
   isDirty: boolean
   lastSavedAt: Date | null
+
+  // Active tool
+  activeTool: ActiveTool
 
   // Selection
   selectedCameraId: string | null
@@ -25,7 +29,9 @@ interface MapViewState {
   // Actions
   markDirty: () => void
   markSaved: () => void
+  setActiveTool: (tool: ActiveTool) => void
   setSelectedCamera: (id: string | null) => void
+  selectCameraAfterPlacement: (id: string) => void
   setSelectedModel: (id: string | null) => void
   setShowFovPolygons: (show: boolean) => void
   setShowZonePolygons: (show: boolean) => void
@@ -37,6 +43,8 @@ interface MapViewState {
 export const useMapViewStore = create<MapViewState>((set) => ({
   isDirty: false,
   lastSavedAt: null,
+
+  activeTool: 'pan',
 
   selectedCameraId: null,
   selectedModelId: null,
@@ -52,7 +60,10 @@ export const useMapViewStore = create<MapViewState>((set) => ({
   markDirty: () => set({ isDirty: true }),
   markSaved: () => set({ isDirty: false, lastSavedAt: new Date() }),
 
+  setActiveTool: (tool) => set({ activeTool: tool }),
+
   setSelectedCamera: (id) => set({ selectedCameraId: id }),
+  selectCameraAfterPlacement: (id) => set({ selectedCameraId: id, activeTool: 'select' }),
   setSelectedModel: (id) => set({ selectedModelId: id }),
 
   setShowFovPolygons: (show) => set({ showFovPolygons: show }),
