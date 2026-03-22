@@ -36,6 +36,7 @@ export default function ProjectMapViewPage() {
       {/* Workspace */}
       <div className="flex-1 flex overflow-hidden">
         <LeftSidebar
+          projectId={id}
           collapsed={sidebarCollapsed}
           onToggleCollapse={() => setSidebarCollapsed((c) => !c)}
         />

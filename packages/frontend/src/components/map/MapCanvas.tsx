@@ -1,10 +1,22 @@
 import 'leaflet/dist/leaflet.css'
 import { useEffect, useRef } from 'react'
-import type { Map as LeafletMap } from 'leaflet'
+import type { Map as LeafletMap, TileLayer } from 'leaflet'
+import { useMapViewStore, type BasemapStyle } from '../../store/mapViewSlice'
 
 const DEFAULT_LAT = 12.9716
 const DEFAULT_LNG = 77.5946
 const DEFAULT_ZOOM = 13
+
+function buildTileUrl(style: BasemapStyle, apiKey: string | undefined): string {
+  const r = '{r}'
+  const base = `https://tiles.stadiamaps.com/tiles/${style}/{z}/{x}/{y}${r}.png`
+  return apiKey ? `${base}?api_key=${apiKey}` : base
+}
+
+const TILE_ATTRIBUTION =
+  '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a> ' +
+  '&copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> ' +
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 
 interface MapCanvasProps {
   centerLat?: number | null
@@ -15,7 +27,11 @@ interface MapCanvasProps {
 export default function MapCanvas({ centerLat, centerLng, defaultZoom }: MapCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<LeafletMap | null>(null)
+  const tileLayerRef = useRef<TileLayer | null>(null)
 
+  const basemapStyle = useMapViewStore((s) => s.basemapStyle)
+
+  // Initialise map once
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return
 
@@ -33,25 +49,29 @@ export default function MapCanvas({ centerLat, centerLng, defaultZoom }: MapCanv
       mapRef.current = map
 
       const stadiaKey = import.meta.env.VITE_STADIA_MAPS_API_KEY
-      L.tileLayer(
-        `https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png${stadiaKey ? `?api_key=${stadiaKey}` : ''}`,
-        {
-          attribution:
-            '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a> ' +
-            '&copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> ' +
-            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-          maxZoom: 20,
-        },
-      ).addTo(map)
+      const tileLayer = L.tileLayer(buildTileUrl(basemapStyle, stadiaKey), {
+        attribution: TILE_ATTRIBUTION,
+        maxZoom: 20,
+      }).addTo(map)
+
+      tileLayerRef.current = tileLayer
     })
 
     return () => {
       if (mapRef.current) {
         mapRef.current.remove()
         mapRef.current = null
+        tileLayerRef.current = null
       }
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Switch tile layer when basemap style changes
+  useEffect(() => {
+    if (!tileLayerRef.current) return
+    const stadiaKey = import.meta.env.VITE_STADIA_MAPS_API_KEY
+    tileLayerRef.current.setUrl(buildTileUrl(basemapStyle, stadiaKey))
+  }, [basemapStyle])
 
   return (
     <div
