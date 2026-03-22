@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   useCameraInstances,
   useUpdateCameraInstance,
@@ -6,6 +6,7 @@ import {
 } from '../../api/cameraInstances'
 import { useImportedCameras } from '../../api/projects'
 import { useMapViewStore } from '../../store/mapViewSlice'
+import { calculateFov, calculateTiltFromTarget } from '../../lib/fovCalculations'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -103,6 +104,41 @@ export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPan
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
   }, [selectedCameraId, setSelectedCamera])
+
+  // Live FOV result — recomputed whenever FOV-relevant fields change
+  const liveFovResult = useMemo(() => {
+    if (!form || !cameraModel) return null
+    if (form.target_distance === '' || form.target_distance <= 0) return null
+
+    const tiltAngle = calculateTiltFromTarget(
+      form.height,
+      form.target_distance,
+      form.target_height,
+    )
+    return calculateFov({
+      focalLengthMin: cameraModel.focal_length_min,
+      focalLengthMax: cameraModel.focal_length_max,
+      hFovMin: cameraModel.h_fov_min,
+      hFovMax: cameraModel.h_fov_max,
+      vFovMin: cameraModel.v_fov_min,
+      vFovMax: cameraModel.v_fov_max,
+      installationHeight: form.height,
+      tiltAngle,
+      focalLengthChosen:
+        form.focal_length_chosen !== '' ? form.focal_length_chosen : cameraModel.focal_length_min,
+    })
+  }, [form?.height, form?.target_distance, form?.target_height, form?.focal_length_chosen, cameraModel])
+
+  // Max valid target distance for the current camera at current height/targetHeight
+  const dMax =
+    liveFovResult && form
+      ? (form.height - form.target_height) /
+        Math.tan((liveFovResult.vAngle / 2) * (Math.PI / 180))
+      : null
+
+  useEffect(() => {
+    if (liveFovResult) console.log('[FOV]', liveFovResult)
+  }, [liveFovResult])
 
   // Dirty check
   const isDirty =
@@ -235,7 +271,14 @@ export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPan
                 min={0.1}
                 step={0.1}
                 value={form.height}
-                onChange={(e) => setField('height', parseFloat(e.target.value) || 0.1)}
+                onChange={(e) => {
+                  const h = parseFloat(e.target.value) || 0.1
+                  const newTilt =
+                    form.target_distance !== '' && form.target_distance > 0
+                      ? calculateTiltFromTarget(h, form.target_distance, form.target_height)
+                      : form.tilt_angle
+                  setForm((f) => f ? { ...f, height: h, tilt_angle: newTilt } : f)
+                }}
                 className={inputCls}
               />
             </FormField>
@@ -263,29 +306,36 @@ export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPan
               </div>
             </FormField>
 
-            <FormField label="Tilt Angle (°)">
-              <input
-                type="number"
-                min={0}
-                max={90}
-                step={1}
-                value={form.tilt_angle}
-                onChange={(e) => setField('tilt_angle', parseFloat(e.target.value) || 0)}
-                className={inputCls}
-              />
-            </FormField>
-
             <FormField label="Target Distance (m)">
               <input
                 type="number"
                 min={0}
                 step={0.1}
                 value={form.target_distance}
-                onChange={(e) => setField('target_distance', parseNullableNumber(e.target.value))}
-                placeholder="Auto"
+                onChange={(e) => {
+                  const dist = parseNullableNumber(e.target.value)
+                  const newTilt =
+                    dist !== '' && dist > 0
+                      ? calculateTiltFromTarget(form.height, dist, form.target_height)
+                      : form.tilt_angle
+                  setForm((f) => f ? { ...f, target_distance: dist, tilt_angle: newTilt } : f)
+                }}
+                placeholder="e.g. 5"
                 className={inputCls}
               />
             </FormField>
+
+            {liveFovResult && !liveFovResult.valid && (
+              <p className="text-[11px] text-amber-400 -mt-2">
+                Top ray sees sky — reduce target distance
+                {dMax !== null && dMax > 0 ? ` (max ≈ ${dMax.toFixed(1)} m)` : ''}.
+              </p>
+            )}
+            {liveFovResult?.valid && (
+              <p className="text-[11px] text-emerald-400 -mt-2">
+                FOV valid — {liveFovResult.areaSqMetres.toFixed(1)} m² coverage
+              </p>
+            )}
 
             <FormField label="Target Height (m)">
               <input
@@ -293,24 +343,84 @@ export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPan
                 min={0.1}
                 step={0.1}
                 value={form.target_height}
-                onChange={(e) => setField('target_height', parseFloat(e.target.value) || 0.1)}
+                onChange={(e) => {
+                  const ht = parseFloat(e.target.value) || 0.1
+                  const newTilt =
+                    form.target_distance !== '' && form.target_distance > 0
+                      ? calculateTiltFromTarget(form.height, form.target_distance, ht)
+                      : form.tilt_angle
+                  setForm((f) => f ? { ...f, target_height: ht, tilt_angle: newTilt } : f)
+                }}
                 className={inputCls}
               />
             </FormField>
 
+            <div>
+              <p className="text-[10px] text-slate-400 uppercase tracking-wide mb-0.5">
+                Computed Tilt
+              </p>
+              <p className="text-xs text-slate-300">
+                {form.target_distance !== '' && form.target_distance > 0
+                  ? `${calculateTiltFromTarget(form.height, form.target_distance, form.target_height).toFixed(1)}°`
+                  : '—'}
+              </p>
+            </div>
+
             <FormField label="Focal Length (mm)">
-              <input
-                type="number"
-                min={0}
-                step={0.1}
-                value={form.focal_length_chosen}
-                onChange={(e) =>
-                  setField('focal_length_chosen', parseNullableNumber(e.target.value))
-                }
-                placeholder="Auto"
-                className={inputCls}
-              />
+              <div className="flex flex-col gap-1">
+                {cameraModel && (
+                  <>
+                    <input
+                      type="range"
+                      min={cameraModel.focal_length_min}
+                      max={cameraModel.focal_length_max}
+                      step={0.1}
+                      value={form.focal_length_chosen !== '' ? form.focal_length_chosen : cameraModel.focal_length_min}
+                      onChange={(e) => setField('focal_length_chosen', parseFloat(e.target.value))}
+                      className="w-full accent-blue-500"
+                    />
+                    <div className="flex justify-between text-[10px] text-slate-500">
+                      <span>{cameraModel.focal_length_min} mm</span>
+                      <span>{cameraModel.focal_length_max} mm</span>
+                    </div>
+                  </>
+                )}
+                <input
+                  type="number"
+                  min={cameraModel?.focal_length_min ?? 0}
+                  max={cameraModel?.focal_length_max}
+                  step={0.1}
+                  value={form.focal_length_chosen}
+                  onChange={(e) =>
+                    setField('focal_length_chosen', parseNullableNumber(e.target.value))
+                  }
+                  placeholder="Auto"
+                  className={inputCls}
+                />
+              </div>
             </FormField>
+
+            <section className="border-t border-slate-700 pt-3 flex flex-col gap-2">
+              <p className="text-[10px] text-slate-400 uppercase tracking-wide">FOV Results</p>
+              <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                <ReadOnlyField
+                  label="H-FOV"
+                  value={liveFovResult ? `${liveFovResult.hAngle.toFixed(1)}°` : '—'}
+                />
+                <ReadOnlyField
+                  label="V-FOV"
+                  value={liveFovResult ? `${liveFovResult.vAngle.toFixed(1)}°` : '—'}
+                />
+                <ReadOnlyField
+                  label="Dead Zone"
+                  value={liveFovResult?.valid ? `${liveFovResult.dNear.toFixed(2)} m` : '—'}
+                />
+                <ReadOnlyField
+                  label="Max Distance"
+                  value={liveFovResult?.valid ? `${liveFovResult.dFar.toFixed(2)} m` : '—'}
+                />
+              </div>
+            </section>
           </div>
 
           {/* Footer */}

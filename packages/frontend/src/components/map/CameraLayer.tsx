@@ -11,6 +11,7 @@ import {
   useCreateCameraInstance,
 } from '../../api/cameraInstances'
 import { useMapViewStore } from '../../store/mapViewSlice'
+import { FOV_DEFAULTS } from '../../lib/fovCalculations'
 
 // ── Marker icon ────────────────────────────────────────────────────────────────
 
@@ -122,7 +123,14 @@ export default function CameraLayer({ projectId, map }: CameraLayerProps) {
 
     const handler = (e: LeafletMouseEvent) => {
       createCamera.mutate(
-        { camera_model_id: selectedModelId, lat: e.latlng.lat, lng: e.latlng.lng },
+        {
+          camera_model_id: selectedModelId,
+          lat: e.latlng.lat,
+          lng: e.latlng.lng,
+          height: FOV_DEFAULTS.height,
+          target_distance: FOV_DEFAULTS.targetDistance,
+          target_height: FOV_DEFAULTS.targetHeight,
+        },
         { onSuccess: (newCamera) => selectCameraAfterPlacement(newCamera.id) },
       )
     }

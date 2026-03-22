@@ -6,6 +6,7 @@ import MapNavbar from '../components/map/MapNavbar'
 import LeftSidebar from '../components/map/LeftSidebar'
 import MapCanvas from '../components/map/MapCanvas'
 import CameraLayer from '../components/map/CameraLayer'
+import FovLayer from '../components/map/FovLayer'
 import BottomToolbar from '../components/map/BottomToolbar'
 import CameraPropertiesPanel from '../components/map/CameraPropertiesPanel'
 import { useMapViewStore } from '../store/mapViewSlice'
@@ -68,6 +69,7 @@ export default function ProjectMapViewPage() {
           onMapReady={setLeafletMap}
         />
         <CameraLayer projectId={id} map={leafletMap} />
+        <FovLayer    projectId={id} map={leafletMap} />
         <CameraPropertiesPanel projectId={id} />
       </div>
 
