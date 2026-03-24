@@ -4,11 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-CCTV Survey Planner — a monorepo with a React/TypeScript frontend and a Python/FastAPI backend. The app helps users plan CCTV camera placements on a map, with geospatial calculations, PDF/KML export, and real-time collaboration via WebSockets.
+CCTV Survey Planner — a monorepo with a React/TypeScript frontend and a Python/FastAPI backend. The app helps users plan CCTV camera placements on a map, with geospatial calculations, PDF/KML export.
 
 ## Monorepo Structure
 
 Managed with **pnpm workspaces** (`pnpm-workspace.yaml`). Two packages:
+
 - `packages/frontend` — React 19, TypeScript, Vite 7, Tailwind CSS v4
 - `packages/backend` — Python 3.12+, FastAPI, MongoDB (Beanie ODM), Redis
 
@@ -38,7 +39,6 @@ uv run pytest -k "test_name"           # Run a single test by name
 ```
 
 ## Environment Setup
-
 
 The Vite dev server proxies `/api/*` to `http://localhost:8000` and `/ws/*` to `ws://localhost:8000`, so no CORS config is needed during development.
 

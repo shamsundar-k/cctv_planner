@@ -1,6 +1,4 @@
-import { useEffect, useState } from 'react'
 import { useParams } from 'react-router'
-import type { Map as LeafletMap } from 'leaflet'
 import { useProject } from '../api/projects'
 import MapNavbar from '../components/map/MapNavbar'
 import LeftSidebar from '../components/map/LeftSidebar'
@@ -9,30 +7,10 @@ import CameraLayer from '../components/map/CameraLayer'
 import FovLayer from '../components/map/FovLayer'
 import BottomToolbar from '../components/map/BottomToolbar'
 import CameraPropertiesPanel from '../components/map/CameraPropertiesPanel'
-import { useMapViewStore } from '../store/mapViewSlice'
 
 export default function ProjectMapViewPage() {
   const { id = '' } = useParams<{ id: string }>()
   const { data: project, isLoading, isError } = useProject(id)
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
-  const [leafletMap, setLeafletMap] = useState<LeafletMap | null>(null)
-
-  const activeTool = useMapViewStore((s) => s.activeTool)
-  const setSelectedCamera = useMapViewStore((s) => s.setSelectedCamera)
-
-  // Deselect camera when clicking map background
-  useEffect(() => {
-    if (!leafletMap) return
-    const handler = () => {
-      if (activeTool === 'select' || activeTool === 'pan') {
-        setSelectedCamera(null)
-      }
-    }
-    leafletMap.on('click', handler)
-    return () => {
-      leafletMap.off('click', handler)
-    }
-  }, [leafletMap, activeTool, setSelectedCamera])
 
   if (isLoading) {
     return (
@@ -57,20 +35,16 @@ export default function ProjectMapViewPage() {
 
       {/* Workspace */}
       <div className="flex-1 flex overflow-hidden">
-        <LeftSidebar
-          projectId={id}
-          collapsed={sidebarCollapsed}
-          onToggleCollapse={() => setSidebarCollapsed((c) => !c)}
-        />
+        <LeftSidebar projectId={id} />
         <MapCanvas
           centerLat={project.center_lat}
           centerLng={project.center_lng}
           defaultZoom={project.default_zoom}
-          onMapReady={setLeafletMap}
-        />
-        <CameraLayer projectId={id} map={leafletMap} />
-        <FovLayer    projectId={id} map={leafletMap} />
-        <CameraPropertiesPanel projectId={id} />
+        >
+          <FovLayer    projectId={id} />
+          <CameraLayer projectId={id} />
+          <CameraPropertiesPanel projectId={id} />
+        </MapCanvas>
       </div>
 
       {/* Bottom toolbar */}

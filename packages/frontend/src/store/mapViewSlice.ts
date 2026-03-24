@@ -30,6 +30,7 @@ interface MapViewState {
   markDirty: () => void
   markSaved: () => void
   setActiveTool: (tool: ActiveTool) => void
+  setLeafletMap: (map: LeafletMap | null) => void
   setSelectedCamera: (id: string | null) => void
   selectCameraAfterPlacement: (id: string) => void
   setSelectedModel: (id: string | null) => void
@@ -46,6 +47,8 @@ export const useMapViewStore = create<MapViewState>((set) => ({
 
   activeTool: 'pan',
 
+  leafletMap: null,
+
   selectedCameraId: null,
   selectedModelId: null,
 
@@ -61,6 +64,7 @@ export const useMapViewStore = create<MapViewState>((set) => ({
   markSaved: () => set({ isDirty: false, lastSavedAt: new Date() }),
 
   setActiveTool: (tool) => set({ activeTool: tool }),
+  setLeafletMap: (map) => set({ leafletMap: map }),
 
   setSelectedCamera: (id) => set({ selectedCameraId: id }),
   selectCameraAfterPlacement: (id) => set({ selectedCameraId: id, activeTool: 'select' }),

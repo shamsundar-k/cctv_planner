@@ -7,10 +7,11 @@
  * from the map view store.
  */
 import { useEffect, useRef } from 'react'
-import type { Map as LeafletMap, Polygon } from 'leaflet'
+import type { Polygon } from 'leaflet'
 import { useCameraInstances } from '../../api/cameraInstances'
 import { useImportedCameras } from '../../api/projects'
 import { useMapViewStore } from '../../store/mapViewSlice'
+import { useLeafletMap } from './MapContext'
 import {
   calculateFov,
   calculateTiltFromTarget,
@@ -19,13 +20,13 @@ import {
 
 interface FovLayerProps {
   projectId: string
-  map: LeafletMap | null
 }
 
-export default function FovLayer({ projectId, map }: FovLayerProps) {
+export default function FovLayer({ projectId }: FovLayerProps) {
   const { data: cameras } = useCameraInstances(projectId)
   const { data: importedItems } = useImportedCameras(projectId)
 
+  const map = useLeafletMap()
   const showFovPolygons = useMapViewStore((s) => s.showFovPolygons)
   const hiddenCameraIds = useMapViewStore((s) => s.hiddenCameraIds)
   const selectedCameraId = useMapViewStore((s) => s.selectedCameraId)
@@ -73,7 +74,7 @@ export default function FovLayer({ projectId, map }: FovLayerProps) {
 
         const tiltAngle = calculateTiltFromTarget(
           cam.height,
-          cam.target_distance,
+          cam.target_distance!,
           cam.target_height,
         )
 

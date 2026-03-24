@@ -1,7 +1,8 @@
 import 'leaflet/dist/leaflet.css'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import type { Map as LeafletMap, TileLayer } from 'leaflet'
 import { useMapViewStore, type BasemapStyle } from '../../store/mapViewSlice'
+import MapContext from './MapContext'
 
 const CROSSHAIR_TOOLS = new Set(['place-camera'])
 
@@ -24,18 +25,18 @@ interface MapCanvasProps {
   centerLat?: number | null
   centerLng?: number | null
   defaultZoom?: number | null
-  onMapReady?: (map: LeafletMap) => void
+  children?: ReactNode
 }
 
-export default function MapCanvas({ centerLat, centerLng, defaultZoom, onMapReady }: MapCanvasProps) {
+export default function MapCanvas({ centerLat, centerLng, defaultZoom, children }: MapCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null)
-  const mapRef = useRef<LeafletMap | null>(null)
   const tileLayerRef = useRef<TileLayer | null>(null)
-  const onMapReadyRef = useRef(onMapReady)
-  onMapReadyRef.current = onMapReady
+  const mapRef = useRef<LeafletMap | null>(null)
+  const [map, setMap] = useState<LeafletMap | null>(null)
 
   const basemapStyle = useMapViewStore((s) => s.basemapStyle)
   const activeTool = useMapViewStore((s) => s.activeTool)
+  const setSelectedCamera = useMapViewStore((s) => s.setSelectedCamera)
 
   // Initialise map once
   useEffect(() => {
@@ -48,18 +49,18 @@ export default function MapCanvas({ centerLat, centerLng, defaultZoom, onMapRead
       const lng = centerLng ?? DEFAULT_LNG
       const zoom = defaultZoom ?? DEFAULT_ZOOM
 
-      const map = L.map(containerRef.current!, {
+      const leafletMap = L.map(containerRef.current!, {
         zoomControl: true,
       }).setView([lat, lng], zoom)
 
-      mapRef.current = map
-      onMapReadyRef.current?.(map)
+      mapRef.current = leafletMap
+      setMap(leafletMap)
 
       const stadiaKey = import.meta.env.VITE_STADIA_MAPS_API_KEY
       const tileLayer = L.tileLayer(buildTileUrl(basemapStyle, stadiaKey), {
         attribution: TILE_ATTRIBUTION,
         maxZoom: 20,
-      }).addTo(map)
+      }).addTo(leafletMap)
 
       tileLayerRef.current = tileLayer
     })
@@ -69,6 +70,7 @@ export default function MapCanvas({ centerLat, centerLng, defaultZoom, onMapRead
         mapRef.current.remove()
         mapRef.current = null
         tileLayerRef.current = null
+        setMap(null)
       }
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
@@ -86,11 +88,25 @@ export default function MapCanvas({ centerLat, centerLng, defaultZoom, onMapRead
     mapRef.current.getContainer().style.cursor = CROSSHAIR_TOOLS.has(activeTool) ? 'crosshair' : ''
   }, [activeTool])
 
+  // Deselect camera when clicking map background
+  useEffect(() => {
+    const m = mapRef.current
+    if (!m) return
+    const handler = () => {
+      if (activeTool === 'select' || activeTool === 'pan') setSelectedCamera(null)
+    }
+    m.on('click', handler)
+    return () => { m.off('click', handler) }
+  }, [activeTool, setSelectedCamera])
+
   return (
-    <div
-      ref={containerRef}
-      className="flex-1 relative"
-      style={{ minWidth: 0 }}
-    />
+    <MapContext.Provider value={map}>
+      <div
+        ref={containerRef}
+        className="flex-1 relative"
+        style={{ minWidth: 0 }}
+      />
+      {children}
+    </MapContext.Provider>
   )
 }

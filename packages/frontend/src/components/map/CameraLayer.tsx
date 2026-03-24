@@ -5,12 +5,13 @@
  * Renders no DOM of its own; all output goes directly into the Leaflet map.
  */
 import { useEffect, useRef } from 'react'
-import type { Map as LeafletMap, Marker, LeafletMouseEvent } from 'leaflet'
+import type { Marker, LeafletMouseEvent } from 'leaflet'
 import {
   useCameraInstances,
   useCreateCameraInstance,
 } from '../../api/cameraInstances'
 import { useMapViewStore } from '../../store/mapViewSlice'
+import { useLeafletMap } from './MapContext'
 import { FOV_DEFAULTS } from '../../lib/fovCalculations'
 
 // ── Marker icon ────────────────────────────────────────────────────────────────
@@ -37,13 +38,13 @@ function buildCameraIcon(colour: string, selected: boolean): string {
 
 interface CameraLayerProps {
   projectId: string
-  map: LeafletMap | null
 }
 
-export default function CameraLayer({ projectId, map }: CameraLayerProps) {
+export default function CameraLayer({ projectId }: CameraLayerProps) {
   const { data: cameras } = useCameraInstances(projectId)
   const createCamera = useCreateCameraInstance(projectId)
 
+  const map = useLeafletMap()
   const activeTool = useMapViewStore((s) => s.activeTool)
   const selectedModelId = useMapViewStore((s) => s.selectedModelId)
   const selectedCameraId = useMapViewStore((s) => s.selectedCameraId)
