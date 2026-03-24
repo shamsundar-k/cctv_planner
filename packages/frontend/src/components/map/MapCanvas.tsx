@@ -1,6 +1,6 @@
 import 'leaflet/dist/leaflet.css'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import type { Map as LeafletMap, TileLayer } from 'leaflet'
+import type { Map as LeafletMap, TileLayer, LayerGroup } from 'leaflet'
 import { useMapViewStore, type BasemapStyle } from '../../store/mapViewSlice'
 import MapContext from './MapContext'
 
@@ -32,7 +32,11 @@ export default function MapCanvas({ centerLat, centerLng, defaultZoom, children 
   const containerRef = useRef<HTMLDivElement>(null)
   const tileLayerRef = useRef<TileLayer | null>(null)
   const mapRef = useRef<LeafletMap | null>(null)
+  const cameraLayerRef = useRef<LayerGroup | null>(null)
+  const fovLayerRef = useRef<LayerGroup | null>(null)
   const [map, setMap] = useState<LeafletMap | null>(null)
+  const [cameraLayer, setCameraLayer] = useState<LayerGroup | null>(null)
+  const [fovLayer, setFovLayer] = useState<LayerGroup | null>(null)
 
   const basemapStyle = useMapViewStore((s) => s.basemapStyle)
   const activeTool = useMapViewStore((s) => s.activeTool)
@@ -63,6 +67,13 @@ export default function MapCanvas({ centerLat, centerLng, defaultZoom, children 
       }).addTo(leafletMap)
 
       tileLayerRef.current = tileLayer
+
+      const camLayer = L.layerGroup().addTo(leafletMap)
+      const fovLayerGroup = L.layerGroup().addTo(leafletMap)
+      cameraLayerRef.current = camLayer
+      fovLayerRef.current = fovLayerGroup
+      setCameraLayer(camLayer)
+      setFovLayer(fovLayerGroup)
     })
 
     return () => {
@@ -70,7 +81,11 @@ export default function MapCanvas({ centerLat, centerLng, defaultZoom, children 
         mapRef.current.remove()
         mapRef.current = null
         tileLayerRef.current = null
+        cameraLayerRef.current = null
+        fovLayerRef.current = null
         setMap(null)
+        setCameraLayer(null)
+        setFovLayer(null)
       }
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
@@ -100,7 +115,7 @@ export default function MapCanvas({ centerLat, centerLng, defaultZoom, children 
   }, [activeTool, setSelectedCamera])
 
   return (
-    <MapContext.Provider value={map}>
+    <MapContext.Provider value={{ map, cameraLayer, fovLayer }}>
       <div
         ref={containerRef}
         className="flex-1 relative"

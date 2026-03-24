@@ -8,7 +8,7 @@
 import { useEffect, useRef } from 'react'
 import type { Marker, LeafletMouseEvent } from 'leaflet'
 import { useMapViewStore } from '../../store/mapViewSlice'
-import { useLeafletMap } from './MapContext'
+import { useCameraLayer } from './MapContext'
 
 // ── Icon builder (same visual as before) ──────────────────────────────────────
 
@@ -40,7 +40,7 @@ export default function CameraMarker({ cameraId }: CameraMarkerProps) {
   const camera = useMapViewStore((s) => s.cameraInstances[cameraId])
   const selectedCameraId = useMapViewStore((s) => s.selectedCameraId)
   const setSelectedCamera = useMapViewStore((s) => s.setSelectedCamera)
-  const map = useLeafletMap()
+  const cameraLayer = useCameraLayer()
 
   const markerRef = useRef<Marker | null>(null)
   // Keep selectedCameraId in a ref so the click handler never goes stale
@@ -50,7 +50,7 @@ export default function CameraMarker({ cameraId }: CameraMarkerProps) {
 
   // ── Create marker on mount, remove on unmount ────────────────────────────
   useEffect(() => {
-    if (!map || !camera) return
+    if (!cameraLayer || !camera) return
 
     let mounted = true
     import('leaflet').then((L) => {
@@ -63,7 +63,7 @@ export default function CameraMarker({ cameraId }: CameraMarkerProps) {
           iconSize: [28, 28],
           iconAnchor: [14, 14],
         }),
-      }).addTo(map)
+      }).addTo(cameraLayer)
 
       marker.on('click', (e: LeafletMouseEvent) => {
         e.originalEvent.stopPropagation()
@@ -81,7 +81,7 @@ export default function CameraMarker({ cameraId }: CameraMarkerProps) {
     }
   // Only run on mount/unmount — position and icon updates are handled separately
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [map])
+  }, [cameraLayer])
 
   // ── Update icon when colour or selection state changes ───────────────────
   useEffect(() => {

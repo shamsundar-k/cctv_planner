@@ -9,7 +9,7 @@ import { useEffect, useRef } from 'react'
 import type { Polygon } from 'leaflet'
 import { useImportedCameras } from '../../api/projects'
 import { useMapViewStore } from '../../store/mapViewSlice'
-import { useLeafletMap } from './MapContext'
+import { useFovLayer } from './MapContext'
 import {
   calculateFov,
   calculateTiltFromTarget,
@@ -28,7 +28,7 @@ export default function FovPolygon({ cameraId, projectId }: FovPolygonProps) {
   const hiddenCameraIds = useMapViewStore((s) => s.hiddenCameraIds)
 
   const { data: importedItems } = useImportedCameras(projectId)
-  const map = useLeafletMap()
+  const fovLayer = useFovLayer()
 
   const polygonRef = useRef<Polygon | null>(null)
 
@@ -42,7 +42,7 @@ export default function FovPolygon({ cameraId, projectId }: FovPolygonProps) {
 
   // ── Sync polygon with camera state ───────────────────────────────────────
   useEffect(() => {
-    if (!map || !camera || !importedItems) return
+    if (!fovLayer || !camera || !importedItems) return
 
     const shouldHide =
       !showFovPolygons ||
@@ -111,10 +111,10 @@ export default function FovPolygon({ cameraId, projectId }: FovPolygonProps) {
         polygonRef.current.setLatLngs(latlngs)
         polygonRef.current.setStyle(style)
       } else {
-        polygonRef.current = L.polygon(latlngs, style).addTo(map)
+        polygonRef.current = L.polygon(latlngs, style).addTo(fovLayer)
       }
     })
-  }, [camera, selectedCameraId, showFovPolygons, hiddenCameraIds, importedItems, map])
+  }, [camera, selectedCameraId, showFovPolygons, hiddenCameraIds, importedItems, fovLayer])
 
   return null
 }

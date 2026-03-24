@@ -6,7 +6,8 @@
       "Bash(xargs grep:*)",
       "Bash(grep -r \"cameraInstances\\\\|POST.*cameras\\\\|PUT.*cameras\\\\|DELETE.*cameras\" C:Developmentcctv_plannerpackagesfrontendsrc --include=*.ts --include=*.tsx)",
       "Bash(npm list:*)",
-      "Bash(pnpm install:*)"
+      "Bash(pnpm install:*)",
+      "Bash(grep -E \"\\\\.\\(tsx|ts\\)$\")"
     ]
   }
 }
