@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import type { CameraInstance } from '../api/cameraInstances.types'
 
 export type BasemapStyle = 'alidade_smooth' | 'alidade_smooth_dark' | 'stamen_toner'
 export type ActiveTool = 'pan' | 'select' | 'place-camera' | 'draw-polygon' | 'draw-line' | 'measure' | 'delete'
@@ -26,6 +27,13 @@ interface MapViewState {
   // Per-camera visibility overrides (set of hidden IDs)
   hiddenCameraIds: string[]
 
+  // ── Camera working-copy store ─────────────────────────────────────────────
+  // Populated by useSyncCameraInstancesToStore; used by CameraMarker / FovPolygon
+  cameraIds: string[]
+  cameraInstances: Record<string, CameraInstance>
+  // IDs that have been edited locally but not yet saved to the server
+  dirtyIds: Set<string>
+
   // Actions
   markDirty: () => void
   markSaved: () => void
@@ -39,7 +47,18 @@ interface MapViewState {
   setShowCameraLabels: (show: boolean) => void
   setBasemapStyle: (style: BasemapStyle) => void
   toggleCameraVisibility: (cameraId: string) => void
+
+  // Camera store actions
+  hydrateCameras: (cameras: CameraInstance[]) => void
+  addCamera: (camera: CameraInstance) => void
+  removeCamera: (id: string) => void
+  updateCamera: (id: string, patch: Partial<CameraInstance>) => void
+  clearDirty: (id: string) => void
 }
+
+// Leaflet Map type — imported lazily so we keep this file framework-agnostic
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type LeafletMap = any
 
 export const useMapViewStore = create<MapViewState>((set) => ({
   isDirty: false,
@@ -59,6 +78,11 @@ export const useMapViewStore = create<MapViewState>((set) => ({
   basemapStyle: 'alidade_smooth',
 
   hiddenCameraIds: [],
+
+  // Camera working-copy store
+  cameraIds: [],
+  cameraInstances: {},
+  dirtyIds: new Set<string>(),
 
   markDirty: () => set({ isDirty: true }),
   markSaved: () => set({ isDirty: false, lastSavedAt: new Date() }),
@@ -82,4 +106,50 @@ export const useMapViewStore = create<MapViewState>((set) => ({
         ? state.hiddenCameraIds.filter((id) => id !== cameraId)
         : [...state.hiddenCameraIds, cameraId],
     })),
+
+  // ── Camera store actions ──────────────────────────────────────────────────
+
+  hydrateCameras: (cameras) =>
+    set({
+      cameraIds: cameras.map((c) => c.id),
+      cameraInstances: Object.fromEntries(cameras.map((c) => [c.id, c])),
+      dirtyIds: new Set<string>(),
+    }),
+
+  addCamera: (camera) =>
+    set((s) => ({
+      cameraIds: [...s.cameraIds, camera.id],
+      cameraInstances: { ...s.cameraInstances, [camera.id]: camera },
+    })),
+
+  removeCamera: (id) =>
+    set((s) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { [id]: _removed, ...rest } = s.cameraInstances
+      const dirty = new Set(s.dirtyIds)
+      dirty.delete(id)
+      return {
+        cameraIds: s.cameraIds.filter((i) => i !== id),
+        cameraInstances: rest,
+        dirtyIds: dirty,
+      }
+    }),
+
+  updateCamera: (id, patch) =>
+    set((s) => {
+      if (!s.cameraInstances[id]) return s
+      const dirty = new Set(s.dirtyIds)
+      dirty.add(id)
+      return {
+        cameraInstances: { ...s.cameraInstances, [id]: { ...s.cameraInstances[id], ...patch } },
+        dirtyIds: dirty,
+      }
+    }),
+
+  clearDirty: (id) =>
+    set((s) => {
+      const dirty = new Set(s.dirtyIds)
+      dirty.delete(id)
+      return { dirtyIds: dirty }
+    }),
 }))
