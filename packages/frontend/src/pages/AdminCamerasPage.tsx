@@ -35,7 +35,8 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import Navbar from '../components/layout/Navbar'
 import { useAuthStore } from '../store/authSlice'
-import { useAllCameras, useDeleteCamera, type CameraModel } from '../api/cameras'
+import { useAllCameras, useDeleteCamera } from '../api/cameras'
+import type { CameraModel } from '../api/cameras.types'
 import { useToast } from '../components/ui/Toast'
 
 function CameraTypeLabel({ type }: { type: CameraModel['camera_type'] }) {

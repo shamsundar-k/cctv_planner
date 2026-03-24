@@ -17,7 +17,7 @@
  * SkeletonCard() — Internal component that renders a fixed-height animated
  *   skeleton placeholder matching the approximate dimensions of a ProjectCard.
  */
-import type { Project } from '../../api/projects'
+import type { Project } from '../../api/projects.types'
 import ProjectCard from './ProjectCard'
 import EmptyState from './EmptyState'
 

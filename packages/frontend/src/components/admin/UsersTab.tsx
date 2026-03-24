@@ -20,7 +20,7 @@
  * Avatar initials are rendered using `getInitials()` from admin/utils.ts.
  * Join date is formatted using `formatDate()` from admin/utils.ts.
  */
-import type { AdminUser } from '../../api/admin'
+import type { AdminUser } from '../../api/admin.types'
 import SearchInput from './SearchInput'
 import { formatDate, getInitials } from './utils'
 

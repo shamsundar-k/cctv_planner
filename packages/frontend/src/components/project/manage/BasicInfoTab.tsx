@@ -21,7 +21,7 @@
  * reflects any externally updated values.
  */
 import { useState, useEffect } from 'react'
-import type { Project, UpdateProjectDTO } from '../../../api/projects'
+import type { Project, UpdateProjectDTO } from '../../../api/projects.types'
 import { useUpdateProject } from '../../../api/projects'
 import { useToast } from '../../ui/Toast'
 

@@ -21,7 +21,8 @@
  *   error message and shows an error toast.
  */
 import { useEffect, useRef, useState } from 'react'
-import { useDeleteProject, type Project } from '../../api/projects'
+import { useDeleteProject } from '../../api/projects'
+import type { Project } from '../../api/projects.types'
 import { useToast } from '../ui/Toast'
 
 interface DeleteProjectModalProps {

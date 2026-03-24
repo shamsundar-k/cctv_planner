@@ -21,7 +21,7 @@
  * expiryBarColor(pct) — Internal helper; maps a percentage value to a CSS
  *   colour string (green / amber / red) used by the progress bar and badge.
  */
-import type { AdminInvite } from '../../api/admin'
+import type { AdminInvite } from '../../api/admin.types'
 import { formatDate, getExpiryPercent, getExpiryLabel } from './utils'
 
 interface InvitesTabProps {

@@ -17,7 +17,7 @@
  *     - "Delete" — calls `onDeleteProject(id, name)` to open the confirmation
  *       modal in AdminDashboard.
  */
-import type { AdminProject } from '../../api/admin'
+import type { AdminProject } from '../../api/admin.types'
 import SearchInput from './SearchInput'
 import { formatDate } from './utils'
 

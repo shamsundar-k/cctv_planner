@@ -25,7 +25,7 @@
 import 'leaflet/dist/leaflet.css'
 import { useState, useEffect, useRef } from 'react'
 import type { Map as LeafletMap, Marker as LeafletMarker } from 'leaflet'
-import type { Project, UpdateProjectDTO } from '../../../api/projects'
+import type { Project, UpdateProjectDTO } from '../../../api/projects.types'
 import { useUpdateProject } from '../../../api/projects'
 import { useToast } from '../../ui/Toast'
 

@@ -26,7 +26,7 @@
  */
 import { memo, useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router'
-import type { Project } from '../../api/projects'
+import type { Project } from '../../api/projects.types'
 
 function formatRelativeTime(dateStr: string): string {
   const diffMs = Date.now() - new Date(dateStr).getTime()
