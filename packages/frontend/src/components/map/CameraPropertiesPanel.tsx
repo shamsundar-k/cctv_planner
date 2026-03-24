@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
-  useCameraInstances,
-  useUpdateCameraInstance,
+  useSaveDirtyCameras,
   useDeleteCameraInstance,
 } from '../../api/cameraInstances'
 import { useImportedCameras } from '../../api/projects'
@@ -53,22 +52,26 @@ interface CameraPropertiesPanelProps {
 export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPanelProps) {
   const selectedCameraId = useMapViewStore((s) => s.selectedCameraId)
   const setSelectedCamera = useMapViewStore((s) => s.setSelectedCamera)
+  // Read this camera's working-copy directly from the Zustand store
+  const camera = useMapViewStore((s) =>
+    s.selectedCameraId ? (s.cameraInstances[s.selectedCameraId] ?? null) : null,
+  )
+  // Watch the ID list so we can auto-deselect when a camera is deleted
+  const cameraIds = useMapViewStore((s) => s.cameraIds)
 
-  const { data: cameras } = useCameraInstances(projectId)
   const { data: importedItems } = useImportedCameras(projectId)
 
-  const updateCamera = useUpdateCameraInstance(projectId)
+  const saveCamera = useSaveDirtyCameras(projectId)
   const deleteCamera = useDeleteCameraInstance(projectId)
 
-  const camera = cameras?.find((c) => c.id === selectedCameraId) ?? null
-  const cameraModel = importedItems?.find(
-    (item) => item.camera_model.id === camera?.camera_model_id,
-  )?.camera_model ?? null
+  const cameraModel =
+    importedItems?.find((item) => item.camera_model.id === camera?.camera_model_id)
+      ?.camera_model ?? null
 
   const [form, setForm] = useState<FormValues | null>(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
 
-  // Initialise form when selection changes (not on every refetch)
+  // Initialise form when selection changes (not on every store update)
   useEffect(() => {
     if (!camera) {
       setForm(null)
@@ -88,12 +91,12 @@ export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPan
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [camera?.id])
 
-  // Auto-deselect if selected camera was removed from the list
+  // Auto-deselect if selected camera was deleted
   useEffect(() => {
-    if (selectedCameraId && cameras && !cameras.find((c) => c.id === selectedCameraId)) {
+    if (selectedCameraId && !cameraIds.includes(selectedCameraId)) {
       setSelectedCamera(null)
     }
-  }, [cameras, selectedCameraId, setSelectedCamera])
+  }, [cameraIds, selectedCameraId, setSelectedCamera])
 
   // Escape key closes the panel
   useEffect(() => {
@@ -140,7 +143,7 @@ export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPan
     if (liveFovResult) console.log('[FOV]', liveFovResult)
   }, [liveFovResult])
 
-  // Dirty check
+  // Dirty check — local form vs the server-synced camera in the store
   const isDirty =
     form !== null &&
     camera !== null &&
@@ -156,35 +159,19 @@ export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPan
 
   function handleSave() {
     if (!form || !camera) return
-    updateCamera.mutate(
-      {
-        cameraId: camera.id,
-        data: {
-          label: form.label,
-          colour: form.colour,
-          height: form.height,
-          bearing: form.bearing,
-          tilt_angle: form.tilt_angle,
-          target_distance: form.target_distance === '' ? null : form.target_distance,
-          target_height: form.target_height,
-          focal_length_chosen: form.focal_length_chosen === '' ? null : form.focal_length_chosen,
-        },
+    saveCamera.mutate({
+      cameraId: camera.id,
+      data: {
+        label: form.label,
+        colour: form.colour,
+        height: form.height,
+        bearing: form.bearing,
+        tilt_angle: form.tilt_angle,
+        target_distance: form.target_distance === '' ? null : form.target_distance,
+        target_height: form.target_height,
+        focal_length_chosen: form.focal_length_chosen === '' ? null : form.focal_length_chosen,
       },
-      {
-        onSuccess: (updated) => {
-          setForm({
-            label: updated.label,
-            colour: updated.colour,
-            height: updated.height,
-            bearing: updated.bearing,
-            tilt_angle: updated.tilt_angle,
-            target_distance: updated.target_distance ?? '',
-            target_height: updated.target_height,
-            focal_length_chosen: updated.focal_length_chosen ?? '',
-          })
-        },
-      },
-    )
+    })
   }
 
   function handleDelete() {
@@ -427,10 +414,10 @@ export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPan
           <div className="px-4 py-3 border-t border-slate-700 flex flex-col gap-2 shrink-0">
             <button
               onClick={handleSave}
-              disabled={!isDirty || updateCamera.isPending}
+              disabled={!isDirty || saveCamera.isPending}
               className="h-8 rounded-md bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              {updateCamera.isPending ? 'Saving…' : 'Save Changes'}
+              {saveCamera.isPending ? 'Saving…' : 'Save Changes'}
             </button>
 
             {!confirmDelete ? (
