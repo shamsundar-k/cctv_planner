@@ -4,7 +4,8 @@ import {
   useDeleteCameraInstance,
 } from '../../api/cameraInstances'
 import { useImportedCameras } from '../../api/projects'
-import { useMapViewStore } from '../../store/mapViewSlice'
+import { useCameraInstanceStore } from '../../store/cameraInstanceStore'
+import { useCameraLayerStore } from '../../store/cameraLayerSlice'
 import { calculateFov, calculateTiltFromTarget } from '../../lib/fovCalculations'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -50,14 +51,14 @@ interface CameraPropertiesPanelProps {
 }
 
 export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPanelProps) {
-  const selectedCameraId = useMapViewStore((s) => s.selectedCameraId)
-  const setSelectedCamera = useMapViewStore((s) => s.setSelectedCamera)
+  const selectedCameraId = useCameraLayerStore((s) => s.selectedCameraId)
+  const clearSelection = useCameraLayerStore((s) => s.clearSelection)
   // Read this camera's working-copy directly from the Zustand store
-  const camera = useMapViewStore((s) =>
-    s.selectedCameraId ? (s.cameraInstances[s.selectedCameraId] ?? null) : null,
+  const camera = useCameraInstanceStore((s) =>
+    selectedCameraId ? (s.cameraInstances[selectedCameraId] ?? null) : null,
   )
   // Watch the ID list so we can auto-deselect when a camera is deleted
-  const cameraIds = useMapViewStore((s) => s.cameraIds)
+  const cameraIds = useCameraInstanceStore((s) => s.cameraIds)
 
   const { data: importedItems } = useImportedCameras(projectId)
 
@@ -94,19 +95,19 @@ export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPan
   // Auto-deselect if selected camera was deleted
   useEffect(() => {
     if (selectedCameraId && !cameraIds.includes(selectedCameraId)) {
-      setSelectedCamera(null)
+      clearSelection()
     }
-  }, [cameraIds, selectedCameraId, setSelectedCamera])
+  }, [cameraIds, selectedCameraId, clearSelection])
 
   // Escape key closes the panel
   useEffect(() => {
     if (!selectedCameraId) return
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setSelectedCamera(null)
+      if (e.key === 'Escape') clearSelection()
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [selectedCameraId, setSelectedCamera])
+  }, [selectedCameraId, clearSelection])
 
   // Live FOV result — recomputed whenever FOV-relevant fields change
   const liveFovResult = useMemo(() => {
@@ -177,7 +178,7 @@ export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPan
   function handleDelete() {
     if (!camera) return
     deleteCamera.mutate(camera.id, {
-      onSuccess: () => setSelectedCamera(null),
+      onSuccess: () => clearSelection(),
     })
   }
 
@@ -203,7 +204,7 @@ export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPan
           <div className="flex items-center justify-between px-4 py-3 border-b border-slate-700 shrink-0">
             <h2 className="text-sm font-semibold text-slate-100">Camera Properties</h2>
             <button
-              onClick={() => setSelectedCamera(null)}
+              onClick={() => clearSelection()}
               className="text-slate-400 hover:text-slate-200 transition-colors"
               aria-label="Close panel"
             >

@@ -1,4 +1,5 @@
 import { useMapViewStore, type BasemapStyle } from '../../../store/mapViewSlice'
+import { useCameraLayerStore } from '../../../store/cameraLayerSlice'
 import ToggleRow from './ToggleRow'
 
 const BASEMAP_OPTIONS: { value: BasemapStyle; label: string }[] = [
@@ -8,16 +9,8 @@ const BASEMAP_OPTIONS: { value: BasemapStyle; label: string }[] = [
 ]
 
 export default function LayersTab() {
-  const {
-    showFovPolygons,
-    showZonePolygons,
-    showCameraLabels,
-    basemapStyle,
-    setShowFovPolygons,
-    setShowZonePolygons,
-    setShowCameraLabels,
-    setBasemapStyle,
-  } = useMapViewStore()
+  const { showFovPolygons, showZonePolygons, basemapStyle, setShowFovPolygons, setShowZonePolygons, setBasemapStyle } = useMapViewStore()
+  const { showCameraLabels, setShowCameraLabels } = useCameraLayerStore()
 
   return (
     <div className="flex flex-col gap-3">

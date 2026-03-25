@@ -1,6 +1,7 @@
 import { Link } from 'react-router'
 import { useImportedCameras } from '../../../api/projects'
 import { useMapViewStore } from '../../../store/mapViewSlice'
+import { useCameraLayerStore } from '../../../store/cameraLayerSlice'
 import type { ModelsTabProps } from './types'
 
 const CAMERA_TYPE_LABELS: Record<string, string> = {
@@ -11,7 +12,8 @@ const CAMERA_TYPE_LABELS: Record<string, string> = {
 
 export default function ModelsTab({ projectId }: ModelsTabProps) {
   const { data: importedItems, isLoading } = useImportedCameras(projectId)
-  const { selectedModelId, setSelectedModel, activeTool } = useMapViewStore()
+  const { selectedModelId, setSelectedModel } = useCameraLayerStore()
+  const activeTool = useMapViewStore((s) => s.activeTool)
   const isPlacing = activeTool === 'place-camera'
 
   if (isLoading) {

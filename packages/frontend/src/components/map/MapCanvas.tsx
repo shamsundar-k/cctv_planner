@@ -1,32 +1,14 @@
 import 'leaflet/dist/leaflet.css'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import type { Map as LeafletMap, TileLayer, LayerGroup } from 'leaflet'
-import { useMapViewStore, type BasemapStyle } from '../../store/mapViewSlice'
+import { useMapViewStore } from '../../store/mapViewSlice'
+import { useCameraLayerStore } from '../../store/cameraLayerSlice'
 import MapContext from './MapContext'
-
-const CROSSHAIR_TOOLS = new Set(['place-camera'])
-
-const DEFAULT_LAT = 12.9716
-const DEFAULT_LNG = 77.5946
-const DEFAULT_ZOOM = 13
-
-function buildTileUrl(style: BasemapStyle, apiKey: string | undefined): string {
-  const r = '{r}'
-  const base = `https://tiles.stadiamaps.com/tiles/${style}/{z}/{x}/{y}${r}.png`
-  return apiKey ? `${base}?api_key=${apiKey}` : base
-}
-
-const TILE_ATTRIBUTION =
-  '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a> ' +
-  '&copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> ' +
-  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-
-interface MapCanvasProps {
-  centerLat?: number | null
-  centerLng?: number | null
-  defaultZoom?: number | null
-  children?: ReactNode
-}
+import {
+  buildTileUrl, TILE_ATTRIBUTION,
+  CROSSHAIR_TOOLS, DEFAULT_LAT, DEFAULT_LNG, DEFAULT_ZOOM,
+  type MapCanvasProps
+} from './MapCanvas/tileUtils'
 
 export default function MapCanvas({ centerLat, centerLng, defaultZoom, children }: MapCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -40,7 +22,7 @@ export default function MapCanvas({ centerLat, centerLng, defaultZoom, children 
 
   const basemapStyle = useMapViewStore((s) => s.basemapStyle)
   const activeTool = useMapViewStore((s) => s.activeTool)
-  const setSelectedCamera = useMapViewStore((s) => s.setSelectedCamera)
+  const clearSelection = useCameraLayerStore((s) => s.clearSelection)
 
   // Initialise map once
   useEffect(() => {
@@ -108,11 +90,11 @@ export default function MapCanvas({ centerLat, centerLng, defaultZoom, children 
     const m = mapRef.current
     if (!m) return
     const handler = () => {
-      if (activeTool === 'select' || activeTool === 'pan') setSelectedCamera(null)
+      if (activeTool === 'select' || activeTool === 'pan') clearSelection()
     }
     m.on('click', handler)
     return () => { m.off('click', handler) }
-  }, [activeTool, setSelectedCamera])
+  }, [activeTool, clearSelection])
 
   return (
     <MapContext.Provider value={{ map, cameraLayer, fovLayer }}>

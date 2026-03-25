@@ -1,11 +1,11 @@
 import { useCameraInstances } from '../../../api/cameraInstances'
-import { useMapViewStore } from '../../../store/mapViewSlice'
+import { useCameraLayerStore } from '../../../store/cameraLayerSlice'
 import EyeIcon from './EyeIcon'
 import type { CamerasTabProps } from './types'
 
 export default function CamerasTab({ projectId }: CamerasTabProps) {
   const { data: cameras, isLoading } = useCameraInstances(projectId)
-  const { selectedCameraId, hiddenCameraIds, setSelectedCamera, toggleCameraVisibility } = useMapViewStore()
+  const { selectedCameraId, hiddenCameraIds, selectCamera, toggleCameraVisibility } = useCameraLayerStore()
 
   if (isLoading) {
     return (
@@ -40,7 +40,7 @@ export default function CamerasTab({ projectId }: CamerasTabProps) {
                   ? 'bg-blue-600/30 text-slate-100'
                   : 'text-slate-300 hover:bg-slate-700/50 hover:text-slate-100'
               }`}
-              onClick={() => setSelectedCamera(isSelected ? null : cam.id)}
+              onClick={() => selectCamera(isSelected ? null : cam.id)}
             >
               {/* Colour dot */}
               <span

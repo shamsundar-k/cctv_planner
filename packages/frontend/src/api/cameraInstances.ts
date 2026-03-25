@@ -14,7 +14,7 @@ import { useEffect } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import client from './client'
 import type { CameraInstance, CameraInstanceCreatePayload, CameraInstanceUpdatePayload } from './cameraInstances.types'
-import { useMapViewStore } from '../store/mapViewSlice'
+import { useCameraInstanceStore } from '../store/cameraInstanceStore'
 
 // ── Query keys ─────────────────────────────────────────────────────────────────
 
@@ -45,7 +45,7 @@ export function useCameraInstances(projectId: string) {
  */
 export function useSyncCameraInstancesToStore(projectId: string) {
   const { data } = useCameraInstances(projectId)
-  const hydrateCameras = useMapViewStore((s) => s.hydrateCameras)
+  const hydrateCameras = useCameraInstanceStore((s) => s.hydrateCameras)
   useEffect(() => {
     if (data) hydrateCameras(data)
   }, [data, hydrateCameras])
@@ -65,7 +65,7 @@ export function useCreateCameraInstance(projectId: string) {
         (old) => [...(old ?? []), newCamera],
       )
       // Mirror into the Zustand working-copy store
-      useMapViewStore.getState().addCamera(newCamera)
+      useCameraInstanceStore.getState().addCamera(newCamera)
     },
   })
 }
@@ -98,8 +98,7 @@ export function useSaveDirtyCameras(projectId: string) {
         (old) => (old ?? []).map((c) => (c.id === updated.id ? updated : c)),
       )
       // Sync server-canonical values back and clear the dirty flag
-      useMapViewStore.getState().updateCamera(updated.id, updated)
-      useMapViewStore.getState().clearDirty(updated.id)
+      useCameraInstanceStore.getState().markCameraSynced(updated.id, updated)
     },
   })
 }
@@ -117,7 +116,7 @@ export function useDeleteCameraInstance(projectId: string) {
         (old) => (old ?? []).filter((c) => c.id !== cameraId),
       )
       // Remove from the Zustand working-copy store
-      useMapViewStore.getState().removeCamera(cameraId)
+      useCameraInstanceStore.getState().removeCamera(cameraId)
     },
   })
 }

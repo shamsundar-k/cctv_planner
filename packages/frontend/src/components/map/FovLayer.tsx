@@ -6,7 +6,7 @@
  * change.  Each <FovPolygon> manages its own polygon and subscribes to its
  * own slice of the store.
  */
-import { useMapViewStore } from '../../store/mapViewSlice'
+import { useCameraInstanceStore } from '../../store/cameraInstanceStore'
 import FovPolygon from './FovPolygon'
 
 interface FovLayerProps {
@@ -14,7 +14,7 @@ interface FovLayerProps {
 }
 
 export default function FovLayer({ projectId }: FovLayerProps) {
-  const cameraIds = useMapViewStore((s) => s.cameraIds)
+  const cameraIds = useCameraInstanceStore((s) => s.cameraIds)
 
   return (
     <>

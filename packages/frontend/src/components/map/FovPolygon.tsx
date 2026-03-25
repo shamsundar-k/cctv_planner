@@ -9,6 +9,8 @@ import { useEffect, useRef } from 'react'
 import type { Polygon } from 'leaflet'
 import { useImportedCameras } from '../../api/projects'
 import { useMapViewStore } from '../../store/mapViewSlice'
+import { useCameraInstanceStore } from '../../store/cameraInstanceStore'
+import { useCameraLayerStore } from '../../store/cameraLayerSlice'
 import { useFovLayer } from './MapContext'
 import {
   calculateFov,
@@ -22,10 +24,10 @@ interface FovPolygonProps {
 }
 
 export default function FovPolygon({ cameraId, projectId }: FovPolygonProps) {
-  const camera = useMapViewStore((s) => s.cameraInstances[cameraId])
-  const selectedCameraId = useMapViewStore((s) => s.selectedCameraId)
+  const camera = useCameraInstanceStore((s) => s.cameraInstances[cameraId])
+  const selectedCameraId = useCameraLayerStore((s) => s.selectedCameraId)
+  const hiddenCameraIds = useCameraLayerStore((s) => s.hiddenCameraIds)
   const showFovPolygons = useMapViewStore((s) => s.showFovPolygons)
-  const hiddenCameraIds = useMapViewStore((s) => s.hiddenCameraIds)
 
   const { data: importedItems } = useImportedCameras(projectId)
   const fovLayer = useFovLayer()

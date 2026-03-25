@@ -7,7 +7,8 @@
  */
 import { useEffect, useRef } from 'react'
 import type { Marker, LeafletMouseEvent } from 'leaflet'
-import { useMapViewStore } from '../../store/mapViewSlice'
+import { useCameraInstanceStore } from '../../store/cameraInstanceStore'
+import { useCameraLayerStore } from '../../store/cameraLayerSlice'
 import { useCameraLayer } from './MapContext'
 
 // ── Icon builder (same visual as before) ──────────────────────────────────────
@@ -37,9 +38,9 @@ interface CameraMarkerProps {
 }
 
 export default function CameraMarker({ cameraId }: CameraMarkerProps) {
-  const camera = useMapViewStore((s) => s.cameraInstances[cameraId])
-  const selectedCameraId = useMapViewStore((s) => s.selectedCameraId)
-  const setSelectedCamera = useMapViewStore((s) => s.setSelectedCamera)
+  const camera = useCameraInstanceStore((s) => s.cameraInstances[cameraId])
+  const selectedCameraId = useCameraLayerStore((s) => s.selectedCameraId)
+  const selectCamera = useCameraLayerStore((s) => s.selectCamera)
   const cameraLayer = useCameraLayer()
 
   const markerRef = useRef<Marker | null>(null)
@@ -47,6 +48,7 @@ export default function CameraMarker({ cameraId }: CameraMarkerProps) {
   // without needing to recreate the marker.
   const selectedCameraIdRef = useRef(selectedCameraId)
   useEffect(() => { selectedCameraIdRef.current = selectedCameraId }, [selectedCameraId])
+
 
   // ── Create marker on mount, remove on unmount ────────────────────────────
   useEffect(() => {
@@ -68,7 +70,7 @@ export default function CameraMarker({ cameraId }: CameraMarkerProps) {
       marker.on('click', (e: LeafletMouseEvent) => {
         e.originalEvent.stopPropagation()
         const currentSelected = selectedCameraIdRef.current
-        setSelectedCamera(cameraId === currentSelected ? null : cameraId)
+        selectCamera(cameraId === currentSelected ? null : cameraId)
       })
 
       markerRef.current = marker
@@ -97,6 +99,7 @@ export default function CameraMarker({ cameraId }: CameraMarkerProps) {
       )
     })
   }, [camera?.colour, selectedCameraId, camera?.id])
+
 
   // ── Update position when lat/lng changes ────────────────────────────────
   useEffect(() => {

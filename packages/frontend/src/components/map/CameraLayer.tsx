@@ -12,6 +12,8 @@ import { useEffect } from 'react'
 import type { LeafletMouseEvent } from 'leaflet'
 import { useCreateCameraInstance } from '../../api/cameraInstances'
 import { useMapViewStore } from '../../store/mapViewSlice'
+import { useCameraInstanceStore } from '../../store/cameraInstanceStore'
+import { useCameraLayerStore } from '../../store/cameraLayerSlice'
 import { useLeafletMap } from './MapContext'
 import { FOV_DEFAULTS } from '../../lib/fovCalculations'
 import CameraMarker from './CameraMarker'
@@ -21,13 +23,14 @@ interface CameraLayerProps {
 }
 
 export default function CameraLayer({ projectId }: CameraLayerProps) {
-  const cameraIds = useMapViewStore((s) => s.cameraIds)
+  const cameraIds = useCameraInstanceStore((s) => s.cameraIds)
   const createCamera = useCreateCameraInstance(projectId)
 
   const map = useLeafletMap()
   const activeTool = useMapViewStore((s) => s.activeTool)
-  const selectedModelId = useMapViewStore((s) => s.selectedModelId)
-  const selectCameraAfterPlacement = useMapViewStore((s) => s.selectCameraAfterPlacement)
+  const selectedModelId = useCameraLayerStore((s) => s.selectedModelId)
+  const selectCamera = useCameraLayerStore((s) => s.selectCamera)
+  const setActiveTool = useMapViewStore((s) => s.setActiveTool)
 
   // ── Map click handler for camera placement ────────────────────────────────
   useEffect(() => {
@@ -43,7 +46,7 @@ export default function CameraLayer({ projectId }: CameraLayerProps) {
           target_distance: FOV_DEFAULTS.targetDistance,
           target_height: FOV_DEFAULTS.targetHeight,
         },
-        { onSuccess: (newCamera) => selectCameraAfterPlacement(newCamera.id) },
+        { onSuccess: (newCamera) => { selectCamera(newCamera.id); setActiveTool('select') } },
       )
     }
 
@@ -51,7 +54,7 @@ export default function CameraLayer({ projectId }: CameraLayerProps) {
     return () => {
       map.off('click', handler)
     }
-  }, [map, activeTool, selectedModelId, createCamera, selectCameraAfterPlacement])
+  }, [map, activeTool, selectedModelId, createCamera, selectCamera, setActiveTool])
 
   // ── Render one CameraMarker per ID ───────────────────────────────────────
   // React mounts/unmounts each CameraMarker when IDs are added/removed.
