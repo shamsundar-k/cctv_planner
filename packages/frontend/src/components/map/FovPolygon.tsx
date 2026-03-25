@@ -6,12 +6,11 @@
  * list comes from React Query's shared cache (no extra fetch per instance).
  */
 import { useEffect, useRef } from 'react'
-import type { Polygon } from 'leaflet'
+import type { Polygon, LayerGroup } from 'leaflet'
 import { useImportedCameras } from '../../api/projects'
 import { useMapViewStore } from '../../store/mapViewSlice'
 import { useCameraInstanceStore } from '../../store/cameraInstanceStore'
 import { useCameraLayerStore } from '../../store/cameraLayerSlice'
-import { useFovLayer } from './MapContext'
 import {
   calculateFov,
   calculateTiltFromTarget,
@@ -21,16 +20,16 @@ import {
 interface FovPolygonProps {
   cameraId: string
   projectId: string
+  layer: LayerGroup | null
 }
 
-export default function FovPolygon({ cameraId, projectId }: FovPolygonProps) {
+export default function FovPolygon({ cameraId, projectId, layer }: FovPolygonProps) {
   const camera = useCameraInstanceStore((s) => s.cameraInstances[cameraId])
   const selectedCameraId = useCameraLayerStore((s) => s.selectedCameraId)
   const hiddenCameraIds = useCameraLayerStore((s) => s.hiddenCameraIds)
   const showFovPolygons = useMapViewStore((s) => s.showFovPolygons)
 
   const { data: importedItems } = useImportedCameras(projectId)
-  const fovLayer = useFovLayer()
 
   const polygonRef = useRef<Polygon | null>(null)
 
@@ -44,7 +43,7 @@ export default function FovPolygon({ cameraId, projectId }: FovPolygonProps) {
 
   // ── Sync polygon with camera state ───────────────────────────────────────
   useEffect(() => {
-    if (!fovLayer || !camera || !importedItems) return
+    if (!layer || !camera || !importedItems) return
 
     const shouldHide =
       !showFovPolygons ||
@@ -113,10 +112,10 @@ export default function FovPolygon({ cameraId, projectId }: FovPolygonProps) {
         polygonRef.current.setLatLngs(latlngs)
         polygonRef.current.setStyle(style)
       } else {
-        polygonRef.current = L.polygon(latlngs, style).addTo(fovLayer)
+        polygonRef.current = L.polygon(latlngs, style).addTo(layer)
       }
     })
-  }, [camera, selectedCameraId, showFovPolygons, hiddenCameraIds, importedItems, fovLayer])
+  }, [camera, selectedCameraId, showFovPolygons, hiddenCameraIds, importedItems, layer])
 
   return null
 }

@@ -6,10 +6,9 @@
  * completely invisible to this component.
  */
 import { useEffect, useRef } from 'react'
-import type { Marker, LeafletMouseEvent } from 'leaflet'
+import type { Marker, LeafletMouseEvent, LayerGroup } from 'leaflet'
 import { useCameraInstanceStore } from '../../store/cameraInstanceStore'
 import { useCameraLayerStore } from '../../store/cameraLayerSlice'
-import { useCameraLayer } from './MapContext'
 
 // ── Icon builder (same visual as before) ──────────────────────────────────────
 
@@ -35,13 +34,13 @@ function buildCameraIcon(colour: string, selected: boolean): string {
 
 interface CameraMarkerProps {
   cameraId: string
+  layer: LayerGroup | null
 }
 
-export default function CameraMarker({ cameraId }: CameraMarkerProps) {
+export default function CameraMarker({ cameraId, layer }: CameraMarkerProps) {
   const camera = useCameraInstanceStore((s) => s.cameraInstances[cameraId])
   const selectedCameraId = useCameraLayerStore((s) => s.selectedCameraId)
   const selectCamera = useCameraLayerStore((s) => s.selectCamera)
-  const cameraLayer = useCameraLayer()
 
   const markerRef = useRef<Marker | null>(null)
   // Keep selectedCameraId in a ref so the click handler never goes stale
@@ -52,7 +51,7 @@ export default function CameraMarker({ cameraId }: CameraMarkerProps) {
 
   // ── Create marker on mount, remove on unmount ────────────────────────────
   useEffect(() => {
-    if (!cameraLayer || !camera) return
+    if (!layer || !camera) return
 
     let mounted = true
     import('leaflet').then((L) => {
@@ -65,7 +64,7 @@ export default function CameraMarker({ cameraId }: CameraMarkerProps) {
           iconSize: [28, 28],
           iconAnchor: [14, 14],
         }),
-      }).addTo(cameraLayer)
+      }).addTo(layer)
 
       marker.on('click', (e: LeafletMouseEvent) => {
         e.originalEvent.stopPropagation()
@@ -83,7 +82,7 @@ export default function CameraMarker({ cameraId }: CameraMarkerProps) {
     }
   // Only run on mount/unmount — position and icon updates are handled separately
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cameraLayer])
+  }, [layer])
 
   // ── Update icon when colour or selection state changes ───────────────────
   useEffect(() => {

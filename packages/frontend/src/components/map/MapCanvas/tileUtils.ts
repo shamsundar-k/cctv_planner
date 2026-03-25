@@ -6,6 +6,7 @@ export interface MapCanvasProps {
   centerLat?: number | null
   centerLng?: number | null
   defaultZoom?: number | null
+  projectId: string
   children?: ReactNode
 }
 

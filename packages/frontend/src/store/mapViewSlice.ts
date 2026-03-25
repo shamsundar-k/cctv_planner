@@ -40,7 +40,10 @@ export const useMapViewStore = create<MapViewState>((set) => ({
   basemapStyle: 'alidade_smooth',
 
   setLeafletMap: (map) => set({ leafletMap: map }),
-  setActiveTool: (tool) => set({ activeTool: tool }),
+  setActiveTool: (tool) => {
+    console.log('Setting active tool to:', tool)
+    set({ activeTool: tool })
+  },
 
   setShowFovPolygons: (show) => set({ showFovPolygons: show }),
   setShowZonePolygons: (show) => set({ showZonePolygons: show }),

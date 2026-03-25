@@ -7,7 +7,10 @@
       "Bash(grep -r \"cameraInstances\\\\|POST.*cameras\\\\|PUT.*cameras\\\\|DELETE.*cameras\" C:Developmentcctv_plannerpackagesfrontendsrc --include=*.ts --include=*.tsx)",
       "Bash(npm list:*)",
       "Bash(pnpm install:*)",
-      "Bash(grep -E \"\\\\.\\(tsx|ts\\)$\")"
+      "Bash(grep -E \"\\\\.\\(tsx|ts\\)$\")",
+      "Bash(pnpm tsc:*)",
+      "Bash(powershell.exe -Command \"Remove-Item ''''C:\\\\Drive_D\\\\cctv_planner\\\\packages\\\\frontend\\\\src\\\\components\\\\map\\\\BottomToolbar.tsx'''', ''''C:\\\\Drive_D\\\\cctv_planner\\\\packages\\\\frontend\\\\src\\\\components\\\\map\\\\ToolGroup.tsx'''', ''''C:\\\\Drive_D\\\\cctv_planner\\\\packages\\\\frontend\\\\src\\\\components\\\\map\\\\ToolButton.tsx'''', ''''C:\\\\Drive_D\\\\cctv_planner\\\\packages\\\\frontend\\\\src\\\\components\\\\map\\\\toolbarConfig.ts'''', ''''C:\\\\Drive_D\\\\cctv_planner\\\\packages\\\\frontend\\\\src\\\\components\\\\map\\\\toolIcons.tsx''''\")",
+      "Bash(powershell.exe -Command \"Get-ChildItem 'C:\\\\Drive_D\\\\cctv_planner\\\\packages\\\\frontend\\\\src\\\\components\\\\map' | Select-Object Name\")"
     ]
   }
 }

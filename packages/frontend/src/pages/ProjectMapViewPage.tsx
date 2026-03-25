@@ -4,9 +4,7 @@ import { useSyncCameraInstancesToStore } from '../api/cameraInstances'
 import MapNavbar from '../components/map/MapNavbar'
 import LeftSidebar from '../components/map/LeftSidebar'
 import MapCanvas from '../components/map/MapCanvas'
-import CameraLayer from '../components/map/CameraLayer'
-import FovLayer from '../components/map/FovLayer'
-import BottomToolbar from '../components/map/BottomToolbar'
+import BottomToolbar from '../components/BottomToolbar/BottomToolbar'
 import CameraPropertiesPanel from '../components/map/CameraPropertiesPanel'
 
 export default function ProjectMapViewPage() {
@@ -43,9 +41,8 @@ export default function ProjectMapViewPage() {
           centerLat={project.center_lat}
           centerLng={project.center_lng}
           defaultZoom={project.default_zoom}
+          projectId={id}
         >
-          <FovLayer    projectId={id} />
-          <CameraLayer projectId={id} />
           <CameraPropertiesPanel projectId={id} />
         </MapCanvas>
       </div>

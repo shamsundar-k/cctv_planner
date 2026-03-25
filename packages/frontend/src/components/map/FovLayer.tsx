@@ -6,6 +6,10 @@
  * change.  Each <FovPolygon> manages its own polygon and subscribes to its
  * own slice of the store.
  */
+import L from 'leaflet'
+import { useState, useEffect } from 'react'
+import type { LayerGroup } from 'leaflet'
+import { useMapViewStore } from '../../store/mapViewSlice'
 import { useCameraInstanceStore } from '../../store/cameraInstanceStore'
 import FovPolygon from './FovPolygon'
 
@@ -15,11 +19,25 @@ interface FovLayerProps {
 
 export default function FovLayer({ projectId }: FovLayerProps) {
   const cameraIds = useCameraInstanceStore((s) => s.cameraIds)
+  const map = useMapViewStore((s) => s.leafletMap)
+
+  const [layer, setLayer] = useState<LayerGroup | null>(null)
+
+  // ── Create / destroy the LayerGroup when the map becomes available ────────
+  useEffect(() => {
+    if (!map) return
+    const lg = L.layerGroup().addTo(map)
+    setLayer(lg)
+    return () => {
+      lg.remove()
+      setLayer(null)
+    }
+  }, [map])
 
   return (
     <>
       {cameraIds.map((id) => (
-        <FovPolygon key={id} cameraId={id} projectId={projectId} />
+        <FovPolygon key={id} cameraId={id} projectId={projectId} layer={layer} />
       ))}
     </>
   )
