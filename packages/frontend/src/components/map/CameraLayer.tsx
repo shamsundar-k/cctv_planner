@@ -11,7 +11,7 @@
 import L from 'leaflet'
 import { useState, useEffect } from 'react'
 import type { LeafletMouseEvent, LayerGroup } from 'leaflet'
-import { useCreateCameraInstance } from '../../api/cameraInstances'
+import type { CameraInstance } from '../../api/cameraInstances.types'
 import { useMapViewStore } from '../../store/mapViewSlice'
 import { useCameraInstanceStore } from '../../store/cameraInstanceStore'
 import { useCameraLayerStore } from '../../store/cameraLayerSlice'
@@ -24,7 +24,7 @@ interface CameraLayerProps {
 
 export default function CameraLayer({ projectId }: CameraLayerProps) {
   const cameraIds = useCameraInstanceStore((s) => s.cameraIds)
-  const createCamera = useCreateCameraInstance(projectId)
+  const addCamera = useCameraInstanceStore((s) => s.addCamera)
 
   const map = useMapViewStore((s) => s.leafletMap)
   const activeTool = useMapViewStore((s) => s.activeTool)
@@ -54,19 +54,31 @@ export default function CameraLayer({ projectId }: CameraLayerProps) {
 
     const handler = (e: LeafletMouseEvent) => {
       if (activeTool === 'place-camera' && selectedModelId) {
-        console.log('Placing camera at:', e.latlng)
-        // Place new camera
-        createCamera.mutate(
-          {
-            camera_model_id: selectedModelId,
-            lat: e.latlng.lat,
-            lng: e.latlng.lng,
-            height: FOV_DEFAULTS.height,
-            target_distance: FOV_DEFAULTS.targetDistance,
-            target_height: FOV_DEFAULTS.targetHeight,
-          },
-          { onSuccess: (newCamera) => { selectCamera(newCamera.id); setActiveTool('select') } },
-        )
+        const tempId = 'temp-' + crypto.randomUUID()
+        const now = new Date().toISOString()
+        const localCamera: CameraInstance = {
+          id: tempId,
+          label: '',
+          lat: e.latlng.lat,
+          lng: e.latlng.lng,
+          bearing: 0,
+          height: FOV_DEFAULTS.height,
+          tilt_angle: 30.0,
+          focal_length_chosen: null,
+          colour: '#3B82F6',
+          visible: true,
+          fov_visible_geojson: null,
+          fov_ir_geojson: null,
+          target_distance: FOV_DEFAULTS.targetDistance,
+          target_height: FOV_DEFAULTS.targetHeight,
+          camera_model_id: selectedModelId,
+          project_id: projectId,
+          created_at: now,
+          updated_at: now,
+        }
+        addCamera(localCamera)
+        selectCamera(tempId)
+        setActiveTool('select')
       } else if (activeTool === 'select' || activeTool === 'pan') {
         // Deselect camera when clicking map background
         clearSelection()
@@ -78,7 +90,7 @@ export default function CameraLayer({ projectId }: CameraLayerProps) {
     return () => {
       map.off('click', handler)
     }
-  }, [map, activeTool, selectedModelId, createCamera, selectCamera, clearSelection, setActiveTool])
+  }, [map, activeTool, selectedModelId, projectId, addCamera, selectCamera, clearSelection, setActiveTool])
 
   // ── Render one CameraMarker per ID ───────────────────────────────────────
   // React mounts/unmounts each CameraMarker when IDs are added/removed.

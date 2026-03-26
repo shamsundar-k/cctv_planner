@@ -10,7 +10,7 @@
  * useSaveDirtyCameras(projectId)           — PUT  /projects/:id/cameras/:camId  (per-dirty-camera save)
  * useDeleteCameraInstance(projectId)       — DELETE /projects/:id/cameras/:camId
  */
-import { useEffect } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import client from './client'
 import type { CameraInstance, CameraInstanceCreatePayload, CameraInstanceUpdatePayload } from './cameraInstances.types'
@@ -45,10 +45,10 @@ export function useCameraInstances(projectId: string) {
  */
 export function useSyncCameraInstancesToStore(projectId: string) {
   const { data } = useCameraInstances(projectId)
-  const hydrateCameras = useCameraInstanceStore((s) => s.hydrateCameras)
+  const mergeHydrate = useCameraInstanceStore((s) => s.mergeHydrate)
   useEffect(() => {
-    if (data) hydrateCameras(data)
-  }, [data, hydrateCameras])
+    if (data) mergeHydrate(data)
+  }, [data, mergeHydrate])
 }
 
 export function useCreateCameraInstance(projectId: string) {
@@ -119,4 +119,72 @@ export function useDeleteCameraInstance(projectId: string) {
       useCameraInstanceStore.getState().removeCamera(cameraId)
     },
   })
+}
+
+/**
+ * POSTs all cameras currently in `createdIds` (temp-ID cameras) to the server.
+ * For each success, replaces the temp ID with the server-assigned ID.
+ * For each failure, marks the camera as failed so it survives mergeHydrate.
+ * After all POSTs settle, fetches the full camera list and merges into the store.
+ */
+export function useSaveNewCameras(projectId: string) {
+  const queryClient = useQueryClient()
+  const [isSavingNew, setIsSavingNew] = useState(false)
+
+  const saveNewCameras = useCallback(async () => {
+    const store = useCameraInstanceStore.getState()
+    const tempCameras = [...store.createdIds].map((id) => store.cameraInstances[id]).filter(Boolean)
+    if (tempCameras.length === 0) return
+
+    setIsSavingNew(true)
+    try {
+      const results = await Promise.allSettled(
+        tempCameras.map(async (cam) => {
+          const payload: CameraInstanceCreatePayload = {
+            camera_model_id: cam.camera_model_id,
+            label: cam.label,
+            lat: cam.lat,
+            lng: cam.lng,
+            bearing: cam.bearing,
+            height: cam.height,
+            tilt_angle: cam.tilt_angle,
+            focal_length_chosen: cam.focal_length_chosen,
+            colour: cam.colour,
+            visible: cam.visible,
+            fov_visible_geojson: cam.fov_visible_geojson,
+            fov_ir_geojson: cam.fov_ir_geojson,
+            target_distance: cam.target_distance,
+            target_height: cam.target_height,
+          }
+          const res = await client.post<CameraInstance>(`/projects/${projectId}/cameras`, payload)
+          return { tempId: cam.id, serverCamera: res.data }
+        }),
+      )
+
+      const { replaceTempId, markCameraFailed } = useCameraInstanceStore.getState()
+      for (let i = 0; i < results.length; i++) {
+        const result = results[i]
+        if (result.status === 'fulfilled') {
+          const { tempId, serverCamera } = result.value
+          replaceTempId(tempId, serverCamera.id, serverCamera)
+          // Append to React Query cache (temp ID was never in the cache)
+          queryClient.setQueryData<CameraInstance[]>(
+            cameraInstanceKeys.list(projectId),
+            (old) => [...(old ?? []), serverCamera],
+          )
+        } else {
+          markCameraFailed(tempCameras[i].id)
+        }
+      }
+
+      // Selective hydration: fetch server list then merge (failed cameras preserved by mergeHydrate)
+      const fetchRes = await client.get<CameraInstance[]>(`/projects/${projectId}/cameras`)
+      queryClient.setQueryData(cameraInstanceKeys.list(projectId), fetchRes.data)
+      useCameraInstanceStore.getState().mergeHydrate(fetchRes.data)
+    } finally {
+      setIsSavingNew(false)
+    }
+  }, [projectId, queryClient])
+
+  return { saveNewCameras, isSavingNew }
 }

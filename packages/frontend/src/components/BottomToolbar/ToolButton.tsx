@@ -1,5 +1,6 @@
 import { getIcon } from './toolIcons'
 import type { ActiveTool } from '../../store/mapViewSlice'
+import { useMemo } from 'react'
 
 interface ToolButtonProps {
   label: string
@@ -9,8 +10,7 @@ interface ToolButtonProps {
 }
 
 export function ToolButton({ label, icon, isActive, onClick }: ToolButtonProps) {
-  const IconComponent = getIcon(icon)
-
+  const IconComponent = useMemo(() => getIcon(icon), [icon])
   return (
     <button
       title={label}

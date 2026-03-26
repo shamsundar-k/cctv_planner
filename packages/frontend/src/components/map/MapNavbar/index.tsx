@@ -15,7 +15,7 @@ export default function MapNavbar({ projectId, projectName, onSave }: MapNavbarP
   const user = useAuthStore((s) => s.user)
 
   const projectNameProps = useProjectName(projectId, projectName)
-  const saveAction = useSaveAction(onSave)
+  const saveAction = useSaveAction(projectId, onSave)
 
   let initials = '??'
   if (user?.fullName) {

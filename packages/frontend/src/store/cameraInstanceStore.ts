@@ -12,9 +12,10 @@ interface CameraStoreState {
   lastSavedAt: Date | null
 
   // Track what changed and how
-  createdIds: Set<string>   // New cameras (POST)
-  updatedIds: Set<string>   // Modified cameras (PATCH)
-  deletedIds: Set<string>   // Removed cameras (DELETE)
+  createdIds: Set<string>      // New cameras (POST)
+  updatedIds: Set<string>      // Modified cameras (PATCH)
+  deletedIds: Set<string>      // Removed cameras (DELETE)
+  failedCameraIds: Set<string> // Temp IDs that failed POST
 
   // Actions
   addCamera: (camera: CameraInstance) => void
@@ -23,8 +24,14 @@ interface CameraStoreState {
 
   // Sync helpers
   hydrateCameras: (cameras: CameraInstance[]) => void
+  // Merge server-fetched cameras with locally-failed cameras (preserves failedCameraIds)
+  mergeHydrate: (fetchedCameras: CameraInstance[]) => void
   // Write server-canonical data back and remove this camera from all dirty sets
   markCameraSynced: (id: string, canonical: CameraInstance) => void
+  // Replace a temp ID with the server-assigned ID after a successful POST
+  replaceTempId: (tempId: string, serverId: string, serverCamera: CameraInstance) => void
+  // Mark a temp-ID camera as failed so it persists through mergeHydrate
+  markCameraFailed: (tempId: string) => void
   markSaved: () => void
   clearChanges: () => void
 }
@@ -40,6 +47,7 @@ export const useCameraInstanceStore = create<CameraStoreState>()(
       createdIds: new Set(),
       updatedIds: new Set(),
       deletedIds: new Set(),
+      failedCameraIds: new Set(),
 
       addCamera: (camera) =>
         set((s) => {
@@ -122,6 +130,55 @@ export const useCameraInstanceStore = create<CameraStoreState>()(
           createdIds: new Set(),
           updatedIds: new Set(),
           deletedIds: new Set(),
+          failedCameraIds: new Set(),
+        }),
+
+      // Merge server-fetched cameras with locally-failed cameras.
+      // Failed cameras (temp IDs) are kept in place so the user can retry saving them.
+      mergeHydrate: (fetchedCameras) =>
+        set((s) => {
+          const failedIds = s.failedCameraIds
+          const failedCameras = [...failedIds].map((id) => s.cameraInstances[id]).filter(Boolean)
+          const fetchedMap = Object.fromEntries(fetchedCameras.map((c) => [c.id, c]))
+          const failedMap = Object.fromEntries(failedCameras.map((c) => [c.id, c]))
+          return {
+            cameraIds: [...fetchedCameras.map((c) => c.id), ...failedIds],
+            cameraInstances: { ...fetchedMap, ...failedMap },
+            createdIds: new Set(failedIds), // failed cameras still need a POST retry
+            updatedIds: new Set(),
+            deletedIds: new Set(),
+            isDirty: failedIds.size > 0,
+            // failedCameraIds unchanged — persists until retry succeeds
+          }
+        }),
+
+      replaceTempId: (tempId, serverId, serverCamera) =>
+        set((s) => {
+          if (!s.cameraInstances[tempId]) return s
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { [tempId]: _removed, ...restInstances } = s.cameraInstances
+          const created = new Set(s.createdIds)
+          created.delete(tempId)
+          const stillDirty = created.size > 0 || s.updatedIds.size > 0 || s.deletedIds.size > 0
+          return {
+            cameraIds: s.cameraIds.map((id) => (id === tempId ? serverId : id)),
+            cameraInstances: { ...restInstances, [serverId]: serverCamera },
+            createdIds: created,
+            isDirty: stillDirty,
+          }
+        }),
+
+      markCameraFailed: (tempId) =>
+        set((s) => {
+          const created = new Set(s.createdIds)
+          created.delete(tempId)
+          const failed = new Set(s.failedCameraIds)
+          failed.add(tempId)
+          return {
+            createdIds: created,
+            failedCameraIds: failed,
+            isDirty: true, // failed cameras still need attention
+          }
         }),
 
       markSaved: () =>
@@ -131,6 +188,7 @@ export const useCameraInstanceStore = create<CameraStoreState>()(
           createdIds: new Set(),
           updatedIds: new Set(),
           deletedIds: new Set(),
+          failedCameraIds: new Set(),
         }),
 
       clearChanges: () =>
@@ -139,6 +197,7 @@ export const useCameraInstanceStore = create<CameraStoreState>()(
           createdIds: new Set(),
           updatedIds: new Set(),
           deletedIds: new Set(),
+          failedCameraIds: new Set(),
         }),
     }),
     { name: 'CameraStore' },
