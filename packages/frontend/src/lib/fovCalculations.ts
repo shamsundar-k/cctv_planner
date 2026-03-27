@@ -26,7 +26,6 @@ export interface FovInput {
 
   // From CameraInstance
   installationHeight: number  // metres — lens height above ground
-  tiltAngle: number           // degrees — downward tilt from horizontal
   focalLengthChosen: number   // mm — within [focalLengthMin, focalLengthMax]
 }
 
@@ -56,8 +55,8 @@ export interface FovResult {
 // ── Default values for first camera placement ─────────────────────────────────
 
 export const FOV_DEFAULTS = {
-  height: 3.0,          // metres — typical wall/pole mount height
-  targetDistance: 10.0, // metres — default surveillance distance
+  height: 5.0,          // metres — typical wall/pole mount height
+  targetDistance: 50.0, // metres — default surveillance distance
   targetHeight: 1.7,    // metres — average adult head height
 } as const
 
@@ -150,10 +149,10 @@ function buildTrapezoidPolygon(
   wFar: number,
 ): FovResult['trapezoid'] {
   return {
-    nearLeft:  { x: -(wNear / 2), y: dNear },
+    nearLeft: { x: -(wNear / 2), y: dNear },
     nearRight: { x: +(wNear / 2), y: dNear },
-    farRight:  { x: +(wFar / 2),  y: dFar },
-    farLeft:   { x: -(wFar / 2),  y: dFar },
+    farRight: { x: +(wFar / 2), y: dFar },
+    farLeft: { x: -(wFar / 2), y: dFar },
   }
 }
 
@@ -182,10 +181,10 @@ export function calculateFov(input: FovInput): FovResult {
       wFar: 0,
       areaSqMetres: 0,
       trapezoid: {
-        nearLeft:  { x: 0, y: 0 },
+        nearLeft: { x: 0, y: 0 },
         nearRight: { x: 0, y: 0 },
-        farRight:  { x: 0, y: 0 },
-        farLeft:   { x: 0, y: 0 },
+        farRight: { x: 0, y: 0 },
+        farLeft: { x: 0, y: 0 },
       },
     }
   }
@@ -234,7 +233,7 @@ export function projectTrapezoidToLatLng(
   const cosLat = Math.cos((cameraLat * Math.PI) / 180)
 
   const project = ({ x, y }: CartesianPoint): [number, number] => {
-    const eastM  =  x * Math.cos(θ) + y * Math.sin(θ)
+    const eastM = x * Math.cos(θ) + y * Math.sin(θ)
     const northM = -x * Math.sin(θ) + y * Math.cos(θ)
     return [
       cameraLat + northM / 111320,
@@ -278,9 +277,9 @@ export function runFovDemo(): void {
   console.log('  H-angle:', resultA.hAngle.toFixed(1), '°  (doc uses datasheet-corrected 52°)')
   console.log('  V-angle:', resultA.vAngle.toFixed(1), '°')
   console.log('  D_near: ', resultA.dNear.toFixed(2), 'm')
-  console.log('  D_far:  ', resultA.dFar.toFixed(2),  'm')
+  console.log('  D_far:  ', resultA.dFar.toFixed(2), 'm')
   console.log('  W_near: ', resultA.wNear.toFixed(2), 'm')
-  console.log('  W_far:  ', resultA.wFar.toFixed(2),  'm')
+  console.log('  W_far:  ', resultA.wFar.toFixed(2), 'm')
   console.log('  Area:   ', resultA.areaSqMetres.toFixed(1), 'm²')
   console.log('  Trapezoid corners (camera-local, metres):')
   console.table(resultA.trapezoid)
@@ -295,9 +294,9 @@ export function runFovDemo(): void {
   console.log('  V-angle:', resultB.vAngle.toFixed(1), '°')
   if (resultB.valid) {
     console.log('  D_near: ', resultB.dNear.toFixed(2), 'm')
-    console.log('  D_far:  ', resultB.dFar.toFixed(2),  'm')
+    console.log('  D_far:  ', resultB.dFar.toFixed(2), 'm')
     console.log('  W_near: ', resultB.wNear.toFixed(2), 'm')
-    console.log('  W_far:  ', resultB.wFar.toFixed(2),  'm')
+    console.log('  W_far:  ', resultB.wFar.toFixed(2), 'm')
     console.log('  Area:   ', resultB.areaSqMetres.toFixed(1), 'm²')
     console.log('  Trapezoid corners (camera-local, metres):')
     console.table(resultB.trapezoid)
@@ -305,4 +304,43 @@ export function runFovDemo(): void {
     console.warn('  Invalid:', resultB.error)
   }
   console.groupEnd()
+}
+
+const D_FAR_CAP = 500;
+const EPSILON = 1e-6;
+
+function interpolateAngle(
+  fMin: number, fMax: number,
+  angleAtFMin: number, angleAtFMax: number,
+  fChosen: number
+): number {
+  const t = (fChosen - fMin) / (fMax - fMin);
+  return angleAtFMin - t * (angleAtFMin - angleAtFMax);
+}
+
+
+export function computeFovCartesian(camera_height: number, target_distance: number, target_height: number,
+  focal_length_min: number, focal_length_max: number, h_fov_min: number, h_fov_max: number,
+  v_fov_min: number, v_fov_max: number, focal_length_chosen: number) {
+
+  if (camera_height <= 0 || target_distance <= 0 || target_height < 0) {
+    return { status: "invalid_input" }
+  }
+
+  const hAngleDeg = interpolateAngle(focal_length_min, focal_length_max, h_fov_min, h_fov_max, focal_length_chosen);
+  const vAngleDeg = interpolateAngle(focal_length_min, focal_length_max, v_fov_min, v_fov_max, focal_length_chosen);
+  const haRad = toRad(hAngleDeg);
+  const vaRad = toRad(vAngleDeg);
+
+  const topRayRad = Math.atan2(H - ht, dt);
+  const tiltRad = topRayRad + vaRad / 2;
+  const topRayDeg = toDeg(topRayRad);
+  const tiltDeg = toDeg(tiltRad);
+
+
+
+
+
+
+
 }
