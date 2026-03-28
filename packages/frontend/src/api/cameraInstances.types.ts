@@ -8,7 +8,6 @@ export interface CameraInstance {
   tilt_angle: number
   focal_length_chosen: number | null
   colour: string
-  visible: boolean
   fov_visible_geojson: object | null
   fov_ir_geojson: object | null
   target_distance: number | null

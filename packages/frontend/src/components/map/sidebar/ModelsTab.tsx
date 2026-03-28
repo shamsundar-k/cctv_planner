@@ -12,6 +12,7 @@ const CAMERA_TYPE_LABELS: Record<string, string> = {
 
 export default function ModelsTab({ projectId }: ModelsTabProps) {
   const { data: importedItems, isLoading } = useImportedCameras(projectId)
+  console.log("Camera models list", importedItems)
   const { selectedModelId, setSelectedModel } = useCameraLayerStore()
   const activeTool = useMapViewStore((s) => s.activeTool)
   const isPlacing = activeTool === 'place-camera'
@@ -60,16 +61,14 @@ export default function ModelsTab({ projectId }: ModelsTabProps) {
             <li key={camera_model.id}>
               <button
                 onClick={() => setSelectedModel(isSelected ? null : camera_model.id)}
-                className={`w-full flex items-center gap-2 px-2 py-1.5 rounded border-none cursor-pointer text-left transition-colors ${
-                  isSelected
+                className={`w-full flex items-center gap-2 px-2 py-1.5 rounded border-none cursor-pointer text-left transition-colors ${isSelected
                     ? 'bg-blue-600/30 text-slate-100'
                     : 'bg-transparent text-slate-300 hover:bg-slate-700/50 hover:text-slate-100'
-                }`}
+                  }`}
               >
                 {/* Armed indicator */}
-                <span className={`shrink-0 w-3.5 h-3.5 rounded-full border-2 transition-colors ${
-                  isSelected ? 'border-blue-400 bg-blue-500' : 'border-slate-600'
-                }`} />
+                <span className={`shrink-0 w-3.5 h-3.5 rounded-full border-2 transition-colors ${isSelected ? 'border-blue-400 bg-blue-500' : 'border-slate-600'
+                  }`} />
                 <span className="flex flex-col gap-0.5 min-w-0">
                   <span className="text-xs font-medium truncate leading-tight">
                     {camera_model.name}

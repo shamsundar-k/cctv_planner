@@ -13,8 +13,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import client from './client'
 import type { CameraModel, CameraModelCreate, CameraModelUpdate } from './cameras.types'
 
-import { queryClient } from '../queryClient'
-
 // ── Query keys ─────────────────────────────────────────────────────────────────
 
 export const cameraKeys = {
@@ -102,17 +100,4 @@ export function useDeleteCamera() {
     retry: 0,
   })
 }
-//camera details fetch Non-hook
-
-export async function getCameraModelDetails(id: string): Promise<CameraModel> {
-  return queryClient.fetchQuery({
-    queryKey: cameraKeys.detail(id),
-    queryFn: async () => {
-      const res = await client.get<CameraModel>(`/camera-models/${id}`)
-      return res.data
-    },
-    staleTime: 2 * 60 * 1000,
-  })
-}
-
 

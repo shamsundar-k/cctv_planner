@@ -16,6 +16,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { AxiosError } from 'axios'
 import client from './client'
 import type { Project, ImportedCameraItem, CreateProjectDTO, UpdateProjectDTO } from './projects.types'
+import type { CameraModel } from './cameras.types'
+import { queryClient } from '../queryClient'
 
 // ── Query keys ─────────────────────────────────────────────────────────────────
 
@@ -144,6 +146,17 @@ export function useRemoveCameraFromProject() {
       queryClient.invalidateQueries({ queryKey: projectKeys.all })
     },
   })
+}
+
+// ── Non-hook cache helpers ──────────────────────────────────────────────────────
+
+export function getCameraModelDetails(id: string): CameraModel | undefined {
+  const importedQueries = queryClient.getQueriesData<ImportedCameraItem[]>({ queryKey: ['importedCameras'] })
+  for (const [, data] of importedQueries) {
+    const found = data?.find((item) => item.camera_model.id === id)
+    if (found) return found.camera_model
+  }
+  return undefined
 }
 
 // Re-export AxiosError for consumers

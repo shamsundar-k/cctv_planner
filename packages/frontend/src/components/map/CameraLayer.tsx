@@ -11,11 +11,11 @@
 import L from 'leaflet'
 import { useState, useEffect } from 'react'
 import type { LeafletMouseEvent, LayerGroup } from 'leaflet'
-import type { CameraInstance } from '../../api/cameraInstances.types'
 import { useMapViewStore } from '../../store/mapViewSlice'
 import { useCameraInstanceStore } from '../../store/cameraInstanceStore'
+import { generateDefaultCameraInstance } from '../../lib/cameraGenerator'
 import { useCameraLayerStore } from '../../store/cameraLayerSlice'
-import { FOV_DEFAULTS } from '../../lib/fovCalculations'
+
 import CameraMarker from './CameraMarker'
 
 interface CameraLayerProps {
@@ -34,6 +34,13 @@ export default function CameraLayer({ projectId }: CameraLayerProps) {
   const setActiveTool = useMapViewStore((s) => s.setActiveTool)
 
   const [layer, setLayer] = useState<LayerGroup | null>(null)
+
+  type geo_position =
+    {
+      lat: number,
+      lng: number
+
+    }
 
   // ── Create / destroy the LayerGroup when the map becomes available ────────
   useEffect(() => {
@@ -54,30 +61,12 @@ export default function CameraLayer({ projectId }: CameraLayerProps) {
 
     const handler = (e: LeafletMouseEvent) => {
       if (activeTool === 'place-camera' && selectedModelId) {
-        const tempId = 'temp-' + crypto.randomUUID()
-        const now = new Date().toISOString()
-        const localCamera: CameraInstance = {
-          id: tempId,
-          label: '',
-          lat: e.latlng.lat,
-          lng: e.latlng.lng,
-          bearing: 0,
-          height: FOV_DEFAULTS.height,
-          tilt_angle: 30.0,
-          focal_length_chosen: null,
-          colour: '#3B82F6',
-          visible: true,
-          fov_visible_geojson: null,
-          fov_ir_geojson: null,
-          target_distance: FOV_DEFAULTS.targetDistance,
-          target_height: FOV_DEFAULTS.targetHeight,
-          camera_model_id: selectedModelId,
-          project_id: projectId,
-          created_at: now,
-          updated_at: now,
-        }
+
+        console.log("selected model", selectedModelId)
+        const position: geo_position = { lat: e.latlng.lat, lng: e.latlng.lng }
+        const localCamera = generateDefaultCameraInstance(selectedModelId, position, projectId);
         addCamera(localCamera)
-        selectCamera(tempId)
+        selectCamera(localCamera.id)
         setActiveTool('select')
       } else if (activeTool === 'select' || activeTool === 'pan') {
         // Deselect camera when clicking map background
