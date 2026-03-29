@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Video, Layers, LayoutGrid } from 'lucide-react'
 import { useMapViewStore } from '../../store/mapViewSlice'
+import { useCameraLayerStore } from '../../store/cameraLayerSlice'
 import TabButton from './sidebar/TabButton'
 import CamerasTab from './sidebar/CamerasTab'
 import LayersTab from './sidebar/LayersTab'
@@ -11,9 +12,13 @@ export default function LeftSidebar({ projectId }: LeftSidebarProps) {
   const [collapsed, setCollapsed] = useState(false)
   const [manualTab, setManualTab] = useState<TabId>('cameras')
   const activeTool = useMapViewStore((s) => s.activeTool)
+  const selectedCameraId = useCameraLayerStore((s) => s.selectedCameraId)
 
-  // When Place Camera is active, always show Models tab; otherwise use manual selection
-  const activeTab: TabId = activeTool === 'place-camera' ? 'models' : manualTab
+  // When Place Camera is active, always show Models tab.
+  // When a camera is selected, show Cameras tab (to reveal the list).
+  // Otherwise use manual selection.
+  const activeTab: TabId =
+    activeTool === 'place-camera' ? 'models' : selectedCameraId ? 'cameras' : manualTab
 
   return (
     <aside
