@@ -14,7 +14,7 @@ export interface FovCartesian {
   h_angle: number;        // degrees — interpolated horizontal FOV
   v_angle: number;        // degrees — interpolated vertical FOV
   top_ray_angle: number;  // degrees — top ray from horizontal (+down / -up)
-  tilt: number;           // degrees — derived tilt (+down / -up)
+  tilt_angle: number;           // degrees — derived tilt (+down / -up)
   d_near: number | null;  // m — closest ground point (dead zone edge)
   d_far: number | null;   // m — furthest ground point
   w_near: number | null;   // m — trapezoid width at d_near
@@ -23,7 +23,7 @@ export interface FovCartesian {
   area: number | null;     // m²
 }
 
-interface fov_input_params {
+export interface fov_input_params {
   camera_height: number;
   target_distance: number;
   target_height: number;
@@ -82,7 +82,7 @@ function makeInvalidResult(
     h_angle,
     v_angle,
     top_ray_angle,
-    tilt,
+    tilt_angle: tilt,
     d_near,
     d_far,
     w_near: null,
@@ -110,7 +110,7 @@ function makeValidResult(
   const w_target = 2 * target_distance * Math.tan(toRad(h_angle / 2));
   const area = 0.5 * (w_near + w_far) * (d_far - d_near);
   return {
-    status, h_angle, v_angle, top_ray_angle, tilt,
+    status, h_angle, v_angle, top_ray_angle, tilt_angle: tilt,
     d_near, d_far, w_near, w_far, w_target, area,
   };
 }
@@ -218,7 +218,7 @@ export function computeFovCartesian(params: fov_input_params): FovCartesian {
 // ── Function 2: Translate FOV trapezoid to geo coordinates ───────────────────
 
 export function computeFovGeoCorners(
-  fov: FovCartesian,
+  fov: Pick<FovCartesian, 'd_near' | 'd_far' | 'w_near' | 'w_far'>,
   camera_lat: number,
   camera_lng: number,
   bearing: number   // degrees clockwise from North

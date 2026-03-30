@@ -4,13 +4,14 @@ export interface CameraInstance {
   lat: number
   lng: number
   bearing: number
-  height: number
+  camera_height: number
   tilt_angle: number
-  focal_length_chosen: number | null
+  focal_length_chosen: number 
   colour: string
+  fov_visible_cartesian: object | null
   fov_visible_geojson: object | null
   fov_ir_geojson: object | null
-  target_distance: number | null
+  target_distance: number 
   target_height: number
   camera_model_id: string
   project_id: string
@@ -24,7 +25,7 @@ export interface CameraInstanceCreatePayload {
   lat: number
   lng: number
   bearing?: number
-  height?: number
+  camera_height?: number
   tilt_angle?: number
   focal_length_chosen?: number | null
   colour?: string
@@ -40,7 +41,7 @@ export interface CameraInstanceUpdatePayload {
   lat?: number
   lng?: number
   bearing?: number
-  height?: number
+  camera_height?: number
   tilt_angle?: number
   focal_length_chosen?: number | null
   colour?: string

@@ -6,14 +6,14 @@ import {
 import { useImportedCameras } from '../../api/projects'
 import { useCameraInstanceStore } from '../../store/cameraInstanceStore'
 import { useCameraLayerStore } from '../../store/cameraLayerSlice'
-import { calculateFov, calculateTiltFromTarget } from '../../lib/fovCalculations'
+
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
 interface FormValues {
   label: string
   colour: string
-  height: number
+  camera_height: number
   bearing: number
   tilt_angle: number
   target_distance: number | ''
@@ -50,404 +50,413 @@ interface CameraPropertiesPanelProps {
   projectId: string
 }
 
+// export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPanelProps) {
+//   const selectedCameraId = useCameraLayerStore((s) => s.selectedCameraId)
+//   const clearSelection = useCameraLayerStore((s) => s.clearSelection)
+//   // Read this camera's working-copy directly from the Zustand store
+//   const camera = useCameraInstanceStore((s) =>
+//     selectedCameraId ? (s.cameraInstances[selectedCameraId] ?? null) : null,
+//   )
+//   // Watch the ID list so we can auto-deselect when a camera is deleted
+//   const cameraIds = useCameraInstanceStore((s) => s.cameraIds)
+
+//   const { data: importedItems } = useImportedCameras(projectId)
+
+//   const saveCamera = useSaveDirtyCameras(projectId)
+//   const deleteCamera = useDeleteCameraInstance(projectId)
+
+//   const cameraModel =
+//     importedItems?.find((item) => item.camera_model.id === camera?.camera_model_id)
+//       ?.camera_model ?? null
+
+//   const [form, setForm] = useState<FormValues | null>(null)
+//   const [confirmDelete, setConfirmDelete] = useState(false)
+
+//   // Initialise form when selection changes (not on every store update)
+//   useEffect(() => {
+//     if (!camera) {
+//       setForm(null)
+//       return
+//     }
+//     setForm({
+//       label: camera.label,
+//       colour: camera.colour,
+//       camera_height: camera.camera_height,
+//       bearing: camera.bearing,
+//       tilt_angle: camera.tilt_angle,
+//       target_distance: camera.target_distance ?? '',
+//       target_height: camera.target_height,
+//       focal_length_chosen: camera.focal_length_chosen ?? '',
+//     })
+//     setConfirmDelete(false)
+//   // eslint-disable-next-line react-hooks/exhaustive-deps
+//   }, [camera?.id])
+
+//   // Auto-deselect if selected camera was deleted
+//   useEffect(() => {
+//     if (selectedCameraId && !cameraIds.includes(selectedCameraId)) {
+//       clearSelection()
+//     }
+//   }, [cameraIds, selectedCameraId, clearSelection])
+
+//   // Escape key closes the panel
+//   useEffect(() => {
+//     if (!selectedCameraId) return
+//     const handler = (e: KeyboardEvent) => {
+//       if (e.key === 'Escape') clearSelection()
+//     }
+//     window.addEventListener('keydown', handler)
+//     return () => window.removeEventListener('keydown', handler)
+//   }, [selectedCameraId, clearSelection])
+
+//   // Live FOV result — recomputed whenever FOV-relevant fields change
+//   const liveFovResult = useMemo(() => {
+//     if (!form || !cameraModel) return null
+//     if (form.target_distance === '' || form.target_distance <= 0) return null
+
+//     const tiltAngle = calculateTiltFromTarget(
+//       form.camera_height,
+//       form.target_distance,
+//       form.target_height,
+//     )
+//     return calculateFov({
+//       focalLengthMin: cameraModel.focal_length_min,
+//       focalLengthMax: cameraModel.focal_length_max,
+//       hFovMin: cameraModel.h_fov_min,
+//       hFovMax: cameraModel.h_fov_max,
+//       vFovMin: cameraModel.v_fov_min,
+//       vFovMax: cameraModel.v_fov_max,
+//       installationHeight: form.camera_height,
+//       tiltAngle,
+//       focalLengthChosen:
+//         form.focal_length_chosen !== '' ? form.focal_length_chosen : cameraModel.focal_length_min,
+//     })
+//   }, [form?.camera_height, form?.target_distance, form?.target_height, form?.focal_length_chosen, cameraModel])
+
+//   // Max valid target distance for the current camera at current height/targetHeight
+//   const dMax =
+//     liveFovResult && form
+//       ? (form.camera_height - form.target_height) /
+//         Math.tan((liveFovResult.vAngle / 2) * (Math.PI / 180))
+//       : null
+
+//   useEffect(() => {
+//     if (liveFovResult) console.log('[FOV]', liveFovResult)
+//   }, [liveFovResult])
+
+//   // Dirty check — local form vs the server-synced camera in the store
+//   const isDirty =
+//     form !== null &&
+//     camera !== null &&
+//     (form.label !== camera.label ||
+//       form.colour !== camera.colour ||
+//       form.camera_height !== camera.camera_height ||
+//       form.bearing !== camera.bearing ||
+//       form.tilt_angle !== camera.tilt_angle ||
+//       (form.target_distance === '' ? null : form.target_distance) !== camera.target_distance ||
+//       form.target_height !== camera.target_height ||
+//       (form.focal_length_chosen === '' ? null : form.focal_length_chosen) !==
+//         camera.focal_length_chosen)
+
+//   function handleSave() {
+//     if (!form || !camera) return
+//     saveCamera.mutate({
+//       cameraId: camera.id,
+//       data: {
+//         label: form.label,
+//         colour: form.colour,
+//         camera_height: form.camera_height,
+//         bearing: form.bearing,
+//         tilt_angle: form.tilt_angle,
+//         target_distance: form.target_distance === '' ? null : form.target_distance,
+//         target_height: form.target_height,
+//         focal_length_chosen: form.focal_length_chosen === '' ? null : form.focal_length_chosen,
+//       },
+//     })
+//   }
+
+//   function handleDelete() {
+//     if (!camera) return
+//     deleteCamera.mutate(camera.id, {
+//       onSuccess: () => clearSelection(),
+//     })
+//   }
+
+//   function setField<K extends keyof FormValues>(key: K, value: FormValues[K]) {
+//     setForm((f) => (f ? { ...f, [key]: value } : f))
+//   }
+
+//   function parseNullableNumber(raw: string): number | '' {
+//     if (raw === '') return ''
+//     const n = parseFloat(raw)
+//     return isNaN(n) ? '' : n
+//   }
+
+//   return (
+//     <aside
+//       className="shrink-0 bg-slate-800 border-l border-slate-700 flex flex-col overflow-hidden transition-[width] duration-200"
+//       style={{ width: selectedCameraId ? 312 : 0 }}
+//       aria-hidden={!selectedCameraId}
+//     >
+//       {selectedCameraId && form && camera && (
+//         <div className="flex flex-col h-full w-[312px]">
+//           {/* Header */}
+//           <div className="flex items-center justify-between px-4 py-3 border-b border-slate-700 shrink-0">
+//             <h2 className="text-sm font-semibold text-slate-100">Camera Properties</h2>
+//             <button
+//               onClick={() => clearSelection()}
+//               className="text-slate-400 hover:text-slate-200 transition-colors"
+//               aria-label="Close panel"
+//             >
+//               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+//                 <path d="M18 6L6 18M6 6l12 12" />
+//               </svg>
+//             </button>
+//           </div>
+
+//           {/* Read-only info */}
+//           <section className="px-4 py-3 border-b border-slate-700 shrink-0 flex flex-col gap-2">
+//             <ReadOnlyField label="Model" value={cameraModel?.name ?? '—'} />
+//             <ReadOnlyField
+//               label="Position"
+//               value={`${camera.lat.toFixed(6)}, ${camera.lng.toFixed(6)}`}
+//             />
+//           </section>
+
+//           {/* Editable fields */}
+//           <div className="flex-1 overflow-y-auto px-4 py-3 flex flex-col gap-4">
+//             <FormField label="Label">
+//               <input
+//                 type="text"
+//                 value={form.label}
+//                 onChange={(e) => setField('label', e.target.value)}
+//                 placeholder="e.g. Entrance Camera"
+//                 className={inputCls}
+//               />
+//             </FormField>
+
+//             <FormField label="Colour">
+//               <div className="flex items-center gap-2">
+//                 <input
+//                   type="color"
+//                   value={form.colour}
+//                   onChange={(e) => setField('colour', e.target.value)}
+//                   className="w-8 h-8 cursor-pointer rounded border border-slate-600 bg-transparent p-0.5 shrink-0"
+//                 />
+//                 <input
+//                   type="text"
+//                   value={form.colour}
+//                   onChange={(e) => setField('colour', e.target.value)}
+//                   maxLength={7}
+//                   className={inputCls}
+//                 />
+//               </div>
+//             </FormField>
+
+//             <FormField label="Height above ground (m)">
+//               <input
+//                 type="number"
+//                 min={0.1}
+//                 step={0.1}
+//                 value={form.camera_height}
+//                 onChange={(e) => {
+//                   const h = parseFloat(e.target.value) || 0.1
+//                   const newTilt =
+//                     form.target_distance !== '' && form.target_distance > 0
+//                       ? calculateTiltFromTarget(h, form.target_distance, form.target_height)
+//                       : form.tilt_angle
+//                   setForm((f) => f ? { ...f, camera_height: h, tilt_angle: newTilt } : f)
+//                 }}
+//                 className={inputCls}
+//               />
+//             </FormField>
+
+//             <FormField label="Bearing (°)">
+//               <div className="flex flex-col gap-1">
+//                 <input
+//                   type="range"
+//                   min={0}
+//                   max={360}
+//                   step={1}
+//                   value={form.bearing}
+//                   onChange={(e) => setField('bearing', parseInt(e.target.value))}
+//                   className="w-full accent-blue-500"
+//                 />
+//                 <input
+//                   type="number"
+//                   min={0}
+//                   max={360}
+//                   step={1}
+//                   value={form.bearing}
+//                   onChange={(e) => setField('bearing', parseFloat(e.target.value) || 0)}
+//                   className={inputCls}
+//                 />
+//               </div>
+//             </FormField>
+
+//             <FormField label="Target Distance (m)">
+//               <input
+//                 type="number"
+//                 min={0}
+//                 step={0.1}
+//                 value={form.target_distance}
+//                 onChange={(e) => {
+//                   const dist = parseNullableNumber(e.target.value)
+//                   const newTilt =
+//                     dist !== '' && dist > 0
+//                       ? calculateTiltFromTarget(form.camera_height, dist, form.target_height)
+//                       : form.tilt_angle
+//                   setForm((f) => f ? { ...f, target_distance: dist, tilt_angle: newTilt } : f)
+//                 }}
+//                 placeholder="e.g. 5"
+//                 className={inputCls}
+//               />
+//             </FormField>
+
+//             {liveFovResult && !liveFovResult.valid && (
+//               <p className="text-[11px] text-amber-400 -mt-2">
+//                 Top ray sees sky — reduce target distance
+//                 {dMax !== null && dMax > 0 ? ` (max ≈ ${dMax.toFixed(1)} m)` : ''}.
+//               </p>
+//             )}
+//             {liveFovResult?.valid && (
+//               <p className="text-[11px] text-emerald-400 -mt-2">
+//                 FOV valid — {liveFovResult.areaSqMetres.toFixed(1)} m² coverage
+//               </p>
+//             )}
+
+//             <FormField label="Target Height (m)">
+//               <input
+//                 type="number"
+//                 min={0.1}
+//                 step={0.1}
+//                 value={form.target_height}
+//                 onChange={(e) => {
+//                   const ht = parseFloat(e.target.value) || 0.1
+//                   const newTilt =
+//                     form.target_distance !== '' && form.target_distance > 0
+//                       ? calculateTiltFromTarget(form.camera_height, form.target_distance, ht)
+//                       : form.tilt_angle
+//                   setForm((f) => f ? { ...f, target_height: ht, tilt_angle: newTilt } : f)
+//                 }}
+//                 className={inputCls}
+//               />
+//             </FormField>
+
+//             <div>
+//               <p className="text-[10px] text-slate-400 uppercase tracking-wide mb-0.5">
+//                 Computed Tilt
+//               </p>
+//               <p className="text-xs text-slate-300">
+//                 {form.target_distance !== '' && form.target_distance > 0
+//                   ? `${calculateTiltFromTarget(form.camera_height, form.target_distance, form.target_height).toFixed(1)}°`
+//                   : '—'}
+//               </p>
+//             </div>
+
+//             <FormField label="Focal Length (mm)">
+//               <div className="flex flex-col gap-1">
+//                 {cameraModel && (
+//                   <>
+//                     <input
+//                       type="range"
+//                       min={cameraModel.focal_length_min}
+//                       max={cameraModel.focal_length_max}
+//                       step={0.1}
+//                       value={form.focal_length_chosen !== '' ? form.focal_length_chosen : cameraModel.focal_length_min}
+//                       onChange={(e) => setField('focal_length_chosen', parseFloat(e.target.value))}
+//                       className="w-full accent-blue-500"
+//                     />
+//                     <div className="flex justify-between text-[10px] text-slate-500">
+//                       <span>{cameraModel.focal_length_min} mm</span>
+//                       <span>{cameraModel.focal_length_max} mm</span>
+//                     </div>
+//                   </>
+//                 )}
+//                 <input
+//                   type="number"
+//                   min={cameraModel?.focal_length_min ?? 0}
+//                   max={cameraModel?.focal_length_max}
+//                   step={0.1}
+//                   value={form.focal_length_chosen}
+//                   onChange={(e) =>
+//                     setField('focal_length_chosen', parseNullableNumber(e.target.value))
+//                   }
+//                   placeholder="Auto"
+//                   className={inputCls}
+//                 />
+//               </div>
+//             </FormField>
+
+//             <section className="border-t border-slate-700 pt-3 flex flex-col gap-2">
+//               <p className="text-[10px] text-slate-400 uppercase tracking-wide">FOV Results</p>
+//               <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+//                 <ReadOnlyField
+//                   label="H-FOV"
+//                   value={liveFovResult ? `${liveFovResult.hAngle.toFixed(1)}°` : '—'}
+//                 />
+//                 <ReadOnlyField
+//                   label="V-FOV"
+//                   value={liveFovResult ? `${liveFovResult.vAngle.toFixed(1)}°` : '—'}
+//                 />
+//                 <ReadOnlyField
+//                   label="Dead Zone"
+//                   value={liveFovResult?.valid ? `${liveFovResult.dNear.toFixed(2)} m` : '—'}
+//                 />
+//                 <ReadOnlyField
+//                   label="Max Distance"
+//                   value={liveFovResult?.valid ? `${liveFovResult.dFar.toFixed(2)} m` : '—'}
+//                 />
+//               </div>
+//             </section>
+//           </div>
+
+//           {/* Footer */}
+//           <div className="px-4 py-3 border-t border-slate-700 flex flex-col gap-2 shrink-0">
+//             <button
+//               onClick={handleSave}
+//               disabled={!isDirty || saveCamera.isPending}
+//               className="h-8 rounded-md bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+//             >
+//               {saveCamera.isPending ? 'Saving…' : 'Save Changes'}
+//             </button>
+
+//             {!confirmDelete ? (
+//               <button
+//                 onClick={() => setConfirmDelete(true)}
+//                 className="h-8 rounded-md text-red-400 hover:text-red-300 text-xs font-medium transition-colors"
+//               >
+//                 Delete Camera
+//               </button>
+//             ) : (
+//               <div className="flex gap-2">
+//                 <button
+//                   onClick={handleDelete}
+//                   disabled={deleteCamera.isPending}
+//                   className="flex-1 h-8 rounded-md bg-red-600 hover:bg-red-500 text-white text-xs font-medium transition-colors disabled:opacity-40"
+//                 >
+//                   {deleteCamera.isPending ? 'Deleting…' : 'Confirm Delete'}
+//                 </button>
+//                 <button
+//                   onClick={() => setConfirmDelete(false)}
+//                   className="flex-1 h-8 rounded-md bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs font-medium transition-colors"
+//                 >
+//                   Cancel
+//                 </button>
+//               </div>
+//             )}
+//           </div>
+//         </div>
+//       )}
+//     </aside>
+//   )
+// }
+
 export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPanelProps) {
-  const selectedCameraId = useCameraLayerStore((s) => s.selectedCameraId)
-  const clearSelection = useCameraLayerStore((s) => s.clearSelection)
-  // Read this camera's working-copy directly from the Zustand store
-  const camera = useCameraInstanceStore((s) =>
-    selectedCameraId ? (s.cameraInstances[selectedCameraId] ?? null) : null,
-  )
-  // Watch the ID list so we can auto-deselect when a camera is deleted
-  const cameraIds = useCameraInstanceStore((s) => s.cameraIds)
 
-  const { data: importedItems } = useImportedCameras(projectId)
-
-  const saveCamera = useSaveDirtyCameras(projectId)
-  const deleteCamera = useDeleteCameraInstance(projectId)
-
-  const cameraModel =
-    importedItems?.find((item) => item.camera_model.id === camera?.camera_model_id)
-      ?.camera_model ?? null
-
-  const [form, setForm] = useState<FormValues | null>(null)
-  const [confirmDelete, setConfirmDelete] = useState(false)
-
-  // Initialise form when selection changes (not on every store update)
-  useEffect(() => {
-    if (!camera) {
-      setForm(null)
-      return
-    }
-    setForm({
-      label: camera.label,
-      colour: camera.colour,
-      height: camera.height,
-      bearing: camera.bearing,
-      tilt_angle: camera.tilt_angle,
-      target_distance: camera.target_distance ?? '',
-      target_height: camera.target_height,
-      focal_length_chosen: camera.focal_length_chosen ?? '',
-    })
-    setConfirmDelete(false)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [camera?.id])
-
-  // Auto-deselect if selected camera was deleted
-  useEffect(() => {
-    if (selectedCameraId && !cameraIds.includes(selectedCameraId)) {
-      clearSelection()
-    }
-  }, [cameraIds, selectedCameraId, clearSelection])
-
-  // Escape key closes the panel
-  useEffect(() => {
-    if (!selectedCameraId) return
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') clearSelection()
-    }
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
-  }, [selectedCameraId, clearSelection])
-
-  // Live FOV result — recomputed whenever FOV-relevant fields change
-  const liveFovResult = useMemo(() => {
-    if (!form || !cameraModel) return null
-    if (form.target_distance === '' || form.target_distance <= 0) return null
-
-    const tiltAngle = calculateTiltFromTarget(
-      form.height,
-      form.target_distance,
-      form.target_height,
-    )
-    return calculateFov({
-      focalLengthMin: cameraModel.focal_length_min,
-      focalLengthMax: cameraModel.focal_length_max,
-      hFovMin: cameraModel.h_fov_min,
-      hFovMax: cameraModel.h_fov_max,
-      vFovMin: cameraModel.v_fov_min,
-      vFovMax: cameraModel.v_fov_max,
-      installationHeight: form.height,
-      tiltAngle,
-      focalLengthChosen:
-        form.focal_length_chosen !== '' ? form.focal_length_chosen : cameraModel.focal_length_min,
-    })
-  }, [form?.height, form?.target_distance, form?.target_height, form?.focal_length_chosen, cameraModel])
-
-  // Max valid target distance for the current camera at current height/targetHeight
-  const dMax =
-    liveFovResult && form
-      ? (form.height - form.target_height) /
-        Math.tan((liveFovResult.vAngle / 2) * (Math.PI / 180))
-      : null
-
-  useEffect(() => {
-    if (liveFovResult) console.log('[FOV]', liveFovResult)
-  }, [liveFovResult])
-
-  // Dirty check — local form vs the server-synced camera in the store
-  const isDirty =
-    form !== null &&
-    camera !== null &&
-    (form.label !== camera.label ||
-      form.colour !== camera.colour ||
-      form.height !== camera.height ||
-      form.bearing !== camera.bearing ||
-      form.tilt_angle !== camera.tilt_angle ||
-      (form.target_distance === '' ? null : form.target_distance) !== camera.target_distance ||
-      form.target_height !== camera.target_height ||
-      (form.focal_length_chosen === '' ? null : form.focal_length_chosen) !==
-        camera.focal_length_chosen)
-
-  function handleSave() {
-    if (!form || !camera) return
-    saveCamera.mutate({
-      cameraId: camera.id,
-      data: {
-        label: form.label,
-        colour: form.colour,
-        height: form.height,
-        bearing: form.bearing,
-        tilt_angle: form.tilt_angle,
-        target_distance: form.target_distance === '' ? null : form.target_distance,
-        target_height: form.target_height,
-        focal_length_chosen: form.focal_length_chosen === '' ? null : form.focal_length_chosen,
-      },
-    })
-  }
-
-  function handleDelete() {
-    if (!camera) return
-    deleteCamera.mutate(camera.id, {
-      onSuccess: () => clearSelection(),
-    })
-  }
-
-  function setField<K extends keyof FormValues>(key: K, value: FormValues[K]) {
-    setForm((f) => (f ? { ...f, [key]: value } : f))
-  }
-
-  function parseNullableNumber(raw: string): number | '' {
-    if (raw === '') return ''
-    const n = parseFloat(raw)
-    return isNaN(n) ? '' : n
-  }
-
-  return (
-    <aside
-      className="shrink-0 bg-slate-800 border-l border-slate-700 flex flex-col overflow-hidden transition-[width] duration-200"
-      style={{ width: selectedCameraId ? 312 : 0 }}
-      aria-hidden={!selectedCameraId}
-    >
-      {selectedCameraId && form && camera && (
-        <div className="flex flex-col h-full w-[312px]">
-          {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-slate-700 shrink-0">
-            <h2 className="text-sm font-semibold text-slate-100">Camera Properties</h2>
-            <button
-              onClick={() => clearSelection()}
-              className="text-slate-400 hover:text-slate-200 transition-colors"
-              aria-label="Close panel"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M18 6L6 18M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-
-          {/* Read-only info */}
-          <section className="px-4 py-3 border-b border-slate-700 shrink-0 flex flex-col gap-2">
-            <ReadOnlyField label="Model" value={cameraModel?.name ?? '—'} />
-            <ReadOnlyField
-              label="Position"
-              value={`${camera.lat.toFixed(6)}, ${camera.lng.toFixed(6)}`}
-            />
-          </section>
-
-          {/* Editable fields */}
-          <div className="flex-1 overflow-y-auto px-4 py-3 flex flex-col gap-4">
-            <FormField label="Label">
-              <input
-                type="text"
-                value={form.label}
-                onChange={(e) => setField('label', e.target.value)}
-                placeholder="e.g. Entrance Camera"
-                className={inputCls}
-              />
-            </FormField>
-
-            <FormField label="Colour">
-              <div className="flex items-center gap-2">
-                <input
-                  type="color"
-                  value={form.colour}
-                  onChange={(e) => setField('colour', e.target.value)}
-                  className="w-8 h-8 cursor-pointer rounded border border-slate-600 bg-transparent p-0.5 shrink-0"
-                />
-                <input
-                  type="text"
-                  value={form.colour}
-                  onChange={(e) => setField('colour', e.target.value)}
-                  maxLength={7}
-                  className={inputCls}
-                />
-              </div>
-            </FormField>
-
-            <FormField label="Height above ground (m)">
-              <input
-                type="number"
-                min={0.1}
-                step={0.1}
-                value={form.height}
-                onChange={(e) => {
-                  const h = parseFloat(e.target.value) || 0.1
-                  const newTilt =
-                    form.target_distance !== '' && form.target_distance > 0
-                      ? calculateTiltFromTarget(h, form.target_distance, form.target_height)
-                      : form.tilt_angle
-                  setForm((f) => f ? { ...f, height: h, tilt_angle: newTilt } : f)
-                }}
-                className={inputCls}
-              />
-            </FormField>
-
-            <FormField label="Bearing (°)">
-              <div className="flex flex-col gap-1">
-                <input
-                  type="range"
-                  min={0}
-                  max={360}
-                  step={1}
-                  value={form.bearing}
-                  onChange={(e) => setField('bearing', parseInt(e.target.value))}
-                  className="w-full accent-blue-500"
-                />
-                <input
-                  type="number"
-                  min={0}
-                  max={360}
-                  step={1}
-                  value={form.bearing}
-                  onChange={(e) => setField('bearing', parseFloat(e.target.value) || 0)}
-                  className={inputCls}
-                />
-              </div>
-            </FormField>
-
-            <FormField label="Target Distance (m)">
-              <input
-                type="number"
-                min={0}
-                step={0.1}
-                value={form.target_distance}
-                onChange={(e) => {
-                  const dist = parseNullableNumber(e.target.value)
-                  const newTilt =
-                    dist !== '' && dist > 0
-                      ? calculateTiltFromTarget(form.height, dist, form.target_height)
-                      : form.tilt_angle
-                  setForm((f) => f ? { ...f, target_distance: dist, tilt_angle: newTilt } : f)
-                }}
-                placeholder="e.g. 5"
-                className={inputCls}
-              />
-            </FormField>
-
-            {liveFovResult && !liveFovResult.valid && (
-              <p className="text-[11px] text-amber-400 -mt-2">
-                Top ray sees sky — reduce target distance
-                {dMax !== null && dMax > 0 ? ` (max ≈ ${dMax.toFixed(1)} m)` : ''}.
-              </p>
-            )}
-            {liveFovResult?.valid && (
-              <p className="text-[11px] text-emerald-400 -mt-2">
-                FOV valid — {liveFovResult.areaSqMetres.toFixed(1)} m² coverage
-              </p>
-            )}
-
-            <FormField label="Target Height (m)">
-              <input
-                type="number"
-                min={0.1}
-                step={0.1}
-                value={form.target_height}
-                onChange={(e) => {
-                  const ht = parseFloat(e.target.value) || 0.1
-                  const newTilt =
-                    form.target_distance !== '' && form.target_distance > 0
-                      ? calculateTiltFromTarget(form.height, form.target_distance, ht)
-                      : form.tilt_angle
-                  setForm((f) => f ? { ...f, target_height: ht, tilt_angle: newTilt } : f)
-                }}
-                className={inputCls}
-              />
-            </FormField>
-
-            <div>
-              <p className="text-[10px] text-slate-400 uppercase tracking-wide mb-0.5">
-                Computed Tilt
-              </p>
-              <p className="text-xs text-slate-300">
-                {form.target_distance !== '' && form.target_distance > 0
-                  ? `${calculateTiltFromTarget(form.height, form.target_distance, form.target_height).toFixed(1)}°`
-                  : '—'}
-              </p>
-            </div>
-
-            <FormField label="Focal Length (mm)">
-              <div className="flex flex-col gap-1">
-                {cameraModel && (
-                  <>
-                    <input
-                      type="range"
-                      min={cameraModel.focal_length_min}
-                      max={cameraModel.focal_length_max}
-                      step={0.1}
-                      value={form.focal_length_chosen !== '' ? form.focal_length_chosen : cameraModel.focal_length_min}
-                      onChange={(e) => setField('focal_length_chosen', parseFloat(e.target.value))}
-                      className="w-full accent-blue-500"
-                    />
-                    <div className="flex justify-between text-[10px] text-slate-500">
-                      <span>{cameraModel.focal_length_min} mm</span>
-                      <span>{cameraModel.focal_length_max} mm</span>
-                    </div>
-                  </>
-                )}
-                <input
-                  type="number"
-                  min={cameraModel?.focal_length_min ?? 0}
-                  max={cameraModel?.focal_length_max}
-                  step={0.1}
-                  value={form.focal_length_chosen}
-                  onChange={(e) =>
-                    setField('focal_length_chosen', parseNullableNumber(e.target.value))
-                  }
-                  placeholder="Auto"
-                  className={inputCls}
-                />
-              </div>
-            </FormField>
-
-            <section className="border-t border-slate-700 pt-3 flex flex-col gap-2">
-              <p className="text-[10px] text-slate-400 uppercase tracking-wide">FOV Results</p>
-              <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                <ReadOnlyField
-                  label="H-FOV"
-                  value={liveFovResult ? `${liveFovResult.hAngle.toFixed(1)}°` : '—'}
-                />
-                <ReadOnlyField
-                  label="V-FOV"
-                  value={liveFovResult ? `${liveFovResult.vAngle.toFixed(1)}°` : '—'}
-                />
-                <ReadOnlyField
-                  label="Dead Zone"
-                  value={liveFovResult?.valid ? `${liveFovResult.dNear.toFixed(2)} m` : '—'}
-                />
-                <ReadOnlyField
-                  label="Max Distance"
-                  value={liveFovResult?.valid ? `${liveFovResult.dFar.toFixed(2)} m` : '—'}
-                />
-              </div>
-            </section>
-          </div>
-
-          {/* Footer */}
-          <div className="px-4 py-3 border-t border-slate-700 flex flex-col gap-2 shrink-0">
-            <button
-              onClick={handleSave}
-              disabled={!isDirty || saveCamera.isPending}
-              className="h-8 rounded-md bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              {saveCamera.isPending ? 'Saving…' : 'Save Changes'}
-            </button>
-
-            {!confirmDelete ? (
-              <button
-                onClick={() => setConfirmDelete(true)}
-                className="h-8 rounded-md text-red-400 hover:text-red-300 text-xs font-medium transition-colors"
-              >
-                Delete Camera
-              </button>
-            ) : (
-              <div className="flex gap-2">
-                <button
-                  onClick={handleDelete}
-                  disabled={deleteCamera.isPending}
-                  className="flex-1 h-8 rounded-md bg-red-600 hover:bg-red-500 text-white text-xs font-medium transition-colors disabled:opacity-40"
-                >
-                  {deleteCamera.isPending ? 'Deleting…' : 'Confirm Delete'}
-                </button>
-                <button
-                  onClick={() => setConfirmDelete(false)}
-                  className="flex-1 h-8 rounded-md bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs font-medium transition-colors"
-                >
-                  Cancel
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-    </aside>
+  return(
+    <div>
+      camera panel
+    </div>
   )
 }

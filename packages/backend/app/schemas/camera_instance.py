@@ -9,7 +9,7 @@ class CameraInstanceCreate(BaseModel):
     lat: float
     lng: float
     bearing: float = 0.0
-    height: float = Field(default=3.0, gt=0)
+    camera_height: float = Field(default=3.0, gt=0)
     tilt_angle: float = 30.0
     focal_length_chosen: float | None = None
     colour: str = "#3B82F6"
@@ -32,7 +32,7 @@ class CameraInstanceUpdate(BaseModel):
     lat: float | None = None
     lng: float | None = None
     bearing: float | None = None
-    height: float | None = Field(default=None, gt=0)
+    camera_height: float | None = Field(default=None, gt=0)
     tilt_angle: float | None = None
     focal_length_chosen: float | None = None
     colour: str | None = None

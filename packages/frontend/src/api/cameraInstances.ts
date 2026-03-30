@@ -146,7 +146,7 @@ export function useSaveNewCameras(projectId: string) {
             lat: cam.lat,
             lng: cam.lng,
             bearing: cam.bearing,
-            height: cam.height,
+            camera_height: cam.camera_height,
             tilt_angle: cam.tilt_angle,
             focal_length_chosen: cam.focal_length_chosen,
             colour: cam.colour,

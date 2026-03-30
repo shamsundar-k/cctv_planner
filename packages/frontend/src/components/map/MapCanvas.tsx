@@ -3,7 +3,7 @@ import { useEffect, useRef, type ReactNode } from 'react'
 import type { Map as LeafletMap, TileLayer } from 'leaflet'
 import { useMapViewStore } from '../../store/mapViewSlice'
 import CameraLayer from './CameraLayer'
-import FovLayer from './FovLayer'
+
 import {
   buildTileUrl, TILE_ATTRIBUTION,
   CROSSHAIR_TOOLS, DEFAULT_LAT, DEFAULT_LNG, DEFAULT_ZOOM,
@@ -73,7 +73,7 @@ export default function MapCanvas({ centerLat, centerLng, defaultZoom, projectId
   return (
     <>
       <div ref={containerRef} className="flex-1 relative min-w-0" />
-      <FovLayer projectId={projectId} />
+      
       <CameraLayer projectId={projectId} />
       {children}
     </>

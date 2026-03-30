@@ -68,7 +68,7 @@ export default function FovPolygon({ cameraId, projectId, layer }: FovPolygonPro
     }
 
     const tiltAngle = calculateTiltFromTarget(
-      camera.height,
+      camera.camera_height,
       camera.target_distance!,
       camera.target_height,
     )
@@ -80,7 +80,7 @@ export default function FovPolygon({ cameraId, projectId, layer }: FovPolygonPro
       hFovMax: cameraModel.h_fov_max,
       vFovMin: cameraModel.v_fov_min,
       vFovMax: cameraModel.v_fov_max,
-      installationHeight: camera.height,
+      installationHeight: camera.camera_height,
       tiltAngle,
       focalLengthChosen: camera.focal_length_chosen ?? cameraModel.focal_length_min,
     })

@@ -11,7 +11,10 @@
       "Bash(pnpm tsc:*)",
       "Bash(powershell.exe -Command \"Remove-Item ''''C:\\\\Drive_D\\\\cctv_planner\\\\packages\\\\frontend\\\\src\\\\components\\\\map\\\\BottomToolbar.tsx'''', ''''C:\\\\Drive_D\\\\cctv_planner\\\\packages\\\\frontend\\\\src\\\\components\\\\map\\\\ToolGroup.tsx'''', ''''C:\\\\Drive_D\\\\cctv_planner\\\\packages\\\\frontend\\\\src\\\\components\\\\map\\\\ToolButton.tsx'''', ''''C:\\\\Drive_D\\\\cctv_planner\\\\packages\\\\frontend\\\\src\\\\components\\\\map\\\\toolbarConfig.ts'''', ''''C:\\\\Drive_D\\\\cctv_planner\\\\packages\\\\frontend\\\\src\\\\components\\\\map\\\\toolIcons.tsx''''\")",
       "Bash(powershell.exe -Command \"Get-ChildItem 'C:\\\\Drive_D\\\\cctv_planner\\\\packages\\\\frontend\\\\src\\\\components\\\\map' | Select-Object Name\")",
-      "Bash(npx tsx:*)"
+      "Bash(npx tsx:*)",
+      "Bash(node -e \"const fovCalcs = require\\(''/c/Drive_D/cctv_planner/packages/frontend/src/lib/fovCalculations.ts''\\); console.log\\(Object.keys\\(fovCalcs\\)\\);\")",
+      "Bash(/tmp/height_report.txt:*)",
+      "Read(//tmp/**)"
     ]
   }
 }

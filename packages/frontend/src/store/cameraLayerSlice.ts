@@ -8,18 +8,13 @@ interface CameraLayerState {
   // Active camera model for placement
   selectedModelId: string | null
 
-  // Per-camera visibility overrides (set of hidden IDs)
-  hiddenCameraIds: string[]
 
-  // Camera visualization
-  showCameraLabels: boolean
 
   // Actions
   selectCamera: (id: string | null, zoomLevel?: number) => void
   clearSelection: () => void
   setSelectedModel: (id: string | null) => void
-  toggleCameraVisibility: (cameraId: string) => void
-  setShowCameraLabels: (show: boolean) => void
+
 }
 
 export const useCameraLayerStore = create<CameraLayerState>((set) => ({
@@ -39,12 +34,4 @@ export const useCameraLayerStore = create<CameraLayerState>((set) => ({
 
   setSelectedModel: (id) => set({ selectedModelId: id }),
 
-  toggleCameraVisibility: (cameraId) =>
-    set((state) => ({
-      hiddenCameraIds: state.hiddenCameraIds.includes(cameraId)
-        ? state.hiddenCameraIds.filter((id) => id !== cameraId)
-        : [...state.hiddenCameraIds, cameraId],
-    })),
-
-  setShowCameraLabels: (show) => set({ showCameraLabels: show }),
 }))

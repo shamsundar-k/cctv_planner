@@ -32,7 +32,7 @@ class CameraInstanceSummary(BaseModel):
     lat: float
     lng: float
     bearing: float
-    height: float
+    camera_height: float
     tilt_angle: float
     focal_length_chosen: float | None
     colour: str

@@ -24,7 +24,7 @@ class CameraInstance(Document):
     bearing: float = 0.0                        # degrees, 0 = North (pan direction)
 
     # ── Installation parameters ───────────────────────────────────────────────
-    height: float = Field(default=3.0, gt=0)    # m — lens height above ground
+    camera_height: float = Field(default=5.0, gt=0)    # m — lens height above ground
     tilt_angle: float = 30.0                    # ° — downward tilt from horizontal
     focal_length_chosen: float | None = None    # mm — selected zoom; None = focal_length_min
 

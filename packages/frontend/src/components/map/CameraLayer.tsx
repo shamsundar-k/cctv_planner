@@ -65,9 +65,17 @@ export default function CameraLayer({ projectId }: CameraLayerProps) {
         console.log("selected model", selectedModelId)
         const position: geo_position = { lat: e.latlng.lat, lng: e.latlng.lng }
         const localCamera = generateDefaultCameraInstance(selectedModelId, position, projectId);
-        addCamera(localCamera)
-        selectCamera(localCamera.id)
-        setActiveTool('select')
+        if(localCamera){
+          console.log("camera created",localCamera)
+          addCamera(localCamera)
+          selectCamera(localCamera.id)
+          setActiveTool('select')
+        }
+        else{
+          console.log("Error adding camera")
+        }
+        
+        
       } else if (activeTool === 'select' || activeTool === 'pan') {
         // Deselect camera when clicking map background
         clearSelection()
