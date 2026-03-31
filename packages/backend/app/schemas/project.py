@@ -28,6 +28,7 @@ class ProjectUpdate(BaseModel):
 
 class CameraInstanceSummary(BaseModel):
     id: str
+    client_id: str
     label: str
     lat: float
     lng: float

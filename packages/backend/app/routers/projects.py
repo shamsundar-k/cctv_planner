@@ -85,6 +85,7 @@ def _camera_model_id(cam: CameraInstance) -> str:
 def _to_camera_summary(cam: CameraInstance) -> CameraInstanceSummary:
     return CameraInstanceSummary(
         id=str(cam.id),
+        client_id=cam.client_id,
         label=cam.label,
         lat=cam.lat,
         lng=cam.lng,
@@ -367,7 +368,7 @@ async def remove_imported_camera(
 
 async def _get_camera_for_project(
     project_id: PydanticObjectId,
-    camera_id: PydanticObjectId,
+    client_id: str,
     current_user: User,
 ) -> tuple[Project, CameraInstance]:
     project = await Project.get(project_id)
@@ -375,13 +376,11 @@ async def _get_camera_for_project(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
     _require_access(project, current_user)
 
-    cam = await CameraInstance.get(camera_id)
+    cam = await CameraInstance.find_one(
+        CameraInstance.project.id == project.id,  # type: ignore[union-attr]
+        CameraInstance.client_id == client_id,
+    )
     if cam is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Camera instance not found")
-
-    # Verify the camera belongs to this project
-    cam_project_id = cam.project.ref.id if not isinstance(cam.project, Project) else cam.project.id  # type: ignore[union-attr]
-    if cam_project_id != project.id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Camera instance not found")
 
     return project, cam
@@ -436,6 +435,7 @@ async def place_camera_instance(
     )
 
     instance = CameraInstance(
+        client_id=body.client_id,
         project=project,  # type: ignore[arg-type]
         camera_model=cm,  # type: ignore[arg-type]
         label=body.label,
@@ -456,24 +456,24 @@ async def place_camera_instance(
     return _to_camera_summary(instance)
 
 
-@router.get("/{project_id}/cameras/{camera_id}", response_model=CameraInstanceSummary)
+@router.get("/{project_id}/cameras/{client_id}", response_model=CameraInstanceSummary)
 async def get_camera_instance(
     project_id: PydanticObjectId,
-    camera_id: PydanticObjectId,
+    client_id: str,
     current_user: User = Depends(get_current_user),
 ) -> CameraInstanceSummary:
-    _, cam = await _get_camera_for_project(project_id, camera_id, current_user)
+    _, cam = await _get_camera_for_project(project_id, client_id, current_user)
     return _to_camera_summary(cam)
 
 
-@router.put("/{project_id}/cameras/{camera_id}", response_model=CameraInstanceSummary)
+@router.put("/{project_id}/cameras/{client_id}", response_model=CameraInstanceSummary)
 async def update_camera_instance(
     project_id: PydanticObjectId,
-    camera_id: PydanticObjectId,
+    client_id: str,
     body: CameraInstanceUpdate,
     current_user: User = Depends(get_current_user),
 ) -> CameraInstanceSummary:
-    _, cam = await _get_camera_for_project(project_id, camera_id, current_user)
+    _, cam = await _get_camera_for_project(project_id, client_id, current_user)
 
     updates = body.model_dump(exclude_none=True, exclude={"ir_range_hint"})
     if "target_distance" not in updates and body.ir_range_hint > 0:
@@ -485,11 +485,11 @@ async def update_camera_instance(
     return _to_camera_summary(cam)
 
 
-@router.delete("/{project_id}/cameras/{camera_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{project_id}/cameras/{client_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_camera_instance(
     project_id: PydanticObjectId,
-    camera_id: PydanticObjectId,
+    client_id: str,
     current_user: User = Depends(get_current_user),
 ) -> None:
-    _, cam = await _get_camera_for_project(project_id, camera_id, current_user)
+    _, cam = await _get_camera_for_project(project_id, client_id, current_user)
     await cam.delete()

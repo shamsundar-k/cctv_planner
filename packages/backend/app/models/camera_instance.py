@@ -10,12 +10,14 @@ from datetime import datetime, timezone
 
 from beanie import Document, Link
 from pydantic import Field
+from pymongo import ASCENDING, IndexModel
 
 from .camera_model import CameraModel
 from .project import Project
 
 
 class CameraInstance(Document):
+    client_id: str
     project: Link[Project]
     camera_model: Link[CameraModel]
     label: str = ""
@@ -41,4 +43,10 @@ class CameraInstance(Document):
 
     class Settings:
         name = "camera_instances"
-        indexes = ["project"]
+        indexes = [
+            "project",
+            IndexModel(
+                [("project.$id", ASCENDING), ("client_id", ASCENDING)],
+                unique=True,
+            ),
+        ]
