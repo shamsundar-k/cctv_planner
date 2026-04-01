@@ -7,6 +7,7 @@ import MapCanvas from '../components/map/MapCanvas'
 import BottomToolbar from '../components/BottomToolbar/BottomToolbar'
 import CameraPropertiesPanel from '../components/map/CameraPropertiesPanel'
 import Map from '../components/map/Map'
+import BasemapSelector from '../components/map/BasemapSelector'
 
 export default function ProjectMapViewPagenew() {
   const { id = '' } = useParams<{ id: string }>()
@@ -41,7 +42,9 @@ export default function ProjectMapViewPagenew() {
         <Map>
 
         </Map>
+
       </div>
+      <BasemapSelector />
     </div>
   )
 }

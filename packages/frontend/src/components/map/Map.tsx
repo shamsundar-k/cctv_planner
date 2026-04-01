@@ -6,6 +6,7 @@ import 'leaflet/dist/leaflet.css';
 import { MapContext } from '../../context/MapContext';
 import BaseTile from './BaseTile';
 
+
 interface MapProps {
     center?: L.LatLngExpression;
     zoom?: number;
