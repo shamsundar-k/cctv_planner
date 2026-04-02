@@ -5,6 +5,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { MapContext } from '../../context/MapContext';
 import BaseTile from './BaseTile';
+import BasemapSelector from './BasemapSelector';
 
 
 interface MapProps {
@@ -16,7 +17,7 @@ interface MapProps {
 export default function Map({
     center = [51.5, -0.09],
     zoom = 13,
-    children,
+
 }: MapProps) {
     const mapDivRef = useRef<HTMLDivElement>(null);
     const mapInstanceRef = useRef<L.Map | null>(null);
@@ -40,9 +41,19 @@ export default function Map({
 
     return (
         <MapContext.Provider value={mapInstanceRef}>
-            <div ref={mapDivRef} style={{ height: '100%', width: '100%' }} />
-            {mapReady && <BaseTile />}
-
+            <div style={{ position: 'relative', height: '100%', width: '100%' }}>
+                <div ref={mapDivRef} style={{ height: '100%', width: '100%' }} />
+                {mapReady && <BaseTile />}
+                <div style={{
+                    position: 'absolute',
+                    bottom: '16px',
+                    right: '16px',
+                    zIndex: 1001,
+                    pointerEvents: 'auto'
+                }}>
+                    <BasemapSelector />
+                </div>
+            </div>
         </MapContext.Provider>
     );
 }

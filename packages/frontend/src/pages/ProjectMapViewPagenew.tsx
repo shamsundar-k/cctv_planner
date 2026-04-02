@@ -31,6 +31,10 @@ export default function ProjectMapViewPagenew() {
     )
   }
 
+  const centerLat = project.center_lat ?? 51.5;
+  const centerLng = project.center_lng ?? -0.09;
+  const defaultZoom = project.default_zoom ?? 13;
+
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-slate-900">
       {/* Navbar */}
@@ -39,12 +43,12 @@ export default function ProjectMapViewPagenew() {
       {/* Workspace */}
       <div className="flex-1 flex overflow-hidden">
         <LeftSidebar projectId={id} />
-        <Map>
+        <Map zoom={defaultZoom} center={[centerLat, centerLng]}>
 
         </Map>
 
       </div>
-      <BasemapSelector />
+
     </div>
   )
 }

@@ -10,7 +10,6 @@ export default function BasemapSelector() {
     const [open, setOpen] = useState(false)
     const ref = useRef<HTMLDivElement>(null)
 
-    // Close on outside click
     useEffect(() => {
         if (!open) return
         const handler = (e: MouseEvent) => {
@@ -31,23 +30,20 @@ export default function BasemapSelector() {
             <div className="relative group">
                 <button
                     onClick={() => setOpen((prev) => !prev)}
-                    className={`absolute bottom-[calc(100%+30px)] right-0 z-[1001]
+                    className={`
             w-8 h-8 flex items-center justify-center rounded-md cursor-pointer
             bg-white border transition-colors
-            ${open
-                            ? 'border-blue-400 bg-gray-50'
-                            : 'border-gray-200 hover:bg-gray-50'
-                        }
+            ${open ? 'border-blue-400 bg-gray-50' : 'border-gray-200 hover:bg-gray-50'}
           `}
                     aria-label="Select base map"
                 >
                     <Layers size={15} className="text-gray-500" />
                 </button>
 
-                {/* Tooltip — suppressed while panel is open */}
+                {/* Tooltip */}
                 {!open && (
                     <div className="
-            absolute bottom-[calc(100%+6px)] right-0 z-[1001]
+            absolute bottom-[calc(100%+6px)] right-0
             px-2 py-1 rounded text-[11px] text-white whitespace-nowrap
             bg-gray-800/80 pointer-events-none
             opacity-0 group-hover:opacity-100 transition-opacity duration-150
@@ -57,13 +53,12 @@ export default function BasemapSelector() {
                 )}
             </div>
 
-            {/* ── Expanded panel ── */}
+            {/* ── Expanded panel — anchored above the button via bottom+right ── */}
             {open && (
                 <div className="
-          absolute bottom-[calc(100%+8px)] right-0 z-[1001]
+          absolute bottom-[calc(100%+8px)] right-0
           bg-white border border-gray-200 rounded-xl p-3 w-[212px]
         ">
-                    {/* Header */}
                     <div className="flex items-center justify-between mb-2.5">
                         <span className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">
                             Base map
@@ -77,16 +72,15 @@ export default function BasemapSelector() {
                         </button>
                     </div>
 
-                    {/* Tile grid — 3 columns, one per style */}
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-2 gap-2">
                         {entries.map(([key, tile]) => {
                             const isActive = key === activeBaseMap
                             return (
                                 <button
                                     key={key}
                                     onClick={() => {
-                                        setBaseMap(key)   // ← store update
-                                        //setOpen(false)
+                                        setBaseMap(key)
+                                        setOpen(false)
                                     }}
                                     className={`
                     rounded-md overflow-hidden text-left transition-all
@@ -102,7 +96,14 @@ export default function BasemapSelector() {
                                         className="w-full h-12 object-cover block"
                                         draggable={false}
                                     />
-
+                                    <div className="px-1.5 py-1 bg-gray-50 flex items-center justify-between gap-1">
+                                        <span className="text-[11px] font-medium text-gray-700 truncate">
+                                            {tile.label}
+                                        </span>
+                                        {isActive && (
+                                            <Check size={10} className="text-blue-500 shrink-0" />
+                                        )}
+                                    </div>
                                 </button>
                             )
                         })}
