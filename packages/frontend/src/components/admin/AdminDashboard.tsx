@@ -29,7 +29,7 @@
  */
 import { useState } from 'react'
 import { Link } from 'react-router'
-import { useAllCameras } from '../../api/cameras'
+import { useAllCameras } from '../../api/camerasModels'
 import {
   useSearchUsers,
   useSearchProjects,
@@ -163,11 +163,10 @@ export default function AdminDashboard() {
           <button
             key={id}
             onClick={() => setActiveTab(id)}
-            className={`px-5 py-2.5 text-sm font-medium bg-transparent border-none cursor-pointer whitespace-nowrap transition-colors border-b-2 -mb-px ${
-              activeTab === id
+            className={`px-5 py-2.5 text-sm font-medium bg-transparent border-none cursor-pointer whitespace-nowrap transition-colors border-b-2 -mb-px ${activeTab === id
                 ? 'text-sky-400 border-sky-400'
                 : 'text-slate-500 border-transparent hover:text-slate-300'
-            }`}
+              }`}
           >
             {label}
             {id === 'invites' && adminInvites.length > 0 && (

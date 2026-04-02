@@ -1,6 +1,7 @@
+import { useEffect } from 'react'
 import { useParams } from 'react-router'
 import { useProject } from '../api/projects'
-import { useSyncCameraInstancesToStore } from '../api/cameraInstances'
+import { useCameraInstanceStore } from '../store/cameraInstanceStore'
 import MapNavbar from '../components/map/MapNavbar'
 import LeftSidebar from '../components/map/LeftSidebar'
 import MapCanvas from '../components/map/MapCanvas'
@@ -9,8 +10,13 @@ import CameraPropertiesPanel from '../components/map/CameraPropertiesPanel'
 
 export default function ProjectMapViewPage() {
   const { id = '' } = useParams<{ id: string }>()
-  // Sync React Query camera list → Zustand working-copy store once per page
-  useSyncCameraInstancesToStore(id)
+  const loadCameras = useCameraInstanceStore((s) => s.loadCameras)
+
+  // Load cameras once on page mount — store owns the data lifecycle
+  useEffect(() => {
+    if (id) loadCameras(id)
+  }, [id, loadCameras])
+
   const { data: project, isLoading, isError } = useProject(id)
 
   if (isLoading) {

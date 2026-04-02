@@ -35,7 +35,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import Navbar from '../components/layout/Navbar'
 import { useAuthStore } from '../store/authSlice'
-import { useAllCameras, useDeleteCamera } from '../api/cameras'
+import { useAllCameras, useDeleteCamera } from '../api/camerasModels'
 import type { CameraModel } from '../api/cameras.types'
 import { useToast } from '../components/ui/Toast'
 

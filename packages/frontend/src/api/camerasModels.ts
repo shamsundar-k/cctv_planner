@@ -22,7 +22,7 @@ export const cameraKeys = {
 
 // ── Hooks ──────────────────────────────────────────────────────────────────────
 
-export function useAllCameras() {
+export function useAllCameraModels() {
   return useQuery({
     queryKey: cameraKeys.all,
     queryFn: async (): Promise<CameraModel[]> => {
@@ -34,7 +34,7 @@ export function useAllCameras() {
   })
 }
 
-export function useCamera(id: string) {
+export function useCameraModel(id: string) {
   return useQuery({
     queryKey: cameraKeys.detail(id),
     queryFn: async (): Promise<CameraModel> => {
@@ -46,7 +46,7 @@ export function useCamera(id: string) {
   })
 }
 
-export function useCreateCamera() {
+export function useCreateCameraModels() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (body: CameraModelCreate): Promise<CameraModel> => {
@@ -60,7 +60,7 @@ export function useCreateCamera() {
   })
 }
 
-export function useUpdateCamera() {
+export function useUpdateCameraModel() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async ({ id, body }: { id: string; body: CameraModelUpdate }): Promise<CameraModel> => {
@@ -75,7 +75,7 @@ export function useUpdateCamera() {
   })
 }
 
-export function useDeleteCamera() {
+export function useDeleteCameraModel() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (id: string): Promise<void> => {

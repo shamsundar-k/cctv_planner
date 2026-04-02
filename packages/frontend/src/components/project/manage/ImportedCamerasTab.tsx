@@ -36,7 +36,7 @@
  */
 import { useState } from 'react'
 import type { CameraModel } from '../../../api/cameras.types'
-import { useAllCameras } from '../../../api/cameras'
+import { useAllCameras } from '../../../api/camerasModels'
 import {
   useImportedCameras,
   useAddCameraToProject,

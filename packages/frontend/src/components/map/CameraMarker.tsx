@@ -1,7 +1,7 @@
 /**
  * CameraMarker — manages one Leaflet marker for one camera.
  *
- * Subscribes to `cameraInstances[cameraId]` in the Zustand store so it only
+ * Subscribes to `cameraRecords[cameraId].camera` in the Zustand store so it only
  * re-renders when *this* camera's data changes.  Other cameras' updates are
  * completely invisible to this component.
  */
@@ -43,7 +43,7 @@ interface CameraMarkerProps {
 }
 
 export default function CameraMarker({ cameraId, layer }: CameraMarkerProps) {
-  const camera = useCameraInstanceStore((s) => s.cameraInstances[cameraId])
+  const camera = useCameraInstanceStore((s) => s.cameraRecords[cameraId]?.camera)
   const selectedCameraId = useCameraLayerStore((s) => s.selectedCameraId)
   const selectCamera = useCameraLayerStore((s) => s.selectCamera)
 
@@ -64,7 +64,7 @@ export default function CameraMarker({ cameraId, layer }: CameraMarkerProps) {
 
       const marker = L.marker([camera.lat, camera.lng], {
         icon: L.divIcon({
-          html: buildCameraIcon(camera.colour, camera.id === selectedCameraIdRef.current, camera.bearing),
+          html: buildCameraIcon(camera.colour, cameraId === selectedCameraIdRef.current, camera.bearing),
           className: '',
           iconSize: [32, 40],
           iconAnchor: [16, 24],
@@ -95,14 +95,14 @@ export default function CameraMarker({ cameraId, layer }: CameraMarkerProps) {
     import('leaflet').then((L) => {
       markerRef.current?.setIcon(
         L.divIcon({
-          html: buildCameraIcon(camera.colour, camera.id === selectedCameraId, camera.bearing),
+          html: buildCameraIcon(camera.colour, cameraId === selectedCameraId, camera.bearing),
           className: '',
           iconSize: [32, 40],
           iconAnchor: [16, 24],
         }),
       )
     })
-  }, [camera?.colour, camera?.bearing, selectedCameraId, camera?.id])
+  }, [camera?.colour, camera?.bearing, selectedCameraId, cameraId])
 
 
   // ── Update position when lat/lng changes ────────────────────────────────

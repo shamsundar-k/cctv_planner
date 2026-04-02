@@ -1,7 +1,7 @@
 /**
  * FovPolygon — manages one Leaflet FOV polygon for one camera.
  *
- * Subscribes to `cameraInstances[cameraId]` in the Zustand store so it only
+ * Subscribes to `cameraRecords[cameraId].camera` in the Zustand store so it only
  * re-renders when *this* camera's data changes.  The imported camera-model
  * list comes from React Query's shared cache (no extra fetch per instance).
  */
@@ -24,7 +24,7 @@ interface FovPolygonProps {
 }
 
 export default function FovPolygon({ cameraId, projectId, layer }: FovPolygonProps) {
-  const camera = useCameraInstanceStore((s) => s.cameraInstances[cameraId])
+  const camera = useCameraInstanceStore((s) => s.cameraRecords[cameraId]?.camera)
   const selectedCameraId = useCameraLayerStore((s) => s.selectedCameraId)
   const hiddenCameraIds = useCameraLayerStore((s) => s.hiddenCameraIds)
   const showFovPolygons = useMapViewStore((s) => s.showFovPolygons)
@@ -47,7 +47,7 @@ export default function FovPolygon({ cameraId, projectId, layer }: FovPolygonPro
 
     const shouldHide =
       !showFovPolygons ||
-      hiddenCameraIds.includes(camera.id) ||
+      hiddenCameraIds.includes(cameraId) ||
       !camera.target_distance ||
       camera.target_distance <= 0
 
@@ -98,7 +98,7 @@ export default function FovPolygon({ cameraId, projectId, layer }: FovPolygonPro
       camera.bearing,
     )
 
-    const isSelected = camera.id === selectedCameraId
+    const isSelected = cameraId === selectedCameraId
     const style = {
       color: camera.colour,
       fillColor: camera.colour,
