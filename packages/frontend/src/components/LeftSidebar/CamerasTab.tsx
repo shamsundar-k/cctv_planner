@@ -1,5 +1,5 @@
-import { useCameraInstances } from '../../../api/cameraInstances'
-import { useCameraLayerStore } from '../../../store/cameraLayerSlice'
+import { useCameraInstances } from '../../api/cameraInstances'
+import { useCameraLayerStore } from '../../store/cameraLayerSlice'
 import EyeIcon from './EyeIcon'
 import type { CamerasTabProps } from './types'
 
@@ -35,11 +35,10 @@ export default function CamerasTab({ projectId }: CamerasTabProps) {
         return (
           <li key={cam.id}>
             <div
-              className={`flex items-center gap-2 h-8 px-1 rounded cursor-pointer group transition-colors ${
-                isSelected
-                  ? 'bg-blue-600/30 text-slate-100'
-                  : 'text-slate-300 hover:bg-slate-700/50 hover:text-slate-100'
-              }`}
+              className={`flex items-center gap-2 h-8 px-1 rounded cursor-pointer group transition-colors ${isSelected
+                ? 'bg-blue-600/30 text-slate-100'
+                : 'text-slate-300 hover:bg-slate-700/50 hover:text-slate-100'
+                }`}
               onClick={() => selectCamera(isSelected ? null : cam.id)}
             >
               {/* Colour dot */}
@@ -58,13 +57,12 @@ export default function CamerasTab({ projectId }: CamerasTabProps) {
                   toggleCameraVisibility(cam.id)
                 }}
                 title={isVisible ? 'Hide camera' : 'Show camera'}
-                className={`shrink-0 p-0.5 rounded border-none bg-transparent cursor-pointer transition-colors ${
-                  isVisible
-                    ? 'text-slate-500 hover:text-slate-100 opacity-0 group-hover:opacity-100'
-                    : 'text-slate-400 opacity-100'
-                }`}
+                className={`shrink-0 p-0.5 rounded border-none bg-transparent cursor-pointer transition-colors ${isVisible
+                  ? 'text-slate-500 hover:text-slate-100 opacity-0 group-hover:opacity-100'
+                  : 'text-slate-400 opacity-100'
+                  }`}
               >
-                <EyeIcon visible={isVisible} />
+
               </button>
             </div>
           </li>

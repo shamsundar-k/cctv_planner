@@ -1,7 +1,7 @@
 import { Link } from 'react-router'
-import { useImportedCameras } from '../../../api/projects'
-import { useMapViewStore } from '../../../store/mapViewSlice'
-import { useCameraLayerStore } from '../../../store/cameraLayerSlice'
+import { useImportedCameras } from '../../api/projects'
+import { useMapViewStore } from '../../store/mapViewSlice'
+import { useCameraLayerStore } from '../../store/cameraLayerSlice'
 import type { ModelsTabProps } from './types'
 
 const CAMERA_TYPE_LABELS: Record<string, string> = {
@@ -62,8 +62,8 @@ export default function ModelsTab({ projectId }: ModelsTabProps) {
               <button
                 onClick={() => setSelectedModel(isSelected ? null : camera_model.id)}
                 className={`w-full flex items-center gap-2 px-2 py-1.5 rounded border-none cursor-pointer text-left transition-colors ${isSelected
-                    ? 'bg-blue-600/30 text-slate-100'
-                    : 'bg-transparent text-slate-300 hover:bg-slate-700/50 hover:text-slate-100'
+                  ? 'bg-blue-600/30 text-slate-100'
+                  : 'bg-transparent text-slate-300 hover:bg-slate-700/50 hover:text-slate-100'
                   }`}
               >
                 {/* Armed indicator */}

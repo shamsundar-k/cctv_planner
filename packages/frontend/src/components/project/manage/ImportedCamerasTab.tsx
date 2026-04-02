@@ -35,7 +35,7 @@
  *   used within card action buttons.
  */
 import { useState } from 'react'
-import type { CameraModel } from '../../../api/cameras.types'
+import type { CameraModel } from '../../../api/cameramodel.types'
 import { useAllCameras } from '../../../api/camerasModels'
 import {
   useImportedCameras,

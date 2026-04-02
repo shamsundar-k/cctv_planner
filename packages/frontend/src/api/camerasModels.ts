@@ -11,7 +11,7 @@
  */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import client from './client'
-import type { CameraModel, CameraModelCreate, CameraModelUpdate } from './cameras.types'
+import type { CameraModel, CameraModelCreate, CameraModelUpdate } from './cameramodel.types'
 
 // ── Query keys ─────────────────────────────────────────────────────────────────
 
@@ -46,7 +46,7 @@ export function useCameraModel(id: string) {
   })
 }
 
-export function useCreateCameraModels() {
+export function useCreateCameraModel() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (body: CameraModelCreate): Promise<CameraModel> => {

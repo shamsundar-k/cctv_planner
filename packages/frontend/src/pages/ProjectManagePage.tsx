@@ -26,7 +26,7 @@ import { useParams, useNavigate, Link } from 'react-router'
 import Navbar from '../components/layout/Navbar'
 import BasicInfoTab from '../components/project/manage/BasicInfoTab'
 import MapLocationTab from '../components/project/manage/MapLocationTab'
-import ImportedCamerasTab from '../components/project/manage/ImportedCamerasTab'
+
 import { useProject } from '../api/projects'
 
 type Tab = 'basic' | 'map' | 'cameras'
@@ -102,11 +102,10 @@ export default function ProjectManagePage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-5 py-2.5 text-sm font-medium border-none bg-transparent cursor-pointer transition-colors border-b-2 -mb-px ${
-                activeTab === tab.id
+              className={`px-5 py-2.5 text-sm font-medium border-none bg-transparent cursor-pointer transition-colors border-b-2 -mb-px ${activeTab === tab.id
                   ? 'text-blue-400 border-blue-500'
                   : 'text-slate-400 border-transparent hover:text-slate-200'
-              }`}
+                }`}
             >
               {tab.label}
             </button>
@@ -116,7 +115,7 @@ export default function ProjectManagePage() {
         {/* Tab content */}
         {activeTab === 'basic' && <BasicInfoTab project={project} />}
         {activeTab === 'map' && <MapLocationTab project={project} />}
-        {activeTab === 'cameras' && <ImportedCamerasTab projectId={project.id} />}
+
       </div>
     </div>
   )

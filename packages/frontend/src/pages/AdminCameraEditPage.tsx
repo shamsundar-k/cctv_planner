@@ -1,59 +1,12 @@
-/*
- * FILE SUMMARY — src/pages/AdminCameraEditPage.tsx
- *
- * Create / edit camera model form page at /admin/manage/cameras/:id. When
- * :id is "new", the page creates a new model; otherwise it edits an existing
- * one.
- *
- * AdminCameraEditPage() — Main page component. Fetches the existing model (if
- *   editing) via useCamera(), populates form state via a useEffect, and renders
- *   a multi-section form with four collapsible <Section>s:
- *   - Identity: Name*, Manufacturer, Model Number, Camera Type, Location,
- *     Notes.
- *   - Lens: Lens Type (fixed/varifocal), Focal Length Min/Max, H-FOV Min/Max,
- *     V-FOV Min/Max, IR Cut Filter toggle. Fixed-lens mode auto-syncs max
- *     values to equal min values.
- *   - Sensor: Resolution H*, Resolution V*, auto-computed Megapixels and
- *     Aspect Ratio, Sensor Size (standard format dropdown + custom input),
- *     Sensor Type, Min Illumination.
- *   - Advanced (collapsed by default): IR Range, WDR toggle, WDR Strength
- *     (shown only when WDR is enabled).
- *
- * set(key, value) — Generic field setter; updates one form field and clears
- *   its validation error.
- *
- * handleLensTypeChange(lt) — Switches the lens type and, if switching to
- *   "fixed", collapses all max values to match their min counterparts.
- *
- * validate() — Runs all field-level validation rules, populates the errors
- *   state map, and returns false if any errors exist.
- *
- * handleSubmit(e) — Calls validate(), then dispatches useCreateCamera or
- *   useUpdateCamera depending on isNew. Shows a success toast and navigates
- *   back to /admin/manage/cameras. Shows an error toast on failure.
- *
- * gcd(a, b) — Euclid's algorithm; used by calcAspectRatio.
- * calcMegapixels(h, v) — Computes sensor megapixels from pixel dimensions.
- * calcAspectRatio(h, v) — Reduces the resolution to its simplest ratio string.
- *
- * Toggle({ checked, onChange }) — Accessible switch button component for
- *   boolean fields (IR Cut Filter, WDR).
- * Tooltip({ text }) — Hoverable info icon that shows a tooltip on the right.
- * Section({ title, children, defaultOpen }) — Collapsible form section with a
- *   chevron toggle button header.
- * InputWithUnit({ unit, children }) — Wraps an input with an absolute-
- *   positioned unit label on the right (mm, °, px, lux, m, dB).
- * Field({ label, children, hint, tooltip }) — Labelled form field wrapper with
- *   optional hint text and tooltip icon.
- */
+
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import Navbar from '../components/layout/Navbar'
 import { useAuthStore } from '../store/authSlice'
-import { useCamera, useCreateCamera, useUpdateCamera } from '../api/camerasModels'
-import type { CameraModelCreate } from '../api/cameras.types'
+import type { CameraModelCreate } from '../api/cameramodel.types'
 import { useToast } from '../components/ui/Toast'
 import { SENSOR_FORMATS, isStandardSensorFormat } from '../constants/sensorFormats'
+import { useCameraModel, useCreateCameraModel, useUpdateCameraModel } from '../api/camerasModels'
 
 // ── Field helpers ────────────────────────────────────────────────────────────
 
@@ -233,9 +186,9 @@ export default function AdminCameraEditPage() {
   const navigate = useNavigate()
   const showToast = useToast()
 
-  const { data: existing, isLoading } = useCamera(id ?? '')
-  const createCamera = useCreateCamera()
-  const updateCamera = useUpdateCamera()
+  const { data: existing, isLoading } = useCameraModel(id ?? '')
+  const createCamera = useCreateCameraModel()
+  const updateCamera = useUpdateCameraModel()
 
   const [form, setForm] = useState<CameraModelCreate>(emptyForm)
   const [errors, setErrors] = useState<Record<string, string>>({})

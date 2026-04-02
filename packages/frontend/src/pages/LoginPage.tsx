@@ -69,31 +69,32 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-900">
-      <div className="w-full max-w-sm bg-slate-800 rounded-2xl shadow-xl border border-slate-700 p-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#336293] via-[#4B4DAD] to-[#4E8AC6] font-sans">
+      <div className="w-full max-w-md bg-white/10 backdrop-blur-xl rounded-[2rem] shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] border border-white/20 p-10 m-4">
         {/* Logo + title */}
-        <div className="flex items-center gap-2.5 mb-8">
-          <svg
-            width="28"
-            height="28"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-hidden="true"
-          >
-            <rect x="2" y="7" width="14" height="10" rx="2" fill="#60a5fa" />
-            <path d="M16 10l5-3v10l-5-3V10z" fill="#60a5fa" />
-            <circle cx="9" cy="12" r="2" fill="#ffffff" />
-          </svg>
-          <h1 className="text-xl font-bold text-slate-100">CCTV Planner</h1>
+        <div className="flex flex-col items-center gap-4 mb-8">
+          <div className="p-4 bg-gradient-to-tr from-[#4E8AC6] to-[#7DB9DB] rounded-2xl shadow-lg ring-1 ring-white/30">
+            <svg
+              width="36"
+              height="36"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <rect x="2" y="7" width="14" height="10" rx="2" fill="#C5ECF0" />
+              <path d="M16 10l5-3v10l-5-3V10z" fill="#C5ECF0" />
+              <circle cx="9" cy="12" r="2" fill="#336293" />
+            </svg>
+          </div>
+          <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#C5ECF0] to-[#ffffff] tracking-tight">CCTV Planner</h1>
+          <p className="text-[#C5ECF0]/80 text-sm font-medium">Welcome back, please sign in</p>
         </div>
 
-        <p className="text-slate-400 text-sm mb-6">Sign in to your account</p>
-
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="email" className="text-sm font-medium text-slate-300">
-              Email
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+          <div className="flex flex-col gap-2">
+            <label htmlFor="email" className="text-sm font-semibold text-[#C5ECF0]">
+              Email Address
             </label>
             <input
               id="email"
@@ -102,13 +103,13 @@ export default function LoginPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+              className="bg-[#336293]/40 border border-[#7DB9DB]/40 rounded-xl px-4 py-3 text-sm text-white placeholder-[#7DB9DB]/60 focus:outline-none focus:border-[#C5ECF0] focus:ring-1 focus:ring-[#C5ECF0] transition-all"
               placeholder="you@example.com"
             />
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="password" className="text-sm font-medium text-slate-300">
+          <div className="flex flex-col gap-2">
+            <label htmlFor="password" className="text-sm font-semibold text-[#C5ECF0]">
               Password
             </label>
             <input
@@ -118,19 +119,21 @@ export default function LoginPage() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+              className="bg-[#336293]/40 border border-[#7DB9DB]/40 rounded-xl px-4 py-3 text-sm text-white placeholder-[#7DB9DB]/60 focus:outline-none focus:border-[#C5ECF0] focus:ring-1 focus:ring-[#C5ECF0] transition-all"
               placeholder="••••••••"
             />
           </div>
 
           {error && (
-            <p className="text-sm text-red-400 bg-red-950/40 border border-red-800 rounded-lg px-3 py-2">{error}</p>
+            <p className="text-sm text-red-100 bg-red-500/20 border border-red-500/30 rounded-xl px-4 py-3 backdrop-blur-sm">
+              {error}
+            </p>
           )}
 
           <button
             type="submit"
             disabled={loading}
-            className="mt-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg px-4 py-2 text-sm transition-colors"
+            className="mt-4 bg-[#C5ECF0] hover:bg-white text-[#336293] disabled:opacity-70 disabled:cursor-not-allowed font-bold rounded-xl px-4 py-3.5 text-base shadow-[0_4px_14px_0_rgba(197,236,240,0.39)] hover:shadow-[0_6px_20px_rgba(197,236,240,0.5)] hover:-translate-y-0.5 transition-all duration-200 ease-in-out"
           >
             {loading ? 'Signing in…' : 'Sign in'}
           </button>
@@ -139,3 +142,4 @@ export default function LoginPage() {
     </div>
   )
 }
+

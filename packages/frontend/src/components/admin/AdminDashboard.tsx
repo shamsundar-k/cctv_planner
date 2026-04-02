@@ -29,7 +29,6 @@
  */
 import { useState } from 'react'
 import { Link } from 'react-router'
-import { useAllCameras } from '../../api/camerasModels'
 import {
   useSearchUsers,
   useSearchProjects,
@@ -71,7 +70,7 @@ export default function AdminDashboard() {
   const { data: filteredProjects = [], isLoading: projectsLoading } = useSearchProjects(projectSearch)
   const { data: allProjects = [] } = useAllProjects()
   const { data: adminInvites = [], isLoading: invitesLoading } = useAllInvites()
-  const { data: cameraModels = [] } = useAllCameras()
+
 
   const generateInvite = useGenerateInvite()
   const deleteUser = useDeleteUser()
@@ -149,12 +148,6 @@ export default function AdminDashboard() {
         <StatCard label="Total Projects" value={allProjects.length} color="#06b6d4" icon="📁" />
         <StatCard label="Cameras Placed" value={totalCameras} color="#a855f7" icon="📷" />
         <StatCard label="Active Invites" value={invitesLoading ? '—' : adminInvites.length} color="#10b981" icon="✉️" />
-        <Link
-          to="/admin/manage/cameras"
-          className="no-underline"
-        >
-          <StatCard label="Camera Models" value={cameraModels.length} color="#f59e0b" icon="🎥" />
-        </Link>
       </div>
 
       {/* Tab nav */}
@@ -164,8 +157,8 @@ export default function AdminDashboard() {
             key={id}
             onClick={() => setActiveTab(id)}
             className={`px-5 py-2.5 text-sm font-medium bg-transparent border-none cursor-pointer whitespace-nowrap transition-colors border-b-2 -mb-px ${activeTab === id
-                ? 'text-sky-400 border-sky-400'
-                : 'text-slate-500 border-transparent hover:text-slate-300'
+              ? 'text-sky-400 border-sky-400'
+              : 'text-slate-500 border-transparent hover:text-slate-300'
               }`}
           >
             {label}

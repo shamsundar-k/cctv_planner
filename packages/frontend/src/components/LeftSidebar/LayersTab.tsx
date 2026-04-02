@@ -1,5 +1,5 @@
-import { useMapViewStore, type BasemapStyle } from '../../../store/mapViewSlice'
-import { useCameraLayerStore } from '../../../store/cameraLayerSlice'
+import { useMapViewStore, type BasemapStyle } from '../../store/mapViewSlice'
+import { useCameraLayerStore } from '../../store/cameraLayerSlice'
 import ToggleRow from './ToggleRow'
 
 const BASEMAP_OPTIONS: { value: BasemapStyle; label: string }[] = [
@@ -35,8 +35,8 @@ export default function LayersTab() {
               key={opt.value}
               onClick={() => setBasemapStyle(opt.value)}
               className={`flex items-center gap-2 h-8 px-2 rounded border-none cursor-pointer text-xs transition-colors text-left ${basemapStyle === opt.value
-                  ? 'bg-blue-600/30 text-slate-100'
-                  : 'bg-transparent text-slate-400 hover:bg-slate-700/50 hover:text-slate-200'
+                ? 'bg-blue-600/30 text-slate-100'
+                : 'bg-transparent text-slate-400 hover:bg-slate-700/50 hover:text-slate-200'
                 }`}
             >
               <span

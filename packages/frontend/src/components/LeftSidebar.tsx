@@ -1,18 +1,25 @@
 import { useState } from 'react'
 import { Video, Layers, LayoutGrid } from 'lucide-react'
-import { useMapViewStore } from '../../store/mapViewSlice'
-import { useCameraLayerStore } from '../../store/cameraLayerSlice'
-import TabButton from './sidebar/TabButton'
-import CamerasTab from './sidebar/CamerasTab'
-import LayersTab from './sidebar/LayersTab'
-import ModelsTab from './sidebar/ModelsTab'
-import type { TabId, LeftSidebarProps } from './sidebar/types'
+import { useMapViewStore } from '../store/mapViewSlice'
+import { useCameraLayerStore } from '../store/cameraLayerSlice'
+import { useAllCameraModels } from '../api/camerasModels'
+import TabButton from './LeftSidebar/TabButton'
 
-export default function LeftSidebar({ projectId }: LeftSidebarProps) {
+import LayersTab from './LeftSidebar/LayersTab'
+import ModelSelectorPanel from './LeftSidebar/Modelselectorpanel'
+import type { TabId, LeftSidebarProps } from './LeftSidebar/types'
+import type { CameraModel } from '../api/cameramodel.types'
+
+export default function LeftSidebar({ projectId: _projectId }: LeftSidebarProps) {
   const [collapsed, setCollapsed] = useState(false)
   const [manualTab, setManualTab] = useState<TabId>('cameras')
   const activeTool = useMapViewStore((s) => s.activeTool)
   const selectedCameraId = useCameraLayerStore((s) => s.selectedCameraId)
+  const { data: allModels = [], isLoading: modelsLoading } = useAllCameraModels()
+
+  const handlePlaceCamera = (model: CameraModel) => {
+    console.log('Place camera:', model)
+  }
 
   // When Place Camera is active, always show Models tab.
   // When a camera is selected, show Cameras tab (to reveal the list).
@@ -27,18 +34,29 @@ export default function LeftSidebar({ projectId }: LeftSidebarProps) {
     >
       {/* Tab buttons */}
       <div className="flex flex-col pt-2 gap-0.5 px-1">
-        <TabButton id="cameras" label="Cameras" icon={Video}       active={activeTab === 'cameras'} collapsed={collapsed} onClick={setManualTab} />
-        <TabButton id="layers"  label="Layers"  icon={Layers}      active={activeTab === 'layers'}  collapsed={collapsed} onClick={setManualTab} />
-        <TabButton id="models"  label="Models"  icon={LayoutGrid}  active={activeTab === 'models'}  collapsed={collapsed} onClick={setManualTab} />
+        <TabButton id="cameras" label="Cameras" icon={Video} active={activeTab === 'cameras'} collapsed={collapsed} onClick={setManualTab} />
+        <TabButton id="layers" label="Layers" icon={Layers} active={activeTab === 'layers'} collapsed={collapsed} onClick={setManualTab} />
+        <TabButton id="models" label="Models" icon={LayoutGrid} active={activeTab === 'models'} collapsed={collapsed} onClick={setManualTab} />
       </div>
 
       {/* Tab content area */}
       {!collapsed && (
-        <div className="flex-1 overflow-y-auto px-2 py-3">
-          {activeTab === 'cameras' && <CamerasTab projectId={projectId} />}
-          {activeTab === 'layers' && <LayersTab />}
-          {activeTab === 'models' && <ModelsTab projectId={projectId} />}
-        </div>
+        <>
+          {activeTab === 'layers' && (
+            <div className="flex-1 overflow-y-auto px-2 py-3">
+              <LayersTab />
+            </div>
+          )}
+          {activeTab === 'models' && (
+            <div className="flex-1 overflow-hidden">
+              <ModelSelectorPanel
+                models={allModels}
+                isLoading={modelsLoading}
+                onPlaceCamera={handlePlaceCamera}
+              />
+            </div>
+          )}
+        </>
       )}
 
       {/* Collapse toggle button — pinned to bottom */}
