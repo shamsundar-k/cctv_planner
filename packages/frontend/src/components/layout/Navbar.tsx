@@ -59,22 +59,17 @@ export default function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-[100] h-16 bg-slate-800 border-b border-slate-700 shadow-md flex items-center px-10 gap-6">
+    <header className="sticky top-0 z-[100] h-16 backdrop-blur-md border-b shadow-[0_2px_20px_rgba(0,0,0,0.4)] flex items-center px-10 gap-6" style={{ background: 'color-mix(in srgb, var(--theme-bg-card) 95%, transparent)', borderColor: 'color-mix(in srgb, var(--theme-surface) 20%, transparent)' }}>
       {/* Logo */}
-      <div className="flex items-center gap-2 shrink-0">
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          aria-hidden="true"
-        >
-          <rect x="2" y="7" width="14" height="10" rx="2" fill="#60a5fa" />
-          <path d="M16 10l5-3v10l-5-3V10z" fill="#60a5fa" />
-          <circle cx="9" cy="12" r="2" fill="#ffffff" />
-        </svg>
-        <span className="text-lg font-bold text-slate-100 whitespace-nowrap">
+      <div className="flex items-center gap-2.5 shrink-0">
+        <div className="p-1.5 rounded-lg" style={{ background: `linear-gradient(135deg, var(--theme-accent), var(--theme-text-secondary))` }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="2" y="7" width="14" height="10" rx="2" fill="var(--theme-text-primary)" />
+            <path d="M16 10l5-3v10l-5-3V10z" fill="var(--theme-text-primary)" />
+            <circle cx="9" cy="12" r="2" fill="var(--theme-bg-card)" />
+          </svg>
+        </div>
+        <span className="text-base font-extrabold whitespace-nowrap tracking-tight" style={{ color: 'var(--theme-text-primary)' }}>
           CCTV Planner
         </span>
       </div>
@@ -85,26 +80,27 @@ export default function Navbar() {
           ref={searchRef}
           type="text"
           value={searchQuery}
-          placeholder="Open projects... (Ctrl+K)"
+          placeholder="Search projects… (Ctrl+K)"
           onChange={(e) => setSearchQuery(e.target.value)}
           onFocus={() => setSearchFocused(true)}
           onBlur={() => setSearchFocused(false)}
-          className={`w-full h-9 px-3 text-sm rounded-md outline-none bg-slate-700 text-slate-100 placeholder-slate-400 transition-colors border ${searchFocused ? 'border-blue-500' : 'border-slate-600'
-            }`}
+          className={`w-full h-9 px-4 text-sm rounded-lg outline-none transition-all border ${searchFocused ? 'ring-1' : ''}`}
+          style={{
+            background: searchFocused ? 'color-mix(in srgb, var(--theme-surface) 25%, transparent)' : 'color-mix(in srgb, var(--theme-surface) 15%, transparent)',
+            borderColor: searchFocused ? 'color-mix(in srgb, var(--theme-text-primary) 50%, transparent)' : 'color-mix(in srgb, var(--theme-surface) 25%, transparent)',
+            color: 'var(--theme-text-primary)',
+          }}
         />
       </div>
 
       {/* Right icons */}
-      <div className="flex items-center gap-6 ml-auto shrink-0">
+      <div className="flex items-center gap-5 ml-auto shrink-0">
         {/* Bell (placeholder) */}
         <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          aria-hidden="true"
-          className="text-slate-500"
+          width="18" height="18" viewBox="0 0 24 24" fill="none"
+          xmlns="http://www.w3.org/2000/svg" aria-hidden="true"
+          className="text-[#9E9A5A]/70 hover:text-[#CADBBD] transition-colors cursor-pointer"
+          style={{ color: 'var(--theme-text-secondary)' }}
         >
           <path d="M12 2a7 7 0 0 0-7 7v4l-2 2v1h18v-1l-2-2V9a7 7 0 0 0-7-7z" fill="currentColor" />
           <path d="M10 19a2 2 0 0 0 4 0" stroke="currentColor" strokeWidth="1.5" fill="none" />
@@ -117,44 +113,22 @@ export default function Navbar() {
             aria-label="User menu"
             className="flex items-center gap-1.5 bg-transparent border-none cursor-pointer p-0"
           >
-            <div className="w-8 h-8 rounded-full bg-blue-600 text-white text-[13px] font-semibold flex items-center justify-center select-none">
+            <div className="w-8 h-8 rounded-full text-[13px] font-bold flex items-center justify-center select-none ring-2 ring-white/10" style={{ background: 'var(--theme-accent)', color: 'var(--theme-accent-text)' }}>
               {initials}
             </div>
-            <svg
-              width="12"
-              height="12"
-              viewBox="0 0 12 12"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              aria-hidden="true"
-            >
-              <path d="M2 4l4 4 4-4" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M2 4l4 4 4-4" stroke="#9E9A5A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M2 4l4 4 4-4" stroke="var(--theme-text-secondary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
-
           {menuOpen && <UserMenu onClose={() => setMenuOpen(false)} />}
         </div>
 
         {/* Help */}
-        <a
-          href="#"
-          aria-label="Help"
-          className="text-slate-500 hover:text-slate-300 flex items-center transition-colors"
-        >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
+        <a href="#" aria-label="Help" className="flex items-center transition-colors" style={{ color: 'var(--theme-text-secondary)' }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
-            <path
-              d="M9.5 9a2.5 2.5 0 0 1 5 0c0 1.5-2.5 2-2.5 4"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-            />
+            <path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 1.5-2.5 2-2.5 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
             <circle cx="12" cy="17" r="0.75" fill="currentColor" />
           </svg>
         </a>

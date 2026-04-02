@@ -3,10 +3,10 @@
  *
  * Palette:
  *   Shadow Grey   #202030  — deepest bg
- *   Vintage Grape #39304A  — surface / input bg
- *   Stone Brown   #635C51  — borders
- *   Grey Olive    #7D7461  — secondary text / icons
- *   Khaki Beige   #B0A990  — primary text
+ *   Vintage Grape #8C6E9E  — surface / input bg
+ *   Stone Brown   #804A38  — borders
+ *   Grey Olive    #9E9A5A  — secondary text / icons
+ *   Khaki Beige   #CADBBD  — primary text
  */
 
 interface ManufacturerFilterProps {
@@ -21,34 +21,27 @@ export default function ManufacturerFilter({
     onSelect,
 }: ManufacturerFilterProps) {
     return (
-        <div className="flex flex-col gap-1">
-            <label
-                style={{ color: '#7D7461' }}
-                className="text-[10px] font-medium uppercase tracking-widest"
-            >
+        <div className="flex flex-col gap-1.5">
+            <label className="text-[10px] font-bold uppercase tracking-widest pl-1" style={{ color: 'var(--theme-text-secondary)' }}>
                 Manufacturer
             </label>
             <select
                 value={selected}
                 onChange={(e) => onSelect(e.target.value)}
+                className="w-full rounded-lg px-3 py-2 text-[13px] font-medium outline-none transition-all backdrop-blur-sm cursor-pointer"
                 style={{
-                    background: '#39304A',
-                    border: '1px solid #635C51',
-                    color: '#B0A990',
+                    color: 'var(--theme-text-primary)',
+                    background: 'color-mix(in srgb, var(--theme-surface) 20%, transparent)',
+                    border: '1px solid color-mix(in srgb, var(--theme-surface) 30%, transparent)',
                 }}
-                className="
-          w-full rounded px-2.5 py-1.5 text-[13px]
-          outline-none transition-colors
-          focus:border-[#7D7461] focus:ring-1 focus:ring-[#7D7461]
-        "
             >
-                <option value="">All manufacturers</option>
+                <option value="" style={{ background: 'var(--theme-bg-card)', color: 'var(--theme-text-primary)' }}>All manufacturers</option>
                 {manufacturers.map((m) => (
-                    <option key={m} value={m} style={{ background: '#39304A' }}>
+                    <option key={m} value={m} style={{ background: 'var(--theme-bg-card)', color: 'var(--theme-text-primary)' }}>
                         {m}
                     </option>
                 ))}
             </select>
         </div>
     )
-}
+}

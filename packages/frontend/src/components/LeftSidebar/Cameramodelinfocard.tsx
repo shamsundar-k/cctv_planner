@@ -8,13 +8,16 @@ interface CameraModelInfoCardProps {
 function SpecCell({ label, value }: { label: string; value: string }) {
     return (
         <div
-            style={{ background: '#39304A', border: '1px solid #635C51' }}
-            className="rounded px-2 py-1.5"
+            className="rounded-lg px-2.5 py-2"
+            style={{
+                background: 'color-mix(in srgb, var(--theme-surface) 20%, transparent)',
+                border: '1px solid color-mix(in srgb, var(--theme-surface) 30%, transparent)',
+            }}
         >
-            <p style={{ color: '#7D7461' }} className="mb-0.5 text-[10px] leading-none">
+            <p className="font-bold uppercase tracking-wider mb-0.5 text-[9px] leading-none" style={{ color: 'var(--theme-text-secondary)' }}>
                 {label}
             </p>
-            <p style={{ color: '#B0A990' }} className="text-[12px] font-medium leading-tight">
+            <p className="text-xs font-semibold leading-tight" style={{ color: 'var(--theme-text-primary)' }}>
                 {value}
             </p>
         </div>
@@ -53,37 +56,37 @@ export default function CameraModelInfoCard({ model, onMoreDetails }: CameraMode
 
     return (
         <div
-            style={{ background: '#202030', border: '1px solid #635C51' }}
-            className="rounded-lg p-2.5"
+            className="rounded-xl p-3 shadow-lg"
+            style={{
+                background: `linear-gradient(to bottom, color-mix(in srgb, var(--theme-surface) 10%, transparent), transparent)`,
+                border: '1px solid color-mix(in srgb, var(--theme-surface) 20%, transparent)',
+            }}
         >
             {/* Header */}
             <div
-                style={{ borderBottom: '1px solid #635C51' }}
-                className="mb-2.5 flex items-center gap-2 pb-2.5"
+                className="mb-3 flex items-center gap-3 pb-3 border-b"
+                style={{ borderColor: 'color-mix(in srgb, var(--theme-surface) 20%, transparent)' }}
             >
                 <div
-                    style={{ background: '#39304A', color: '#7D7461' }}
-                    className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded"
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg shadow-inner"
+                    style={{ background: 'color-mix(in srgb, var(--theme-accent) 80%, transparent)', color: 'var(--theme-text-primary)' }}
                 >
                     <CameraIcon />
                 </div>
-                <div className="min-w-0">
-                    <p
-                        style={{ color: '#B0A990' }}
-                        className="truncate text-[12px] font-semibold leading-tight"
-                    >
+                <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-bold leading-tight" style={{ color: 'var(--theme-text-primary)' }}>
                         {model.name}
                     </p>
-                    <p style={{ color: '#7D7461' }} className="text-[11px] leading-snug">
+                    <p className="text-[11px] font-semibold leading-snug tracking-wide mt-0.5" style={{ color: 'var(--theme-text-secondary)' }}>
                         {model.manufacturer}
-                        <span style={{ color: '#635C51' }}> · </span>
+                        <span className="mx-1" style={{ color: 'var(--theme-accent)' }}>·</span>
                         {capitalize(model.camera_type)}
                     </p>
                 </div>
             </div>
 
             {/* Key specs */}
-            <div className="grid grid-cols-2 gap-1 mb-2.5">
+            <div className="grid grid-cols-2 gap-2 mb-3">
                 <SpecCell
                     label="Resolution"
                     value={`${model.resolution_h}×${model.resolution_v}`}
@@ -98,11 +101,14 @@ export default function CameraModelInfoCard({ model, onMoreDetails }: CameraMode
             {/* More details */}
             <button
                 onClick={onMoreDetails}
-                style={{ color: '#7D7461', border: '1px solid #635C51' }}
-                className="w-full rounded px-2 py-1 text-[11px] hover:text-[#B0A990] hover:border-[#7D7461] transition-colors text-center"
+                className="w-full text-center font-bold tracking-wider rounded-lg px-3 py-2 transition-all text-[11px] uppercase shadow-sm"
+                style={{ color: 'var(--theme-text-primary)', background: 'color-mix(in srgb, var(--theme-surface) 20%, transparent)' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--theme-text-primary)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--theme-bg-card)' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'color-mix(in srgb, var(--theme-surface) 20%, transparent)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--theme-text-primary)' }}
             >
                 More details →
             </button>
         </div>
     )
 }
+

@@ -20,7 +20,10 @@ export function SaveButton({ isSaving, isDirty, lastSavedAt, onClick }: SaveButt
     <button
       onClick={onClick}
       disabled={isSaving}
-      className="relative flex flex-col items-center justify-center px-3 py-1 min-w-[72px] h-8 text-xs font-semibold bg-blue-600 hover:bg-blue-500 disabled:opacity-70 text-white rounded-md border-none cursor-pointer transition-colors leading-tight"
+      className="relative flex flex-col items-center justify-center px-3 py-1 min-w-[72px] h-8 text-xs font-bold border-none rounded-md cursor-pointer transition-all leading-tight disabled:opacity-70 disabled:cursor-not-allowed"
+      style={{ background: 'var(--theme-accent)', color: 'var(--theme-accent-text)' }}
+      onMouseEnter={e => { if (!isSaving) { (e.currentTarget as HTMLButtonElement).style.background = 'var(--theme-accent-hover)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--theme-bg-base)' } }}
+      onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--theme-accent)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--theme-accent-text)' }}
       title={isDirty ? 'Unsaved changes' : lastSavedAt ? `Saved ${formatRelativeTime(lastSavedAt)}` : 'Save'}
     >
       {/* Unsaved dot */}
@@ -43,10 +46,11 @@ export function SaveButton({ isSaving, isDirty, lastSavedAt, onClick }: SaveButt
       </span>
 
       {lastSavedAt && !isSaving && (
-        <span className="text-blue-200 font-normal leading-none" style={{ fontSize: 10 }}>
+        <span className="font-normal leading-none opacity-70" style={{ fontSize: 10 }}>
           {formatRelativeTime(lastSavedAt)}
         </span>
       )}
     </button>
   )
 }
+

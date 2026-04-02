@@ -72,11 +72,15 @@ function ProjectCard({ project, onDelete }: ProjectCardProps) {
   const hasLocation = project.center_lat !== null && project.center_lng !== null
 
   return (
-    <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 flex flex-col gap-2.5 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-200 cursor-default">
+    <div
+      className="rounded-xl p-6 flex flex-col gap-2.5 shadow-md hover:shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:-translate-y-1 transition-all duration-200 cursor-default backdrop-blur-sm"
+      style={{ background: 'color-mix(in srgb, var(--theme-bg-card) 70%, transparent)', border: '1px solid color-mix(in srgb, var(--theme-surface) 25%, transparent)' }}
+    >
       {/* Header row */}
       <div className="flex items-start justify-between gap-2">
         <h3
-          className="text-lg font-semibold text-slate-100 m-0 overflow-hidden text-ellipsis whitespace-nowrap flex-1"
+          className="text-lg font-bold m-0 overflow-hidden text-ellipsis whitespace-nowrap flex-1"
+          style={{ color: 'var(--theme-text-primary)' }}
           title={project.name}
         >
           {project.name}
@@ -87,22 +91,32 @@ function ProjectCard({ project, onDelete }: ProjectCardProps) {
           <button
             aria-label="More options"
             onClick={() => setMenuOpen((o) => !o)}
-            className="bg-transparent border-none cursor-pointer text-lg text-slate-400 hover:text-slate-200 px-1 leading-none rounded hover:bg-slate-700 transition-colors"
+            className="bg-transparent border-none cursor-pointer text-lg px-1 leading-none rounded transition-colors"
+            style={{ color: 'color-mix(in srgb, var(--theme-text-secondary) 70%, transparent)' }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--theme-surface) 20%, transparent)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
             ···
           </button>
           {menuOpen && (
-            <div className="absolute top-[calc(100%+4px)] right-0 bg-slate-800 border border-slate-700 rounded-lg shadow-2xl min-w-[160px] z-10 py-1">
+            <div
+              className="absolute top-[calc(100%+4px)] right-0 rounded-xl shadow-2xl min-w-[160px] z-10 py-1 overflow-hidden"
+              style={{ background: 'var(--theme-bg-card)', border: '1px solid color-mix(in srgb, var(--theme-surface) 30%, transparent)' }}
+            >
               <button
-                className="block w-full text-left bg-transparent border-none px-3.5 py-2.5 text-sm text-slate-600 cursor-not-allowed opacity-60"
+                className="block w-full text-left bg-transparent border-none px-3.5 py-2.5 text-sm cursor-not-allowed opacity-40"
+                style={{ color: 'var(--theme-text-secondary)' }}
                 disabled
                 title="Archive coming soon"
               >
                 Archive Project
               </button>
-              <div className="border-t border-slate-700 my-1" />
+              <div className="my-1" style={{ borderTop: '1px solid color-mix(in srgb, var(--theme-surface) 20%, transparent)' }} />
               <button
-                className="block w-full text-left bg-transparent border-none px-3.5 py-2.5 text-sm text-red-400 cursor-pointer hover:bg-slate-700 transition-colors"
+                className="block w-full text-left bg-transparent border-none px-3.5 py-2.5 text-sm cursor-pointer transition-colors"
+                style={{ color: 'var(--theme-accent)' }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--theme-accent) 10%, transparent)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 onClick={() => { setMenuOpen(false); onDelete(project) }}
               >
                 Delete Project
@@ -113,55 +127,60 @@ function ProjectCard({ project, onDelete }: ProjectCardProps) {
       </div>
 
       {/* Metadata row: cameras + zones */}
-      <div className="flex items-center gap-3 text-[13px] text-slate-400">
-        <span title={`${project.camera_count} camera${project.camera_count !== 1 ? 's' : ''}`}>
-          📷 {project.camera_count} camera{project.camera_count !== 1 ? 's' : ''}
-        </span>
-        <span className="text-slate-700">|</span>
-        <span title={`${project.zone_count} zone${project.zone_count !== 1 ? 's' : ''}`}>
-          📝 {project.zone_count} zone{project.zone_count !== 1 ? 's' : ''}
-        </span>
+      <div className="flex items-center gap-3 text-[13px]" style={{ color: 'color-mix(in srgb, var(--theme-text-secondary) 80%, transparent)' }}>
+        <span>📷 {project.camera_count} camera{project.camera_count !== 1 ? 's' : ''}</span>
+        <span style={{ color: 'color-mix(in srgb, var(--theme-surface) 40%, transparent)' }}>|</span>
+        <span>📝 {project.zone_count} zone{project.zone_count !== 1 ? 's' : ''}</span>
       </div>
 
       {/* Location row */}
       {hasLocation && (
-        <div className="text-[13px] text-slate-400">
+        <div className="text-[13px] text-[#9E9A5A]/70">
           📍 {formatCoord(project.center_lat!, 'lat')}, {formatCoord(project.center_lng!, 'lng')}
         </div>
       )}
 
       {/* Description */}
       {project.description ? (
-        <p className="text-sm text-slate-400 m-0 leading-relaxed line-clamp-2 grow">
+        <p className="text-sm text-[#CADBBD]/60 m-0 leading-relaxed line-clamp-2 grow">
           {project.description}
         </p>
       ) : (
-        <p className="text-sm text-slate-600 m-0 italic grow">No description</p>
+        <p className="text-sm text-[#8C6E9E]/40 m-0 italic grow">No description</p>
       )}
 
       {/* Timestamps */}
       <div className="flex flex-col gap-0.5">
-        <span className="text-xs text-slate-500">Created: {formatRelativeTime(project.created_at)}</span>
-        <span className="text-xs text-slate-500">Modified: {formatRelativeTime(project.updated_at)}</span>
+        <span className="text-xs" style={{ color: 'color-mix(in srgb, var(--theme-text-secondary) 60%, transparent)' }}>Created: {formatRelativeTime(project.created_at)}</span>
+        <span className="text-xs" style={{ color: 'color-mix(in srgb, var(--theme-text-secondary) 60%, transparent)' }}>Modified: {formatRelativeTime(project.updated_at)}</span>
       </div>
 
       {/* Action buttons */}
       <div className="flex gap-2 pt-1">
         <button
           onClick={() => navigate(`/projects/${project.id}`)}
-          className="flex-1 h-[34px] bg-blue-600 hover:bg-blue-700 text-white border-none rounded-md text-sm font-semibold cursor-pointer transition-colors"
+          className="flex-1 h-[34px] border-none rounded-lg text-sm font-bold cursor-pointer transition-all shadow-md"
+          style={{ background: 'var(--theme-accent)', color: 'var(--theme-accent-text)' }}
+          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--theme-accent-hover)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--theme-bg-base)' }}
+          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--theme-accent)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--theme-accent-text)' }}
         >
           Open
         </button>
         <button
           onClick={() => navigate(`/project/manage/${project.id}`)}
-          className="flex-1 h-[34px] bg-slate-700 hover:bg-slate-600 text-slate-200 border border-slate-600 rounded-md text-sm font-semibold cursor-pointer transition-colors"
+          className="flex-1 h-[34px] rounded-lg text-sm font-semibold cursor-pointer transition-colors"
+          style={{ background: 'color-mix(in srgb, var(--theme-surface) 15%, transparent)', color: 'color-mix(in srgb, var(--theme-text-primary) 80%, transparent)', border: '1px solid color-mix(in srgb, var(--theme-surface) 30%, transparent)' }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--theme-surface) 30%, transparent)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--theme-surface) 15%, transparent)')}
         >
           Manage
         </button>
         <button
           onClick={() => onDelete(project)}
-          className="flex-1 h-[34px] bg-transparent hover:bg-red-500/10 text-red-400 border border-red-500/50 rounded-md text-sm font-semibold cursor-pointer transition-colors"
+          className="flex-1 h-[34px] bg-transparent rounded-lg text-sm font-semibold cursor-pointer transition-colors"
+          style={{ color: 'var(--theme-accent)', border: '1px solid color-mix(in srgb, var(--theme-accent) 40%, transparent)' }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--theme-accent) 10%, transparent)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
         >
           Delete
         </button>

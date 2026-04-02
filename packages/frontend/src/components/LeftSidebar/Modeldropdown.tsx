@@ -1,9 +1,3 @@
-/**
- * ModelDropdown
- *
- * Controlled dropdown listing CameraModel options.
- * Emits the full CameraModel object (or null) via onSelect.
- */
 import type { CameraModel } from '../../api/cameramodel.types'
 
 interface ModelDropdownProps {
@@ -23,38 +17,30 @@ export default function ModelDropdown({
     }
 
     return (
-        <div className="flex flex-col gap-1">
-            <label
-                style={{ color: '#7D7461' }}
-                className="text-[10px] font-medium uppercase tracking-widest"
-            >
+        <div className="flex flex-col gap-1.5">
+            <label className="text-[10px] font-bold uppercase tracking-widest pl-1" style={{ color: 'var(--theme-text-secondary)' }}>
                 Model
             </label>
             <select
                 value={selected?.id ?? ''}
                 onChange={handleChange}
                 disabled={models.length === 0}
+                className="w-full rounded-lg px-3 py-2 text-[13px] font-medium outline-none transition-all backdrop-blur-sm disabled:opacity-40 disabled:cursor-not-allowed enabled:cursor-pointer"
                 style={{
-                    background: '#39304A',
-                    border: '1px solid #635C51',
-                    color: '#B0A990',
+                    color: 'var(--theme-text-primary)',
+                    background: 'color-mix(in srgb, var(--theme-surface) 20%, transparent)',
+                    border: '1px solid color-mix(in srgb, var(--theme-surface) 30%, transparent)',
                 }}
-                className="
-          w-full rounded px-2.5 py-1.5 text-[13px]
-          outline-none transition-colors
-          focus:border-[#7D7461] focus:ring-1 focus:ring-[#7D7461]
-          disabled:cursor-not-allowed disabled:opacity-40
-        "
             >
-                <option value="" style={{ background: '#39304A' }}>
+                <option value="" style={{ background: 'var(--theme-bg-card)', color: 'var(--theme-text-primary)' }}>
                     Select a model
                 </option>
                 {models.map((m) => (
-                    <option key={m.id} value={m.id} style={{ background: '#39304A' }}>
+                    <option key={m.id} value={m.id} style={{ background: 'var(--theme-bg-card)', color: 'var(--theme-text-primary)' }}>
                         {m.name}
                     </option>
                 ))}
             </select>
         </div>
     )
-}
+}

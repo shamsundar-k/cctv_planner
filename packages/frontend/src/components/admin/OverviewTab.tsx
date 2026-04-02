@@ -91,26 +91,33 @@ export default function OverviewTab(props: OverviewTabProps) {
   return (
     <div className="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-6">
       {/* System Summary */}
-      <div className="bg-slate-800 rounded-xl p-6 border border-slate-700">
-        <h2 className="text-base font-semibold text-slate-100 mt-0 mb-5">System Summary</h2>
+      <div
+        className="rounded-xl p-6"
+        style={{ background: 'color-mix(in srgb, var(--theme-bg-card) 80%, transparent)', border: '1px solid color-mix(in srgb, var(--theme-surface) 25%, transparent)' }}
+      >
+        <h2 className="text-base font-bold mt-0 mb-5" style={{ color: 'var(--theme-text-primary)' }}>System Summary</h2>
         <div className="flex flex-col">
           {summaryRows.map(({ label, value }) => (
             <div
               key={label}
-              className="flex justify-between py-2.5 border-b border-slate-700 last:border-0"
+              className="flex justify-between py-3 border-b last:border-0"
+              style={{ borderColor: 'color-mix(in srgb, var(--theme-surface) 20%, transparent)' }}
             >
-              <span className="text-sm text-slate-400">{label}</span>
-              <span className="text-sm font-semibold text-slate-100">{value}</span>
+              <span className="text-sm" style={{ color: 'var(--theme-text-secondary)' }}>{label}</span>
+              <span className="text-sm font-bold" style={{ color: 'var(--theme-text-primary)' }}>{value}</span>
             </div>
           ))}
         </div>
       </div>
 
       {/* Generate Invite */}
-      <div className="bg-slate-800 rounded-xl p-6 border border-slate-700">
-        <h2 className="text-base font-semibold text-slate-100 mt-0 mb-2">Generate Invite Link</h2>
-        <p className="text-[13px] text-slate-500 mb-5">
-          Send a {/* TTL is configured server-side */}72-hour invite link to a new user's email address.
+      <div
+        className="rounded-xl p-6"
+        style={{ background: 'color-mix(in srgb, var(--theme-bg-card) 80%, transparent)', border: '1px solid color-mix(in srgb, var(--theme-surface) 25%, transparent)' }}
+      >
+        <h2 className="text-base font-bold mt-0 mb-2" style={{ color: 'var(--theme-text-primary)' }}>Generate Invite Link</h2>
+        <p className="text-[13px] mb-5" style={{ color: 'var(--theme-text-secondary)' }}>
+          Send a 72-hour invite link to a new user's email address.
         </p>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <div>
@@ -119,45 +126,54 @@ export default function OverviewTab(props: OverviewTabProps) {
               value={inviteEmail}
               onChange={(e) => { setInviteEmail(e.target.value); setInviteEmailError('') }}
               placeholder="user@example.com"
-              className={`w-full h-10 px-3 text-sm bg-slate-900 rounded-lg text-slate-100 outline-none placeholder:text-slate-600 box-border border ${
-                inviteEmailError ? 'border-red-500' : 'border-slate-700'
-              }`}
+              className="w-full h-10 px-3 text-sm rounded-lg outline-none box-border"
+              style={{
+                background: 'color-mix(in srgb, var(--theme-surface) 10%, transparent)',
+                border: `1px solid ${inviteEmailError ? '#ef4444' : 'color-mix(in srgb, var(--theme-surface) 30%, transparent)'}`,
+                color: 'var(--theme-text-primary)',
+              }}
             />
             {inviteEmailError && (
-              <p className="text-xs text-red-500 mt-1 mb-0">{inviteEmailError}</p>
+              <p className="text-xs text-red-400 mt-1 mb-0">{inviteEmailError}</p>
             )}
           </div>
           <button
             type="submit"
             disabled={generateInvitePending}
-            className="h-10 bg-blue-500 hover:bg-blue-600 disabled:bg-blue-800 text-white border-none rounded-lg text-sm font-semibold cursor-pointer flex items-center justify-center gap-2 transition-colors disabled:cursor-not-allowed"
+            className="h-10 border-none rounded-lg text-sm font-bold cursor-pointer flex items-center justify-center gap-2 transition-all disabled:cursor-not-allowed disabled:opacity-50"
+            style={{ background: 'var(--theme-accent)', color: 'var(--theme-accent-text)' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--theme-accent-hover)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--theme-bg-base)' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--theme-accent)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--theme-accent-text)' }}
           >
             {generateInvitePending ? <><Spinner /> Generating…</> : 'Generate Invite'}
           </button>
         </form>
 
         {latestCreatedInvite && (
-          <div className="mt-4 p-3 bg-slate-900 rounded-lg border border-slate-800">
-            <p className="text-xs text-slate-500 mb-2">
+          <div
+            className="mt-4 p-4 rounded-xl"
+            style={{ background: 'color-mix(in srgb, var(--theme-surface) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--theme-surface) 20%, transparent)' }}
+          >
+            <p className="text-xs mb-2" style={{ color: 'var(--theme-text-secondary)' }}>
               Latest invite for{' '}
-              <span className="text-slate-400">{latestCreatedInvite.email}</span>:
+              <span style={{ color: 'var(--theme-text-primary)' }}>{latestCreatedInvite.email}</span>:
             </p>
             <div className="flex items-center gap-2">
-              <span className="flex-1 text-xs text-slate-400 overflow-hidden text-ellipsis whitespace-nowrap font-mono">
+              <span className="flex-1 text-xs overflow-hidden text-ellipsis whitespace-nowrap font-mono" style={{ color: 'var(--theme-text-secondary)' }}>
                 {latestCreatedInvite.invite_url}
               </span>
               <button
                 onClick={() => onCopyInvite(latestCreatedInvite.invite_url, latestCreatedInvite.id)}
-                className={`px-2.5 py-1 text-xs text-white border-none rounded-md cursor-pointer shrink-0 transition-colors ${
-                  copiedId === latestCreatedInvite.id
-                    ? 'bg-emerald-600'
-                    : 'bg-slate-700 hover:bg-slate-600'
-                }`}
+                className="px-2.5 py-1 text-xs border-none rounded-lg cursor-pointer shrink-0 transition-all font-semibold"
+                style={{
+                  background: copiedId === latestCreatedInvite.id ? 'color-mix(in srgb, var(--theme-accent-hover) 60%, transparent)' : 'color-mix(in srgb, var(--theme-surface) 25%, transparent)',
+                  color: 'var(--theme-text-primary)',
+                }}
               >
                 {copiedId === latestCreatedInvite.id ? '✓ Copied' : 'Copy'}
               </button>
             </div>
-            <p className="text-[11px] text-slate-600 mt-2 mb-0">
+            <p className="text-[11px] mt-2 mb-0 opacity-60" style={{ color: 'var(--theme-text-secondary)' }}>
               Copy this link now — it won't be shown again.
             </p>
           </div>
@@ -168,3 +184,4 @@ export default function OverviewTab(props: OverviewTabProps) {
 }
 
 export type { LatestInvite }
+

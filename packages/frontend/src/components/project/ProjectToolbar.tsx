@@ -144,21 +144,21 @@ export default function ProjectToolbar({
         { value: 'archived', label: 'Archived' },
       ]
 
-  const btnCls = 'h-9 px-3.5 border border-slate-600 rounded-md text-sm bg-slate-800 text-slate-300 cursor-pointer flex items-center gap-1.5 whitespace-nowrap hover:bg-slate-700 hover:text-slate-100 transition-colors'
-  const dropdownCls = 'absolute top-[calc(100%+4px)] left-0 bg-slate-800 border border-slate-700 rounded-lg shadow-2xl min-w-[200px] z-50 py-1'
-  const menuItemCls = (active: boolean) => `flex items-center gap-2 w-full text-left bg-transparent border-none px-3.5 py-2.5 text-sm text-slate-300 cursor-pointer hover:bg-slate-700 hover:text-slate-100 transition-colors ${active ? 'font-semibold' : 'font-normal'}`
+  const btnCls = 'h-9 px-3.5 border border-[#8C6E9E]/30 rounded-lg text-sm bg-[#8C6E9E]/10 text-[#CADBBD]/80 cursor-pointer flex items-center gap-1.5 whitespace-nowrap hover:bg-[#8C6E9E]/25 hover:text-[#CADBBD] transition-colors'
+  const dropdownCls = 'absolute top-[calc(100%+4px)] left-0 bg-[#4F2A63] border border-[#8C6E9E]/30 rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] min-w-[200px] z-50 py-1 overflow-hidden'
+  const menuItemCls = (active: boolean) => `flex items-center gap-2 w-full text-left bg-transparent border-none px-3.5 py-2.5 text-sm text-[#CADBBD]/80 cursor-pointer hover:bg-[#8C6E9E]/20 hover:text-[#CADBBD] transition-colors ${active ? 'font-bold' : 'font-normal'}`
 
   return (
     <div className="mb-8">
       {/* Title row */}
-      <h1 className="text-[32px] font-bold text-slate-100 mb-5">{pageTitle}</h1>
+      <h1 className="text-[32px] font-extrabold text-[#CADBBD] mb-5 tracking-tight">{pageTitle}</h1>
 
       {/* Controls row */}
       <div className="flex items-center gap-3 flex-wrap">
         {/* Create button */}
         <button
           onClick={onCreateClick}
-          className="h-9 px-4 bg-blue-600 hover:bg-blue-700 text-white border-none rounded-md text-sm font-semibold cursor-pointer transition-colors"
+          className="h-9 px-4 bg-[#804A38] hover:bg-[#9E9A5A] hover:text-[#4F2A63] text-[#CADBBD] border-none rounded-lg text-sm font-bold cursor-pointer transition-all shadow-md shadow-[#804A38]/20"
           title="Create Project (Ctrl+N)"
         >
           + Create Project
@@ -171,13 +171,13 @@ export default function ProjectToolbar({
             value={localSearch}
             placeholder="Search projects..."
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="h-9 w-64 pl-3 pr-8 border border-slate-600 rounded-md text-sm bg-slate-700 text-slate-100 placeholder-slate-400 outline-none focus:border-blue-500 transition-colors"
+            className="h-9 w-64 pl-3 pr-8 border border-[#8C6E9E]/30 rounded-lg text-sm bg-[#8C6E9E]/10 text-[#CADBBD] placeholder-[#8C6E9E]/50 outline-none focus:border-[#CADBBD]/50 focus:ring-1 focus:ring-[#CADBBD]/20 transition-colors"
           />
           {localSearch && (
             <button
               onClick={() => handleSearchChange('')}
               aria-label="Clear search"
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-slate-400 hover:text-slate-200 text-base leading-none p-0"
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-[#9E9A5A]/70 hover:text-[#CADBBD] text-base leading-none p-0"
             >
               ✕
             </button>
@@ -201,7 +201,7 @@ export default function ProjectToolbar({
                   className={menuItemCls(filterType === opt.value)}
                   onClick={() => { setFilterType(opt.value); setFilterOpen(false) }}
                 >
-                  <span className="w-4 text-sky-400">{filterType === opt.value ? '✓' : ''}</span>
+                  <span className="w-4 text-[#9E9A5A]">{filterType === opt.value ? '✓' : ''}</span>
                   {opt.label}
                 </button>
               ))}
@@ -226,7 +226,7 @@ export default function ProjectToolbar({
                   className={menuItemCls(sortBy === value)}
                   onClick={() => { setSortBy(value); setSortOpen(false) }}
                 >
-                  <span className="w-4 text-sky-400">{sortBy === value ? '✓' : ''}</span>
+                  <span className="w-4 text-[#9E9A5A]">{sortBy === value ? '✓' : ''}</span>
                   {label}
                 </button>
               ))}
@@ -238,7 +238,7 @@ export default function ProjectToolbar({
         <button
           onClick={handleRefresh}
           aria-label="Refresh projects"
-          className="w-9 h-9 bg-transparent border border-slate-600 rounded-md cursor-pointer flex items-center justify-center text-slate-400 hover:bg-slate-700 hover:text-sky-400 transition-colors"
+          className="w-9 h-9 bg-transparent border border-[#8C6E9E]/30 rounded-lg cursor-pointer flex items-center justify-center text-[#9E9A5A]/70 hover:bg-[#8C6E9E]/20 hover:text-[#CADBBD] transition-colors"
         >
           <svg
             width="16"
@@ -263,7 +263,7 @@ export default function ProjectToolbar({
       </div>
 
       {/* Metadata line */}
-      <p className="text-sm text-slate-500 mt-3">
+      <p className="text-sm text-[#9E9A5A]/70 mt-3">
         {filteredCount} project{filteredCount !== 1 ? 's' : ''}
         {dataUpdatedAt ? ` · Updated ${formatUpdatedAt(dataUpdatedAt)}` : ''}
       </p>

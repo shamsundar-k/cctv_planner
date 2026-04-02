@@ -10,11 +10,11 @@
  *   onPlaceCamera   — called with the selected CameraModel when button clicked
  *
  * Palette:
- *   Shadow Grey   #202030  — panel bg
- *   Vintage Grape #39304A  — inputs / surfaces
- *   Stone Brown   #635C51  — borders / dividers
- *   Grey Olive    #7D7461  — secondary text / icons
- *   Khaki Beige   #B0A990  — primary text
+ *   Shadow Grey   #4F2A63  — panel bg
+ *   Vintage Grape #8C6E9E  — inputs / surfaces
+ *   Stone Brown   #804A38  — borders / dividers
+ *   Grey Olive    #9E9A5A  — secondary text / icons
+ *   Khaki Beige   #CADBBD  — primary text
  */
 import { useState, useMemo } from 'react'
 import type { CameraModel } from '../../api/cameramodel.types'
@@ -37,19 +37,19 @@ function PlaceCameraButton({
         <button
             disabled={disabled}
             onClick={onClick}
-            style={{
-                background: disabled ? '#39304A' : '#635C51',
-                border: '1px solid #635C51',
-                color: disabled ? '#7D7461' : '#B0A990',
+            className="flex w-full items-center justify-center gap-2.5 rounded-xl px-4 py-3 text-sm font-bold tracking-wide transition-all duration-300 border"
+            style={disabled ? {
+                background: 'color-mix(in srgb, var(--theme-surface) 20%, transparent)',
+                color: 'color-mix(in srgb, var(--theme-surface) 60%, transparent)',
+                borderColor: 'color-mix(in srgb, var(--theme-surface) 20%, transparent)',
+                cursor: 'not-allowed',
+            } : {
+                background: 'var(--theme-accent)',
+                color: 'var(--theme-accent-text)',
+                borderColor: 'transparent',
             }}
-            className="
-        flex w-full items-center justify-center gap-2
-        rounded px-3 py-2 text-[13px] font-medium
-        transition-all duration-150
-        hover:enabled:brightness-110
-        active:enabled:scale-[0.98]
-        disabled:cursor-not-allowed
-      "
+            onMouseEnter={e => { if (!disabled) { (e.currentTarget as HTMLButtonElement).style.background = 'var(--theme-accent-hover)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--theme-bg-base)' } }}
+            onMouseLeave={e => { if (!disabled) { (e.currentTarget as HTMLButtonElement).style.background = 'var(--theme-accent)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--theme-accent-text)' } }}
         >
             <PlaceCameraIcon />
             Place camera
@@ -60,12 +60,12 @@ function PlaceCameraButton({
 function PlaceCameraIcon() {
     return (
         <svg
-            width="13"
-            height="13"
+            width="16"
+            height="16"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2"
+            strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
         >
@@ -80,12 +80,12 @@ function PlaceCameraIcon() {
 
 function LoadingSkeleton() {
     return (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-3">
             {[1, 2].map((i) => (
                 <div
                     key={i}
-                    style={{ background: '#39304A' }}
-                    className="h-7 w-full animate-pulse rounded"
+                    className="h-10 w-full animate-pulse rounded-lg"
+                    style={{ background: 'color-mix(in srgb, var(--theme-surface) 20%, transparent)' }}
                 />
             ))}
         </div>
@@ -95,19 +95,19 @@ function LoadingSkeleton() {
 // ── Divider ───────────────────────────────────────────────────────────────────
 
 function Divider() {
-    return <div style={{ borderTop: '1px solid #635C51' }} className="my-1" />
+    return <div className="my-1.5 h-px w-full" style={{ background: `linear-gradient(to right, transparent, color-mix(in srgb, var(--theme-surface) 40%, transparent), transparent)` }} />
 }
 
 // ── Panel heading ─────────────────────────────────────────────────────────────
 
 function PanelHeading() {
     return (
-        <p
-            style={{ color: '#7D7461' }}
-            className="text-[10px] font-semibold uppercase tracking-widest"
-        >
-            Camera model
-        </p>
+        <div className="flex items-center gap-2 mb-1">
+            <div className="h-4 w-1 rounded-full" style={{ background: 'var(--theme-text-primary)' }} />
+            <h2 className="text-xs font-black uppercase tracking-[0.2em] relative top-0.5" style={{ color: 'var(--theme-text-primary)' }}>
+                Camera Setup
+            </h2>
+        </div>
     )
 }
 
@@ -144,11 +144,11 @@ export default function ModelSelectorPanel({
 
     return (
         <div
-            style={{ background: '#202030' }}
-            className="flex h-full flex-col"
+            className="flex h-full flex-col shadow-xl"
+            style={{ background: 'var(--theme-bg-card)', borderRight: '1px solid color-mix(in srgb, var(--theme-surface) 20%, transparent)' }}
         >
             {/* Fixed: heading + filters */}
-            <div className="p-3 flex flex-col gap-3">
+            <div className="p-4 flex flex-col gap-4">
                 <PanelHeading />
 
                 {isLoading ? (

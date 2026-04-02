@@ -13,7 +13,8 @@ export function UserAvatar({ initials }: UserAvatarProps) {
       <button
         onClick={() => setMenuOpen((o) => !o)}
         aria-label="User menu"
-        className="w-8 h-8 rounded-full bg-blue-600 text-white text-[13px] font-semibold flex items-center justify-center cursor-pointer border-none select-none"
+        className="w-8 h-8 rounded-full text-[13px] font-bold flex items-center justify-center cursor-pointer border-none select-none ring-2 ring-white/10"
+        style={{ background: 'var(--theme-accent)', color: 'var(--theme-accent-text)' }}
       >
         {initials}
       </button>
@@ -26,3 +27,4 @@ export function UserAvatar({ initials }: UserAvatarProps) {
     </div>
   )
 }
+

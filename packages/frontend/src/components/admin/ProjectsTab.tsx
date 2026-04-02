@@ -44,7 +44,7 @@ export default function ProjectsTab({
           onChange={onSearchChange}
           placeholder="Search by project name…"
         />
-        <span className="text-sm text-slate-500">
+        <span className="text-sm" style={{ color: 'var(--theme-text-secondary)' }}>
           {projectsLoading
             ? '…'
             : `${projects.length} project${projects.length !== 1 ? 's' : ''}`}
@@ -54,11 +54,15 @@ export default function ProjectsTab({
       {projectsLoading ? (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="bg-slate-800 rounded-xl p-5 border border-slate-700 h-[140px] animate-pulse" />
+            <div
+              key={i}
+              className="rounded-xl p-5 h-[140px] animate-pulse"
+              style={{ background: 'color-mix(in srgb, var(--theme-bg-card) 80%, transparent)', border: '1px solid color-mix(in srgb, var(--theme-surface) 25%, transparent)' }}
+            />
           ))}
         </div>
       ) : projects.length === 0 ? (
-        <div className="text-center py-16 text-slate-600 text-sm">
+        <div className="text-center py-16 text-sm" style={{ color: 'color-mix(in srgb, var(--theme-text-secondary) 40%, transparent)' }}>
           {projectSearch ? 'No projects match your search.' : 'No projects found.'}
         </div>
       ) : (
@@ -66,35 +70,46 @@ export default function ProjectsTab({
           {projects.map((project) => (
             <div
               key={project.id}
-              className="bg-slate-800 rounded-xl p-5 border border-slate-700 hover:border-slate-600 flex flex-col gap-3 transition-colors"
+              className="rounded-xl p-5 flex flex-col gap-3 transition-all hover:-translate-y-0.5"
+              style={{ background: 'color-mix(in srgb, var(--theme-bg-card) 80%, transparent)', border: '1px solid color-mix(in srgb, var(--theme-surface) 25%, transparent)' }}
             >
               <div>
-                <h3 className="text-[15px] font-semibold text-slate-100 m-0 mb-1 overflow-hidden text-ellipsis whitespace-nowrap">
+                <h3 className="text-[15px] font-bold m-0 mb-1 overflow-hidden text-ellipsis whitespace-nowrap" style={{ color: 'var(--theme-text-primary)' }}>
                   {project.name}
                 </h3>
-                <p className="text-xs text-slate-500 m-0">Owner: {project.owner_id}</p>
+                <p className="text-xs m-0 font-mono" style={{ color: 'color-mix(in srgb, var(--theme-text-secondary) 60%, transparent)' }}>
+                  Owner: {project.owner_id}
+                </p>
               </div>
 
               <div className="flex gap-4">
                 <div className="flex flex-col gap-0.5">
-                  <span className="text-xl font-bold text-purple-500">{project.camera_count}</span>
-                  <span className="text-[11px] text-slate-500">cameras</span>
+                  <span className="text-xl font-extrabold" style={{ color: 'var(--theme-accent)' }}>{project.camera_count}</span>
+                  <span className="text-[11px]" style={{ color: 'var(--theme-text-secondary)' }}>cameras</span>
                 </div>
                 <div className="flex flex-col gap-0.5">
-                  <span className="text-[13px] font-medium text-slate-400">
+                  <span className="text-[13px] font-semibold" style={{ color: 'var(--theme-text-secondary)' }}>
                     {formatDate(project.created_at)}
                   </span>
-                  <span className="text-[11px] text-slate-500">created</span>
+                  <span className="text-[11px]" style={{ color: 'color-mix(in srgb, var(--theme-text-secondary) 60%, transparent)' }}>created</span>
                 </div>
               </div>
 
               <div className="flex gap-2 mt-auto">
-                <button className="flex-1 h-[34px] bg-transparent text-sky-400 border border-sky-400/20 rounded-md text-[13px] cursor-pointer transition-colors hover:bg-sky-400/10">
+                <button
+                  className="flex-1 h-[34px] bg-transparent rounded-lg text-[13px] cursor-pointer transition-colors font-semibold"
+                  style={{ color: 'var(--theme-text-primary)', border: '1px solid color-mix(in srgb, var(--theme-surface) 30%, transparent)' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--theme-surface) 15%, transparent)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                >
                   View
                 </button>
                 <button
                   onClick={() => onDeleteProject(project.id, project.name)}
-                  className="flex-1 h-[34px] bg-transparent text-red-500 border border-red-500/20 rounded-md text-[13px] cursor-pointer transition-colors hover:bg-red-500/10"
+                  className="flex-1 h-[34px] bg-transparent rounded-lg text-[13px] cursor-pointer transition-colors font-semibold"
+                  style={{ color: 'var(--theme-accent)', border: '1px solid color-mix(in srgb, var(--theme-accent) 30%, transparent)' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--theme-accent) 10%, transparent)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
                   Delete
                 </button>
@@ -106,3 +121,4 @@ export default function ProjectsTab({
     </div>
   )
 }
+

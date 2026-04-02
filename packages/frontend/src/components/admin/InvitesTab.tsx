@@ -47,7 +47,11 @@ export default function InvitesTab({
     return (
       <div className="flex flex-col gap-3">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="bg-slate-800 rounded-xl p-5 border border-slate-700 h-24 animate-pulse" />
+          <div
+            key={i}
+            className="rounded-xl p-5 h-24 animate-pulse"
+            style={{ background: 'color-mix(in srgb, var(--theme-bg-card) 80%, transparent)', border: '1px solid color-mix(in srgb, var(--theme-surface) 25%, transparent)' }}
+          />
         ))}
       </div>
     )
@@ -55,7 +59,7 @@ export default function InvitesTab({
 
   if (invites.length === 0) {
     return (
-      <div className="text-center py-20 text-slate-600">
+      <div className="text-center py-20" style={{ color: 'color-mix(in srgb, var(--theme-text-secondary) 40%, transparent)' }}>
         <div className="text-[40px] mb-4">✉️</div>
         <p className="text-sm m-0">No active invites. Use the Overview tab to generate invite links.</p>
       </div>
@@ -69,18 +73,22 @@ export default function InvitesTab({
         const color = expiryBarColor(pct)
 
         return (
-          <div key={invite.id} className="bg-slate-800 rounded-xl p-5 border border-slate-700">
+          <div
+            key={invite.id}
+            className="rounded-xl p-5"
+            style={{ background: 'color-mix(in srgb, var(--theme-bg-card) 80%, transparent)', border: '1px solid color-mix(in srgb, var(--theme-surface) 25%, transparent)' }}
+          >
             <div className="flex justify-between items-start mb-3">
               <div>
-                <p className="text-sm font-semibold text-slate-100 m-0 mb-0.5">{invite.email}</p>
-                <p className="text-xs text-slate-500 m-0">
-                  Invited by <span className="text-slate-400">{invite.invited_by_email}</span>
+                <p className="text-sm font-bold m-0 mb-0.5" style={{ color: 'var(--theme-text-primary)' }}>{invite.email}</p>
+                <p className="text-xs m-0" style={{ color: 'var(--theme-text-secondary)' }}>
+                  Invited by <span style={{ color: 'var(--theme-text-primary)' }}>{invite.invited_by_email}</span>
                   {' · '}Generated {formatDate(invite.created_at)}
                   {' · '}Expires {formatDate(invite.expires_at)}
                 </p>
               </div>
               <span
-                className="text-xs font-semibold px-2.5 py-0.5 rounded-full border whitespace-nowrap ml-3"
+                className="text-xs font-bold px-2.5 py-0.5 rounded-full border whitespace-nowrap ml-3"
                 style={{ color, background: `${color}22`, borderColor: `${color}44` }}
               >
                 {getExpiryLabel(invite.expires_at)}
@@ -88,7 +96,7 @@ export default function InvitesTab({
             </div>
 
             {/* Progress bar */}
-            <div className="h-1 bg-slate-900 rounded-sm mb-3 overflow-hidden">
+            <div className="h-1.5 rounded-sm mb-3 overflow-hidden" style={{ background: 'color-mix(in srgb, var(--theme-surface) 15%, transparent)' }}>
               <div
                 className="h-full rounded-sm transition-[width] duration-1000 ease-linear"
                 style={{ width: `${pct}%`, background: color }}
@@ -98,7 +106,10 @@ export default function InvitesTab({
             <div className="flex justify-end">
               <button
                 onClick={() => onRevokeInvite(invite.id, invite.email)}
-                className="px-3.5 py-1.5 text-[13px] bg-transparent text-red-500 border border-red-500/20 rounded-md cursor-pointer transition-colors hover:bg-red-500/10 hover:border-red-500"
+                className="px-3.5 py-1.5 text-[13px] bg-transparent border rounded-lg cursor-pointer transition-colors font-semibold"
+                style={{ color: 'var(--theme-accent)', borderColor: 'color-mix(in srgb, var(--theme-accent) 30%, transparent)' }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--theme-accent) 10%, transparent)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
                 Revoke
               </button>
@@ -109,3 +120,4 @@ export default function InvitesTab({
     </div>
   )
 }
+

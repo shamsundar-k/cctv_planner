@@ -11,7 +11,11 @@ export default function CamerasTab({ projectId }: CamerasTabProps) {
     return (
       <div className="flex flex-col gap-1.5 pt-1">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="h-8 rounded bg-slate-700/50 animate-pulse" />
+          <div
+            key={i}
+            className="h-8 rounded animate-pulse"
+            style={{ background: 'color-mix(in srgb, var(--theme-surface) 20%, transparent)' }}
+          />
         ))}
       </div>
     )
@@ -19,7 +23,7 @@ export default function CamerasTab({ projectId }: CamerasTabProps) {
 
   if (!cameras || cameras.length === 0) {
     return (
-      <p className="text-xs text-slate-500 italic px-1 pt-2 leading-relaxed">
+      <p className="text-xs italic px-1 pt-2 leading-relaxed" style={{ color: 'color-mix(in srgb, var(--theme-text-secondary) 60%, transparent)' }}>
         No cameras placed yet. Use the toolbar to place a camera.
       </p>
     )
@@ -35,10 +39,13 @@ export default function CamerasTab({ projectId }: CamerasTabProps) {
         return (
           <li key={cam.id}>
             <div
-              className={`flex items-center gap-2 h-8 px-1 rounded cursor-pointer group transition-colors ${isSelected
-                ? 'bg-blue-600/30 text-slate-100'
-                : 'text-slate-300 hover:bg-slate-700/50 hover:text-slate-100'
-                }`}
+              className="flex items-center gap-2 h-8 px-1 rounded cursor-pointer group transition-colors"
+              style={{
+                background: isSelected ? 'color-mix(in srgb, var(--theme-accent) 20%, transparent)' : 'transparent',
+                color: isSelected ? 'var(--theme-text-primary)' : 'color-mix(in srgb, var(--theme-text-primary) 70%, transparent)',
+              }}
+              onMouseEnter={e => { if (!isSelected) { e.currentTarget.style.background = 'color-mix(in srgb, var(--theme-surface) 15%, transparent)'; e.currentTarget.style.color = 'var(--theme-text-primary)' } }}
+              onMouseLeave={e => { if (!isSelected) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'color-mix(in srgb, var(--theme-text-primary) 70%, transparent)' } }}
               onClick={() => selectCamera(isSelected ? null : cam.id)}
             >
               {/* Colour dot */}
@@ -58,9 +65,10 @@ export default function CamerasTab({ projectId }: CamerasTabProps) {
                 }}
                 title={isVisible ? 'Hide camera' : 'Show camera'}
                 className={`shrink-0 p-0.5 rounded border-none bg-transparent cursor-pointer transition-colors ${isVisible
-                  ? 'text-slate-500 hover:text-slate-100 opacity-0 group-hover:opacity-100'
-                  : 'text-slate-400 opacity-100'
-                  }`}
+                  ? 'opacity-0 group-hover:opacity-100'
+                  : 'opacity-100'
+                }`}
+                style={{ color: isVisible ? 'color-mix(in srgb, var(--theme-text-secondary) 60%, transparent)' : 'var(--theme-text-secondary)' }}
               >
 
               </button>

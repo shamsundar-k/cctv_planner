@@ -119,20 +119,26 @@ export default function AdminDashboard() {
     deleteUser.isPending || deleteProject.isPending || revokeInvite.isPending
 
   return (
-    <div className="min-h-screen bg-slate-900 px-10 py-8 font-sans">
+    <div
+      className="min-h-screen px-10 py-8 font-sans"
+      style={{ background: `linear-gradient(135deg, var(--theme-bg-base) 0%, color-mix(in srgb, var(--theme-bg-card) 40%, var(--theme-bg-base)) 100%)` }}
+    >
       {/* Header */}
       <div className="mb-8">
         <Link
           to="/"
-          className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-200 transition-colors mb-3 no-underline"
+          className="inline-flex items-center gap-1.5 text-sm transition-colors mb-3 no-underline"
+          style={{ color: 'color-mix(in srgb, var(--theme-text-secondary) 70%, transparent)' }}
+          onMouseEnter={e => (e.currentTarget.style.color = 'var(--theme-text-primary)')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'color-mix(in srgb, var(--theme-text-secondary) 70%, transparent)')}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path d="M15 19l-7-7 7-7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
           Back to Dashboard
         </Link>
-        <h1 className="text-[28px] font-bold text-slate-100 m-0">Admin Dashboard</h1>
-        <p className="text-sm text-slate-500 mt-1.5 mb-0">
+        <h1 className="text-[28px] font-extrabold m-0 tracking-tight" style={{ color: 'var(--theme-text-primary)' }}>Admin Dashboard</h1>
+        <p className="text-sm mt-1.5 mb-0" style={{ color: 'var(--theme-text-secondary)' }}>
           Manage users, projects, and invitations
         </p>
       </div>
@@ -142,28 +148,36 @@ export default function AdminDashboard() {
         <StatCard
           label="Total Users"
           value={usersLoading ? '—' : filteredUsers.length}
-          color="#3b82f6"
           icon="👥"
         />
-        <StatCard label="Total Projects" value={allProjects.length} color="#06b6d4" icon="📁" />
-        <StatCard label="Cameras Placed" value={totalCameras} color="#a855f7" icon="📷" />
-        <StatCard label="Active Invites" value={invitesLoading ? '—' : adminInvites.length} color="#10b981" icon="✉️" />
+        <StatCard label="Total Projects" value={allProjects.length} icon="📁" />
+        <StatCard label="Cameras Placed" value={totalCameras} icon="📷" />
+        <StatCard label="Active Invites" value={invitesLoading ? '—' : adminInvites.length} icon="✉️" />
       </div>
 
       {/* Tab nav */}
-      <div className="flex border-b border-slate-800 mb-7 overflow-x-auto">
+      <div
+        className="flex mb-7 overflow-x-auto border-b"
+        style={{ borderColor: 'color-mix(in srgb, var(--theme-surface) 20%, transparent)' }}
+      >
         {TABS.map(({ id, label }) => (
           <button
             key={id}
             onClick={() => setActiveTab(id)}
-            className={`px-5 py-2.5 text-sm font-medium bg-transparent border-none cursor-pointer whitespace-nowrap transition-colors border-b-2 -mb-px ${activeTab === id
-              ? 'text-sky-400 border-sky-400'
-              : 'text-slate-500 border-transparent hover:text-slate-300'
-              }`}
+            className="px-5 py-2.5 text-sm font-semibold bg-transparent border-none cursor-pointer whitespace-nowrap transition-all border-b-2 -mb-px"
+            style={{
+              color: activeTab === id ? 'var(--theme-accent-text)' : 'color-mix(in srgb, var(--theme-text-secondary) 70%, transparent)',
+              borderBottomColor: activeTab === id ? 'var(--theme-accent)' : 'transparent',
+            }}
+            onMouseEnter={e => { if (activeTab !== id) e.currentTarget.style.color = 'var(--theme-text-primary)' }}
+            onMouseLeave={e => { if (activeTab !== id) e.currentTarget.style.color = 'color-mix(in srgb, var(--theme-text-secondary) 70%, transparent)' }}
           >
             {label}
             {id === 'invites' && adminInvites.length > 0 && (
-              <span className="ml-2 px-1.5 py-0.5 text-[11px] font-semibold bg-emerald-500/20 text-emerald-400 rounded-full">
+              <span
+                className="ml-2 px-1.5 py-0.5 text-[11px] font-bold rounded-full"
+                style={{ background: 'color-mix(in srgb, var(--theme-accent) 20%, transparent)', color: 'var(--theme-accent-text)' }}
+              >
                 {adminInvites.length}
               </span>
             )}
@@ -230,3 +244,4 @@ export default function AdminDashboard() {
     </div>
   )
 }
+

@@ -28,7 +28,12 @@ export function ProjectNameEditor({
         onBlur={onBlur}
         onKeyDown={onKeyDown}
         maxLength={100}
-        className="text-sm text-slate-200 font-medium bg-slate-700 border border-blue-500 rounded px-2 py-0.5 max-w-xs outline-none"
+        className="text-sm font-medium max-w-xs outline-none rounded px-2 py-0.5"
+        style={{
+          color: 'var(--theme-text-primary)',
+          background: 'color-mix(in srgb, var(--theme-surface) 20%, transparent)',
+          border: '1px solid var(--theme-accent)',
+        }}
         aria-label="Project name"
       />
     )
@@ -36,7 +41,10 @@ export function ProjectNameEditor({
 
   return (
     <span
-      className="text-sm text-slate-200 font-medium truncate max-w-xs cursor-text hover:text-white"
+      className="text-sm font-medium truncate max-w-xs cursor-text transition-colors"
+      style={{ color: 'color-mix(in srgb, var(--theme-text-primary) 85%, transparent)' }}
+      onMouseEnter={e => (e.currentTarget.style.color = 'var(--theme-text-primary)')}
+      onMouseLeave={e => (e.currentTarget.style.color = 'color-mix(in srgb, var(--theme-text-primary) 85%, transparent)')}
       onClick={onStartEditing}
       title="Click to rename"
     >
@@ -44,3 +52,4 @@ export function ProjectNameEditor({
     </span>
   )
 }
+

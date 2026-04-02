@@ -113,7 +113,7 @@ export default function DashboardPage() {
   const pageTitle = isAdmin ? 'All Projects' : 'My Projects'
 
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen" style={{ background: `linear-gradient(135deg, var(--theme-bg-base) 0%, color-mix(in srgb, var(--theme-bg-card) 40%, var(--theme-bg-base)) 100%)` }}>
       <Navbar />
 
       <main className="max-w-[1600px] mx-auto px-10 py-10">
@@ -128,11 +128,11 @@ export default function DashboardPage() {
         />
 
         {isError && (
-          <p className="text-sm text-red-400 mb-6">
+          <p className="text-sm text-red-300/80 mb-6 bg-red-900/20 border border-red-500/30 rounded-xl px-4 py-3">
             Failed to load projects.{' '}
             <button
               onClick={() => refetch()}
-              className="text-blue-400 hover:text-blue-300 cursor-pointer bg-transparent border-none text-sm p-0"
+              className="text-[#CADBBD] hover:text-white cursor-pointer bg-transparent border-none text-sm p-0 font-semibold"
             >
               Retry
             </button>

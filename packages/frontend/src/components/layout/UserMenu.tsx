@@ -60,44 +60,50 @@ export default function UserMenu({ onClose, exitProjectPath }: UserMenuProps) {
     navigate('/login')
   }
 
-  const itemCls = 'block w-full text-left bg-transparent border-none px-4 py-2.5 text-sm text-slate-300 cursor-pointer hover:bg-slate-700 transition-colors'
+  const itemCls = 'block w-full text-left bg-transparent border-none px-4 py-2.5 text-sm cursor-pointer transition-colors'
 
   return (
     <div
       ref={menuRef}
-      className="absolute top-[calc(100%+8px)] right-0 bg-slate-800 border border-slate-700 rounded-lg shadow-2xl min-w-[200px] z-[1000]"
+      className="absolute top-[calc(100%+8px)] right-0 rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] min-w-[220px] z-[1000] overflow-hidden"
+      style={{ background: 'var(--theme-bg-card)', border: '1px solid color-mix(in srgb, var(--theme-surface) 30%, transparent)' }}
     >
-      <div className="px-4 pt-3 pb-2">
-        <div className="text-sm font-semibold text-slate-100">{user?.fullName}</div>
-        <div className="text-xs text-slate-500 mt-0.5">{user?.email}</div>
+      <div className="px-4 pt-4 pb-3 border-b" style={{ borderColor: 'color-mix(in srgb, var(--theme-surface) 20%, transparent)', background: 'color-mix(in srgb, var(--theme-surface) 10%, transparent)' }}>
+        <div className="text-sm font-bold" style={{ color: 'var(--theme-text-primary)' }}>{user?.fullName}</div>
+        <div className="text-xs mt-0.5" style={{ color: 'var(--theme-text-secondary)' }}>{user?.email}</div>
       </div>
-      <hr className="border-slate-700 mx-0 my-0" />
-      <button className={itemCls} onClick={() => { navigate('/profile'); onClose() }}>
-        My Profile
-      </button>
-      {exitProjectPath && (
-        <button className={itemCls} onClick={() => { navigate(exitProjectPath); onClose() }}>
-          Exit Project
+      <div className="py-1">
+        <button className={itemCls} style={{ color: 'var(--theme-text-primary)' }} onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--theme-surface) 20%, transparent)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')} onClick={() => { navigate('/profile'); onClose() }}>
+          My Profile
         </button>
-      )}
-      <button className={itemCls} onClick={() => { navigate('/settings'); onClose() }}>
-        Settings
-      </button>
-      {isAdmin && (
-        <button className={itemCls} onClick={() => { navigate('/admin/manage'); onClose() }}>
-          Manage Users
+        {exitProjectPath && (
+          <button className={itemCls} style={{ color: 'var(--theme-text-primary)' }} onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--theme-surface) 20%, transparent)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')} onClick={() => { navigate(exitProjectPath); onClose() }}>
+            Exit Project
+          </button>
+        )}
+        <button className={itemCls} style={{ color: 'var(--theme-text-primary)' }} onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--theme-surface) 20%, transparent)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')} onClick={() => { navigate('/settings'); onClose() }}>
+          Settings
         </button>
-      )}
-      <button className={itemCls} onClick={() => { navigate('/docs'); onClose() }}>
-        Help &amp; Documentation
-      </button>
-      <hr className="border-slate-700 mx-0 my-0" />
-      <button
-        className="block w-full text-left bg-transparent border-none px-4 py-2.5 text-sm text-red-400 cursor-pointer hover:bg-slate-700 transition-colors"
-        onClick={handleLogout}
-      >
-        Logout
-      </button>
+        {isAdmin && (
+          <button className={itemCls} style={{ color: 'var(--theme-text-primary)' }} onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--theme-surface) 20%, transparent)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')} onClick={() => { navigate('/admin/manage'); onClose() }}>
+            Manage Users
+          </button>
+        )}
+        <button className={itemCls} style={{ color: 'var(--theme-text-primary)' }} onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--theme-surface) 20%, transparent)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')} onClick={() => { navigate('/docs'); onClose() }}>
+          Help &amp; Documentation
+        </button>
+      </div>
+      <div className="border-t" style={{ borderColor: 'color-mix(in srgb, var(--theme-surface) 20%, transparent)' }}>
+        <button
+          className={itemCls}
+          style={{ color: 'var(--theme-accent)' }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--theme-accent) 10%, transparent)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+          onClick={handleLogout}
+        >
+          Logout
+        </button>
+      </div>
     </div>
   )
 }

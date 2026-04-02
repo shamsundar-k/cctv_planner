@@ -21,7 +21,11 @@ export default function ModelsTab({ projectId }: ModelsTabProps) {
     return (
       <div className="flex flex-col gap-1.5 pt-1">
         {[1, 2].map((i) => (
-          <div key={i} className="h-10 rounded bg-slate-700/50 animate-pulse" />
+          <div
+            key={i}
+            className="h-10 rounded animate-pulse"
+            style={{ background: 'color-mix(in srgb, var(--theme-surface) 20%, transparent)' }}
+          />
         ))}
       </div>
     )
@@ -30,12 +34,15 @@ export default function ModelsTab({ projectId }: ModelsTabProps) {
   if (!importedItems || importedItems.length === 0) {
     return (
       <div className="pt-2 px-1">
-        <p className="text-xs text-slate-500 italic leading-relaxed mb-2">
+        <p className="text-xs italic leading-relaxed mb-2" style={{ color: 'color-mix(in srgb, var(--theme-text-secondary) 60%, transparent)' }}>
           No camera models imported for this project.
         </p>
         <Link
           to={`/project/manage/${projectId}`}
-          className="text-xs text-blue-400 hover:text-blue-300 underline"
+          className="text-xs underline transition-colors"
+          style={{ color: 'var(--theme-accent)' }}
+          onMouseEnter={e => (e.currentTarget.style.color = 'var(--theme-accent-hover)')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'var(--theme-accent)')}
         >
           Manage imported cameras →
         </Link>
@@ -46,7 +53,10 @@ export default function ModelsTab({ projectId }: ModelsTabProps) {
   return (
     <div className="flex flex-col gap-2">
       {isPlacing && (
-        <div className="rounded-md bg-blue-900/40 border border-blue-700/50 px-2.5 py-2 text-xs text-blue-300 leading-snug">
+        <div
+          className="rounded-md px-2.5 py-2 text-xs leading-snug"
+          style={{ background: 'color-mix(in srgb, var(--theme-accent) 15%, transparent)', border: '1px solid color-mix(in srgb, var(--theme-accent) 30%, transparent)', color: 'var(--theme-text-primary)' }}
+        >
           {selectedModelId
             ? 'Click on the map to place a camera'
             : 'Select a model below to start placing'}
@@ -57,34 +67,45 @@ export default function ModelsTab({ projectId }: ModelsTabProps) {
           const isSelected = camera_model.id === selectedModelId
           const typeLabel = CAMERA_TYPE_LABELS[camera_model.camera_type] ?? camera_model.camera_type
 
-          return (
+            return (
             <li key={camera_model.id}>
               <button
                 onClick={() => setSelectedModel(isSelected ? null : camera_model.id)}
-                className={`w-full flex items-center gap-2 px-2 py-1.5 rounded border-none cursor-pointer text-left transition-colors ${isSelected
-                  ? 'bg-blue-600/30 text-slate-100'
-                  : 'bg-transparent text-slate-300 hover:bg-slate-700/50 hover:text-slate-100'
-                  }`}
+                className="w-full flex items-center gap-2 px-2 py-1.5 rounded border-none cursor-pointer text-left transition-all"
+                style={{
+                  background: isSelected ? 'color-mix(in srgb, var(--theme-accent) 20%, transparent)' : 'transparent',
+                  color: isSelected ? 'var(--theme-text-primary)' : 'color-mix(in srgb, var(--theme-text-primary) 70%, transparent)',
+                }}
+                onMouseEnter={e => { if (!isSelected) { e.currentTarget.style.background = 'color-mix(in srgb, var(--theme-surface) 15%, transparent)'; e.currentTarget.style.color = 'var(--theme-text-primary)' } }}
+                onMouseLeave={e => { if (!isSelected) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'color-mix(in srgb, var(--theme-text-primary) 70%, transparent)' } }}
               >
                 {/* Armed indicator */}
-                <span className={`shrink-0 w-3.5 h-3.5 rounded-full border-2 transition-colors ${isSelected ? 'border-blue-400 bg-blue-500' : 'border-slate-600'
-                  }`} />
+                <span
+                  className="shrink-0 w-3.5 h-3.5 rounded-full border-2 transition-colors"
+                  style={{
+                    borderColor: isSelected ? 'var(--theme-accent)' : 'color-mix(in srgb, var(--theme-surface) 50%, transparent)',
+                    background: isSelected ? 'var(--theme-accent)' : 'transparent',
+                  }}
+                />
                 <span className="flex flex-col gap-0.5 min-w-0">
                   <span className="text-xs font-medium truncate leading-tight">
                     {camera_model.name}
                   </span>
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] text-slate-400 truncate leading-tight">
+                    <span className="text-[10px] truncate leading-tight" style={{ color: 'var(--theme-text-secondary)' }}>
                       {camera_model.manufacturer}
                     </span>
-                    <span className="text-[10px] px-1 py-px rounded bg-slate-700 text-slate-400 shrink-0">
+                    <span
+                      className="text-[10px] px-1 py-px rounded shrink-0"
+                      style={{ background: 'color-mix(in srgb, var(--theme-surface) 25%, transparent)', color: 'var(--theme-text-secondary)' }}
+                    >
                       {typeLabel}
                     </span>
                   </div>
                 </span>
               </button>
             </li>
-          )
+            )
         })}
       </ul>
     </div>

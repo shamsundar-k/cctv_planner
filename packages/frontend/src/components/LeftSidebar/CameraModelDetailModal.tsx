@@ -25,13 +25,13 @@ function capitalize(s: string): string {
 function SpecCell({ label, value }: { label: string; value: string }) {
     return (
         <div
-            style={{ background: '#39304A', border: '1px solid #635C51' }}
-            className="rounded px-2 py-1.5"
+            className="rounded-xl px-4 py-3 shadow-sm"
+            style={{ background: 'color-mix(in srgb, var(--theme-surface) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--theme-surface) 20%, transparent)' }}
         >
-            <p style={{ color: '#7D7461' }} className="mb-0.5 text-[10px] leading-none">
+            <p className="font-bold uppercase tracking-wider mb-1 text-[11px] leading-none" style={{ color: 'var(--theme-text-secondary)' }}>
                 {label}
             </p>
-            <p style={{ color: '#B0A990' }} className="text-[12px] font-medium leading-tight">
+            <p className="text-sm font-semibold leading-tight" style={{ color: 'var(--theme-text-primary)' }}>
                 {value}
             </p>
         </div>
@@ -40,10 +40,7 @@ function SpecCell({ label, value }: { label: string; value: string }) {
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
     return (
-        <p
-            style={{ color: '#635C51' }}
-            className="mb-1 text-[9px] font-semibold uppercase tracking-widest"
-        >
+        <p className="mb-2 mt-2 text-xs font-bold uppercase tracking-widest pl-1" style={{ color: 'var(--theme-text-secondary)' }}>
             {children}
         </p>
     )
@@ -52,8 +49,8 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 function CameraIcon() {
     return (
         <svg
-            width="16"
-            height="16"
+            width="24"
+            height="24"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -81,57 +78,56 @@ export default function CameraModelDetailModal({ model, onClose }: CameraModelDe
 
     return (
         <div
-            className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999]"
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[9999]"
             onMouseDown={(e) => { if (e.target === e.currentTarget) onClose() }}
         >
             <div
-                style={{ background: '#202030', border: '1px solid #635C51' }}
-                className="rounded-xl shadow-2xl w-[380px] max-h-[90vh] overflow-y-auto flex flex-col"
+                className="rounded-2xl shadow-2xl w-[520px] max-h-[90vh] overflow-y-auto flex flex-col m-4"
+                style={{ background: `linear-gradient(135deg, var(--theme-bg-card), color-mix(in srgb, var(--theme-bg-base) 60%, var(--theme-bg-card)))`, border: '1px solid color-mix(in srgb, var(--theme-surface) 30%, transparent)' }}
                 role="dialog"
                 aria-modal="true"
             >
                 {/* Header */}
                 <div
-                    style={{ borderBottom: '1px solid #635C51' }}
-                    className="flex items-center gap-3 p-4"
+                    className="flex items-center gap-4 p-6 border-b"
+                    style={{ borderColor: 'color-mix(in srgb, var(--theme-surface) 20%, transparent)', background: 'color-mix(in srgb, var(--theme-surface) 5%, transparent)' }}
                 >
                     <div
-                        style={{ background: '#39304A', color: '#7D7461' }}
-                        className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded"
+                        className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl shadow-inner"
+                        style={{ background: 'color-mix(in srgb, var(--theme-accent) 90%, transparent)', color: 'var(--theme-text-primary)' }}
                     >
                         <CameraIcon />
                     </div>
                     <div className="min-w-0 flex-1">
-                        <p
-                            style={{ color: '#B0A990' }}
-                            className="truncate text-[13px] font-semibold leading-tight"
-                        >
+                        <p className="truncate text-xl font-bold leading-tight mb-1" style={{ color: 'var(--theme-text-primary)' }}>
                             {model.name}
                         </p>
-                        <p style={{ color: '#7D7461' }} className="text-[11px] leading-snug">
+                        <p className="text-sm font-semibold tracking-wide" style={{ color: 'var(--theme-text-secondary)' }}>
                             {model.manufacturer}
-                            <span style={{ color: '#635C51' }}> · </span>
+                            <span className="mx-2" style={{ color: 'var(--theme-accent)' }}>·</span>
                             {capitalize(model.camera_type)}
                         </p>
                     </div>
                     <button
                         onClick={onClose}
-                        style={{ color: '#7D7461' }}
-                        className="hover:text-[#B0A990] transition-colors p-1 rounded"
+                        className="transition-colors p-2 rounded-full"
+                        style={{ color: 'var(--theme-text-secondary)' }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = 'var(--theme-text-primary)'; (e.currentTarget as HTMLButtonElement).style.background = 'color-mix(in srgb, var(--theme-surface) 20%, transparent)' }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = 'var(--theme-text-secondary)'; (e.currentTarget as HTMLButtonElement).style.background = 'transparent' }}
                         aria-label="Close"
                     >
-                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                            <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                        <svg width="18" height="18" viewBox="0 0 14 14" fill="none">
+                            <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                         </svg>
                     </button>
                 </div>
 
                 {/* Body */}
-                <div className="p-4 flex flex-col gap-3">
+                <div className="p-6 flex flex-col gap-6">
                     {/* Optics */}
                     <div>
                         <SectionLabel>Optics</SectionLabel>
-                        <div className="grid grid-cols-2 gap-1">
+                        <div className="grid grid-cols-2 gap-3">
                             <SpecCell
                                 label="Focal length"
                                 value={formatFocalLength(model.focal_length_min, model.focal_length_max)}
@@ -145,7 +141,7 @@ export default function CameraModelDetailModal({ model, onClose }: CameraModelDe
                     {/* Sensor */}
                     <div>
                         <SectionLabel>Sensor</SectionLabel>
-                        <div className="grid grid-cols-2 gap-1">
+                        <div className="grid grid-cols-2 gap-3">
                             <SpecCell
                                 label="Resolution"
                                 value={`${model.resolution_h}×${model.resolution_v}`}
@@ -165,7 +161,7 @@ export default function CameraModelDetailModal({ model, onClose }: CameraModelDe
                     {model.ir_range > 0 && (
                         <div>
                             <SectionLabel>Illumination</SectionLabel>
-                            <div className="grid grid-cols-2 gap-1">
+                            <div className="grid grid-cols-2 gap-3">
                                 <SpecCell label="IR range" value={`${model.ir_range} m`} />
                             </div>
                         </div>
@@ -176,8 +172,8 @@ export default function CameraModelDetailModal({ model, onClose }: CameraModelDe
                         <div>
                             <SectionLabel>Notes</SectionLabel>
                             <p
-                                style={{ color: '#B0A990', background: '#39304A', border: '1px solid #635C51' }}
-                                className="rounded px-2 py-1.5 text-[12px] leading-relaxed"
+                                className="rounded-xl px-4 py-3 text-sm leading-relaxed shadow-sm"
+                                style={{ background: 'color-mix(in srgb, var(--theme-surface) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--theme-surface) 20%, transparent)', color: 'var(--theme-text-primary)' }}
                             >
                                 {model.notes}
                             </p>

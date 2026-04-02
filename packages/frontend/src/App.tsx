@@ -28,34 +28,38 @@ import AdminCameraEditPage from './pages/AdminCameraEditPage'
 import ProjectManagePage from './pages/ProjectManagePage'
 import ProjectMapViewPagenew from './pages/ProjectMapViewPagenew'
 import { ToastProvider } from './components/ui/Toast'
+import ThemeProvider from './context/ThemeProvider'
 
 function App() {
   return (
-    <ToastProvider>
-      <BrowserRouter>
-        <Routes>
-          {/* Public-only routes — redirect to / if already logged in */}
-          <Route element={<PublicOnlyRoute />}>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/accept-invite" element={<AcceptInvitePage />} />
-          </Route>
+    <ThemeProvider>
+      <ToastProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* Public-only routes — redirect to / if already logged in */}
+            <Route element={<PublicOnlyRoute />}>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/accept-invite" element={<AcceptInvitePage />} />
+            </Route>
 
-          {/* Protected routes */}
-          <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<DashboardPage />} />
-            <Route path="/admin/manage" element={<AdminPage />} />
-            <Route path="/admin/manage/cameras" element={<AdminCamerasPage />} />
-            <Route path="/admin/manage/cameras/:id" element={<AdminCameraEditPage />} />
-            <Route path="/project/manage/:id" element={<ProjectManagePage />} />
-            <Route path="/projects/:id" element={<ProjectMapViewPagenew />} />
-          </Route>
+            {/* Protected routes */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/" element={<DashboardPage />} />
+              <Route path="/admin/manage" element={<AdminPage />} />
+              <Route path="/admin/manage/cameras" element={<AdminCamerasPage />} />
+              <Route path="/admin/manage/cameras/:id" element={<AdminCameraEditPage />} />
+              <Route path="/project/manage/:id" element={<ProjectManagePage />} />
+              <Route path="/projects/:id" element={<ProjectMapViewPagenew />} />
+            </Route>
 
-          {/* Fallback */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </BrowserRouter>
-    </ToastProvider>
+            {/* Fallback */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </ToastProvider>
+    </ThemeProvider>
   )
 }
 
 export default App
+

@@ -32,8 +32,8 @@ interface CreateProjectModalProps {
 }
 
 const inputCls = (invalid: boolean) =>
-  `w-full px-3 py-2 border rounded-md text-sm text-slate-100 bg-slate-700 placeholder-slate-500 outline-none transition-colors ${
-    invalid ? 'border-red-500' : 'border-slate-600 focus:border-blue-500'
+  `w-full px-3 py-2.5 border rounded-xl text-sm text-[#CADBBD] bg-[#8C6E9E]/10 placeholder-[#8C6E9E]/50 outline-none transition-all ${
+    invalid ? 'border-red-500 ring-1 ring-red-500/30' : 'border-[#8C6E9E]/30 focus:border-[#CADBBD]/60 focus:ring-1 focus:ring-[#CADBBD]/20'
   }`
 
 export default function CreateProjectModal({ onClose }: CreateProjectModalProps) {
@@ -94,20 +94,20 @@ export default function CreateProjectModal({ onClose }: CreateProjectModalProps)
       onMouseDown={(e) => { if (e.target === e.currentTarget) onClose() }}
     >
       <div
-        className="bg-slate-800 border border-slate-700 rounded-xl shadow-2xl w-[600px] max-h-[90vh] overflow-y-auto flex flex-col"
+        className="bg-[#4F2A63]/90 backdrop-blur-xl border border-[#8C6E9E]/30 rounded-2xl shadow-[0_24px_64px_rgba(0,0,0,0.6)] w-[600px] max-h-[90vh] overflow-y-auto flex flex-col"
         role="dialog"
         aria-modal="true"
         aria-labelledby="create-modal-title"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-700">
-          <h2 id="create-modal-title" className="text-lg font-bold text-slate-100 m-0">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-[#8C6E9E]/20 bg-[#8C6E9E]/5">
+          <h2 id="create-modal-title" className="text-lg font-bold text-[#CADBBD] m-0">
             Create New Project
           </h2>
           <button
             onClick={onClose}
             aria-label="Close"
-            className="bg-transparent border-none cursor-pointer text-xl text-slate-400 hover:text-slate-200 leading-none transition-colors"
+            className="bg-transparent border-none cursor-pointer text-xl text-[#9E9A5A]/70 hover:text-[#CADBBD] leading-none transition-colors p-1 rounded-full hover:bg-[#8C6E9E]/20"
           >
             ✕
           </button>
@@ -118,8 +118,8 @@ export default function CreateProjectModal({ onClose }: CreateProjectModalProps)
           <div className="px-6 py-6 flex flex-col gap-5">
             {/* Name */}
             <div>
-              <label htmlFor="create-name" className="block text-sm font-medium text-slate-300 mb-1.5">
-                Project Name <span className="text-red-400">*</span>
+              <label htmlFor="create-name" className="block text-xs font-bold text-[#9E9A5A] uppercase tracking-widest mb-1.5">
+                Project Name <span className="text-[#804A38] normal-case tracking-normal">*</span>
               </label>
               <input
                 ref={nameRef}
@@ -131,13 +131,13 @@ export default function CreateProjectModal({ onClose }: CreateProjectModalProps)
                 placeholder="e.g. Parking Lot – Downtown"
                 className={inputCls(name.length > 0 && !nameValid)}
               />
-              <span className="text-xs text-slate-500 mt-1 block">1–100 characters (required)</span>
+              <span className="text-xs text-[#9E9A5A]/60 mt-1 block">1–100 characters (required)</span>
             </div>
 
             {/* Description */}
             <div>
-              <label htmlFor="create-desc" className="block text-sm font-medium text-slate-300 mb-1.5">
-                Description <span className="text-slate-500 font-normal">(optional)</span>
+              <label htmlFor="create-desc" className="block text-xs font-bold text-[#9E9A5A] uppercase tracking-widest mb-1.5">
+                Description <span className="text-[#8C6E9E]/60 font-normal normal-case tracking-normal">(optional)</span>
               </label>
               <textarea
                 id="create-desc"
@@ -146,22 +146,22 @@ export default function CreateProjectModal({ onClose }: CreateProjectModalProps)
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Brief description of the survey project..."
                 rows={3}
-                className="w-full px-3 py-2 border border-slate-600 focus:border-blue-500 rounded-md text-sm text-slate-100 bg-slate-700 placeholder-slate-500 outline-none transition-colors resize-y font-[inherit] leading-relaxed"
+                className="w-full px-3 py-2.5 border border-[#8C6E9E]/30 focus:border-[#CADBBD]/60 focus:ring-1 focus:ring-[#CADBBD]/20 rounded-xl text-sm text-[#CADBBD] bg-[#8C6E9E]/10 placeholder-[#8C6E9E]/50 outline-none transition-all resize-y font-[inherit] leading-relaxed"
               />
-              <span className="text-xs text-slate-500 mt-1 block">{description.length}/500 characters</span>
+              <span className="text-xs text-[#9E9A5A]/60 mt-1 block">{description.length}/500 characters</span>
             </div>
 
             {/* Base Map Location */}
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1">
-                Base Map Location <span className="text-slate-500 font-normal">(optional)</span>
+              <label className="block text-xs font-bold text-[#9E9A5A] uppercase tracking-widest mb-1">
+                Base Map Location <span className="text-[#8C6E9E]/60 font-normal normal-case tracking-normal">(optional)</span>
               </label>
-              <span className="text-xs text-slate-500 block mb-2.5">
+              <span className="text-xs text-[#9E9A5A]/60 block mb-2.5">
                 Set the initial map view when this project is opened
               </span>
               <div className="flex gap-2.5">
                 <div className="flex-1">
-                  <label htmlFor="create-lat" className="text-xs text-slate-500 block mb-1">Latitude</label>
+                  <label htmlFor="create-lat" className="text-xs text-[#9E9A5A]/70 font-bold uppercase tracking-wider block mb-1">Latitude</label>
                   <input
                     id="create-lat"
                     type="number"
@@ -175,7 +175,7 @@ export default function CreateProjectModal({ onClose }: CreateProjectModalProps)
                   />
                 </div>
                 <div className="flex-1">
-                  <label htmlFor="create-lng" className="text-xs text-slate-500 block mb-1">Longitude</label>
+                  <label htmlFor="create-lng" className="text-xs text-[#9E9A5A]/70 font-bold uppercase tracking-wider block mb-1">Longitude</label>
                   <input
                     id="create-lng"
                     type="number"
@@ -189,7 +189,7 @@ export default function CreateProjectModal({ onClose }: CreateProjectModalProps)
                   />
                 </div>
                 <div className="w-[90px]">
-                  <label htmlFor="create-zoom" className="text-xs text-slate-500 block mb-1">Zoom (1–22)</label>
+                  <label htmlFor="create-zoom" className="text-xs text-[#9E9A5A]/70 font-bold uppercase tracking-wider block mb-1">Zoom (1–22)</label>
                   <input
                     id="create-zoom"
                     type="number"
@@ -204,24 +204,24 @@ export default function CreateProjectModal({ onClose }: CreateProjectModalProps)
             </div>
 
             {submitError && (
-              <p className="text-sm text-red-400 m-0">{submitError}</p>
+              <p className="text-sm text-red-300/80 m-0 bg-red-900/20 border border-red-500/30 rounded-xl px-3 py-2">{submitError}</p>
             )}
           </div>
 
           {/* Footer */}
-          <div className="flex justify-end gap-3 px-6 py-4 border-t border-slate-700">
+          <div className="flex justify-end gap-3 px-6 py-4 border-t border-[#8C6E9E]/20 bg-[#8C6E9E]/5">
             <button
               type="button"
               onClick={onClose}
-              className="h-9 px-4 bg-slate-700 hover:bg-slate-600 text-slate-200 border border-slate-600 rounded-md text-sm font-semibold cursor-pointer transition-colors"
+              className="h-9 px-4 bg-[#8C6E9E]/15 hover:bg-[#8C6E9E]/30 text-[#CADBBD]/80 border border-[#8C6E9E]/30 rounded-lg text-sm font-semibold cursor-pointer transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={!canSubmit}
-              className={`h-9 px-5 border-none rounded-md text-sm font-semibold text-white transition-colors ${
-                canSubmit ? 'bg-blue-600 hover:bg-blue-700 cursor-pointer' : 'bg-slate-600 cursor-not-allowed opacity-50'
+              className={`h-9 px-5 border-none rounded-lg text-sm font-bold transition-all ${
+                canSubmit ? 'bg-[#804A38] hover:bg-[#9E9A5A] hover:text-[#4F2A63] text-[#CADBBD] cursor-pointer shadow-md shadow-[#804A38]/20' : 'bg-[#8C6E9E]/20 text-[#8C6E9E]/40 cursor-not-allowed'
               }`}
             >
               {isPending ? 'Creating…' : 'Create Project'}

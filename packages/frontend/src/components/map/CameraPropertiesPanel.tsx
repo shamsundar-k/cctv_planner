@@ -23,8 +23,8 @@ interface FormValues {
 function ReadOnlyField({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="text-[10px] text-slate-400 uppercase tracking-wide mb-0.5">{label}</p>
-      <p className="text-xs text-slate-300 truncate">{value}</p>
+      <p className="text-[10px] uppercase tracking-wide mb-0.5" style={{ color: 'var(--theme-text-secondary)' }}>{label}</p>
+      <p className="text-xs truncate" style={{ color: 'var(--theme-text-primary)' }}>{value}</p>
     </div>
   )
 }
@@ -32,14 +32,18 @@ function ReadOnlyField({ label, value }: { label: string; value: string }) {
 function FormField({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <p className="text-[10px] text-slate-400 uppercase tracking-wide mb-1">{label}</p>
+      <p className="text-[10px] uppercase tracking-wide mb-1" style={{ color: 'var(--theme-text-secondary)' }}>{label}</p>
       {children}
     </div>
   )
 }
 
-const inputCls =
-  'bg-slate-700 border border-slate-600 rounded-md text-slate-100 text-xs px-2 py-1.5 w-full focus:outline-none focus:ring-1 focus:ring-blue-500'
+const inputStyle: React.CSSProperties = {
+  background: 'color-mix(in srgb, var(--theme-surface) 20%, transparent)',
+  border: '1px solid color-mix(in srgb, var(--theme-surface) 35%, transparent)',
+  color: 'var(--theme-text-primary)',
+}
+const inputCls = 'rounded-md text-xs px-2 py-1.5 w-full focus:outline-none'
 
 // ── FOV helper ─────────────────────────────────────────────────────────────────
 
@@ -168,26 +172,36 @@ export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPan
 
   return (
     <aside
-      className="shrink-0 bg-slate-800 border-l border-slate-700 flex flex-col overflow-hidden transition-[width] duration-200"
-      style={{ width: selectedCameraId ? 312 : 0 }}
+      className="shrink-0 flex flex-col overflow-hidden transition-[width] duration-200"
+      style={{
+        width: selectedCameraId ? 312 : 0,
+        background: 'var(--theme-bg-card)',
+        borderLeft: '1px solid color-mix(in srgb, var(--theme-surface) 20%, transparent)',
+      }}
       aria-hidden={!selectedCameraId}
     >
       {selectedCameraId && form && camera && (
         <div className="flex flex-col h-full w-[312px]">
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-slate-700 shrink-0">
+          <div
+            className="flex items-center justify-between px-4 py-3 border-b shrink-0"
+            style={{ borderColor: 'color-mix(in srgb, var(--theme-surface) 20%, transparent)' }}
+          >
             <div className="flex items-center gap-2">
-              <h2 className="text-sm font-semibold text-slate-100">Camera Properties</h2>
+              <h2 className="text-sm font-bold" style={{ color: 'var(--theme-text-primary)' }}>Camera Properties</h2>
               {saveStatus === 'failed' && (
                 <span className="text-[10px] text-red-400 font-medium">Save failed</span>
               )}
               {saveStatus === 'saving' && (
-                <span className="text-[10px] text-blue-400 font-medium">Saving…</span>
+                <span className="text-[10px] font-medium" style={{ color: 'var(--theme-accent)' }}>Saving…</span>
               )}
             </div>
             <button
               onClick={() => clearSelection()}
-              className="text-slate-400 hover:text-slate-200 transition-colors"
+              className="transition-colors p-1 rounded"
+              style={{ color: 'var(--theme-text-secondary)' }}
+              onMouseEnter={e => (e.currentTarget.style.color = 'var(--theme-text-primary)')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'var(--theme-text-secondary)')}
               aria-label="Close panel"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -197,7 +211,10 @@ export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPan
           </div>
 
           {/* Read-only info */}
-          <section className="px-4 py-3 border-b border-slate-700 shrink-0 flex flex-col gap-2">
+          <section
+            className="px-4 py-3 border-b shrink-0 flex flex-col gap-2"
+            style={{ borderColor: 'color-mix(in srgb, var(--theme-surface) 20%, transparent)', background: 'color-mix(in srgb, var(--theme-surface) 5%, transparent)' }}
+          >
             <ReadOnlyField label="Model" value={cameraModel?.name ?? '—'} />
             <ReadOnlyField
               label="Position"
@@ -214,6 +231,7 @@ export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPan
                 onChange={(e) => setField('label', e.target.value)}
                 placeholder="e.g. Entrance Camera"
                 className={inputCls}
+                style={inputStyle}
               />
             </FormField>
 
@@ -223,7 +241,8 @@ export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPan
                   type="color"
                   value={form.colour}
                   onChange={(e) => setField('colour', e.target.value)}
-                  className="w-8 h-8 cursor-pointer rounded border border-slate-600 bg-transparent p-0.5 shrink-0"
+                  className="w-8 h-8 cursor-pointer rounded p-0.5 shrink-0"
+                  style={{ border: '1px solid color-mix(in srgb, var(--theme-surface) 35%, transparent)', background: 'transparent' }}
                 />
                 <input
                   type="text"
@@ -231,6 +250,7 @@ export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPan
                   onChange={(e) => setField('colour', e.target.value)}
                   maxLength={7}
                   className={inputCls}
+                  style={inputStyle}
                 />
               </div>
             </FormField>
@@ -243,6 +263,7 @@ export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPan
                 value={form.camera_height}
                 onChange={(e) => setField('camera_height', parseFloat(e.target.value) || 0.1)}
                 className={inputCls}
+                style={inputStyle}
               />
             </FormField>
 
@@ -255,7 +276,8 @@ export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPan
                   step={1}
                   value={form.bearing}
                   onChange={(e) => setField('bearing', parseInt(e.target.value))}
-                  className="w-full accent-blue-500"
+                  className="w-full"
+                  style={{ accentColor: 'var(--theme-accent)' }}
                 />
                 <input
                   type="number"
@@ -265,6 +287,7 @@ export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPan
                   value={form.bearing}
                   onChange={(e) => setField('bearing', parseFloat(e.target.value) || 0)}
                   className={inputCls}
+                  style={inputStyle}
                 />
               </div>
             </FormField>
@@ -278,6 +301,7 @@ export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPan
                 onChange={(e) => setField('target_distance', parseNullableNumber(e.target.value))}
                 placeholder="e.g. 50"
                 className={inputCls}
+                style={inputStyle}
               />
             </FormField>
 
@@ -289,6 +313,7 @@ export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPan
                 value={form.target_height}
                 onChange={(e) => setField('target_height', parseFloat(e.target.value) || 0.1)}
                 className={inputCls}
+                style={inputStyle}
               />
             </FormField>
 
@@ -302,9 +327,10 @@ export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPan
                     step={0.1}
                     value={form.focal_length_chosen !== '' ? form.focal_length_chosen : cameraModel.focal_length_min}
                     onChange={(e) => setField('focal_length_chosen', parseFloat(e.target.value))}
-                    className="w-full accent-blue-500"
+                    className="w-full"
+                    style={{ accentColor: 'var(--theme-accent)' }}
                   />
-                  <div className="flex justify-between text-[10px] text-slate-500">
+                  <div className="flex justify-between text-[10px]" style={{ color: 'color-mix(in srgb, var(--theme-text-secondary) 70%, transparent)' }}>
                     <span>{cameraModel.focal_length_min} mm</span>
                     <span>{cameraModel.focal_length_max} mm</span>
                   </div>
@@ -317,6 +343,7 @@ export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPan
                     onChange={(e) => setField('focal_length_chosen', parseNullableNumber(e.target.value))}
                     placeholder="Auto"
                     className={inputCls}
+                    style={inputStyle}
                   />
                 </div>
               </FormField>
@@ -324,14 +351,20 @@ export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPan
           </div>
 
           {/* Footer */}
-          <div className="px-4 py-3 border-t border-slate-700 flex flex-col gap-2 shrink-0">
-            <p className="text-[10px] text-slate-500 text-center">
+          <div
+            className="px-4 py-3 border-t flex flex-col gap-2 shrink-0"
+            style={{ borderColor: 'color-mix(in srgb, var(--theme-surface) 20%, transparent)' }}
+          >
+            <p className="text-[10px] text-center" style={{ color: 'color-mix(in srgb, var(--theme-text-secondary) 60%, transparent)' }}>
               Changes are saved with the global Save button
             </p>
             {!confirmDelete ? (
               <button
                 onClick={() => setConfirmDelete(true)}
-                className="h-8 rounded-md text-red-400 hover:text-red-300 text-xs font-medium transition-colors"
+                className="h-8 rounded-md text-xs font-medium transition-colors"
+                style={{ color: 'var(--theme-accent)' }}
+                onMouseEnter={e => (e.currentTarget.style.color = 'color-mix(in srgb, var(--theme-accent) 70%, white)')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'var(--theme-accent)')}
               >
                 Delete Camera
               </button>
@@ -339,13 +372,19 @@ export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPan
               <div className="flex gap-2">
                 <button
                   onClick={handleDelete}
-                  className="flex-1 h-8 rounded-md bg-red-600 hover:bg-red-500 text-white text-xs font-medium transition-colors"
+                  className="flex-1 h-8 rounded-md text-xs font-bold transition-all border-none"
+                  style={{ background: 'var(--theme-accent)', color: 'var(--theme-accent-text)' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--theme-accent-hover)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--theme-bg-base)' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--theme-accent)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--theme-accent-text)' }}
                 >
                   Confirm Delete
                 </button>
                 <button
                   onClick={() => setConfirmDelete(false)}
-                  className="flex-1 h-8 rounded-md bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs font-medium transition-colors"
+                  className="flex-1 h-8 rounded-md text-xs font-medium transition-colors border-none"
+                  style={{ background: 'color-mix(in srgb, var(--theme-surface) 20%, transparent)', color: 'var(--theme-text-secondary)' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--theme-surface) 30%, transparent)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--theme-surface) 20%, transparent)')}
                 >
                   Cancel
                 </button>
