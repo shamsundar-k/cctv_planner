@@ -8,7 +8,7 @@ import { useBaseTileStore } from '../../store/baseTileStore'
 
 // Headless component — no DOM output
 export default function BaseTile() {
-    const mapRef = useMapContext()
+    const { mapRef } = useMapContext()
     const tileLayerRef = useRef<L.TileLayer | null>(null)
     const activeBaseMap = useBaseTileStore((s) => s.activeBaseMap)
 
