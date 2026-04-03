@@ -3,7 +3,7 @@ import { useParams } from 'react-router'
 import { useProject } from '../api/projects'
 import { useCameraInstanceStore } from '../store/cameraInstanceStore'
 import MapNavbar from '../components/map/MapNavbar'
-import LeftSidebar from '../components/LeftSidebar'
+import LeftSidebar from '../components/LeftSidebar/LeftSidebar'
 import Map from '../components/map/Map'
 
 

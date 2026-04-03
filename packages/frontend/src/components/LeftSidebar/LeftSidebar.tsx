@@ -1,8 +1,10 @@
 import { useState } from 'react'
-import { useAllCameraModels } from '../api/camerasModels'
-import ModelSelectorPanel from './LeftSidebar/Modelselectorpanel'
-import type { LeftSidebarProps } from './LeftSidebar/types'
-import type { CameraModel } from '../api/cameramodel.types'
+import { useAllCameraModels } from '../../api/camerasModels'
+import ModelSelectorPanel from './../LeftSidebar/Modelselectorpanel'
+import type { LeftSidebarProps } from './../LeftSidebar/types'
+import type { CameraModel } from '../../api/cameramodel.types'
+import { useCameraLayerStore } from '../../store/cameraLayerSlice'
+import { useCameraPlacementStore } from '../../store/cameraPlacementSlice'
 
 type TabId = 'models' | 'cameras'
 
@@ -40,9 +42,13 @@ function RailTab({ label, active, onClick }: { label: string; active: boolean; o
 export default function LeftSidebar({ projectId: _projectId }: LeftSidebarProps) {
   const [activeTab, setActiveTab] = useState<TabId | null>(null)
   const { data: allModels = [], isLoading: modelsLoading } = useAllCameraModels()
+  const { setMode, setSelectedCameraId, setSelectedModel } = useCameraPlacementStore()
 
   const handlePlaceCamera = (model: CameraModel) => {
-    console.log('Place camera:', model)
+    console.log("Selected model", model)
+    setSelectedModel({ manufacturer: model.manufacturer, model: model.model_number })
+    setSelectedCameraId(model.id)
+    setMode('PLACING')
   }
 
   return (

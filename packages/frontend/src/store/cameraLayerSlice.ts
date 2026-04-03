@@ -1,25 +1,23 @@
 import { create } from 'zustand'
 import { useMapViewStore } from './mapViewSlice'
+import type { CameraModel } from '../api/cameramodel.types'
 
 interface CameraLayerState {
   // Selection (single camera at a time)
   selectedCameraId: string | null
 
   // Active camera model for placement
-  selectedModelId: string | null
-
-
+  selectedModel: CameraModel | null
 
   // Actions
   selectCamera: (id: string | null, zoomLevel?: number) => void
   clearSelection: () => void
-  setSelectedModel: (id: string | null) => void
-
+  setSelectedModel: (model: CameraModel | null) => void
 }
 
 export const useCameraLayerStore = create<CameraLayerState>((set) => ({
   selectedCameraId: null,
-  selectedModelId: null,
+  selectedModel: null,
   hiddenCameraIds: [],
   showCameraLabels: true,
 
@@ -32,6 +30,5 @@ export const useCameraLayerStore = create<CameraLayerState>((set) => ({
 
   clearSelection: () => set({ selectedCameraId: null }),
 
-  setSelectedModel: (id) => set({ selectedModelId: id }),
-
+  setSelectedModel: (model) => set({ selectedModel: model }),
 }))
