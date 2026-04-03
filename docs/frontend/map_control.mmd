@@ -1,0 +1,62 @@
+
+flowchart TD
+    subgraph Config["📄 mapConfig.ts"]
+        BASE_MAPS["BASE_MAPS<br>(tile providers)"]
+        LAYER_NAMES["LAYER_NAMES<br>(cameras, FOV, Draw)"]
+        DEFAULT_BASE_MAP["DEFAULT_BASE_MAP"]
+    end
+
+    subgraph Stores["🗄️ Zustand Stores"]
+        baseTileStore["baseTileStore<br>─────────────<br>activeBaseMap<br>setBaseMap()"]
+    end
+
+    subgraph Context["⚛️ MapContext"]
+        MapContextValue["MapContextValue<br>─────────────<br>mapRef: RefObject‹L.Map›<br>layersRef: RefObject‹LayerGroups›<br>visibleLayers: Record‹LayerName, bool›<br>toggleLayer(name)"]
+    end
+
+    subgraph MapComp["🗺️ Map.tsx  (Provider)"]
+        mapInstanceRef["mapInstanceRef<br>RefObject‹L.Map›"]
+        layersRef_map["layersRef<br>RefObject‹LayerGroups›"]
+        visibleLayers["visibleLayers<br>state"]
+        toggleLayer["toggleLayer()"]
+    end
+
+    subgraph Children["🧩 Child Components"]
+        BaseTile["BaseTile.tsx<br>─────────────<br>Reads: mapRef.current<br>Reads: activeBaseMap<br>Imperatively adds/swaps<br>L.TileLayer on the map"]
+
+        subgraph Toolbar["MapToolbar.tsx  (openPanel state)"]
+            BasemapPanel["BasemapPanel.tsx<br>─────────────<br>Reads: activeBaseMap<br>Calls: setBaseMap()"]
+            LayersPanel["LayersPanel.tsx<br>─────────────<br>Reads: visibleLayers<br>Calls: toggleLayer()"]
+        end
+    end
+
+    %% Config → Store / Map
+    DEFAULT_BASE_MAP -->|initial value| baseTileStore
+    BASE_MAPS -->|tile URLs & labels| BaseTile
+    BASE_MAPS -->|thumbnails & keys| BasemapPanel
+    LAYER_NAMES -->|layer names| MapComp
+    LAYER_NAMES -->|layer labels| LayersPanel
+
+    %% Map builds context
+    mapInstanceRef --> MapContextValue
+    layersRef_map --> MapContextValue
+    visibleLayers --> MapContextValue
+    toggleLayer --> MapContextValue
+
+    %% Context consumed
+    MapContextValue -->|useMapContext → mapRef| BaseTile
+    MapContextValue -->|useMapContext → visibleLayers, toggleLayer| LayersPanel
+
+    %% Store consumed
+    baseTileStore -->|useBaseTileStore → activeBaseMap| BaseTile
+    baseTileStore -->|useBaseTileStore → activeBaseMap, setBaseMap| BasemapPanel
+
+    %% toggleLayer side-effect
+    LayersPanel -- "user clicks toggle" --> toggleLayer
+    toggleLayer -->|add/removeLayer on L.Map| layersRef_map
+    toggleLayer -->|setVisibleLayers| visibleLayers
+
+    %% basemap side-effect
+    BasemapPanel -- "user clicks tile" --> baseTileStore
+    baseTileStore -- "activeBaseMap changes" --> BaseTile
+    BaseTile -->|tileLayer.setUrl| mapInstanceRef

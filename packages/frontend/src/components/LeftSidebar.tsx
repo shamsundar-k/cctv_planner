@@ -1,103 +1,94 @@
 import { useState } from 'react'
-import { Video, Layers, LayoutGrid } from 'lucide-react'
-import { useMapViewStore } from '../store/mapViewSlice'
-import { useCameraLayerStore } from '../store/cameraLayerSlice'
 import { useAllCameraModels } from '../api/camerasModels'
-import TabButton from './LeftSidebar/TabButton'
-
-
 import ModelSelectorPanel from './LeftSidebar/Modelselectorpanel'
-import type { TabId, LeftSidebarProps } from './LeftSidebar/types'
+import type { LeftSidebarProps } from './LeftSidebar/types'
 import type { CameraModel } from '../api/cameramodel.types'
 
+type TabId = 'models' | 'cameras'
+
+function RailTab({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
+  const [hovered, setHovered] = useState(false)
+
+  return (
+    <button
+      onClick={onClick}
+      title={label}
+      className="w-full py-5 px-2 rounded-lg border-none cursor-pointer select-none text-[10px] font-extrabold tracking-widest uppercase flex items-center justify-center gap-1.5"
+      style={{
+        writingMode: 'vertical-lr',
+        transform: hovered ? 'rotate(180deg) scaleY(1.08)' : 'rotate(180deg) scaleY(1)',
+        transition: 'transform 150ms ease',
+        background: active ? 'var(--theme-accent)' : 'transparent',
+        color: active ? 'var(--theme-text-primary)' : 'var(--theme-text-secondary)',
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <span
+        className="rounded-full shrink-0"
+        style={{
+          width: 5,
+          height: 5,
+          background: active ? 'var(--theme-text-primary)' : 'var(--theme-text-secondary)',
+        }}
+      />
+      {label}
+    </button>
+  )
+}
+
 export default function LeftSidebar({ projectId: _projectId }: LeftSidebarProps) {
-  const [collapsed, setCollapsed] = useState(false)
-  const [manualTab, setManualTab] = useState<TabId>('cameras')
-  const activeTool = useMapViewStore((s) => s.activeTool)
-  const selectedCameraId = useCameraLayerStore((s) => s.selectedCameraId)
+  const [activeTab, setActiveTab] = useState<TabId | null>(null)
   const { data: allModels = [], isLoading: modelsLoading } = useAllCameraModels()
 
   const handlePlaceCamera = (model: CameraModel) => {
     console.log('Place camera:', model)
   }
 
-  // When Place Camera is active, always show Models tab.
-  // When a camera is selected, show Cameras tab (to reveal the list).
-  // Otherwise use manual selection.
-  const activeTab: TabId =
-    activeTool === 'place-camera' ? 'models' : selectedCameraId ? 'cameras' : manualTab
-
   return (
-    <aside
-      className="shrink-0 flex flex-col relative transition-[width] duration-200"
-      style={{
-        width: collapsed ? 44 : 236,
-        background: 'var(--theme-bg-card)',
-        borderRight: '1px solid color-mix(in srgb, var(--theme-surface) 20%, transparent)',
-      }}
-    >
-      {/* Tab buttons */}
+    <div className="relative shrink-0 h-full" style={{ width: 36 }}>
+      {/* Rail */}
       <div
-        className="flex flex-col pt-2 gap-0.5 px-1 pb-2 border-b"
-        style={{ borderColor: 'color-mix(in srgb, var(--theme-surface) 15%, transparent)' }}
+        className="flex flex-col gap-5 pt-1 h-full"
+        style={{
+          width: 36,
+          background: 'var(--theme-bg-card)',
+          borderRight: '1px solid color-mix(in srgb, var(--theme-surface) 20%, transparent)',
+        }}
       >
-        <TabButton id="cameras" label="Cameras" icon={Video} active={activeTab === 'cameras'} collapsed={collapsed} onClick={setManualTab} />
-        <TabButton id="layers" label="Layers" icon={Layers} active={activeTab === 'layers'} collapsed={collapsed} onClick={setManualTab} />
-        <TabButton id="models" label="Models" icon={LayoutGrid} active={activeTab === 'models'} collapsed={collapsed} onClick={setManualTab} />
+        {(['models', 'cameras'] as TabId[]).map(tab => (
+          <RailTab
+            key={tab}
+            label={tab}
+            active={activeTab === tab}
+            onClick={() => setActiveTab(prev => (prev === tab ? null : tab))}
+          />
+        ))}
       </div>
 
-      {/* Tab content area */}
-      {!collapsed && (
-        <>
-          {activeTab === 'layers' && (
-            <div className="flex-1 overflow-y-auto px-2 py-3">
-
-            </div>
-          )}
-          {activeTab === 'models' && (
-            <div className="flex-1 overflow-hidden">
-              <ModelSelectorPanel
-                models={allModels}
-                isLoading={modelsLoading}
-                onPlaceCamera={handlePlaceCamera}
-              />
-            </div>
-          )}
-        </>
-      )}
-
-      {/* Collapse toggle button — pinned to middle */}
-      <button
-        onClick={() => setCollapsed((c) => !c)}
-        aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full flex items-center justify-center cursor-pointer transition-all z-10 border"
-        style={{
-          background: 'var(--theme-bg-card)',
-          borderColor: 'color-mix(in srgb, var(--theme-surface) 25%, transparent)',
-          color: 'var(--theme-text-secondary)',
-        }}
-        onMouseEnter={e => {
-          e.currentTarget.style.background = 'color-mix(in srgb, var(--theme-surface) 20%, transparent)'
-          e.currentTarget.style.color = 'var(--theme-text-primary)'
-        }}
-        onMouseLeave={e => {
-          e.currentTarget.style.background = 'var(--theme-bg-card)'
-          e.currentTarget.style.color = 'var(--theme-text-secondary)'
-        }}
-      >
-        <svg
-          width="10"
-          height="10"
-          viewBox="0 0 10 10"
-          fill="none"
-          aria-hidden="true"
-          style={{ transform: collapsed ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}
+      {/* Floating panel — overlays the map */}
+      {activeTab && (
+        <div
+          className="absolute top-0 flex flex-col overflow-hidden shadow-2xl"
+          style={{
+            left: 36,
+            width: 236,
+            height: '100%',
+            zIndex: 1000,
+            background: 'var(--theme-bg-card)',
+            borderRight: '1px solid color-mix(in srgb, var(--theme-surface) 20%, transparent)',
+          }}
         >
-          <path d="M6.5 2L3.5 5l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </button>
-    </aside>
+          {activeTab === 'models' && (
+            <ModelSelectorPanel
+              models={allModels}
+              isLoading={modelsLoading}
+              onPlaceCamera={handlePlaceCamera}
+            />
+          )}
+          {activeTab === 'cameras' && <div className="flex-1" />}
+        </div>
+      )}
+    </div>
   )
 }
-

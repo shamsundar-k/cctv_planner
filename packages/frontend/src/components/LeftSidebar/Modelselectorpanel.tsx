@@ -26,7 +26,7 @@ import CameraModelDetailModal from './CameraModelDetailModal'
 
 // ── Place camera button ────────────────────────────────────────────────────────
 
-function PlaceCameraButton({
+function SelectCameraButton({
     disabled,
     onClick,
 }: {
@@ -51,13 +51,13 @@ function PlaceCameraButton({
             onMouseEnter={e => { if (!disabled) { (e.currentTarget as HTMLButtonElement).style.background = 'var(--theme-accent-hover)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--theme-bg-base)' } }}
             onMouseLeave={e => { if (!disabled) { (e.currentTarget as HTMLButtonElement).style.background = 'var(--theme-accent)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--theme-accent-text)' } }}
         >
-            <PlaceCameraIcon />
-            Place camera
+            <SelectCameraIcon />
+            Select camera
         </button>
     )
 }
 
-function PlaceCameraIcon() {
+function SelectCameraIcon() {
     return (
         <svg
             width="16"
@@ -191,7 +191,7 @@ export default function ModelSelectorPanel({
             {/* Always-visible button pinned at bottom */}
             <div className="p-3">
                 {selectedModel && <Divider />}
-                <PlaceCameraButton
+                <SelectCameraButton
                     disabled={selectedModel === null}
                     onClick={() => selectedModel && onPlaceCamera(selectedModel)}
                 />

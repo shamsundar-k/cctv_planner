@@ -1,13 +1,12 @@
 import type { LucideIcon } from 'lucide-react'
 
-export type TabId = 'cameras' | 'layers' | 'models'
+export type TabId = 'cameras' | 'models'
 
 export interface TabButtonProps {
   id: TabId
   label: string
   icon: LucideIcon
   active: boolean
-  collapsed: boolean
   onClick: (id: TabId) => void
 }
 
