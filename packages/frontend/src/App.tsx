@@ -28,12 +28,10 @@ import AdminCameraEditPage from './pages/AdminCameraEditPage'
 import ProjectManagePage from './pages/ProjectManagePage'
 import ProjectMapViewPagenew from './pages/ProjectMapViewPagenew'
 import { ToastProvider } from './components/ui/Toast'
-import ThemeProvider from './context/ThemeProvider'
 
 function App() {
   return (
-    <ThemeProvider>
-      <ToastProvider>
+    <ToastProvider>
         <BrowserRouter>
           <Routes>
             {/* Public-only routes — redirect to / if already logged in */}
@@ -56,8 +54,7 @@ function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>
-      </ToastProvider>
-    </ThemeProvider>
+    </ToastProvider>
   )
 }
 

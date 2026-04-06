@@ -1,9 +1,28 @@
 /*
  * FILE SUMMARY — src/index.css
  *
- * Global CSS entry point. Contains a single directive:
- *   @import "tailwindcss" — pulls in all Tailwind CSS v4 base styles, utility
- *   classes, and component styles. This file is imported by main.tsx so
- *   Tailwind styles are available to every component in the application.
+ * Global CSS entry point. Pulls in Tailwind v4 and registers Tailwind colour
+ * tokens that map to each --theme-* variable so utility classes like
+ * bg-bg-card, text-text-primary, bg-accent, hover:bg-accent-hover etc. work
+ * without arbitrary-value syntax.
+ *
+ * The --theme-* CSS variables themselves are injected into <head> at
+ * build-time by the injectTheme Vite plugin (see vite.config.ts) via a
+ * transformIndexHtml hook, so no @import is needed here.
+ *
+ * To change the theme: update ACTIVE_THEME in src/config/themes.ts and
+ * restart the dev server / rebuild.
  */
 @import "tailwindcss";
+
+@theme {
+  --color-canvas:       var(--theme-bg-base);
+  --color-card:         var(--theme-bg-card);
+  --color-surface:      var(--theme-surface);
+  --color-border:       var(--theme-border);
+  --color-primary:      var(--theme-text-primary);
+  --color-muted:        var(--theme-text-secondary);
+  --color-accent:       var(--theme-accent);
+  --color-accent-hover: var(--theme-accent-hover);
+  --color-on-accent:    var(--theme-accent-text);
+}

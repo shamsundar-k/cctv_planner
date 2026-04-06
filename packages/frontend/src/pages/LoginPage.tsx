@@ -3,21 +3,6 @@
  *
  * Login page shown to unauthenticated users at /login. Accessible only via
  * the PublicOnlyRoute guard (authenticated users are redirected to /).
- *
- * LoginPage() — Renders a centred card with:
- *   - App logo and brand name.
- *   - Email and password inputs with autocomplete hints.
- *   - An inline error message when credentials are invalid.
- *   - A "Sign in" button that is disabled while the request is in flight.
- *
- * handleSubmit(e) — Submits the credentials to POST /auth/login via the Axios
- *   client. On success:
- *     • Decodes the returned access_token using decodeJwt() to extract the
- *       user's id and role without an extra API call.
- *     • Calls setAuth() on the Zustand auth store to persist the user and both
- *       tokens.
- *     • Navigates to the dashboard (/).
- *   On failure, sets an "Invalid email or password." error message.
  */
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router'
@@ -69,47 +54,44 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[var(--theme-bg-base)] font-sans" style={{ background: `linear-gradient(135deg, var(--theme-bg-base) 0%, color-mix(in srgb, var(--theme-bg-card) 60%, transparent) 50%, var(--theme-bg-base) 100%)` }}>
+    <div className="min-h-screen flex items-center justify-center bg-canvas font-sans bg-gradient-to-br from-canvas via-card/60 to-canvas">
 
       {/* Decorative background orbs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full blur-3xl opacity-30" style={{ background: 'var(--theme-surface)' }} />
-        <div className="absolute -bottom-32 -right-32 w-96 h-96 rounded-full blur-3xl opacity-20" style={{ background: 'var(--theme-accent)' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-3xl opacity-5" style={{ background: 'var(--theme-text-secondary)' }} />
+        <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full blur-3xl opacity-30 bg-surface" />
+        <div className="absolute -bottom-32 -right-32 w-96 h-96 rounded-full blur-3xl opacity-20 bg-accent" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-3xl opacity-5 bg-muted" />
       </div>
 
       <div className="relative w-full max-w-md m-4">
         {/* Card */}
-        <div
-          className="backdrop-blur-2xl rounded-[2rem] shadow-[0_24px_64px_rgba(0,0,0,0.5)] overflow-hidden"
-          style={{ background: 'color-mix(in srgb, var(--theme-bg-card) 60%, transparent)', border: '1px solid color-mix(in srgb, var(--theme-surface) 30%, transparent)' }}
-        >
+        <div className="backdrop-blur-2xl rounded-[2rem] shadow-[0_24px_64px_rgba(0,0,0,0.5)] overflow-hidden bg-card/60 border border-surface/30">
 
           {/* Top accent stripe */}
-          <div className="h-1.5 w-full" style={{ background: `linear-gradient(to right, var(--theme-accent), var(--theme-text-secondary), var(--theme-surface))` }} />
+          <div className="h-1.5 w-full bg-gradient-to-r from-accent via-muted to-surface" />
 
           <div className="p-10">
             {/* Logo + title */}
             <div className="flex flex-col items-center gap-4 mb-10">
               <div className="relative">
-                <div className="absolute inset-0 rounded-2xl blur-xl opacity-40" style={{ background: 'var(--theme-accent)' }} />
-                <div className="relative p-4 rounded-2xl shadow-xl ring-1 ring-white/10" style={{ background: `linear-gradient(135deg, var(--theme-accent), color-mix(in srgb, var(--theme-text-secondary) 80%, transparent))` }}>
+                <div className="absolute inset-0 rounded-2xl blur-xl opacity-40 bg-accent" />
+                <div className="relative p-4 rounded-2xl shadow-xl ring-1 ring-white/10 bg-gradient-to-br from-accent to-muted/80">
                   <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <rect x="2" y="7" width="14" height="10" rx="2" fill="var(--theme-text-primary)" />
-                    <path d="M16 10l5-3v10l-5-3V10z" fill="var(--theme-text-primary)" />
-                    <circle cx="9" cy="12" r="2" fill="var(--theme-bg-card)" />
+                    <rect x="2" y="7" width="14" height="10" rx="2" className="fill-primary" />
+                    <path d="M16 10l5-3v10l-5-3V10z" className="fill-primary" />
+                    <circle cx="9" cy="12" r="2" className="fill-card" />
                   </svg>
                 </div>
               </div>
               <div className="text-center">
-                <h1 className="text-3xl font-extrabold tracking-tight" style={{ color: 'var(--theme-text-primary)' }}>CCTV Planner</h1>
-                <p className="text-sm font-medium mt-1.5 tracking-wide" style={{ color: 'var(--theme-text-secondary)' }}>Welcome back — sign in to continue</p>
+                <h1 className="text-3xl font-extrabold tracking-tight text-primary">CCTV Planner</h1>
+                <p className="text-sm font-medium mt-1.5 tracking-wide text-muted">Welcome back — sign in to continue</p>
               </div>
             </div>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
               <div className="flex flex-col gap-2">
-                <label htmlFor="email" className="text-xs font-bold uppercase tracking-widest pl-1" style={{ color: 'var(--theme-text-secondary)' }}>
+                <label htmlFor="email" className="text-xs font-bold uppercase tracking-widest pl-1 text-muted">
                   Email Address
                 </label>
                 <input
@@ -119,20 +101,13 @@ export default function LoginPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="rounded-xl px-4 py-3.5 text-sm outline-none transition-all duration-200"
+                  className="rounded-xl px-4 py-3.5 text-sm outline-none transition-all duration-200 bg-surface/10 border border-surface/30 text-primary focus:border-primary/60 focus:bg-surface/20"
                   placeholder="you@example.com"
-                  style={{
-                    background: 'color-mix(in srgb, var(--theme-surface) 10%, transparent)',
-                    border: '1px solid color-mix(in srgb, var(--theme-surface) 30%, transparent)',
-                    color: 'var(--theme-text-primary)',
-                  }}
-                  onFocus={e => { e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--theme-text-primary) 60%, transparent)'; e.currentTarget.style.background = 'color-mix(in srgb, var(--theme-surface) 20%, transparent)' }}
-                  onBlur={e => { e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--theme-surface) 30%, transparent)'; e.currentTarget.style.background = 'color-mix(in srgb, var(--theme-surface) 10%, transparent)' }}
                 />
               </div>
 
               <div className="flex flex-col gap-2">
-                <label htmlFor="password" className="text-xs font-bold uppercase tracking-widest pl-1" style={{ color: 'var(--theme-text-secondary)' }}>
+                <label htmlFor="password" className="text-xs font-bold uppercase tracking-widest pl-1 text-muted">
                   Password
                 </label>
                 <input
@@ -142,15 +117,8 @@ export default function LoginPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="rounded-xl px-4 py-3.5 text-sm outline-none transition-all duration-200"
+                  className="rounded-xl px-4 py-3.5 text-sm outline-none transition-all duration-200 bg-surface/10 border border-surface/30 text-primary focus:border-primary/60 focus:bg-surface/20"
                   placeholder="••••••••"
-                  style={{
-                    background: 'color-mix(in srgb, var(--theme-surface) 10%, transparent)',
-                    border: '1px solid color-mix(in srgb, var(--theme-surface) 30%, transparent)',
-                    color: 'var(--theme-text-primary)',
-                  }}
-                  onFocus={e => { e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--theme-text-primary) 60%, transparent)'; e.currentTarget.style.background = 'color-mix(in srgb, var(--theme-surface) 20%, transparent)' }}
-                  onBlur={e => { e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--theme-surface) 30%, transparent)'; e.currentTarget.style.background = 'color-mix(in srgb, var(--theme-surface) 10%, transparent)' }}
                 />
               </div>
 
@@ -163,13 +131,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="mt-3 disabled:opacity-50 disabled:cursor-not-allowed font-bold rounded-xl px-4 py-4 text-base tracking-wide shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 ease-in-out"
-                style={{
-                  background: 'var(--theme-accent)',
-                  color: 'var(--theme-accent-text)',
-                }}
-                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--theme-accent-hover)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--theme-bg-base)' }}
-                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--theme-accent)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--theme-accent-text)' }}
+                className="mt-3 disabled:opacity-50 disabled:cursor-not-allowed font-bold rounded-xl px-4 py-4 text-base tracking-wide shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 ease-in-out bg-accent text-on-accent hover:bg-accent-hover hover:text-canvas"
               >
                 {loading ? 'Signing in…' : 'Sign in'}
               </button>
@@ -178,7 +140,7 @@ export default function LoginPage() {
         </div>
 
         {/* Footer hint */}
-        <p className="text-center text-xs mt-6 tracking-wide opacity-50" style={{ color: 'var(--theme-surface)' }}>
+        <p className="text-center text-xs mt-6 tracking-wide opacity-50 text-surface">
           CCTV Planner · Secure Access Portal
         </p>
       </div>
