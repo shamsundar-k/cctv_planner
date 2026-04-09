@@ -1,23 +1,4 @@
-/*
- * FILE SUMMARY — src/components/admin/ProjectsTab.tsx
- *
- * Projects tab panel in the admin dashboard. Displays a searchable card grid
- * of all projects visible to the admin.
- *
- * ProjectsTab({ projects, projectsLoading, projectSearch, onSearchChange,
- *   onDeleteProject }) — Renders:
- *   - A <SearchInput> for filtering projects by name (controlled via
- *     `projectSearch` / `onSearchChange` props, debounced upstream).
- *   - A project count badge.
- *   - While `projectsLoading`: a grid of 6 pulsing skeleton cards.
- *   - When the filtered list is empty: a centred empty-state message.
- *   - Otherwise: a responsive grid of project cards, each showing the project
- *     name, owner ID, camera count, creation date, and two action buttons:
- *     - "View" (placeholder, not yet routed).
- *     - "Delete" — calls `onDeleteProject(id, name)` to open the confirmation
- *       modal in AdminDashboard.
- */
-import type { AdminProject } from '../../api/admin.types'
+import type { AdminProject } from '../api/admin.types'
 import SearchInput from './SearchInput'
 import { formatDate } from './utils'
 
@@ -121,4 +102,3 @@ export default function ProjectsTab({
     </div>
   )
 }
-

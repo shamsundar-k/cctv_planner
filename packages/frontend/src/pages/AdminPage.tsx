@@ -17,7 +17,7 @@ import { useEffect } from 'react'
 import { useNavigate } from 'react-router'
 import { useAuthStore } from '../store/authSlice'
 import Navbar from '../components/layout/Navbar'
-import AdminDashboard from '../components/admin/AdminDashboard'
+import AdminDashboard from '../features/admin/component/AdminDashboard'
 
 export default function AdminPage() {
   const user = useAuthStore((s) => s.user)
