@@ -1,5 +1,5 @@
 /*
- * FILE SUMMARY — src/components/project/DeleteProjectModal.tsx
+ * FILE SUMMARY — src/features/projects/components/DeleteProjectModal.tsx
  *
  * Confirmation modal for permanently deleting a project. Requires the user to
  * type the project name exactly before the delete action is enabled.
@@ -21,9 +21,9 @@
  *   error message and shows an error toast.
  */
 import { useEffect, useRef, useState } from 'react'
-import { useDeleteProject } from '../../api/projects'
-import type { Project } from '../../api/projects.types'
-import { useToast } from '../ui/Toast'
+import { useDeleteProject } from '../../../api/projects'
+import type { Project } from '../../../api/projects.types'
+import { useToast } from '../../../components/ui/Toast'
 
 interface DeleteProjectModalProps {
   project: Project
@@ -68,20 +68,20 @@ export default function DeleteProjectModal({ project, onClose }: DeleteProjectMo
       onMouseDown={(e) => { if (e.target === e.currentTarget) onClose() }}
     >
       <div
-        className="bg-slate-800 border border-slate-700 rounded-xl shadow-2xl w-[560px] flex flex-col"
+        className="bg-card border border-border rounded-xl shadow-2xl w-[560px] flex flex-col"
         role="dialog"
         aria-modal="true"
         aria-labelledby="delete-modal-title"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-700">
-          <h2 id="delete-modal-title" className="text-lg font-bold text-slate-100 m-0">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-border">
+          <h2 id="delete-modal-title" className="text-lg font-bold text-primary m-0">
             Delete Project
           </h2>
           <button
             onClick={onClose}
             aria-label="Close"
-            className="bg-transparent border-none cursor-pointer text-xl text-slate-400 hover:text-slate-200 leading-none transition-colors"
+            className="bg-transparent border-none cursor-pointer text-xl text-muted hover:text-primary leading-none transition-colors"
           >
             ✕
           </button>
@@ -97,10 +97,10 @@ export default function DeleteProjectModal({ project, onClose }: DeleteProjectMo
               <circle cx="12" cy="17" r="1" fill="#ffffff" />
             </svg>
             <div>
-              <p className="text-sm font-semibold text-slate-100 m-0 mb-1">
+              <p className="text-sm font-semibold text-primary m-0 mb-1">
                 Permanently delete &ldquo;{project.name}&rdquo;?
               </p>
-              <p className="text-sm text-slate-400 m-0 leading-relaxed">
+              <p className="text-sm text-muted m-0 leading-relaxed">
                 This action cannot be undone. All cameras, zones, and reports associated with this
                 project will be permanently deleted.
               </p>
@@ -111,10 +111,10 @@ export default function DeleteProjectModal({ project, onClose }: DeleteProjectMo
           <div>
             <label
               htmlFor="delete-confirm"
-              className="text-sm text-slate-300 block mb-2 leading-relaxed"
+              className="text-sm text-primary/80 block mb-2 leading-relaxed"
             >
               Type the project name to confirm:{' '}
-              <strong className="text-slate-100">{project.name}</strong>
+              <strong className="text-primary">{project.name}</strong>
             </label>
             <input
               ref={inputRef}
@@ -124,10 +124,10 @@ export default function DeleteProjectModal({ project, onClose }: DeleteProjectMo
               onChange={(e) => setConfirmText(e.target.value)}
               placeholder={project.name}
               onKeyDown={(e) => { if (e.key === 'Enter') handleDelete() }}
-              className={`w-full px-3 py-2 border rounded-md text-sm text-slate-100 bg-slate-700 placeholder-slate-500 outline-none transition-colors ${
+              className={`w-full px-3 py-2 border rounded-md text-sm text-primary bg-surface/20 placeholder-muted/50 outline-none transition-colors ${
                 confirmText.length > 0 && !confirmed
                   ? 'border-red-500'
-                  : 'border-slate-600 focus:border-blue-500'
+                  : 'border-border focus:border-accent'
               }`}
             />
           </div>
@@ -138,10 +138,10 @@ export default function DeleteProjectModal({ project, onClose }: DeleteProjectMo
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end gap-3 px-6 py-4 border-t border-slate-700">
+        <div className="flex justify-end gap-3 px-6 py-4 border-t border-border">
           <button
             onClick={onClose}
-            className="h-9 px-4 bg-slate-700 hover:bg-slate-600 text-slate-200 border border-slate-600 rounded-md text-sm font-semibold cursor-pointer transition-colors"
+            className="h-9 px-4 bg-surface/20 hover:bg-surface/40 text-primary border border-border rounded-md text-sm font-semibold cursor-pointer transition-colors"
           >
             Cancel
           </button>
@@ -149,7 +149,7 @@ export default function DeleteProjectModal({ project, onClose }: DeleteProjectMo
             onClick={handleDelete}
             disabled={!canDelete}
             className={`h-9 px-5 border-none rounded-md text-sm font-semibold text-white transition-colors ${
-              canDelete ? 'bg-red-600 hover:bg-red-700 cursor-pointer' : 'bg-slate-600 cursor-not-allowed opacity-50'
+              canDelete ? 'bg-red-600 hover:bg-red-700 cursor-pointer' : 'bg-surface/30 cursor-not-allowed opacity-50'
             }`}
           >
             {isPending ? 'Deleting…' : 'Delete Project'}

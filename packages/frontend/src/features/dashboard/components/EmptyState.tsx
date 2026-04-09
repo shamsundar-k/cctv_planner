@@ -1,5 +1,5 @@
 /*
- * FILE SUMMARY — src/components/project/EmptyState.tsx
+ * FILE SUMMARY — src/features/dashboard/components/EmptyState.tsx
  *
  * Illustrated empty-state panel shown when the user has no projects (or no
  * projects match the current filter/search).
@@ -18,7 +18,7 @@ interface EmptyStateProps {
 
 export default function EmptyState({ onCreateClick }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center py-20 px-10 bg-slate-800 border border-slate-700 rounded-xl text-center">
+    <div className="flex flex-col items-center justify-center py-20 px-10 bg-card border border-border rounded-xl text-center">
       {/* Target icon */}
       <svg
         width="64"
@@ -38,8 +38,8 @@ export default function EmptyState({ onCreateClick }: EmptyStateProps) {
         <line x1="50" y1="32" x2="60" y2="32" stroke="#60a5fa" strokeWidth="3" strokeLinecap="round" />
       </svg>
 
-      <h2 className="text-2xl font-bold text-slate-100 mb-3">No Projects Yet</h2>
-      <p className="text-sm text-slate-400 mb-8 max-w-[400px] leading-relaxed">
+      <h2 className="text-2xl font-bold text-primary mb-3">No Projects Yet</h2>
+      <p className="text-sm text-muted mb-8 max-w-[400px] leading-relaxed">
         Create your first CCTV survey project to get started. Plan camera placements, define coverage
         zones, and generate reports.
       </p>
@@ -47,13 +47,13 @@ export default function EmptyState({ onCreateClick }: EmptyStateProps) {
       <div className="flex gap-4">
         <button
           onClick={onCreateClick}
-          className="h-10 px-5 bg-blue-600 hover:bg-blue-700 text-white border-none rounded-md text-sm font-semibold cursor-pointer transition-colors"
+          className="h-10 px-5 bg-accent hover:bg-accent-hover text-on-accent border-none rounded-md text-sm font-semibold cursor-pointer transition-colors"
         >
           + Create Project
         </button>
         <a
           href="#"
-          className="h-10 px-5 bg-transparent hover:bg-slate-700 text-sky-400 border border-sky-500/50 rounded-md text-sm font-semibold cursor-pointer no-underline flex items-center transition-colors"
+          className="h-10 px-5 bg-transparent hover:bg-surface/20 text-accent border border-accent/50 rounded-md text-sm font-semibold cursor-pointer no-underline flex items-center transition-colors"
         >
           View Documentation
         </a>

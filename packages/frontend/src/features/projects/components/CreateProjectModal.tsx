@@ -1,5 +1,5 @@
 /*
- * FILE SUMMARY — src/components/project/CreateProjectModal.tsx
+ * FILE SUMMARY — src/features/projects/components/CreateProjectModal.tsx
  *
  * Modal dialog for creating a new CCTV survey project.
  *
@@ -24,16 +24,16 @@
  * mutation is in flight.
  */
 import { useEffect, useRef, useState } from 'react'
-import { useCreateProject } from '../../api/projects'
-import { useToast } from '../ui/Toast'
+import { useCreateProject } from '../../../api/projects'
+import { useToast } from '../../../components/ui/Toast'
 
 interface CreateProjectModalProps {
   onClose: () => void
 }
 
 const inputCls = (invalid: boolean) =>
-  `w-full px-3 py-2.5 border rounded-xl text-sm text-[#CADBBD] bg-[#8C6E9E]/10 placeholder-[#8C6E9E]/50 outline-none transition-all ${
-    invalid ? 'border-red-500 ring-1 ring-red-500/30' : 'border-[#8C6E9E]/30 focus:border-[#CADBBD]/60 focus:ring-1 focus:ring-[#CADBBD]/20'
+  `w-full px-3 py-2.5 border rounded-xl text-sm text-primary bg-surface/10 placeholder-surface/50 outline-none transition-all ${
+    invalid ? 'border-red-500 ring-1 ring-red-500/30' : 'border-surface/30 focus:border-primary/60 focus:ring-1 focus:ring-primary/20'
   }`
 
 export default function CreateProjectModal({ onClose }: CreateProjectModalProps) {
@@ -94,20 +94,20 @@ export default function CreateProjectModal({ onClose }: CreateProjectModalProps)
       onMouseDown={(e) => { if (e.target === e.currentTarget) onClose() }}
     >
       <div
-        className="bg-[#4F2A63]/90 backdrop-blur-xl border border-[#8C6E9E]/30 rounded-2xl shadow-[0_24px_64px_rgba(0,0,0,0.6)] w-[600px] max-h-[90vh] overflow-y-auto flex flex-col"
+        className="bg-card/90 backdrop-blur-xl border border-surface/30 rounded-2xl shadow-[0_24px_64px_rgba(0,0,0,0.6)] w-[600px] max-h-[90vh] overflow-y-auto flex flex-col"
         role="dialog"
         aria-modal="true"
         aria-labelledby="create-modal-title"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-[#8C6E9E]/20 bg-[#8C6E9E]/5">
-          <h2 id="create-modal-title" className="text-lg font-bold text-[#CADBBD] m-0">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-surface/20 bg-surface/5">
+          <h2 id="create-modal-title" className="text-lg font-bold text-primary m-0">
             Create New Project
           </h2>
           <button
             onClick={onClose}
             aria-label="Close"
-            className="bg-transparent border-none cursor-pointer text-xl text-[#9E9A5A]/70 hover:text-[#CADBBD] leading-none transition-colors p-1 rounded-full hover:bg-[#8C6E9E]/20"
+            className="bg-transparent border-none cursor-pointer text-xl text-muted/70 hover:text-primary leading-none transition-colors p-1 rounded-full hover:bg-surface/20"
           >
             ✕
           </button>
@@ -118,8 +118,8 @@ export default function CreateProjectModal({ onClose }: CreateProjectModalProps)
           <div className="px-6 py-6 flex flex-col gap-5">
             {/* Name */}
             <div>
-              <label htmlFor="create-name" className="block text-xs font-bold text-[#9E9A5A] uppercase tracking-widest mb-1.5">
-                Project Name <span className="text-[#804A38] normal-case tracking-normal">*</span>
+              <label htmlFor="create-name" className="block text-xs font-bold text-muted uppercase tracking-widest mb-1.5">
+                Project Name <span className="text-accent normal-case tracking-normal">*</span>
               </label>
               <input
                 ref={nameRef}
@@ -131,13 +131,13 @@ export default function CreateProjectModal({ onClose }: CreateProjectModalProps)
                 placeholder="e.g. Parking Lot – Downtown"
                 className={inputCls(name.length > 0 && !nameValid)}
               />
-              <span className="text-xs text-[#9E9A5A]/60 mt-1 block">1–100 characters (required)</span>
+              <span className="text-xs text-muted/60 mt-1 block">1–100 characters (required)</span>
             </div>
 
             {/* Description */}
             <div>
-              <label htmlFor="create-desc" className="block text-xs font-bold text-[#9E9A5A] uppercase tracking-widest mb-1.5">
-                Description <span className="text-[#8C6E9E]/60 font-normal normal-case tracking-normal">(optional)</span>
+              <label htmlFor="create-desc" className="block text-xs font-bold text-muted uppercase tracking-widest mb-1.5">
+                Description <span className="text-surface/60 font-normal normal-case tracking-normal">(optional)</span>
               </label>
               <textarea
                 id="create-desc"
@@ -146,22 +146,22 @@ export default function CreateProjectModal({ onClose }: CreateProjectModalProps)
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Brief description of the survey project..."
                 rows={3}
-                className="w-full px-3 py-2.5 border border-[#8C6E9E]/30 focus:border-[#CADBBD]/60 focus:ring-1 focus:ring-[#CADBBD]/20 rounded-xl text-sm text-[#CADBBD] bg-[#8C6E9E]/10 placeholder-[#8C6E9E]/50 outline-none transition-all resize-y font-[inherit] leading-relaxed"
+                className="w-full px-3 py-2.5 border border-surface/30 focus:border-primary/60 focus:ring-1 focus:ring-primary/20 rounded-xl text-sm text-primary bg-surface/10 placeholder-surface/50 outline-none transition-all resize-y font-[inherit] leading-relaxed"
               />
-              <span className="text-xs text-[#9E9A5A]/60 mt-1 block">{description.length}/500 characters</span>
+              <span className="text-xs text-muted/60 mt-1 block">{description.length}/500 characters</span>
             </div>
 
             {/* Base Map Location */}
             <div>
-              <label className="block text-xs font-bold text-[#9E9A5A] uppercase tracking-widest mb-1">
-                Base Map Location <span className="text-[#8C6E9E]/60 font-normal normal-case tracking-normal">(optional)</span>
+              <label className="block text-xs font-bold text-muted uppercase tracking-widest mb-1">
+                Base Map Location <span className="text-surface/60 font-normal normal-case tracking-normal">(optional)</span>
               </label>
-              <span className="text-xs text-[#9E9A5A]/60 block mb-2.5">
+              <span className="text-xs text-muted/60 block mb-2.5">
                 Set the initial map view when this project is opened
               </span>
               <div className="flex gap-2.5">
                 <div className="flex-1">
-                  <label htmlFor="create-lat" className="text-xs text-[#9E9A5A]/70 font-bold uppercase tracking-wider block mb-1">Latitude</label>
+                  <label htmlFor="create-lat" className="text-xs text-muted/70 font-bold uppercase tracking-wider block mb-1">Latitude</label>
                   <input
                     id="create-lat"
                     type="number"
@@ -175,7 +175,7 @@ export default function CreateProjectModal({ onClose }: CreateProjectModalProps)
                   />
                 </div>
                 <div className="flex-1">
-                  <label htmlFor="create-lng" className="text-xs text-[#9E9A5A]/70 font-bold uppercase tracking-wider block mb-1">Longitude</label>
+                  <label htmlFor="create-lng" className="text-xs text-muted/70 font-bold uppercase tracking-wider block mb-1">Longitude</label>
                   <input
                     id="create-lng"
                     type="number"
@@ -189,7 +189,7 @@ export default function CreateProjectModal({ onClose }: CreateProjectModalProps)
                   />
                 </div>
                 <div className="w-[90px]">
-                  <label htmlFor="create-zoom" className="text-xs text-[#9E9A5A]/70 font-bold uppercase tracking-wider block mb-1">Zoom (1–22)</label>
+                  <label htmlFor="create-zoom" className="text-xs text-muted/70 font-bold uppercase tracking-wider block mb-1">Zoom (1–22)</label>
                   <input
                     id="create-zoom"
                     type="number"
@@ -209,11 +209,11 @@ export default function CreateProjectModal({ onClose }: CreateProjectModalProps)
           </div>
 
           {/* Footer */}
-          <div className="flex justify-end gap-3 px-6 py-4 border-t border-[#8C6E9E]/20 bg-[#8C6E9E]/5">
+          <div className="flex justify-end gap-3 px-6 py-4 border-t border-surface/20 bg-surface/5">
             <button
               type="button"
               onClick={onClose}
-              className="h-9 px-4 bg-[#8C6E9E]/15 hover:bg-[#8C6E9E]/30 text-[#CADBBD]/80 border border-[#8C6E9E]/30 rounded-lg text-sm font-semibold cursor-pointer transition-colors"
+              className="h-9 px-4 bg-surface/15 hover:bg-surface/30 text-primary/80 border border-surface/30 rounded-lg text-sm font-semibold cursor-pointer transition-colors"
             >
               Cancel
             </button>
@@ -221,7 +221,9 @@ export default function CreateProjectModal({ onClose }: CreateProjectModalProps)
               type="submit"
               disabled={!canSubmit}
               className={`h-9 px-5 border-none rounded-lg text-sm font-bold transition-all ${
-                canSubmit ? 'bg-[#804A38] hover:bg-[#9E9A5A] hover:text-[#4F2A63] text-[#CADBBD] cursor-pointer shadow-md shadow-[#804A38]/20' : 'bg-[#8C6E9E]/20 text-[#8C6E9E]/40 cursor-not-allowed'
+                canSubmit
+                  ? 'bg-accent hover:bg-accent-hover hover:text-card text-on-accent cursor-pointer shadow-md shadow-accent/20'
+                  : 'bg-surface/20 text-surface/40 cursor-not-allowed'
               }`}
             >
               {isPending ? 'Creating…' : 'Create Project'}

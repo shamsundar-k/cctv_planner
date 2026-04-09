@@ -4,7 +4,7 @@ import { useAuthStore } from '../../../store/authSlice'
 import FormField from './FormField'
 import LoginErrorBanner from './LoginErrorBanner'
 import LoginSubmitButton from './LoginSubmitButton'
-import { loginUser } from './api'
+import { loginUser } from '../api/api'
 
 export default function LoginForm() {
   const navigate = useNavigate()

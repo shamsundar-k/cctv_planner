@@ -1,5 +1,5 @@
 /*
- * FILE SUMMARY — src/components/project/ProjectList.tsx
+ * FILE SUMMARY — src/features/dashboard/components/ProjectList.tsx
  *
  * Responsive grid of project cards with loading skeleton and empty state.
  *
@@ -17,8 +17,8 @@
  * SkeletonCard() — Internal component that renders a fixed-height animated
  *   skeleton placeholder matching the approximate dimensions of a ProjectCard.
  */
-import type { Project } from '../../api/projects.types'
-import ProjectCard from './ProjectCard'
+import type { Project } from '../../../api/projects.types'
+import ProjectCard from '../../projects/components/ProjectCard'
 import EmptyState from './EmptyState'
 
 interface ProjectListProps {
@@ -42,7 +42,7 @@ export default function ProjectList({
 }: ProjectListProps) {
   const gridCls = 'grid gap-8 w-full'
   const gridStyle: React.CSSProperties = {
-    gridTemplateColumns: 'repeat(auto-fill, minmax(450px, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 380px))',
   }
 
   if (isLoading) {
