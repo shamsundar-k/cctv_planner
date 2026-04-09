@@ -1,26 +1,3 @@
-/*
- * FILE SUMMARY — src/components/admin/DeleteModal.tsx
- *
- * Reusable confirmation modal for destructive admin actions (delete user,
- * delete project, revoke invite).
- *
- * DeleteModal({ modal, onClose, onConfirm, isDeleting }) — Renders a centred
- *   overlay modal with:
- *   - A warning icon, a dynamic title, and a body message that vary based on
- *     `modal.type` ('user' | 'project' | 'invite') using the MODAL_COPY map.
- *   - The target entity's name displayed in bold within the body text.
- *   - An "This action cannot be undone" warning plus optional extra context
- *     (e.g. data loss warning for projects, link-deactivation note for
- *     invites).
- *   - A "Cancel" button (calls `onClose`) and a red confirm button
- *     ("Confirm Delete" or "Revoke Invite" depending on type).
- *   - Both buttons are disabled while `isDeleting` is true; the confirm button
- *     shows a <Spinner> and in-progress text during the mutation.
- *   - Clicking the backdrop (outside the dialog box) calls `onClose`.
- *
- * MODAL_COPY — Internal constant map from entity type to title/body/extra
- *   strings, keeping UI copy co-located with the modal component.
- */
 import type { DeleteModalState } from './types'
 import Spinner from './Spinner'
 
@@ -105,4 +82,3 @@ export default function DeleteModal({ modal, onClose, onConfirm, isDeleting }: D
     </div>
   )
 }
-

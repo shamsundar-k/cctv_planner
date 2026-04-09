@@ -1,27 +1,4 @@
-/*
- * FILE SUMMARY — src/components/admin/InvitesTab.tsx
- *
- * Invites tab panel in the admin dashboard. Displays all active invite links
- * with their expiry status and a revoke action.
- *
- * InvitesTab({ invites, isLoading, copiedId, onCopyInvite, onRevokeInvite })
- *   — Renders one of three states:
- *   - Loading: three pulsing skeleton cards.
- *   - Empty: a centred envelope icon with a hint to use the Overview tab.
- *   - List: for each invite, a card showing:
- *       • Recipient email and invited-by email.
- *       • Generated date and expiry date (formatted via formatDate).
- *       • A colour-coded time-remaining badge (green > 50 %, amber > 20 %,
- *         red ≤ 20 %) using getExpiryLabel / getExpiryPercent from utils.
- *       • A horizontal progress bar whose width and colour reflect the
- *         remaining lifetime percentage.
- *       • A "Revoke" button that calls `onRevokeInvite(id, email)` to open the
- *         confirmation modal in AdminDashboard.
- *
- * expiryBarColor(pct) — Internal helper; maps a percentage value to a CSS
- *   colour string (green / amber / red) used by the progress bar and badge.
- */
-import type { AdminInvite } from '../../api/admin.types'
+import type { AdminInvite } from '../api/invites.types'
 import { formatDate, getExpiryPercent, getExpiryLabel } from './utils'
 
 interface InvitesTabProps {
@@ -120,4 +97,3 @@ export default function InvitesTab({
     </div>
   )
 }
-
