@@ -1,23 +1,3 @@
-/*
- * FILE SUMMARY — src/components/admin/StatCard.tsx
- *
- * Simple metric display card used in the admin dashboard header row.
- *
- * StatCard({ label, value, color, icon }) — Renders a compact card with:
- *   - A text label (e.g. "Total Users") and a large bold numeric or string
- *     value displayed prominently.
- *   - A square icon badge in the top-right corner, tinted with a semi-
- *     transparent version of the `color` prop.
- *   - A border whose colour is also derived from the `color` prop at 20 %
- *     opacity, giving each card a distinct accent.
- *
- * Props:
- *   label  — Descriptive metric name shown above the value.
- *   value  — The metric value to display (number | string). Can be "—" while
- *            the data is loading.
- *   color  — Hex colour string used for the border and icon background tint.
- *   icon   — Emoji string rendered inside the icon badge.
- */
 export default function StatCard({
   label,
   value,
@@ -48,4 +28,3 @@ export default function StatCard({
     </div>
   )
 }
-

@@ -1,32 +1,13 @@
-/*
- * FILE SUMMARY — src/api/admin.ts
- *
- * TanStack Query hooks and utilities for admin-only API endpoints.
- *
- * useAllUsers() — Fetches the full list of registered users.
- * useAllProjects() — Fetches all projects for the admin overview.
- * useAllInvites() — Fetches active invite records.
- * useGenerateInvite() — Creates a new invite link.
- * useDeleteUser() — Deletes a user with optimistic cache updates.
- * useDeleteProject() — Deletes a project with optimistic cache updates.
- * useRevokeInvite() — Revokes an invite with optimistic cache updates.
- * useDebounce<T>() — Internal hook to debounce user input.
- * useSearchUsers() — Client-side filtered search of all users.
- * useSearchProjects() — Client-side filtered search of all projects.
- */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useState } from 'react'
-import client from './client'
-import type { AdminUser, AdminProject, InviteResponse, AdminInvite } from './admin.types'
-
-
+import client from '../../../api/client'
+import type { AdminUser, AdminProject } from './admin.types'
 
 // ── Query keys ─────────────────────────────────────────────────────────────────
 
 export const adminKeys = {
   users: ['admin', 'users'] as const,
   projects: ['admin', 'projects'] as const,
-  invites: ['admin', 'invites'] as const,
 }
 
 // ── Hooks ──────────────────────────────────────────────────────────────────────
@@ -54,33 +35,6 @@ export function useAllProjects() {
     staleTime: 2 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
     retry: 2,
-  })
-}
-
-export function useAllInvites() {
-  return useQuery({
-    queryKey: adminKeys.invites,
-    queryFn: async (): Promise<AdminInvite[]> => {
-      const res = await client.get<AdminInvite[]>('/admin/invites')
-      return res.data
-    },
-    staleTime: 1 * 60 * 1000,
-    gcTime: 5 * 60 * 1000,
-    retry: 1,
-  })
-}
-
-export function useGenerateInvite() {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: async (email: string): Promise<InviteResponse> => {
-      const res = await client.post<InviteResponse>('/admin/invite', { email })
-      return res.data
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminKeys.invites })
-    },
-    retry: 0,
   })
 }
 
@@ -131,32 +85,6 @@ export function useDeleteProject() {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: adminKeys.projects })
-    },
-    retry: 0,
-  })
-}
-
-export function useRevokeInvite() {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: async (inviteId: string): Promise<void> => {
-      await client.delete(`/admin/invites/${inviteId}`)
-    },
-    onMutate: async (inviteId) => {
-      await queryClient.cancelQueries({ queryKey: adminKeys.invites })
-      const snapshot = queryClient.getQueryData<AdminInvite[]>(adminKeys.invites)
-      queryClient.setQueryData<AdminInvite[]>(adminKeys.invites, (prev) =>
-        prev ? prev.filter((i) => i.id !== inviteId) : [],
-      )
-      return { snapshot }
-    },
-    onError: (_err, _inviteId, context) => {
-      if (context?.snapshot) {
-        queryClient.setQueryData(adminKeys.invites, context.snapshot)
-      }
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: adminKeys.invites })
     },
     retry: 0,
   })
