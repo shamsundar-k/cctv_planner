@@ -1,11 +1,37 @@
+import LoginBackgroundOrbs from '../features/login/component/LoginBackgroundOrbs'
+import LoginCard from '../features/login/component/LoginCard'
 import AcceptInvitePanel from '../features/accept-invite/component/AcceptInvitePanel'
 
 export default function AcceptInvitePage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="w-full max-w-sm bg-white rounded-2xl shadow-md p-8">
-        <h1 className="text-2xl font-semibold text-gray-900 mb-2">Create your account</h1>
-        <AcceptInvitePanel />
+    <div className="min-h-screen flex items-center justify-center bg-canvas font-sans bg-gradient-to-br from-canvas via-card/60 to-canvas">
+      <LoginBackgroundOrbs />
+
+      <div className="relative w-full max-w-md m-4">
+        <LoginCard>
+          <div className="flex flex-col items-center gap-3 mb-8">
+            <div className="relative">
+              <div className="absolute inset-0 rounded-2xl blur-xl opacity-40 bg-accent" />
+              <div className="relative p-4 rounded-2xl shadow-xl ring-1 ring-white/10 bg-gradient-to-br from-accent to-muted/80">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <rect x="2" y="7" width="14" height="10" rx="2" className="fill-primary" />
+                  <path d="M16 10l5-3v10l-5-3V10z" className="fill-primary" />
+                  <circle cx="9" cy="12" r="2" className="fill-card" />
+                </svg>
+              </div>
+            </div>
+            <div className="text-center">
+              <h1 className="text-3xl font-extrabold tracking-tight text-primary">Create your account</h1>
+              <p className="text-sm font-medium mt-1.5 tracking-wide text-muted">Complete your invitation to get started</p>
+            </div>
+          </div>
+
+          <AcceptInvitePanel />
+        </LoginCard>
+
+        <p className="text-center text-xs mt-6 tracking-wide opacity-50 text-surface">
+          CCTV Planner · Secure Access Portal
+        </p>
       </div>
     </div>
   )
