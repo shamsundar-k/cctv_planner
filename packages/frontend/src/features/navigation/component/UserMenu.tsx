@@ -1,5 +1,5 @@
 /*
- * FILE SUMMARY — src/components/layout/UserMenu.tsx
+ * FILE SUMMARY — src/features/navigation/component/UserMenu.tsx
  *
  * Dropdown menu that appears when the user clicks their avatar in the Navbar.
  *
@@ -23,7 +23,7 @@
  */
 import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router'
-import { useAuthStore } from '../../store/authSlice'
+import { useAuthStore } from '../../../store/authSlice'
 
 interface UserMenuProps {
   onClose: () => void

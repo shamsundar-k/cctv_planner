@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import Navbar from '../components/layout/Navbar'
+import Navbar from '../features/navigation/component/Navbar'
 import { useAdminCameraEdit } from '../features/admin-cameras/hooks/useAdminCameraEdit'
 import CameraEditForm from '../features/admin-cameras/component/CameraEditForm'
 

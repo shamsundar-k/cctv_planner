@@ -13,7 +13,7 @@
  *   - For admin users, renders a full-screen container with <Navbar> and
  *     <AdminDashboard>.
  */
-import Navbar from '../components/layout/Navbar'
+import Navbar from '../features/navigation/component/Navbar'
 import AdminDashboard from '../features/admin/component/AdminDashboard'
 
 export default function AdminPage() {

@@ -7,7 +7,7 @@
  */
 import { useCallback } from 'react'
 import type { Project } from '../api/projects.types'
-import Navbar from '../components/layout/Navbar'
+import Navbar from '../features/navigation/component/Navbar'
 import { useDashboard } from '../features/dashboard/hooks/useDashboard'
 import DashboardErrorBanner from '../features/dashboard/components/DashboardErrorBanner'
 import ProjectToolbar from '../features/dashboard/components/ProjectToolbar'
@@ -24,8 +24,6 @@ export default function DashboardPage() {
     (project: Project) => setModal({ type: 'delete', project }),
     [setModal],
   )
-  const handleRefresh = useCallback(() => refetch(), [refetch])
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-canvas to-card/40">
       <Navbar />
@@ -36,13 +34,13 @@ export default function DashboardPage() {
           filteredCount={filtered.length}
           isAdmin={isAdmin}
           onCreateClick={handleOpenCreate}
-          onRefresh={handleRefresh}
+          onRefresh={refetch}
           isFetching={isFetching}
           dataUpdatedAt={dataUpdatedAt}
         />
 
         {isError && (
-          <DashboardErrorBanner onRetry={handleRefresh} />
+          <DashboardErrorBanner onRetry={refetch} />
         )}
 
         <ProjectList

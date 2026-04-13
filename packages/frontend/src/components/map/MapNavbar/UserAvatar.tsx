@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import UserMenu from '../../layout/UserMenu'
+import UserMenu from '../../../features/navigation/component/UserMenu'
 
 interface UserAvatarProps {
   initials: string

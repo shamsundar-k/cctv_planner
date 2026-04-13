@@ -22,7 +22,7 @@
  * If `id` is absent from params, the user is immediately redirected to /.
  */
 import { useNavigate, Link } from 'react-router'
-import Navbar from '../components/layout/Navbar'
+import Navbar from '../features/navigation/component/Navbar'
 import BasicInfoTab from '../features/project-manage/components/BasicInfoTab'
 import MapLocationTab from '../features/project-manage/components/MapLocationTab'
 import { useProjectManage, TABS } from '../features/project-manage/hooks/useProjectManage'
