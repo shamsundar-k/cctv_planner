@@ -21,28 +21,15 @@
  * The page title shows the project name.
  * If `id` is absent from params, the user is immediately redirected to /.
  */
-import { useState } from 'react'
-import { useParams, useNavigate, Link } from 'react-router'
+import { useNavigate, Link } from 'react-router'
 import Navbar from '../components/layout/Navbar'
-import BasicInfoTab from '../components/project/manage/BasicInfoTab'
-import MapLocationTab from '../components/project/manage/MapLocationTab'
-
-import { useProject } from '../api/projects'
-
-type Tab = 'basic' | 'map' | 'cameras'
-
-const TABS: { id: Tab; label: string }[] = [
-  { id: 'basic', label: 'Basic Info' },
-  { id: 'map', label: 'Map Location' },
-  { id: 'cameras', label: 'Imported Cameras' },
-]
+import BasicInfoTab from '../features/project-manage/components/BasicInfoTab'
+import MapLocationTab from '../features/project-manage/components/MapLocationTab'
+import { useProjectManage, TABS } from '../features/project-manage/hooks/useProjectManage'
 
 export default function ProjectManagePage() {
-  const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState<Tab>('basic')
-
-  const { data: project, isLoading, isError } = useProject(id ?? '')
+  const { id, project, isLoading, isError, activeTab, setActiveTab } = useProjectManage()
 
   if (!id) {
     navigate('/', { replace: true })
@@ -51,11 +38,11 @@ export default function ProjectManagePage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-900">
+      <div className="min-h-screen bg-gradient-to-br from-canvas to-card/40">
         <Navbar />
         <div className="px-10 py-8">
-          <div className="h-7 bg-slate-800 rounded w-48 animate-pulse mb-8" />
-          <div className="h-10 bg-slate-800 rounded w-full animate-pulse" />
+          <div className="h-7 bg-card rounded w-48 animate-pulse mb-8" />
+          <div className="h-10 bg-card rounded w-full animate-pulse" />
         </div>
       </div>
     )
@@ -63,11 +50,11 @@ export default function ProjectManagePage() {
 
   if (isError || !project) {
     return (
-      <div className="min-h-screen bg-slate-900">
+      <div className="min-h-screen bg-gradient-to-br from-canvas to-card/40">
         <Navbar />
-        <div className="px-10 py-8 text-slate-400">
+        <div className="px-10 py-8 text-muted">
           Project not found.{' '}
-          <Link to="/" className="text-blue-400 hover:text-blue-300">
+          <Link to="/" className="text-accent hover:text-accent-hover">
             Go back
           </Link>
         </div>
@@ -76,13 +63,13 @@ export default function ProjectManagePage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-canvas to-card/40">
       <Navbar />
       <div className="px-10 py-8 max-w-5xl">
         {/* Back link */}
         <Link
           to="/"
-          className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-200 transition-colors mb-4 no-underline"
+          className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-primary transition-colors mb-4 no-underline"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
             <path d="M15 19l-7-7 7-7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -92,19 +79,19 @@ export default function ProjectManagePage() {
 
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-slate-100 m-0">{project.name}</h1>
-          <p className="text-sm text-slate-500 mt-1 m-0">Project settings</p>
+          <h1 className="text-2xl font-bold text-primary m-0">{project.name}</h1>
+          <p className="text-sm text-muted/70 mt-1 m-0">Project settings</p>
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-0 border-b border-slate-700 mb-6">
+        <div className="flex gap-0 border-b border-surface/30 mb-6">
           {TABS.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`px-5 py-2.5 text-sm font-medium border-none bg-transparent cursor-pointer transition-colors border-b-2 -mb-px ${activeTab === tab.id
-                  ? 'text-blue-400 border-blue-500'
-                  : 'text-slate-400 border-transparent hover:text-slate-200'
+                  ? 'text-accent border-accent'
+                  : 'text-muted border-transparent hover:text-primary'
                 }`}
             >
               {tab.label}

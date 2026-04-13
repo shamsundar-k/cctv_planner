@@ -1,5 +1,5 @@
 /*
- * FILE SUMMARY — src/components/project/manage/MapLocationTab.tsx
+ * FILE SUMMARY — src/features/project-manage/components/MapLocationTab.tsx
  *
  * "Map Location" tab in the Project Settings page. Provides an interactive
  * Leaflet map for setting the project's default centre point and zoom level.
@@ -27,7 +27,7 @@ import { useState, useEffect, useRef } from 'react'
 import type { Map as LeafletMap, Marker as LeafletMarker } from 'leaflet'
 import type { Project, UpdateProjectDTO } from '../../../api/projects.types'
 import { useUpdateProject } from '../../../api/projects'
-import { useToast } from '../../ui/Toast'
+import { useToast } from '../../../components/ui/Toast'
 
 interface MapLocationTabProps {
   project: Project
@@ -133,27 +133,27 @@ export default function MapLocationTab({ project }: MapLocationTabProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-sm text-slate-400 m-0">
+      <p className="text-sm text-muted m-0">
         Click on the map to set the default center point, or drag the marker. Zoom in/out to set the default zoom level.
       </p>
 
       {/* Map */}
       <div
         ref={containerRef}
-        style={{ height: 380, borderRadius: 8, border: '1px solid #334155' }}
+        style={{ height: 380, borderRadius: 8, border: '1px solid var(--color-border)' }}
       />
 
       {/* Coordinate readout */}
-      <div className="flex items-center gap-4 text-sm text-slate-400">
-        <span>Lat: <span className="text-slate-200 font-mono">{lat.toFixed(6)}</span></span>
-        <span>Lng: <span className="text-slate-200 font-mono">{lng.toFixed(6)}</span></span>
-        <span>Zoom: <span className="text-slate-200 font-mono">{zoom}</span></span>
+      <div className="flex items-center gap-4 text-sm text-muted">
+        <span>Lat: <span className="text-primary font-mono">{lat.toFixed(6)}</span></span>
+        <span>Lng: <span className="text-primary font-mono">{lng.toFixed(6)}</span></span>
+        <span>Zoom: <span className="text-primary font-mono">{zoom}</span></span>
       </div>
 
       <button
         onClick={handleSave}
         disabled={!isDirty || updateProject.isPending}
-        className="self-start px-5 py-2 text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white rounded-lg border-none cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="self-start px-5 py-2 text-sm font-semibold bg-accent hover:bg-accent-hover text-on-accent rounded-lg border-none cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {updateProject.isPending ? 'Saving…' : 'Save Location'}
       </button>

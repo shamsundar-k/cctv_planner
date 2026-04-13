@@ -1,5 +1,5 @@
 /*
- * FILE SUMMARY — src/components/project/manage/ImportedCamerasTab.tsx
+ * FILE SUMMARY — src/features/project-manage/components/ImportedCamerasTab.tsx
  *
  * "Imported Cameras" tab in the Project Settings page. Dual-pane interface
  * for managing which camera models are associated with a project.
@@ -42,7 +42,7 @@ import {
   useAddCameraToProject,
   useRemoveCameraFromProject,
 } from '../../../api/projects'
-import { useToast } from '../../ui/Toast'
+import { useToast } from '../../../components/ui/Toast'
 import type { AxiosError } from 'axios'
 
 interface ImportedCamerasTabProps {
@@ -58,14 +58,14 @@ const TYPE_LABELS: Record<string, string> = {
 }
 
 const TYPE_COLORS: Record<string, string> = {
-  fixed_dome: 'bg-slate-700 text-slate-300',
+  fixed_dome: 'bg-surface/20 text-muted',
   ptz: 'bg-purple-900/60 text-purple-300',
   bullet: 'bg-amber-900/60 text-amber-300',
 }
 
 function TypeBadge({ type }: { type: string }) {
   const label = TYPE_LABELS[type] ?? type
-  const color = TYPE_COLORS[type] ?? 'bg-slate-700 text-slate-300'
+  const color = TYPE_COLORS[type] ?? 'bg-surface/20 text-muted'
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${color}`}>
       {label}
@@ -105,20 +105,20 @@ function CameraDetailModal({ model, onClose }: { model: CameraModel; onClose: ()
       tabIndex={-1}
     >
       <div
-        className="bg-slate-800 border border-slate-700 rounded-xl shadow-2xl w-full max-w-[480px] mx-4 flex flex-col max-h-[80vh]"
+        className="bg-card border border-surface/30 rounded-xl shadow-2xl w-full max-w-[480px] mx-4 flex flex-col max-h-[80vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-start justify-between gap-3 p-5 border-b border-slate-700">
+        <div className="flex items-start justify-between gap-3 p-5 border-b border-surface/30">
           <div className="min-w-0">
-            <h3 className="text-base font-semibold text-slate-100 m-0 leading-snug">{model.name}</h3>
-            <p className="text-xs text-slate-500 mt-0.5 m-0">
+            <h3 className="text-base font-semibold text-primary m-0 leading-snug">{model.name}</h3>
+            <p className="text-xs text-muted/70 mt-0.5 m-0">
               {[model.manufacturer, model.model_number].filter(Boolean).join(' · ') || '—'}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="shrink-0 w-7 h-7 flex items-center justify-center rounded-md text-slate-400 hover:text-slate-100 hover:bg-slate-700 transition-colors border-none bg-transparent cursor-pointer"
+            className="shrink-0 w-7 h-7 flex items-center justify-center rounded-md text-muted hover:text-primary hover:bg-surface/20 transition-colors border-none bg-transparent cursor-pointer"
             aria-label="Close"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
@@ -132,21 +132,21 @@ function CameraDetailModal({ model, onClose }: { model: CameraModel; onClose: ()
           <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm">
             {rows.map(([label, value]) => (
               <>
-                <span key={`l-${label}`} className="text-slate-500 whitespace-nowrap">{label}</span>
-                <span key={`v-${label}`} className="text-slate-300">{value}</span>
+                <span key={`l-${label}`} className="text-muted/70 whitespace-nowrap">{label}</span>
+                <span key={`v-${label}`} className="text-primary/80">{value}</span>
               </>
             ))}
           </div>
           {model.notes && (
-            <p className="text-xs text-slate-500 italic mt-4 m-0">{model.notes}</p>
+            <p className="text-xs text-muted/70 italic mt-4 m-0">{model.notes}</p>
           )}
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-slate-700 flex justify-end">
+        <div className="p-4 border-t border-surface/30 flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-lg border-none cursor-pointer transition-colors"
+            className="px-4 py-2 text-sm font-medium bg-surface/20 hover:bg-surface/30 text-primary/90 rounded-lg border-none cursor-pointer transition-colors"
           >
             Close
           </button>
@@ -248,8 +248,8 @@ export default function ImportedCamerasTab({ projectId }: ImportedCamerasTabProp
         {/* ── Section 1: Project Cameras ── */}
         <section>
           <div className="flex items-center gap-2 mb-3">
-            <h2 className="text-sm font-semibold text-slate-200 m-0">Project Cameras</h2>
-            <span className="inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded-full bg-slate-700 text-slate-300 text-xs font-semibold">
+            <h2 className="text-sm font-semibold text-primary/90 m-0">Project Cameras</h2>
+            <span className="inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded-full bg-surface/20 text-muted text-xs font-semibold">
               {importedItems.length}
             </span>
           </div>
@@ -257,13 +257,13 @@ export default function ImportedCamerasTab({ projectId }: ImportedCamerasTabProp
           {importedLoading ? (
             <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-3">
               {Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="bg-slate-700/50 rounded-lg border border-slate-700 p-4 animate-pulse h-32" />
+                <div key={i} className="bg-surface/10 rounded-lg border border-surface/30 p-4 animate-pulse h-32" />
               ))}
             </div>
           ) : importedItems.length === 0 ? (
-            <div className="flex flex-col items-center justify-center gap-2 py-8 text-slate-600">
+            <div className="flex flex-col items-center justify-center gap-2 py-8 text-muted/40">
               <p className="text-sm m-0">No cameras imported yet</p>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="text-slate-700 mt-1">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="mt-1">
                 <path d="M12 5v14M19 12l-7 7-7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
@@ -272,12 +272,12 @@ export default function ImportedCamerasTab({ projectId }: ImportedCamerasTabProp
               {importedItems.map(({ camera_model: cm, placed_count }) => (
                 <div
                   key={cm.id}
-                  className="bg-slate-800 border border-slate-700 rounded-lg p-3.5 flex flex-col gap-2 hover:border-slate-600 transition-colors"
+                  className="bg-card border border-surface/30 rounded-lg p-3.5 flex flex-col gap-2 hover:border-surface/50 transition-colors"
                 >
                   {/* Name + manufacturer */}
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-slate-100 m-0 truncate">{cm.name}</p>
-                    <p className="text-xs text-slate-500 m-0 mt-0.5 truncate">
+                    <p className="text-sm font-semibold text-primary m-0 truncate">{cm.name}</p>
+                    <p className="text-xs text-muted/70 m-0 mt-0.5 truncate">
                       {[cm.manufacturer, cm.model_number].filter(Boolean).join(' · ') || '—'}
                     </p>
                   </div>
@@ -286,20 +286,20 @@ export default function ImportedCamerasTab({ projectId }: ImportedCamerasTabProp
                   <TypeBadge type={cm.camera_type} />
 
                   {/* Specs line */}
-                  <p className="text-xs text-slate-500 m-0">
+                  <p className="text-xs text-muted/70 m-0">
                     {cm.resolution_h}×{cm.resolution_v} · {hfovLabel(cm.h_fov_min, cm.h_fov_max)} H-FOV
                   </p>
 
                   {/* Bottom row: placed badge + action buttons */}
                   <div className="flex items-center justify-between mt-auto pt-1">
-                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${placed_count > 0 ? 'bg-blue-900/60 text-blue-300' : 'bg-slate-700 text-slate-500'}`}>
+                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${placed_count > 0 ? 'bg-accent/10 text-accent' : 'bg-surface/20 text-muted/50'}`}>
                       {placed_count} placed
                     </span>
                     <div className="flex items-center gap-1">
                       <button
                         onClick={() => setDetailModel(cm)}
                         title="View details"
-                        className="w-7 h-7 flex items-center justify-center rounded-md text-slate-400 hover:text-slate-100 hover:bg-slate-700 transition-colors border-none bg-transparent cursor-pointer"
+                        className="w-7 h-7 flex items-center justify-center rounded-md text-muted hover:text-primary hover:bg-surface/20 transition-colors border-none bg-transparent cursor-pointer"
                       >
                         <InfoIcon />
                       </button>
@@ -307,7 +307,7 @@ export default function ImportedCamerasTab({ projectId }: ImportedCamerasTabProp
                         onClick={() => handleRemove(cm.id, cm.name, placed_count)}
                         disabled={placed_count > 0 || removeCamera.isPending}
                         title={placed_count > 0 ? `Cannot remove — ${placed_count} instance(s) placed on map` : 'Remove from project'}
-                        className="w-7 h-7 flex items-center justify-center rounded-md text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors border-none bg-transparent cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-slate-400 disabled:hover:bg-transparent"
+                        className="w-7 h-7 flex items-center justify-center rounded-md text-muted hover:text-red-400 hover:bg-red-500/10 transition-colors border-none bg-transparent cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-muted disabled:hover:bg-transparent"
                       >
                         <TrashIcon />
                       </button>
@@ -322,24 +322,24 @@ export default function ImportedCamerasTab({ projectId }: ImportedCamerasTabProp
         {/* ── Section 2: Browse & Add Camera Models ── */}
         <section>
           <div className="flex items-center justify-between gap-3 mb-3">
-            <h2 className="text-sm font-semibold text-slate-200 m-0">Browse Camera Models</h2>
+            <h2 className="text-sm font-semibold text-primary/90 m-0">Browse Camera Models</h2>
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by name or manufacturer…"
-              className="h-8 px-3 text-xs rounded-md bg-slate-700 border border-slate-600 text-slate-100 placeholder-slate-500 outline-none focus:border-blue-500 transition-colors w-56"
+              className="h-8 px-3 text-xs rounded-md bg-surface/10 border border-surface/30 text-primary placeholder-muted/50 outline-none focus:border-accent transition-colors w-56"
             />
           </div>
 
           {allLoading ? (
             <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-3">
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="bg-slate-700/50 rounded-lg border border-slate-700 p-4 animate-pulse h-32" />
+                <div key={i} className="bg-surface/10 rounded-lg border border-surface/30 p-4 animate-pulse h-32" />
               ))}
             </div>
           ) : filteredAll.length === 0 ? (
-            <div className="text-center py-10 text-slate-600 text-sm">
+            <div className="text-center py-10 text-muted/40 text-sm">
               {search ? 'No models match your search.' : 'No camera models available.'}
             </div>
           ) : (
@@ -349,12 +349,12 @@ export default function ImportedCamerasTab({ projectId }: ImportedCamerasTabProp
                 return (
                   <div
                     key={camera.id}
-                    className="bg-slate-800 border border-slate-700 rounded-lg p-3.5 flex flex-col gap-2 hover:border-slate-600 transition-colors"
+                    className="bg-card border border-surface/30 rounded-lg p-3.5 flex flex-col gap-2 hover:border-surface/50 transition-colors"
                   >
                     {/* Name + manufacturer */}
                     <div className="min-w-0">
-                      <p className="text-sm font-semibold text-slate-100 m-0 truncate">{camera.name}</p>
-                      <p className="text-xs text-slate-500 m-0 mt-0.5 truncate">
+                      <p className="text-sm font-semibold text-primary m-0 truncate">{camera.name}</p>
+                      <p className="text-xs text-muted/70 m-0 mt-0.5 truncate">
                         {[camera.manufacturer, camera.model_number].filter(Boolean).join(' · ') || '—'}
                       </p>
                     </div>
@@ -363,7 +363,7 @@ export default function ImportedCamerasTab({ projectId }: ImportedCamerasTabProp
                     <TypeBadge type={camera.camera_type} />
 
                     {/* Specs line */}
-                    <p className="text-xs text-slate-500 m-0">
+                    <p className="text-xs text-muted/70 m-0">
                       {camera.resolution_h}×{camera.resolution_v} · {hfovLabel(camera.h_fov_min, camera.h_fov_max)} H-FOV
                     </p>
 
@@ -372,7 +372,7 @@ export default function ImportedCamerasTab({ projectId }: ImportedCamerasTabProp
                       <button
                         onClick={() => setDetailModel(camera)}
                         title="View details"
-                        className="w-7 h-7 flex items-center justify-center rounded-md text-slate-400 hover:text-slate-100 hover:bg-slate-700 transition-colors border-none bg-transparent cursor-pointer"
+                        className="w-7 h-7 flex items-center justify-center rounded-md text-muted hover:text-primary hover:bg-surface/20 transition-colors border-none bg-transparent cursor-pointer"
                       >
                         <InfoIcon />
                       </button>
@@ -386,7 +386,7 @@ export default function ImportedCamerasTab({ projectId }: ImportedCamerasTabProp
                         <button
                           onClick={() => handleAdd(camera)}
                           disabled={addCamera.isPending}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white rounded-md border-none cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-accent hover:bg-accent-hover text-on-accent rounded-md border-none cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <PlusIcon />
                           Add to Project

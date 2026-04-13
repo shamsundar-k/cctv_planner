@@ -43,22 +43,7 @@ export type ThemeKey = keyof typeof THEMES
 
 // ── Theme definitions ──────────────────────────────────────────────────────────
 
-export const THEMES = {
-  /** Purple / Sage / Terracotta — current default */
-  vintage: {
-    label: 'Vintage Dusk',
-    colors: {
-      bgBase: '#2a1535',
-      bgCard: '#4F2A63',
-      surface: '#8C6E9E',
-      border: '#8C6E9E',
-      textPrimary: '#CADBBD',
-      textSecondary: '#9E9A5A',
-      accent: '#804A38',
-      accentHover: '#9E9A5A',
-      accentText: '#CADBBD',
-    },
-  },
+export const THEMES = { 
 
   /** Ocean blues — cool professional feel */
   ocean: {
@@ -66,7 +51,7 @@ export const THEMES = {
     colors: {
       bgBase: '#0d1b2a',
       bgCard: '#1b2e45',
-      surface: '#2e4a68',
+      surface: '#243d58',
       border: '#2e4a68',
       textPrimary: '#d4eaf7',
       textSecondary: '#7eb8d4',
@@ -76,21 +61,6 @@ export const THEMES = {
     },
   },
 
-  /** Forest greens — earthy and calm */
-  forest: {
-    label: 'Forest Mist',
-    colors: {
-      bgBase: '#0d1f12',
-      bgCard: '#1a3320',
-      surface: '#2d5037',
-      border: '#3a6645',
-      textPrimary: '#c8e6c4',
-      textSecondary: '#87b88a',
-      accent: '#4a7c59',
-      accentHover: '#6ea87e',
-      accentText: '#c8e6c4',
-    },
-  },
 
   /** Warm amber / charcoal — rich dark mode */
   ember: {
@@ -108,19 +78,83 @@ export const THEMES = {
     },
   },
 
-  /** Slate / Rose — modern minimal with a pop of colour */
-  rose: {
-    label: 'Moonrise Rose',
+
+  /** Northern lights — dark navy with shimmering teal/cyan */
+  aurora: {
+    label: 'Aurora Borealis',
     colors: {
-      bgBase: '#141018',
-      bgCard: '#221a2e',
-      surface: '#3a2d4a',
-      border: '#4a3860',
-      textPrimary: '#f0e8f5',
-      textSecondary: '#c4a8d8',
-      accent: '#a0406a',
-      accentHover: '#d46090',
-      accentText: '#f0e8f5',
+      bgBase: '#080e1a',
+      bgCard: '#0d1e30',
+      surface: '#163040',
+      border: '#1e4d5c',
+      textPrimary: '#c4f0e4',
+      textSecondary: '#6ecfb8',
+      accent: '#1e9e7a',
+      accentHover: '#3ecfa0',
+      accentText: '#080e1a',
+    },
+  },
+
+  /** Warm sandy dunes & dark plum — huemint.com/gradient-9 palette 1 */
+  desertRose: {
+    label: 'Desert Rose',
+    colors: {
+      bgBase: '#3a1520',
+      bgCard: '#572d1f',
+      surface: '#6d4528',
+      border: '#8c5b42',
+      textPrimary: '#efded1',
+      textSecondary: '#c59f8d',
+      accent: '#a36a42',
+      accentHover: '#bb8067',
+      accentText: '#efded1',
+    },
+  },
+
+  /** Muted mauve & smoky slate — huemint.com/gradient-9 palette 2 */
+  smokyMauve: {
+    label: 'Smoky Mauve',
+    colors: {
+      bgBase: '#262725',
+      bgCard: '#4b3e42',
+      surface: '#4f434d',
+      border: '#706b67',
+      textPrimary: '#dcdad2',
+      textSecondary: '#b09b97',
+      accent: '#a2675a',
+      accentHover: '#a37f7e',
+      accentText: '#dcdad2',
+    },
+  },
+
+  /** Dark teal depths with terracotta fire — custom 9-colour palette */
+  spiceAndTide: {
+    label: 'Spice & Tide',
+    colors: {
+      bgBase: '#004343',
+      bgCard: '#006464',
+      surface: '#008585',
+      border: '#74a892',
+      textPrimary: '#fbf2c4',
+      textSecondary: '#e5c185',
+      accent: '#963e20',
+      accentHover: '#c7522a',
+      accentText: '#fbf2c4',
+    },
+  },
+  /** Deep navy & teal with magenta/violet accent — cosmic 9-colour palette */
+  nebula: {
+    label: 'Nebula',
+    colors: {
+      bgBase: '#192a51',
+      bgCard: '#0f4066',
+      surface: '#0f5266',
+      border: '#0f6466',
+      textPrimary: '#ededed',
+      textSecondary: '#e8c587',
+      accent: '#660f64',
+      accentHover: '#4b0f66',
+      accentText: '#ededed',
     },
   },
 } satisfies Record<string, Theme>
@@ -130,4 +164,4 @@ export const THEMES = {
  * Change this string to switch the entire app's colour scheme.
  * Must be one of the keys in THEMES above.
  */
-export const ACTIVE_THEME: ThemeKey = 'vintage'
+export const ACTIVE_THEME: ThemeKey = 'nebula'
