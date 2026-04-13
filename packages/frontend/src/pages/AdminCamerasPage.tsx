@@ -1,7 +1,5 @@
-import { useEffect } from 'react'
-import { Link, useNavigate } from 'react-router'
+import { Link } from 'react-router'
 import Navbar from '../components/layout/Navbar'
-import { useAuthStore } from '../store/authSlice'
 import { useAdminCameras } from '../features/admin-cameras/hooks/useAdminCameras'
 import CameraListHeader from '../features/admin-cameras/component/CameraListHeader'
 import CameraSearchBar from '../features/admin-cameras/component/CameraSearchBar'
@@ -9,17 +7,8 @@ import CameraGrid from '../features/admin-cameras/component/CameraGrid'
 import DeleteConfirmModal from '../features/admin-cameras/component/DeleteConfirmModal'
 
 export default function AdminCamerasPage() {
-  const user = useAuthStore((s) => s.user)
-  const navigate = useNavigate()
-
   const { isLoading, filtered, search, setSearch, deleteTarget, setDeleteTarget, handleDelete, isDeleting } =
     useAdminCameras()
-
-  useEffect(() => {
-    if (user && user.role !== 'admin') navigate('/', { replace: true })
-  }, [user, navigate])
-
-  if (!user || user.role !== 'admin') return null
 
   return (
     <div className="min-h-screen bg-slate-900">

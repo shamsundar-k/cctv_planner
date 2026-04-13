@@ -1,22 +1,11 @@
-import { useEffect } from 'react'
-import { Link, useNavigate } from 'react-router'
+import { Link } from 'react-router'
 import Navbar from '../components/layout/Navbar'
-import { useAuthStore } from '../store/authSlice'
 import { useAdminCameraEdit } from '../features/admin-cameras/hooks/useAdminCameraEdit'
 import CameraEditForm from '../features/admin-cameras/component/CameraEditForm'
 
 export default function AdminCameraEditPage() {
-  const user = useAuthStore((s) => s.user)
-  const navigate = useNavigate()
-
   const editProps = useAdminCameraEdit()
   const { isNew, isLoading } = editProps
-
-  useEffect(() => {
-    if (user && user.role !== 'admin') navigate('/', { replace: true })
-  }, [user, navigate])
-
-  if (!user || user.role !== 'admin') return null
 
   if (!isNew && isLoading) {
     return (
