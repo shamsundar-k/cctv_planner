@@ -8,8 +8,7 @@ export default function NavActions() {
         width="18" height="18" viewBox="0 0 24 24"
         fill="none" xmlns="http://www.w3.org/2000/svg"
         aria-hidden="true"
-        className="cursor-pointer transition-colors"
-        style={{ color: 'var(--theme-text-secondary)' }}
+        className="cursor-pointer transition-colors text-muted"
       >
         <path d="M12 2a7 7 0 0 0-7 7v4l-2 2v1h18v-1l-2-2V9a7 7 0 0 0-7-7z" fill="currentColor" />
         <path d="M10 19a2 2 0 0 0 4 0" stroke="currentColor" strokeWidth="1.5" fill="none" />
@@ -21,8 +20,7 @@ export default function NavActions() {
       <a
         href="#"
         aria-label="Help"
-        className="flex items-center transition-colors"
-        style={{ color: 'var(--theme-text-secondary)' }}
+        className="flex items-center transition-colors text-muted"
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />

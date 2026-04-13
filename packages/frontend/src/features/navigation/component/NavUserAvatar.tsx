@@ -34,8 +34,7 @@ export default function NavUserAvatar() {
         className="flex items-center gap-1.5 bg-transparent border-none cursor-pointer p-0"
       >
         <div
-          className="w-8 h-8 rounded-full text-[13px] font-bold flex items-center justify-center select-none ring-2 ring-white/10"
-          style={{ background: 'var(--theme-accent)', color: 'var(--theme-accent-text)' }}
+          className="w-8 h-8 rounded-full text-[13px] font-bold flex items-center justify-center select-none ring-2 ring-white/10 bg-accent text-on-accent"
         >
           {initials}
         </div>
@@ -46,7 +45,7 @@ export default function NavUserAvatar() {
         >
           <path
             d="M2 4l4 4 4-4"
-            stroke="var(--theme-text-secondary)"
+            className="stroke-muted"
             strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
           />
         </svg>
