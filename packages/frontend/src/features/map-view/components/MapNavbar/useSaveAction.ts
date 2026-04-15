@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useCameraInstanceStore } from '../../../store/cameraInstanceStore'
-import { useToast } from '../../ui/Toast'
+import { useCameraInstanceStore } from '../../../../store/cameraInstanceStore'
+import { useToast } from '../../../../components/ui/Toast'
 
 interface UseSaveActionReturn {
   isSaving: boolean

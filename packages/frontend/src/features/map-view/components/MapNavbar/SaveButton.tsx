@@ -53,4 +53,3 @@ export function SaveButton({ isSaving, isDirty, lastSavedAt, onClick }: SaveButt
     </button>
   )
 }
-

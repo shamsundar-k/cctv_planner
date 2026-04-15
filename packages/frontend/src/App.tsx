@@ -27,7 +27,7 @@ import AdminPage from './pages/AdminPage'
 import AdminCamerasPage from './pages/AdminCamerasPage'
 import AdminCameraEditPage from './pages/AdminCameraEditPage'
 import ProjectManagePage from './pages/ProjectManagePage'
-import ProjectMapViewPagenew from './pages/ProjectMapViewPagenew'
+import ProjectMapViewPage from './pages/ProjectMapViewPage'
 import { ToastProvider } from './components/ui/Toast'
 
 function App() {
@@ -45,7 +45,7 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<DashboardPage />} />
             <Route path="/project/manage/:id" element={<ProjectManagePage />} />
-            <Route path="/projects/:id" element={<ProjectMapViewPagenew />} />
+            <Route path="/projects/:id" element={<ProjectMapViewPage />} />
 
             {/* Admin-only routes */}
             <Route element={<AdminRoute />}>

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import UserMenu from '../../../features/navigation/component/UserMenu'
+import UserMenu from '../../../../features/navigation/component/UserMenu'
 
 interface UserAvatarProps {
   initials: string
@@ -27,4 +27,3 @@ export function UserAvatar({ initials }: UserAvatarProps) {
     </div>
   )
 }
-

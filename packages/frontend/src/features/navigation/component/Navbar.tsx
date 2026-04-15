@@ -1,5 +1,5 @@
 import NavActions from './NavActions'
-import NavLogo from './NavLogo'
+import NavLogo from '../../../components/NavLogo'
 import NavSearchBar from './NavSearchBar'
 
 export default function Navbar() {
