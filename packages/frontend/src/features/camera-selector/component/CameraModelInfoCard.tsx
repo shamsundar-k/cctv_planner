@@ -1,4 +1,4 @@
-import type { CameraModel } from '../../api/cameramodel.types'
+import type { CameraModel } from '../../../api/cameramodel.types'
 
 interface CameraModelInfoCardProps {
     model: CameraModel | null
@@ -111,4 +111,3 @@ export default function CameraModelInfoCard({ model, onMoreDetails }: CameraMode
         </div>
     )
 }
-

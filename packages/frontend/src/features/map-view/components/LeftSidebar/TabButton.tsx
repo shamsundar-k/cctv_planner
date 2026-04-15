@@ -1,4 +1,14 @@
-import type { TabButtonProps } from './types'
+import type { LucideIcon } from 'lucide-react'
+
+type TabId = 'cameras' | 'models'
+
+interface TabButtonProps {
+  id: TabId
+  label: string
+  icon: LucideIcon
+  active: boolean
+  onClick: (id: TabId) => void
+}
 
 export default function TabButton({ id, label, icon: Icon, active, onClick }: TabButtonProps) {
   return (
@@ -21,4 +31,3 @@ export default function TabButton({ id, label, icon: Icon, active, onClick }: Ta
     </button>
   )
 }
-

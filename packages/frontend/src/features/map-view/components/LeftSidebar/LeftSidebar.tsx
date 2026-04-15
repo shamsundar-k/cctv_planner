@@ -1,12 +1,14 @@
 import { useState } from 'react'
-import { useAllCameraModels } from '../../api/camerasModels'
-import ModelSelectorPanel from './../LeftSidebar/Modelselectorpanel'
-import type { LeftSidebarProps } from './../LeftSidebar/types'
-import type { CameraModel } from '../../api/cameramodel.types'
-import { useCameraLayerStore } from '../../store/cameraLayerSlice'
-import { useCameraPlacementStore } from '../../store/cameraPlacementSlice'
+import { useAllCameraModels } from '../../../../api/camerasModels'
+import { useCameraPlacementStore } from '../../../../store/cameraPlacementSlice'
+import type { CameraModel } from '../../../../api/cameramodel.types'
+import ModelSelectorPanel from '../../../camera-selector/component/ModelSelectorPanel'
 
 type TabId = 'models' | 'cameras'
+
+interface LeftSidebarProps {
+  projectId: string
+}
 
 function RailTab({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
   const [hovered, setHovered] = useState(false)

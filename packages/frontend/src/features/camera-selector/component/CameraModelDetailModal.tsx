@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import type { CameraModel } from '../../api/cameramodel.types'
+import type { CameraModel } from '../../../api/cameramodel.types'
 
 interface CameraModelDetailModalProps {
     model: CameraModel

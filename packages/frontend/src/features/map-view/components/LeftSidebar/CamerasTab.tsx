@@ -1,7 +1,9 @@
-import { useCameraInstances } from '../../api/cameraInstances'
-import { useCameraLayerStore } from '../../store/cameraLayerSlice'
-import EyeIcon from './EyeIcon'
-import type { CamerasTabProps } from './types'
+import { useCameraInstances } from '../../../../api/cameraInstances'
+import { useCameraLayerStore } from '../../../../store/cameraLayerSlice'
+
+interface CamerasTabProps {
+  projectId: string
+}
 
 export default function CamerasTab({ projectId }: CamerasTabProps) {
   const { data: cameras, isLoading } = useCameraInstances(projectId)

@@ -1,6 +1,6 @@
 import { useMapView } from '../features/map-view/hooks/useMapView'
 import MapNavbar from '../features/map-view/components/MapNavbar'
-import LeftSidebar from '../components/LeftSidebar/LeftSidebar'
+import LeftSidebar from '../features/map-view/components/LeftSidebar/LeftSidebar'
 import Map from '../components/map/Map'
 
 export default function ProjectMapViewPage() {

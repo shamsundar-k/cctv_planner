@@ -2,26 +2,18 @@
  * ModelSelectorPanel
  *
  * Container for the camera model selection UI in the map sidebar (236px wide).
- * Owns manufacturer filter + model selection state.
+ * State is managed by useCameraSelector; this component handles layout only.
  *
  * Props:
  *   models          — full admin-seeded CameraModel list (fetched by parent)
  *   isLoading       — true while parent is fetching
  *   onPlaceCamera   — called with the selected CameraModel when button clicked
- *
- * Palette:
- *   Shadow Grey   #4F2A63  — panel bg
- *   Vintage Grape #8C6E9E  — inputs / surfaces
- *   Stone Brown   #804A38  — borders / dividers
- *   Grey Olive    #9E9A5A  — secondary text / icons
- *   Khaki Beige   #CADBBD  — primary text
  */
-import { useState, useMemo } from 'react'
-import type { CameraModel } from '../../api/cameramodel.types'
-
-import ManufacturerFilter from './Manufacturerfilter'
-import ModelDropdown from './Modeldropdown'
-import CameraModelInfoCard from './Cameramodelinfocard'
+import type { CameraModel } from '../../../api/cameramodel.types'
+import { useCameraSelector } from '../hooks/useCameraSelector'
+import ManufacturerFilter from './ManufacturerFilter'
+import ModelDropdown from './ModelDropdown'
+import CameraModelInfoCard from './CameraModelInfoCard'
 import CameraModelDetailModal from './CameraModelDetailModal'
 
 // ── Place camera button ────────────────────────────────────────────────────────
@@ -124,23 +116,16 @@ export default function ModelSelectorPanel({
     isLoading,
     onPlaceCamera,
 }: ModelSelectorPanelProps) {
-    const [selectedManufacturer, setSelectedManufacturer] = useState<string>('')
-    const [selectedModel, setSelectedModel] = useState<CameraModel | null>(null)
-    const [showDetailModal, setShowDetailModal] = useState(false)
-
-    const manufacturers = useMemo<string[]>(() => {
-        return Array.from(new Set(models.map((m) => m.manufacturer))).sort()
-    }, [models])
-
-    const filteredModels = useMemo<CameraModel[]>(() => {
-        if (!selectedManufacturer) return models
-        return models.filter((m) => m.manufacturer === selectedManufacturer)
-    }, [models, selectedManufacturer])
-
-    const handleManufacturerSelect = (manufacturer: string) => {
-        setSelectedManufacturer(manufacturer)
-        setSelectedModel(null)
-    }
+    const {
+        manufacturers,
+        filteredModels,
+        selectedManufacturer,
+        selectedModel,
+        showDetailModal,
+        handleManufacturerSelect,
+        setSelectedModel,
+        setShowDetailModal,
+    } = useCameraSelector(models)
 
     return (
         <div

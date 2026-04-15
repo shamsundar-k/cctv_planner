@@ -16,7 +16,8 @@
       "Bash(/tmp/height_report.txt:*)",
       "Read(//tmp/**)",
       "Bash(wc -l /home/office/DEV/cctv_planner/packages/backend/app/routers/*.py)",
-      "Bash(cat /home/office/DEV/cctv_planner/packages/backend/tests/*.py)"
+      "Bash(cat /home/office/DEV/cctv_planner/packages/backend/tests/*.py)",
+      "Bash(pnpm --filter frontend exec tsc --noEmit)"
     ]
   }
 }

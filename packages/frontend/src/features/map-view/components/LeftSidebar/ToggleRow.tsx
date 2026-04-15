@@ -1,4 +1,8 @@
-import type { ToggleRowProps } from './types'
+interface ToggleRowProps {
+  label: string
+  checked: boolean
+  onChange: (v: boolean) => void
+}
 
 export default function ToggleRow({ label, checked, onChange }: ToggleRowProps) {
   return (
@@ -24,4 +28,3 @@ export default function ToggleRow({ label, checked, onChange }: ToggleRowProps) 
     </label>
   )
 }
-
