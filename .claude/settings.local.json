@@ -14,7 +14,9 @@
       "Bash(npx tsx:*)",
       "Bash(node -e \"const fovCalcs = require\\(''/c/Drive_D/cctv_planner/packages/frontend/src/lib/fovCalculations.ts''\\); console.log\\(Object.keys\\(fovCalcs\\)\\);\")",
       "Bash(/tmp/height_report.txt:*)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "Bash(wc -l /home/office/DEV/cctv_planner/packages/backend/app/routers/*.py)",
+      "Bash(cat /home/office/DEV/cctv_planner/packages/backend/tests/*.py)"
     ]
   }
 }
