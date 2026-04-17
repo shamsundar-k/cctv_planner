@@ -118,7 +118,7 @@ export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPan
     })
     setConfirmDelete(false)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [camera?.client_id])
+  }, [camera?.uid])
 
   // Auto-deselect if selected camera was deleted
   useEffect(() => {

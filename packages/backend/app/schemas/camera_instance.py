@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field, model_validator
 
 
 class CameraInstanceCreate(BaseModel):
-    client_id: str
+    uid: str
     camera_model_id: str
     label: str = ""
     lat: float

@@ -17,7 +17,7 @@ from .project import Project
 
 
 class CameraInstance(Document):
-    client_id: str
+    uid: str
     project: Link[Project]
     camera_model: Link[CameraModel]
     label: str = ""

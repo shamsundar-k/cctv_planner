@@ -2,7 +2,7 @@ import type { CameraInstance, CameraInstanceCreatePayload, CameraInstanceUpdateP
 
 export function buildCreatePayload(camera: CameraInstance): CameraInstanceCreatePayload {
   return {
-    client_id: camera.client_id,
+    uid: camera.uid,
     camera_model_id: camera.camera_model_id,
     label: camera.label,
     lat: camera.lat,

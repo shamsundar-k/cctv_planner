@@ -1,5 +1,5 @@
 export interface CameraInstance {
-  client_id: string           // stable client-generated ID, persisted on server
+  uid: string                 // stable client-generated ID, persisted on server
   camera_model_id: string
   label: string
   lat: number
@@ -17,7 +17,7 @@ export interface CameraInstance {
 }
 
 export interface CameraInstanceCreatePayload {
-  client_id: string             // required — server persists and routes by this
+  uid: string                   // required — server persists and routes by this
   camera_model_id: string
   label?: string
   lat: number

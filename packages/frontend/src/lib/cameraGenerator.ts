@@ -16,7 +16,7 @@ const CAMERA_TYPE_LABELS: Record<CameraType, string> = {
 }
 
 export function generateDefaultCameraInstance(camera_model_id: string, position: geo_position, projectId: string): CameraInstance | null {
-    const client_id = crypto.randomUUID()
+    const uid = crypto.randomUUID()
 
     const camera_model_data = getCameraModelDetails(camera_model_id)
     console.log("camera_model_data", camera_model_data)
@@ -26,7 +26,7 @@ export function generateDefaultCameraInstance(camera_model_id: string, position:
     }
 
     const tempCamera: CameraInstance = {
-        client_id,
+        uid,
         label: CAMERA_TYPE_LABELS[camera_model_data.camera_type] ?? 'Unknown',
         lat: position.lat,
         lng: position.lng,
