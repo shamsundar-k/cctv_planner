@@ -2,18 +2,18 @@ import type { CameraRecord, CameraTrackingEntry } from './types'
 
 /**
  * Returns an updated cameraRecords map with the given tracking patch applied,
- * or null if clientId is not found (caller should no-op).
+ * or null if uid is not found (caller should no-op).
  */
 export function withTrackingPatch(
   records: Record<string, CameraRecord>,
-  clientId: string,
+  uid: string,
   patch: Partial<CameraTrackingEntry>,
 ): Record<string, CameraRecord> | null {
-  const record = records[clientId]
+  const record = records[uid]
   if (!record) return null
   return {
     ...records,
-    [clientId]: {
+    [uid]: {
       ...record,
       tracking: { ...record.tracking, ...patch },
     },
@@ -22,11 +22,11 @@ export function withTrackingPatch(
 
 /** Returns all dirty, non-saving camera records matching the given isNew flag. */
 export function filterCameras(
-  clientIds: string[],
+  uids: string[],
   cameraRecords: Record<string, CameraRecord>,
   isNew: boolean,
 ): CameraRecord[] {
-  return clientIds
+  return uids
     .map((id) => cameraRecords[id])
     .filter((r): r is CameraRecord =>
       r != null &&

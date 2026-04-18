@@ -6,10 +6,10 @@ interface CamerasTabProps {
 }
 
 export default function CamerasTab({ projectId: _projectId }: CamerasTabProps) {
-  const clientIds = useCameraInstanceStore((s) => s.clientIds)
+  const uids = useCameraInstanceStore((s) => s.uids)
   const cameraRecords = useCameraInstanceStore((s) => s.cameraRecords)
   const isLoading = useCameraInstanceStore((s) => s.isLoading)
-  const cameras = clientIds.map((id) => cameraRecords[id]?.camera).filter(Boolean)
+  const cameras = uids.map((id) => cameraRecords[id]?.camera).filter(Boolean)
   const { selectedCameraId, hiddenCameraIds, selectCamera, toggleCameraVisibility } = useCameraLayerStore()
 
   if (isLoading) {

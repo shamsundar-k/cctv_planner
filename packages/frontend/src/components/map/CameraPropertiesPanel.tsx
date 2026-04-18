@@ -85,7 +85,7 @@ export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPan
   const camera = useCameraInstanceStore((s) =>
     selectedCameraId ? s.cameraRecords[selectedCameraId]?.camera ?? null : null,
   )
-  const clientIds = useCameraInstanceStore((s) => s.clientIds)
+  const uids = useCameraInstanceStore((s) => s.uids)
   const updateCamera = useCameraInstanceStore((s) => s.updateCamera)
   const removeCamera = useCameraInstanceStore((s) => s.removeCamera)
   const saveStatus = useCameraInstanceStore((s) =>
@@ -122,10 +122,10 @@ export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPan
 
   // Auto-deselect if selected camera was deleted
   useEffect(() => {
-    if (selectedCameraId && !clientIds.includes(selectedCameraId)) {
+    if (selectedCameraId && !uids.includes(selectedCameraId)) {
       clearSelection()
     }
-  }, [clientIds, selectedCameraId, clearSelection])
+  }, [uids, selectedCameraId, clearSelection])
 
   // Escape key closes the panel
   useEffect(() => {

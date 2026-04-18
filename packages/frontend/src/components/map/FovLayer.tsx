@@ -18,7 +18,7 @@ interface FovLayerProps {
 }
 
 export default function FovLayer({ projectId }: FovLayerProps) {
-  const clientIds = useCameraInstanceStore((s) => s.clientIds)
+  const uids = useCameraInstanceStore((s) => s.uids)
   const map = useMapViewStore((s) => s.leafletMap)
 
   const [layer, setLayer] = useState<LayerGroup | null>(null)
@@ -36,7 +36,7 @@ export default function FovLayer({ projectId }: FovLayerProps) {
 
   return (
     <>
-      {clientIds.map((id) => (
+      {uids.map((id) => (
         <FovPolygon key={id} cameraId={id} projectId={projectId} layer={layer} />
       ))}
     </>

@@ -23,7 +23,7 @@ interface CameraLayerProps {
 }
 
 export default function CameraLayer({ projectId }: CameraLayerProps) {
-  const clientIds = useCameraInstanceStore((s) => s.clientIds)
+  const uids = useCameraInstanceStore((s) => s.uids)
   const addCamera = useCameraInstanceStore((s) => s.addCamera)
 
   const map = useMapViewStore((s) => s.leafletMap)
@@ -67,8 +67,8 @@ export default function CameraLayer({ projectId }: CameraLayerProps) {
         const localCamera = generateDefaultCameraInstance(selectedModelId, position, projectId);
         if(localCamera){
           console.log("camera created",localCamera)
-          const clientId = addCamera(localCamera)
-          selectCamera(clientId)
+          const uid = addCamera(localCamera)
+          selectCamera(uid)
           setActiveTool('select')
         }
         else{
@@ -93,7 +93,7 @@ export default function CameraLayer({ projectId }: CameraLayerProps) {
   // React mounts/unmounts each CameraMarker when IDs are added/removed.
   return (
     <>
-      {clientIds.map((id) => (
+      {uids.map((id) => (
         <CameraMarker key={id} cameraId={id} layer={layer} />
       ))}
     </>
