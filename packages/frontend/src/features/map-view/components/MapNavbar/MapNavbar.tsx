@@ -1,9 +1,8 @@
-import { useAuthStore } from '../../../../store/authSlice'
-import { useSaveAction } from './useSaveAction'
+import { useSaveAction } from '../../hooks/useSaveAction'
 import { ProjectTitle } from './ProjectTitle'
 import { SaveButton } from './SaveButton'
-import { UserAvatar } from './UserAvatar'
 import NavLogo from '../../../../components/NavLogo'
+import AppUserAvatar from '../../../../components/AppUserAvatar'
 
 interface MapNavbarProps {
   projectId: string
@@ -12,15 +11,7 @@ interface MapNavbarProps {
 }
 
 export default function MapNavbar({ projectId, projectName, onSave }: MapNavbarProps) {
-  const user = useAuthStore((s) => s.user)
   const saveAction = useSaveAction(projectId, onSave)
-
-  let initials = '??'
-  if (user?.fullName) {
-    initials = user.fullName.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
-  } else if (user?.email) {
-    initials = user.email[0].toUpperCase()
-  }
 
   return (
     <header
@@ -40,7 +31,7 @@ export default function MapNavbar({ projectId, projectName, onSave }: MapNavbarP
           lastSavedAt={saveAction.lastSavedAt}
           onClick={saveAction.handleSave}
         />
-        <UserAvatar initials={initials} />
+        <AppUserAvatar exitProjectPath="/" />
       </div>
     </header>
   )
