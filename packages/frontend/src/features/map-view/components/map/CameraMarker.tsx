@@ -2,18 +2,12 @@
  * CameraMarker — manages one Leaflet marker for one camera.
  *
  * Subscribes to `cameraRecords[cameraId].camera` in the Zustand store so it only
- * re-renders when *this* camera's data changes.  Other cameras' updates are
- * completely invisible to this component.
+ * re-renders when *this* camera's data changes.
  */
 import { useEffect, useRef } from 'react'
 import type { Marker, LeafletMouseEvent, LayerGroup } from 'leaflet'
-import { useCameraInstanceStore } from '../../store/cameraInstanceStore'
-import { useCameraLayerStore } from '../../store/cameraLayerSlice'
-
-// ── Icon builder ──────────────────────────────────────────────────────────────
-// Shape: circle body (pinned to lat/lng) + directional triangle pointing toward
-// the camera's bearing. The whole SVG rotates so the pointer tracks bearing
-// while the circle centre stays fixed on the map coordinate.
+import { useCameraInstanceStore } from '../../../../store/cameraInstanceStore'
+import { useCameraLayerStore } from '../../../../store/cameraLayerSlice'
 
 function buildCameraIcon(colour: string, selected: boolean, bearing: number): string {
   const selectionRing = selected
@@ -35,8 +29,6 @@ function buildCameraIcon(colour: string, selected: boolean, bearing: number): st
   `
 }
 
-// ── Component ──────────────────────────────────────────────────────────────────
-
 interface CameraMarkerProps {
   cameraId: string
   layer: LayerGroup | null
@@ -48,13 +40,9 @@ export default function CameraMarker({ cameraId, layer }: CameraMarkerProps) {
   const selectCamera = useCameraLayerStore((s) => s.selectCamera)
 
   const markerRef = useRef<Marker | null>(null)
-  // Keep selectedCameraId in a ref so the click handler never goes stale
-  // without needing to recreate the marker.
   const selectedCameraIdRef = useRef(selectedCameraId)
   useEffect(() => { selectedCameraIdRef.current = selectedCameraId }, [selectedCameraId])
 
-
-  // ── Create marker on mount, remove on unmount ────────────────────────────
   useEffect(() => {
     if (!layer || !camera) return
 
@@ -85,11 +73,9 @@ export default function CameraMarker({ cameraId, layer }: CameraMarkerProps) {
       markerRef.current?.remove()
       markerRef.current = null
     }
-  // Only run on mount/unmount — position and icon updates are handled separately
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [layer])
 
-  // ── Update icon when colour or selection state changes ───────────────────
   useEffect(() => {
     if (!camera || !markerRef.current) return
     import('leaflet').then((L) => {
@@ -104,8 +90,6 @@ export default function CameraMarker({ cameraId, layer }: CameraMarkerProps) {
     })
   }, [camera?.colour, camera?.bearing, selectedCameraId, cameraId])
 
-
-  // ── Update position when lat/lng changes ────────────────────────────────
   useEffect(() => {
     if (camera && markerRef.current) {
       markerRef.current.setLatLng([camera.lat, camera.lng])

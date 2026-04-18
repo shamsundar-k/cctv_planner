@@ -1,21 +1,20 @@
 /**
  * FovPolygon — manages one Leaflet FOV polygon for one camera.
  *
- * Subscribes to `cameraRecords[cameraId].camera` in the Zustand store so it only
- * re-renders when *this* camera's data changes.  The imported camera-model
- * list comes from React Query's shared cache (no extra fetch per instance).
+ * Subscribes to `cameraRecords[cameraId].camera` so it only re-renders
+ * when *this* camera's data changes.
  */
 import { useEffect, useRef } from 'react'
 import type { Polygon, LayerGroup } from 'leaflet'
-import { useImportedCameras } from '../../api/projects'
-import { useMapViewStore } from '../../store/mapViewSlice'
-import { useCameraInstanceStore } from '../../store/cameraInstanceStore'
-import { useCameraLayerStore } from '../../store/cameraLayerSlice'
+import { useImportedCameras } from '../../../../api/projects'
+import { useMapViewStore } from '../../../../store/mapViewSlice'
+import { useCameraInstanceStore } from '../../../../store/cameraInstanceStore'
+import { useCameraLayerStore } from '../../../../store/cameraLayerSlice'
 import {
   calculateFov,
   calculateTiltFromTarget,
   projectTrapezoidToLatLng,
-} from '../../lib/fovCalculations'
+} from '../../../../lib/fovCalculations'
 
 interface FovPolygonProps {
   cameraId: string
@@ -33,7 +32,6 @@ export default function FovPolygon({ cameraId, projectId, layer }: FovPolygonPro
 
   const polygonRef = useRef<Polygon | null>(null)
 
-  // ── Cleanup on unmount ───────────────────────────────────────────────────
   useEffect(() => {
     return () => {
       polygonRef.current?.remove()
@@ -41,7 +39,6 @@ export default function FovPolygon({ cameraId, projectId, layer }: FovPolygonPro
     }
   }, [])
 
-  // ── Sync polygon with camera state ───────────────────────────────────────
   useEffect(() => {
     if (!layer || !camera || !importedItems) return
 

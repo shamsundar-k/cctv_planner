@@ -1,4 +1,4 @@
-import NavUserAvatar from './NavUserAvatar'
+import AppUserAvatar from '../../../components/AppUserAvatar'
 
 export default function NavActions() {
   return (
@@ -14,7 +14,7 @@ export default function NavActions() {
         <path d="M10 19a2 2 0 0 0 4 0" stroke="currentColor" strokeWidth="1.5" fill="none" />
       </svg>
 
-      <NavUserAvatar />
+      <AppUserAvatar />
 
       {/* Help */}
       <a

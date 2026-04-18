@@ -1,12 +1,15 @@
-import { useCameraInstances } from '../../../../api/cameraInstances'
+import { useCameraInstanceStore } from '../../../../store/cameraInstanceStore'
 import { useCameraLayerStore } from '../../../../store/cameraLayerSlice'
 
 interface CamerasTabProps {
   projectId: string
 }
 
-export default function CamerasTab({ projectId }: CamerasTabProps) {
-  const { data: cameras, isLoading } = useCameraInstances(projectId)
+export default function CamerasTab({ projectId: _projectId }: CamerasTabProps) {
+  const uids = useCameraInstanceStore((s) => s.uids)
+  const cameraRecords = useCameraInstanceStore((s) => s.cameraRecords)
+  const isLoading = useCameraInstanceStore((s) => s.isLoading)
+  const cameras = uids.map((id) => cameraRecords[id]?.camera).filter(Boolean)
   const { selectedCameraId, hiddenCameraIds, selectCamera, toggleCameraVisibility } = useCameraLayerStore()
 
   if (isLoading) {
@@ -34,12 +37,12 @@ export default function CamerasTab({ projectId }: CamerasTabProps) {
   return (
     <ul className="flex flex-col gap-0.5">
       {cameras.map((cam) => {
-        const isSelected = cam.id === selectedCameraId
-        const isVisible = !hiddenCameraIds.includes(cam.id)
+        const isSelected = cam.uid === selectedCameraId
+        const isVisible = !hiddenCameraIds.includes(cam.uid)
         const displayLabel = cam.label || 'Untitled Camera'
 
         return (
-          <li key={cam.id}>
+          <li key={cam.uid}>
             <div
               className="flex items-center gap-2 h-8 px-1 rounded cursor-pointer group transition-colors"
               style={{
@@ -48,7 +51,7 @@ export default function CamerasTab({ projectId }: CamerasTabProps) {
               }}
               onMouseEnter={e => { if (!isSelected) { e.currentTarget.style.background = 'color-mix(in srgb, var(--theme-surface) 15%, transparent)'; e.currentTarget.style.color = 'var(--theme-text-primary)' } }}
               onMouseLeave={e => { if (!isSelected) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'color-mix(in srgb, var(--theme-text-primary) 70%, transparent)' } }}
-              onClick={() => selectCamera(isSelected ? null : cam.id)}
+              onClick={() => selectCamera(isSelected ? null : cam.uid)}
             >
               {/* Colour dot */}
               <span
@@ -63,7 +66,7 @@ export default function CamerasTab({ projectId }: CamerasTabProps) {
               <button
                 onClick={(e) => {
                   e.stopPropagation()
-                  toggleCameraVisibility(cam.id)
+                  toggleCameraVisibility(cam.uid)
                 }}
                 title={isVisible ? 'Hide camera' : 'Show camera'}
                 className={`shrink-0 p-0.5 rounded border-none bg-transparent cursor-pointer transition-colors ${isVisible

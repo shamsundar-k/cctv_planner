@@ -3,6 +3,7 @@ import { useAllCameraModels } from '../../../../api/camerasModels'
 import { useCameraPlacementStore } from '../../../../store/cameraPlacementSlice'
 import type { CameraModel } from '../../../../api/cameramodel.types'
 import ModelSelectorPanel from '../../../camera-selector/component/ModelSelectorPanel'
+import CamerasTab from './CamerasTab'
 
 type TabId = 'models' | 'cameras'
 
@@ -41,7 +42,7 @@ function RailTab({ label, active, onClick }: { label: string; active: boolean; o
   )
 }
 
-export default function LeftSidebar({ projectId: _projectId }: LeftSidebarProps) {
+export default function LeftSidebar({ projectId }: LeftSidebarProps) {
   const [activeTab, setActiveTab] = useState<TabId | null>(null)
   const { data: allModels = [], isLoading: modelsLoading } = useAllCameraModels()
   const { setMode, setSelectedCameraId, setSelectedModel } = useCameraPlacementStore()
@@ -94,7 +95,7 @@ export default function LeftSidebar({ projectId: _projectId }: LeftSidebarProps)
               onPlaceCamera={handlePlaceCamera}
             />
           )}
-          {activeTab === 'cameras' && <div className="flex-1" />}
+          {activeTab === 'cameras' && <CamerasTab projectId={projectId} />}
         </div>
       )}
     </div>
