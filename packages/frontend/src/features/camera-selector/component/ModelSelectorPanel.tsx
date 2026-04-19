@@ -1,141 +1,45 @@
-/**
- * ModelSelectorPanel
- *
- * Container for the camera model selection UI in the map sidebar (236px wide).
- * State is managed by useCameraSelector; this component handles layout only.
- *
- * Props:
- *   models          — full admin-seeded CameraModel list (fetched by parent)
- *   isLoading       — true while parent is fetching
- *   onPlaceCamera   — called with the selected CameraModel when button clicked
- */
-import type { CameraModel } from '../../../api/cameramodel.types'
-import { useCameraSelector } from '../hooks/useCameraSelector'
+import { useState, useMemo } from 'react'
+import { useAllCameraModels } from '../../../api/camerasModels'
+import { useCameraSelectorStore } from '../../../store/cameraSelectorSlice'
 import ManufacturerFilter from './ManufacturerFilter'
 import ModelDropdown from './ModelDropdown'
-import CameraModelInfoCard from './CameraModelInfoCard'
-import CameraModelDetailModal from './CameraModelDetailModal'
-
-// ── Place camera button ────────────────────────────────────────────────────────
-
-function SelectCameraButton({
-    disabled,
-    onClick,
-}: {
-    disabled: boolean
-    onClick: () => void
-}) {
-    return (
-        <button
-            disabled={disabled}
-            onClick={onClick}
-            className="flex w-full items-center justify-center gap-2.5 rounded-xl px-4 py-3 text-sm font-bold tracking-wide transition-all duration-300 border"
-            style={disabled ? {
-                background: 'color-mix(in srgb, var(--theme-surface) 20%, transparent)',
-                color: 'color-mix(in srgb, var(--theme-surface) 60%, transparent)',
-                borderColor: 'color-mix(in srgb, var(--theme-surface) 20%, transparent)',
-                cursor: 'not-allowed',
-            } : {
-                background: 'var(--theme-accent)',
-                color: 'var(--theme-accent-text)',
-                borderColor: 'transparent',
-            }}
-            onMouseEnter={e => { if (!disabled) { (e.currentTarget as HTMLButtonElement).style.background = 'var(--theme-accent-hover)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--theme-bg-base)' } }}
-            onMouseLeave={e => { if (!disabled) { (e.currentTarget as HTMLButtonElement).style.background = 'var(--theme-accent)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--theme-accent-text)' } }}
-        >
-            <SelectCameraIcon />
-            Select camera
-        </button>
-    )
-}
-
-function SelectCameraIcon() {
-    return (
-        <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <circle cx="12" cy="12" r="3" />
-            <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
-            <path d="M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1" />
-        </svg>
-    )
-}
-
-// ── Loading skeleton ──────────────────────────────────────────────────────────
+import PlaceCameraButton from './PlaceCameraButton'
+import PanelHeader from './PanelHeader'
 
 function LoadingSkeleton() {
     return (
         <div className="flex flex-col gap-3">
             {[1, 2].map((i) => (
-                <div
-                    key={i}
-                    className="h-10 w-full animate-pulse rounded-lg"
-                    style={{ background: 'color-mix(in srgb, var(--theme-surface) 20%, transparent)' }}
-                />
+                <div key={i} className="h-10 w-full animate-pulse rounded-lg bg-surface/20" />
             ))}
         </div>
     )
 }
 
-// ── Divider ───────────────────────────────────────────────────────────────────
+export default function ModelSelectorPanel() {
+    const { data: models = [], isLoading } = useAllCameraModels()
+    const { selectedModel, setSelectedModel } = useCameraSelectorStore()
+    const [selectedManufacturer, setSelectedManufacturer] = useState('')
 
-function Divider() {
-    return <div className="my-1.5 h-px w-full" style={{ background: `linear-gradient(to right, transparent, color-mix(in srgb, var(--theme-surface) 40%, transparent), transparent)` }} />
-}
-
-// ── Panel heading ─────────────────────────────────────────────────────────────
-
-function PanelHeading() {
-    return (
-        <div className="flex items-center gap-2 mb-1">
-            <div className="h-4 w-1 rounded-full" style={{ background: 'var(--theme-text-primary)' }} />
-            <h2 className="text-xs font-black uppercase tracking-[0.2em] relative top-0.5" style={{ color: 'var(--theme-text-primary)' }}>
-                Camera Setup
-            </h2>
-        </div>
+    const manufacturers = useMemo(
+        () => Array.from(new Set(models.map((m) => m.manufacturer))).sort(),
+        [models]
     )
-}
 
-// ── Container ─────────────────────────────────────────────────────────────────
+    const filteredModels = useMemo(
+        () => selectedManufacturer ? models.filter((m) => m.manufacturer === selectedManufacturer) : models,
+        [models, selectedManufacturer]
+    )
 
-interface ModelSelectorPanelProps {
-    models: CameraModel[]
-    isLoading: boolean
-    onPlaceCamera: (model: CameraModel) => void
-}
-
-export default function ModelSelectorPanel({
-    models,
-    isLoading,
-    onPlaceCamera,
-}: ModelSelectorPanelProps) {
-    const {
-        manufacturers,
-        filteredModels,
-        selectedManufacturer,
-        selectedModel,
-        showDetailModal,
-        handleManufacturerSelect,
-        setSelectedModel,
-        setShowDetailModal,
-    } = useCameraSelector(models)
+    const handleManufacturerSelect = (manufacturer: string) => {
+        setSelectedManufacturer(manufacturer)
+        setSelectedModel(null)
+    }
 
     return (
-        <div
-            className="flex h-full flex-col shadow-xl"
-            style={{ background: 'var(--theme-bg-card)', borderRight: '1px solid color-mix(in srgb, var(--theme-surface) 20%, transparent)' }}
-        >
-            {/* Fixed: heading + filters */}
+        <div className="flex h-full flex-col shadow-xl bg-card border-r border-surface/20">
             <div className="p-4 flex flex-col gap-4">
-                <PanelHeading />
-
+                <PanelHeader />
                 {isLoading ? (
                     <LoadingSkeleton />
                 ) : (
@@ -145,7 +49,6 @@ export default function ModelSelectorPanel({
                             selected={selectedManufacturer}
                             onSelect={handleManufacturerSelect}
                         />
-
                         <ModelDropdown
                             models={filteredModels}
                             selected={selectedModel}
@@ -154,32 +57,8 @@ export default function ModelSelectorPanel({
                     </>
                 )}
             </div>
-
-            {/* Camera info card */}
-            {selectedModel && (
-                <div className="px-3">
-                    <Divider />
-                    <CameraModelInfoCard
-                        model={selectedModel}
-                        onMoreDetails={() => setShowDetailModal(true)}
-                    />
-                </div>
-            )}
-
-            {showDetailModal && selectedModel && (
-                <CameraModelDetailModal
-                    model={selectedModel}
-                    onClose={() => setShowDetailModal(false)}
-                />
-            )}
-
-            {/* Always-visible button pinned at bottom */}
-            <div className="p-3">
-                {selectedModel && <Divider />}
-                <SelectCameraButton
-                    disabled={selectedModel === null}
-                    onClick={() => selectedModel && onPlaceCamera(selectedModel)}
-                />
+            <div className="mt-auto p-3">
+                <PlaceCameraButton />
             </div>
         </div>
     )

@@ -1,12 +1,12 @@
-import { useMapView } from '../features/map-view/hooks/useMapView'
-import MapNavbar from '../features/map-view/components/MapNavbar/MapNavbar'
-import LeftSidebar from '../features/map-view/components/LeftSidebar/LeftSidebar'
-import Map from '../features/map-view/components/map/Map'
-import CameraLayer from '../features/map-view/components/map/CameraLayer'
-import FovLayer from '../features/map-view/components/map/FovLayer'
-import CameraPropertiesPanel from '../features/map-view/components/map/CameraPropertiesPanel'
+import { useMapView } from '../../features/map-view/hooks/useMapView'
+import MapNavbar from '../../features/map-view/components/MapNavbar/MapNavbar'
+import Map from '../../features/map-view/components/map/Map'
+import CameraLayer from '../../features/map-view/components/map/CameraLayer'
+import FovLayer from '../../features/map-view/components/map/FovLayer'
+import CameraPropertiesPanel from '../../features/map-view/components/map/CameraPropertiesPanel'
+import LeftSidebar from './LeftSidebar'
 
-export default function ProjectMapViewPage() {
+export default function ProjectMapView() {
   const { id, project, isLoading, isError, center, defaultZoom } = useMapView()
 
   if (isLoading) {
@@ -32,9 +32,6 @@ export default function ProjectMapViewPage() {
       <div className="flex-1 flex overflow-hidden">
         <LeftSidebar projectId={id} />
         <Map zoom={defaultZoom} center={center} />
-        <CameraLayer projectId={id} />
-        <FovLayer projectId={id} />
-        <CameraPropertiesPanel projectId={id} />
       </div>
     </div>
   )

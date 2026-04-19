@@ -17,7 +17,8 @@
       "Read(//tmp/**)",
       "Bash(wc -l /home/office/DEV/cctv_planner/packages/backend/app/routers/*.py)",
       "Bash(cat /home/office/DEV/cctv_planner/packages/backend/tests/*.py)",
-      "Bash(pnpm --filter frontend exec tsc --noEmit)"
+      "Bash(pnpm --filter frontend exec tsc --noEmit)",
+      "Bash(pnpm --filter frontend build)"
     ]
   }
 }

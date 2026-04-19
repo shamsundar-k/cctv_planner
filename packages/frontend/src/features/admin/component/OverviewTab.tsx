@@ -1,3 +1,4 @@
+import { Link } from 'react-router'
 import InviteGenerateCard from '../../invites/component/InviteGenerateCard'
 import type { LatestInvite } from '../../invites/component/InviteGenerateCard'
 
@@ -66,6 +67,37 @@ export default function OverviewTab(props: OverviewTabProps) {
         onGenerateInvite={onGenerateInvite}
         onCopyInvite={onCopyInvite}
       />
+
+      {/* Management Links */}
+      <div
+        className="rounded-xl p-6"
+        style={{ background: 'color-mix(in srgb, var(--theme-bg-card) 80%, transparent)', border: '1px solid color-mix(in srgb, var(--theme-surface) 25%, transparent)' }}
+      >
+        <h2 className="text-base font-bold mt-0 mb-5" style={{ color: 'var(--theme-text-primary)' }}>Management</h2>
+        <Link
+          to="/admin/manage/cameras"
+          className="flex items-center justify-between w-full px-4 py-3 rounded-lg no-underline transition-colors"
+          style={{ background: 'color-mix(in srgb, var(--theme-accent) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--theme-accent) 25%, transparent)' }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'color-mix(in srgb, var(--theme-accent) 20%, transparent)' }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'color-mix(in srgb, var(--theme-accent) 10%, transparent)' }}
+        >
+          <div className="flex items-center gap-3">
+            <span
+              className="w-9 h-9 rounded-lg flex items-center justify-center text-base"
+              style={{ background: 'color-mix(in srgb, var(--theme-accent) 20%, transparent)' }}
+            >
+              📷
+            </span>
+            <div>
+              <div className="text-sm font-semibold" style={{ color: 'var(--theme-accent-text)' }}>Camera Models</div>
+              <div className="text-xs" style={{ color: 'var(--theme-text-secondary)' }}>Add, edit and manage the camera catalog</div>
+            </div>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ color: 'var(--theme-accent-text)', flexShrink: 0 }}>
+            <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </Link>
+      </div>
     </div>
   )
 }

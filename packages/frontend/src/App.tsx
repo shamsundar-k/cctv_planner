@@ -27,7 +27,7 @@ import AdminPage from './pages/AdminPage'
 import AdminCamerasPage from './pages/AdminCamerasPage'
 import AdminCameraEditPage from './pages/AdminCameraEditPage'
 import ProjectManagePage from './pages/ProjectManagePage'
-import ProjectMapViewPage from './pages/ProjectMapViewPage'
+import ProjectMapViewPage from './pages/ProjectMapView'
 import { ToastProvider } from './components/ui/Toast'
 
 function App() {

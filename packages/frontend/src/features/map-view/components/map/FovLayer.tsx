@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react'
 import type { LayerGroup } from 'leaflet'
 import { useMapViewStore } from '../../../../store/mapViewSlice'
 import { useCameraInstanceStore } from '../../../../store/cameraInstanceStore'
-import FovPolygon from './FovPolygon'
+// import FovPolygon from './FovPolygon'
 
 interface FovLayerProps {
   projectId: string
@@ -32,9 +32,9 @@ export default function FovLayer({ projectId }: FovLayerProps) {
 
   return (
     <>
-      {uids.map((id) => (
+      {/* {uids.map((id) => (
         <FovPolygon key={id} cameraId={id} projectId={projectId} layer={layer} />
-      ))}
+      ))} */}
     </>
   )
 }

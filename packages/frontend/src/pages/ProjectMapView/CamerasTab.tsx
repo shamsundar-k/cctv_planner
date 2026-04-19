@@ -1,5 +1,5 @@
-import { useCameraInstanceStore } from '../../../../store/cameraInstanceStore'
-import { useCameraLayerStore } from '../../../../store/cameraLayerSlice'
+import { useCameraInstanceStore } from '../../store/cameraInstanceStore'
+import { useCameraLayerStore } from '../../store/cameraLayerSlice'
 
 interface CamerasTabProps {
   projectId: string
@@ -53,30 +53,20 @@ export default function CamerasTab({ projectId: _projectId }: CamerasTabProps) {
               onMouseLeave={e => { if (!isSelected) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'color-mix(in srgb, var(--theme-text-primary) 70%, transparent)' } }}
               onClick={() => selectCamera(isSelected ? null : cam.uid)}
             >
-              {/* Colour dot */}
               <span
                 className="w-2.5 h-2.5 rounded-full shrink-0"
                 style={{ backgroundColor: cam.colour }}
               />
-
-              {/* Label */}
               <span className="flex-1 text-xs truncate select-none">{displayLabel}</span>
-
-              {/* Visibility toggle */}
               <button
                 onClick={(e) => {
                   e.stopPropagation()
                   toggleCameraVisibility(cam.uid)
                 }}
                 title={isVisible ? 'Hide camera' : 'Show camera'}
-                className={`shrink-0 p-0.5 rounded border-none bg-transparent cursor-pointer transition-colors ${isVisible
-                  ? 'opacity-0 group-hover:opacity-100'
-                  : 'opacity-100'
-                }`}
+                className={`shrink-0 p-0.5 rounded border-none bg-transparent cursor-pointer transition-colors ${isVisible ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'}`}
                 style={{ color: isVisible ? 'color-mix(in srgb, var(--theme-text-secondary) 60%, transparent)' : 'var(--theme-text-secondary)' }}
-              >
-
-              </button>
+              />
             </div>
           </li>
         )
