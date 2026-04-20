@@ -1,4 +1,4 @@
-import type { CameraModel } from '../../../types/cameramodel.types'
+import type { CameraModel } from '@/types/cameramodel.types'
 
 interface Props {
   camera: CameraModel
@@ -17,8 +17,8 @@ function CameraTypeLabel({ type }: { type: CameraModel['camera_type'] }) {
 function CameraSpecType({ camera }: Props) {
   return (
     <>
-      <span className="text-slate-500">Type</span>
-      <span className="text-slate-300">
+      <span className="text-muted">Type</span>
+      <span className="text-primary">
         <CameraTypeLabel type={camera.camera_type} />
       </span>
     </>
@@ -28,8 +28,8 @@ function CameraSpecType({ camera }: Props) {
 function CameraSpecResolution({ camera }: Props) {
   return (
     <>
-      <span className="text-slate-500">Resolution</span>
-      <span className="text-slate-300">
+      <span className="text-muted">Resolution</span>
+      <span className="text-primary">
         {camera.resolution_h}×{camera.resolution_v} ({camera.megapixels}MP)
       </span>
     </>
@@ -39,8 +39,8 @@ function CameraSpecResolution({ camera }: Props) {
 function CameraSpecHorizontalFOV({ camera }: Props) {
   return (
     <>
-      <span className="text-slate-500">H-FOV</span>
-      <span className="text-slate-300">
+      <span className="text-muted">H-FOV</span>
+      <span className="text-primary">
         {camera.h_fov_min === camera.h_fov_max
           ? `${camera.h_fov_min}°`
           : `${camera.h_fov_min}°–${camera.h_fov_max}°`}
@@ -52,8 +52,8 @@ function CameraSpecHorizontalFOV({ camera }: Props) {
 function CameraSpecFocalLength({ camera }: Props) {
   return (
     <>
-      <span className="text-slate-500">Focal length</span>
-      <span className="text-slate-300">
+      <span className="text-muted">Focal length</span>
+      <span className="text-primary">
         {camera.focal_length_min === camera.focal_length_max
           ? `${camera.focal_length_min} mm`
           : `${camera.focal_length_min}–${camera.focal_length_max} mm`}
@@ -65,8 +65,8 @@ function CameraSpecFocalLength({ camera }: Props) {
 function CameraSpecIRRange({ camera }: Props) {
   return (
     <>
-      <span className="text-slate-500">IR range</span>
-      <span className="text-slate-300">{camera.ir_range > 0 ? `${camera.ir_range} m` : 'N/A'}</span>
+      <span className="text-muted">IR range</span>
+      <span className="text-primary">{camera.ir_range > 0 ? `${camera.ir_range} m` : 'N/A'}</span>
     </>
   )
 }

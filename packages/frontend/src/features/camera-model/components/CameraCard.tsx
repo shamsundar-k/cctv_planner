@@ -10,7 +10,7 @@ interface Props {
 
 export default function CameraCard({ camera, onDelete }: Props) {
   return (
-    <div className="bg-slate-800 border border-slate-700 rounded-xl p-5 flex flex-col gap-3 hover:border-slate-600 transition-colors">
+    <div className="bg-card border border-border rounded-xl p-5 flex flex-col gap-3 hover:border-muted transition-colors">
       <CameraCardHeader camera={camera} />
 
       {/* Specs */}
@@ -23,7 +23,7 @@ export default function CameraCard({ camera, onDelete }: Props) {
       </div>
 
       {camera.notes && (
-        <p className="text-xs text-slate-500 italic m-0 line-clamp-2">{camera.notes}</p>
+        <p className="text-xs text-muted italic m-0 line-clamp-2">{camera.notes}</p>
       )}
 
       <CameraCardActions camera={camera} onDelete={onDelete} />
