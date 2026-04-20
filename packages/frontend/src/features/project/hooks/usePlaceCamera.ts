@@ -1,6 +1,6 @@
 import { useCameraPlacementStore } from '../../../store/cameraPlacementSlice'
 import { useMapInteractionStore } from '../../../store/mapInteractionSlice'
-import type { CameraModel } from '../../../api/cameramodel.types'
+import type { CameraModel } from '../../../types/cameramodel.types'
 
 export function usePlaceCamera() {
   const { setSelectedCameraId, setSelectedModel } = useCameraPlacementStore()

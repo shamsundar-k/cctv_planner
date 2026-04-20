@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { useMapViewStore } from './mapViewSlice'
-import type { CameraModel } from '../api/cameramodel.types'
+import type { CameraModel } from '../types/cameramodel.types'
 
 interface CameraLayerState {
   // Selection (single camera at a time)

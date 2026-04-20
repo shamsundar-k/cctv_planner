@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import type { CameraModelCreate } from '../../../api/cameramodel.types'
+import type { CameraModelCreate } from '../../../types/cameramodel.types'
 import { SENSOR_FORMATS } from '../../../constants/sensorFormats'
 import { calcMegapixels, calcAspectRatio } from '../utils/cameraFormHelpers'
 import Section from './Section'

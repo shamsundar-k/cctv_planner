@@ -1,4 +1,4 @@
-import type { CameraModel } from '../../../api/cameramodel.types'
+import type { CameraModel } from '../../../types/cameramodel.types'
 
 interface ModelDropdownProps {
     models: CameraModel[]

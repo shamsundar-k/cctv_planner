@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useAllCameraModels, useDeleteCameraModel } from '../../../api/camerasModels'
 import { useToast } from '../../../components/ui/Toast'
-import type { CameraModel } from '../../../api/cameramodel.types'
+import type { CameraModel } from '../../../types/cameramodel.types'
 
 export function useAdminCameras() {
   const showToast = useToast()

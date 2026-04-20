@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { THEMES, ACTIVE_THEME } from './src/config/themes'
-
+import path from 'path'
 /** Injects the active theme's colour values as CSS custom properties on :root
  *  directly into the HTML <head> as an inline <style> tag so no virtual module
  *  is needed. This avoids conflicts with @tailwindcss/vite's internal CSS resolver. */
@@ -38,6 +38,12 @@ function injectTheme() {
 
 export default defineConfig({
   plugins: [injectTheme(), react(), tailwindcss()],
+  resolve: {
+    alias: {
+      // Maps '@' to the 'src' directory relative to the config file
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
   server: {
     port: 5173,
     proxy: {

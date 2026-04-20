@@ -1,4 +1,4 @@
-import type { CameraInstance, CameraInstanceCreatePayload, CameraInstanceUpdatePayload } from '../../api/cameraInstances.types'
+import type { CameraInstance, CameraInstanceCreatePayload, CameraInstanceUpdatePayload } from '../../types/cameraInstances.types'
 
 export function buildCreatePayload(camera: CameraInstance): CameraInstanceCreatePayload {
   return {

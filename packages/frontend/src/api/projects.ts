@@ -16,7 +16,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { AxiosError } from 'axios'
 import client from './client'
 import type { Project, ImportedCameraItem, CreateProjectDTO, UpdateProjectDTO } from './projects.types'
-import type { CameraModel } from './cameramodel.types'
+import type { CameraModel } from '../types/cameramodel.types'
 import { queryClient } from '../queryClient'
 
 // ── Query keys ─────────────────────────────────────────────────────────────────

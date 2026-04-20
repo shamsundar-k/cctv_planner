@@ -11,7 +11,7 @@
  */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import client from './client'
-import type { CameraModel, CameraModelCreate, CameraModelUpdate } from './cameramodel.types'
+import type { CameraModel, CameraModelCreate, CameraModelUpdate } from '../types/cameramodel.types'
 
 // ── Query keys ─────────────────────────────────────────────────────────────────
 

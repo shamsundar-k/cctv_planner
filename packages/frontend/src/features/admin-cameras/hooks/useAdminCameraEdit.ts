@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router'
 import { useCameraModel, useCreateCameraModel, useUpdateCameraModel } from '../../../api/camerasModels'
 import { useToast } from '../../../components/ui/Toast'
 import { isStandardSensorFormat } from '../../../constants/sensorFormats'
-import type { CameraModelCreate } from '../../../api/cameramodel.types'
+import type { CameraModelCreate } from '../../../types/cameramodel.types'
 import { emptyForm } from '../utils/cameraFormHelpers'
 
 export function useAdminCameraEdit() {

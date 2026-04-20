@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useImportedCameras } from '../../../../api/projects'
 import { useCameraInstanceStore } from '../../../../store/cameraInstanceStore'
 import { useCameraLayerStore } from '../../../../store/cameraLayerSlice'
-import type { CameraInstance } from '../../../../api/cameraInstances.types'
+import type { CameraInstance } from '../../../../types/cameraInstances.types'
 import type { fov_input_params } from '../../../../lib/fovCalculations'
 import { computeFovCartesian, computeFovGeoCorners } from '../../../../lib/fovCalculations'
 
@@ -105,7 +105,7 @@ export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPan
       focal_length_chosen: camera.focal_length_chosen ?? '',
     })
     setConfirmDelete(false)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [camera?.uid])
 
   useEffect(() => {

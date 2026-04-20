@@ -1,4 +1,4 @@
-import type { CameraModel } from './cameramodel.types'
+import type { CameraModel } from '../types/cameramodel.types'
 
 export interface Collaborator {
   user_id: string

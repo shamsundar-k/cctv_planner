@@ -1,4 +1,4 @@
-import type { CameraInstance } from '../../api/cameraInstances.types'
+import type { CameraInstance } from '../../types/cameraInstances.types'
 
 // ── Tracking ───────────────────────────────────────────────────────────────────
 

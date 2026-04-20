@@ -1,6 +1,6 @@
-import type { CameraInstance } from '../api/cameraInstances.types'
+import type { CameraInstance } from '../types/cameraInstances.types'
 import { getCameraModelDetails } from '../api/projects'
-import type { CameraType } from '../api/cameramodel.types'
+import type { CameraType } from '../types/cameramodel.types'
 import type { fov_input_params, FovCartesian } from './fovCalculations'
 import { computeFovCartesian, computeFovGeoCorners } from './fovCalculations'
 

@@ -1,4 +1,4 @@
-import type { CameraModelCreate } from '../../../api/cameramodel.types'
+import type { CameraModelCreate } from '../../../types/cameramodel.types'
 
 export function gcd(a: number, b: number): number {
   return b === 0 ? a : gcd(b, a % b)

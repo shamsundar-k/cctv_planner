@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
-import type { CameraInstance, CameraInstanceCreatePayload, CameraInstanceUpdatePayload } from '../../api/cameraInstances.types'
+import type { CameraInstance, CameraInstanceCreatePayload, CameraInstanceUpdatePayload } from '../../types/cameraInstances.types'
 import client from '../../api/client'
 import type { CameraInstanceStoreState, CameraRecord } from './types'
 import { filterCameras, withTrackingPatch } from './helpers'
