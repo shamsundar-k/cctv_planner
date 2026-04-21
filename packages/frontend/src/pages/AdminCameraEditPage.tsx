@@ -1,6 +1,6 @@
 import { Link } from 'react-router'
 import Navbar from '../features/navigation/component/Navbar'
-import { useAdminCameraEdit } from '../features/admin-cameras/hooks/useAdminCameraEdit'
+import { useAdminCameraEdit } from '../features/camera-model/hooks/useAdminCameraEdit'
 import CameraEditForm from '../features/admin-cameras/component/CameraEditForm'
 
 export default function AdminCameraEditPage() {

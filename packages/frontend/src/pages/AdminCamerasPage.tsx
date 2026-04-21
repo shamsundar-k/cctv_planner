@@ -1,14 +1,11 @@
 import { Link } from 'react-router'
 import Navbar from '../features/navigation/component/Navbar'
-import { useAdminCameras } from '../features/admin-cameras/hooks/useAdminCameras'
-import CameraListHeader from '../features/admin-cameras/component/CameraListHeader'
-import CameraSearchBar from '../features/admin-cameras/component/CameraSearchBar'
-import CameraGrid from '../features/admin-cameras/component/CameraGrid'
-import DeleteConfirmModal from '../features/admin-cameras/component/DeleteConfirmModal'
+import { useCameraModelList } from '../features/camera-model/hooks/useCameraModelList'
+import CameraListHeader from '../features/camera-model/components/CameraListHeader'
+import CameraGrid from '../features/camera-model/components/CameraGrid'
 
 export default function AdminCamerasPage() {
-  const { isLoading, filtered, search, setSearch, deleteTarget, setDeleteTarget, handleDelete, isDeleting } =
-    useAdminCameras()
+  const { cameras, isLoading } = useCameraModelList()
 
   return (
     <div className="min-h-screen bg-slate-900">
@@ -25,18 +22,9 @@ export default function AdminCamerasPage() {
         </Link>
 
         <CameraListHeader />
-        <CameraSearchBar search={search} onSearch={setSearch} count={filtered.length} isLoading={isLoading} />
-        <CameraGrid cameras={filtered} isLoading={isLoading} search={search} onDelete={setDeleteTarget} />
+        <CameraGrid cameras={cameras} isLoading={isLoading} />
       </div>
-
-      {deleteTarget && (
-        <DeleteConfirmModal
-          camera={deleteTarget}
-          onConfirm={handleDelete}
-          onCancel={() => setDeleteTarget(null)}
-          isDeleting={isDeleting}
-        />
-      )}
     </div>
   )
 }
+

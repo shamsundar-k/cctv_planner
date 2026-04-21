@@ -4,7 +4,7 @@ import { useCameraModel, useCreateCameraModel, useUpdateCameraModel } from '../.
 import { useToast } from '../../../components/ui/Toast'
 import { isStandardSensorFormat } from '../../../constants/sensorFormats'
 import type { CameraModelCreate } from '../../../types/cameramodel.types'
-import { emptyForm } from '../utils/cameraFormHelpers'
+import { emptyForm } from '../../admin-cameras/utils/cameraFormHelpers'
 
 export function useAdminCameraEdit() {
   const { id } = useParams<{ id: string }>()
