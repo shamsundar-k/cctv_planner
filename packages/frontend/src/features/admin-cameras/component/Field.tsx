@@ -7,7 +7,7 @@ interface Props {
   tooltip?: string
 }
 
-const labelClass = 'block text-xs font-medium text-gray-500 mb-1'
+const labelClass = 'block text-xs font-medium text-muted mb-1'
 
 export default function Field({ label, children, hint, tooltip }: Props) {
   return (
@@ -17,7 +17,7 @@ export default function Field({ label, children, hint, tooltip }: Props) {
         {tooltip && <Tooltip text={tooltip} />}
       </label>
       {children}
-      {hint && <p className="text-[11px] text-gray-400 mt-1 mb-0">{hint}</p>}
+      {hint && <p className="text-[11px] text-muted mt-1 mb-0">{hint}</p>}
     </div>
   )
 }

@@ -6,7 +6,7 @@ export default function CameraListHeader() {
       <div>
         <h1 className="text-[28px] font-bold text-slate-100 m-0">Camera Models</h1>
         <p className="text-sm text-slate-500 mt-1.5 mb-0">
-          Global camera hardware catalogue available to all users
+          Camera  catalogue
         </p>
       </div>
       <Link

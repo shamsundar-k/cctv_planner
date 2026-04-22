@@ -9,13 +9,13 @@ interface Props {
 export default function Section({ title, children, defaultOpen = true }: Props) {
   const [open, setOpen] = useState(defaultOpen)
   return (
-    <section className="border border-gray-200 rounded-xl overflow-hidden bg-white shadow-sm">
+    <section className="border border-border rounded-xl overflow-hidden bg-card shadow-sm">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center justify-between px-5 py-3 bg-gray-50 hover:bg-gray-100 transition-colors border-b border-gray-200"
+        className="w-full flex items-center justify-between px-5 py-3 bg-surface hover:bg-border/30 transition-colors border-b border-border"
       >
-        <h2 className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest m-0">{title}</h2>
+        <h2 className="text-[11px] font-semibold text-muted uppercase tracking-widest m-0">{title}</h2>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="16"
@@ -26,7 +26,7 @@ export default function Section({ title, children, defaultOpen = true }: Props) 
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className={`text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`}
+          className={`text-muted transition-transform ${open ? 'rotate-180' : ''}`}
         >
           <polyline points="6 9 12 15 18 9" />
         </svg>
