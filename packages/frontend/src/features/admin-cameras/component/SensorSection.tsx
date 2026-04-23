@@ -2,9 +2,10 @@ import type { CameraModelCreate } from '../../../types/cameramodel.types'
 import { SENSOR_FORMATS } from '../../../constants/sensorFormats'
 import { calcMegapixels, calcAspectRatio } from '../utils/cameraFormHelpers'
 import CollapsibleSection from '../../../components/ui/CollapsibleSection'
-import Field from './Field'
-import InputWithUnit from './InputWithUnit'
-import { inputClass, selectClass } from './formStyles'
+import Field from '../../../components/ui/FormField'
+import InputWithUnit from '../../../components/ui/InputWithUnit'
+import SelectField from '../../../components/ui/SelectField'
+import { inputClass } from './formStyles'
 
 interface Props {
   form: CameraModelCreate
@@ -17,7 +18,7 @@ interface Props {
 export default function SensorSection({ form, errors, set, sensorIsCustom, setSensorIsCustom }: Props) {
   return (
     <CollapsibleSection title="Sensor">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-4 gap-4">
         <Field label="Resolution H *">
           <InputWithUnit unit="px">
             <input
@@ -47,14 +48,19 @@ export default function SensorSection({ form, errors, set, sensorIsCustom, setSe
         </Field>
 
         <Field label="Megapixels">
-          <div className="h-9 px-3 flex items-center text-sm text-primary bg-surface border border-border rounded-lg">
-            {calcMegapixels(form.resolution_h, form.resolution_v)} MP
+          <div className="h-9 flex items-center gap-1">
+            <span className="text-base font-semibold text-primary">
+              {calcMegapixels(form.resolution_h, form.resolution_v)}
+            </span>
+            <span className="text-xs text-muted">MP</span>
           </div>
         </Field>
 
         <Field label="Aspect Ratio">
-          <div className="h-9 px-3 flex items-center text-sm text-primary bg-surface border border-border rounded-lg">
-            {calcAspectRatio(form.resolution_h, form.resolution_v)}
+          <div className="h-9 flex items-center">
+            <span className="text-base font-semibold text-primary">
+              {calcAspectRatio(form.resolution_h, form.resolution_v)}
+            </span>
           </div>
         </Field>
 
@@ -66,8 +72,7 @@ export default function SensorSection({ form, errors, set, sensorIsCustom, setSe
               : undefined
           }
         >
-          <select
-            className={selectClass}
+          <SelectField
             value={sensorIsCustom ? 'Custom' : (form.sensor_size ?? '')}
             onChange={(e) => {
               const val = e.target.value
@@ -87,7 +92,7 @@ export default function SensorSection({ form, errors, set, sensorIsCustom, setSe
               </option>
             ))}
             <option value="Custom">Custom (enter width in mm)</option>
-          </select>
+          </SelectField>
           {sensorIsCustom && (
             <input
               className={`${inputClass} mt-2`}
@@ -99,13 +104,12 @@ export default function SensorSection({ form, errors, set, sensorIsCustom, setSe
         </Field>
 
         <Field label="Sensor Type">
-          <select
-            className={selectClass}
+          <SelectField
             value={form.sensor_type}
             onChange={(e) => set('sensor_type', e.target.value as CameraModelCreate['sensor_type'])}
           >
             <option value="cmos">CMOS</option>
-          </select>
+          </SelectField>
         </Field>
 
         <Field label="Min Illumination" hint="0 = works in total darkness (IR)">

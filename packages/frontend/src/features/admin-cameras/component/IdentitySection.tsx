@@ -1,7 +1,8 @@
 import type { CameraModelCreate } from '../../../types/cameramodel.types'
 import CollapsibleSection from '../../../components/ui/CollapsibleSection'
-import Field from './Field'
-import { inputClass, selectClass } from './formStyles'
+import Field from '../../../components/ui/FormField'
+import SelectField from '../../../components/ui/SelectField'
+import { inputClass } from './formStyles'
 
 interface Props {
   form: CameraModelCreate
@@ -12,7 +13,7 @@ interface Props {
 export default function IdentitySection({ form, errors, set }: Props) {
   return (
     <CollapsibleSection title="Identity">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-3 gap-4">
         <Field label="Name *">
           <input
             className={`${inputClass} ${errors.name ? 'border-red-400 focus:border-red-400 focus:ring-red-400' : ''}`}
@@ -42,24 +43,24 @@ export default function IdentitySection({ form, errors, set }: Props) {
         </Field>
 
         <Field label="Camera Type">
-          <select
-            className={selectClass}
+          <SelectField
             value={form.camera_type}
             onChange={(e) => set('camera_type', e.target.value as CameraModelCreate['camera_type'])}
           >
             <option value="bullet">Bullet</option>
             <option value="fixed_dome">Fixed Dome</option>
             <option value="ptz">PTZ</option>
-          </select>
+          </SelectField>
         </Field>
 
         <Field label="Location/Environment">
-          <input
-            className={inputClass}
+          <SelectField
             value={form.location}
             onChange={(e) => set('location', e.target.value)}
-            placeholder="Location/Environment"
-          />
+          >
+            <option value="outdoor">Outdoor</option>
+            <option value="indoor">Indoor</option>
+          </SelectField>
         </Field>
 
         <Field label="Notes">

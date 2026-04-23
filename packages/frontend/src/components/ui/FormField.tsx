@@ -9,7 +9,7 @@ interface Props {
 
 const labelClass = 'block text-xs font-medium text-muted mb-1'
 
-export default function Field({ label, children, hint, tooltip }: Props) {
+export default function FormField({ label, children, hint, tooltip }: Props) {
   return (
     <div>
       <label className={labelClass}>

@@ -1,7 +1,7 @@
 import type { CameraModelCreate } from '../../../types/cameramodel.types'
 import CollapsibleSection from '../../../components/ui/CollapsibleSection'
-import Field from './Field'
-import InputWithUnit from './InputWithUnit'
+import Field from '../../../components/ui/FormField'
+import InputWithUnit from '../../../components/ui/InputWithUnit'
 import ToggleSwitch from '../../../components/ui/ToggleSwitch'
 import { inputClass } from './formStyles'
 
@@ -13,7 +13,7 @@ interface Props {
 export default function AdvancedSection({ form, set }: Props) {
   return (
     <CollapsibleSection title="Advanced" defaultOpen={false}>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-3 gap-4">
         <Field
           label="IR Range"
           tooltip="Effective IR illuminator range — 0 means no built-in IR"

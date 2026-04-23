@@ -1,4 +1,4 @@
-import type { CameraModel } from '../../../types/cameramodel.types'
+import type { CameraModel } from '@/types/cameramodel.types'
 
 interface Props {
   camera: CameraModel

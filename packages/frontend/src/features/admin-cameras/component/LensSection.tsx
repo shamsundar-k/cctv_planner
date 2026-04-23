@@ -1,9 +1,10 @@
 import type { CameraModelCreate } from '../../../types/cameramodel.types'
 import CollapsibleSection from '../../../components/ui/CollapsibleSection'
-import Field from './Field'
-import InputWithUnit from './InputWithUnit'
+import Field from '../../../components/ui/FormField'
+import InputWithUnit from '../../../components/ui/InputWithUnit'
+import SelectField from '../../../components/ui/SelectField'
 import ToggleSwitch from '../../../components/ui/ToggleSwitch'
-import { inputClass, selectClass } from './formStyles'
+import { inputClass } from './formStyles'
 
 interface Props {
   form: CameraModelCreate
@@ -17,17 +18,22 @@ interface Props {
 export default function LensSection({ form, errors, set, setForm, handleLensTypeChange, isFixed }: Props) {
   return (
     <CollapsibleSection title="Lens">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-4 gap-4">
         <Field label="Lens Type">
-          <select
-            className={selectClass}
+          <SelectField
             value={form.lens_type}
             onChange={(e) => handleLensTypeChange(e.target.value as CameraModelCreate['lens_type'])}
           >
             <option value="fixed">Fixed</option>
             <option value="varifocal">Varifocal</option>
-            <option value="optical_zoom">Optical Zoom</option>
-          </select>
+          </SelectField>
+        </Field>
+
+        <Field label="IR Cut Filter">
+          <div className="flex items-center gap-3 h-9">
+            <ToggleSwitch checked={form.ir_cut_filter} onChange={(v) => set('ir_cut_filter', v)} />
+            <span className="text-sm text-muted">Enabled</span>
+          </div>
         </Field>
 
         <Field label="Focal Length Min">
@@ -156,13 +162,6 @@ export default function LensSection({ form, errors, set, setForm, handleLensType
             />
           </InputWithUnit>
           {errors.v_fov_max && <p className="text-xs text-red-500 mt-1 mb-0">{errors.v_fov_max}</p>}
-        </Field>
-
-        <Field label="IR Cut Filter">
-          <div className="flex items-center gap-3 h-9">
-            <ToggleSwitch checked={form.ir_cut_filter} onChange={(v) => set('ir_cut_filter', v)} />
-            <span className="text-sm text-muted">Enabled</span>
-          </div>
         </Field>
       </div>
     </CollapsibleSection>
