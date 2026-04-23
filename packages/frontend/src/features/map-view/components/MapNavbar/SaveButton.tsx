@@ -1,3 +1,5 @@
+import { Loader2 } from 'lucide-react'
+
 function formatRelativeTime(date: Date): string {
   const diffMin = Math.floor((Date.now() - date.getTime()) / 60_000)
   if (diffMin < 1) return 'just now'
@@ -34,10 +36,7 @@ export function SaveButton({ isSaving, isDirty, lastSavedAt, onClick }: SaveButt
       <span className="flex items-center gap-1">
         {isSaving ? (
           <>
-            <svg className="animate-spin w-3 h-3 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-            </svg>
+            <Loader2 size={12} className="animate-spin shrink-0" aria-hidden="true" />
             Saving…
           </>
         ) : (

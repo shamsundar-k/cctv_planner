@@ -1,4 +1,5 @@
 import { Link } from 'react-router'
+import { ChevronLeft } from 'lucide-react'
 import Navbar from '../features/navigation/component/Navbar'
 import { useCameraModelList } from '../features/camera-model/hooks/useCameraModelList'
 import CameraListHeader from '../features/camera-model/components/CameraListHeader'
@@ -15,9 +16,7 @@ export default function AdminCamerasPage() {
           to="/admin/manage"
           className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-200 transition-colors mb-4 no-underline"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 19l-7-7 7-7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          <ChevronLeft size={16} />
           Admin Dashboard
         </Link>
 

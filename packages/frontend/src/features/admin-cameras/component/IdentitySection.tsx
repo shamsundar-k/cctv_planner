@@ -1,5 +1,5 @@
 import type { CameraModelCreate } from '../../../types/cameramodel.types'
-import Section from './Section'
+import CollapsibleSection from '../../../components/ui/CollapsibleSection'
 import Field from './Field'
 import { inputClass, selectClass } from './formStyles'
 
@@ -11,7 +11,7 @@ interface Props {
 
 export default function IdentitySection({ form, errors, set }: Props) {
   return (
-    <Section title="Identity">
+    <CollapsibleSection title="Identity">
       <div className="grid grid-cols-2 gap-4">
         <Field label="Name *">
           <input
@@ -71,6 +71,6 @@ export default function IdentitySection({ form, errors, set }: Props) {
           />
         </Field>
       </div>
-    </Section>
+    </CollapsibleSection>
   )
 }

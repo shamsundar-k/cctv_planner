@@ -35,6 +35,7 @@
  *   used within card action buttons.
  */
 import { useState } from 'react'
+import { Info, Trash2, Plus, Check, X, ArrowDown } from 'lucide-react'
 import type { CameraModel } from '../../../types/cameramodel.types'
 import { useAllCameras } from '../../../api/camerasModels'
 import {
@@ -121,9 +122,7 @@ function CameraDetailModal({ model, onClose }: { model: CameraModel; onClose: ()
             className="shrink-0 w-7 h-7 flex items-center justify-center rounded-md text-muted hover:text-primary hover:bg-surface/20 transition-colors border-none bg-transparent cursor-pointer"
             aria-label="Close"
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-              <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            </svg>
+            <X size={14} />
           </button>
         </div>
 
@@ -158,38 +157,10 @@ function CameraDetailModal({ model, onClose }: { model: CameraModel; onClose: ()
 
 // ── Icon buttons ──────────────────────────────────────────────────────────────
 
-function InfoIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
-      <path d="M12 16v-4M12 8h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-function TrashIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-      <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
-function PlusIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-      <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-function CheckIcon() {
-  return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-      <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
+function InfoIcon() { return <Info size={14} /> }
+function TrashIcon() { return <Trash2 size={14} /> }
+function PlusIcon() { return <Plus size={12} /> }
+function CheckIcon() { return <Check size={13} /> }
 
 // ── Main component ────────────────────────────────────────────────────────────
 
@@ -263,9 +234,7 @@ export default function ImportedCamerasTab({ projectId }: ImportedCamerasTabProp
           ) : importedItems.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-2 py-8 text-muted/40">
               <p className="text-sm m-0">No cameras imported yet</p>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="mt-1">
-                <path d="M12 5v14M19 12l-7 7-7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+              <ArrowDown size={16} className="mt-1" />
             </div>
           ) : (
             <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-3">

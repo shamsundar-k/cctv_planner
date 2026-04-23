@@ -21,6 +21,7 @@
  *   error message and shows an error toast.
  */
 import { useEffect, useRef, useState } from 'react'
+import { TriangleAlert } from 'lucide-react'
 import { useDeleteProject } from '../../../api/projects'
 import type { Project } from '../../../api/projects.types'
 import { useToast } from '../../../components/ui/Toast'
@@ -91,11 +92,7 @@ export default function DeleteProjectModal({ project, onClose }: DeleteProjectMo
         <div className="px-6 py-6 flex flex-col gap-4">
           {/* Warning */}
           <div className="flex gap-3 p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="shrink-0 mt-0.5">
-              <path d="M12 2L2 21h20L12 2z" fill="#f59e0b" />
-              <path d="M12 9v5" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" />
-              <circle cx="12" cy="17" r="1" fill="#ffffff" />
-            </svg>
+            <TriangleAlert size={20} className="shrink-0 mt-0.5 text-amber-400" />
             <div>
               <p className="text-sm font-semibold text-primary m-0 mb-1">
                 Permanently delete &ldquo;{project.name}&rdquo;?

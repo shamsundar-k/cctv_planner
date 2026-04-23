@@ -12,6 +12,8 @@
  *     the CreateProjectModal in DashboardPage.
  *   - A "View Documentation" link (currently a placeholder "#" href).
  */
+import { Target } from 'lucide-react'
+
 interface EmptyStateProps {
   onCreateClick: () => void
 }
@@ -20,23 +22,7 @@ export default function EmptyState({ onCreateClick }: EmptyStateProps) {
   return (
     <div className="flex flex-col items-center justify-center py-20 px-10 bg-card border border-border rounded-xl text-center">
       {/* Target icon */}
-      <svg
-        width="64"
-        height="64"
-        viewBox="0 0 64 64"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        aria-hidden="true"
-        className="mb-6 opacity-30"
-      >
-        <circle cx="32" cy="32" r="28" stroke="#60a5fa" strokeWidth="3" />
-        <circle cx="32" cy="32" r="18" stroke="#60a5fa" strokeWidth="3" />
-        <circle cx="32" cy="32" r="8" fill="#60a5fa" />
-        <line x1="32" y1="4" x2="32" y2="14" stroke="#60a5fa" strokeWidth="3" strokeLinecap="round" />
-        <line x1="32" y1="50" x2="32" y2="60" stroke="#60a5fa" strokeWidth="3" strokeLinecap="round" />
-        <line x1="4" y1="32" x2="14" y2="32" stroke="#60a5fa" strokeWidth="3" strokeLinecap="round" />
-        <line x1="50" y1="32" x2="60" y2="32" stroke="#60a5fa" strokeWidth="3" strokeLinecap="round" />
-      </svg>
+      <Target size={64} aria-hidden="true" className="mb-6 opacity-30 text-blue-400" />
 
       <h2 className="text-2xl font-bold text-primary mb-3">No Projects Yet</h2>
       <p className="text-sm text-muted mb-8 max-w-[400px] leading-relaxed">

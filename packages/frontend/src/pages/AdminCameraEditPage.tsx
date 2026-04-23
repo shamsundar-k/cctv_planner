@@ -1,4 +1,5 @@
 import { Link } from 'react-router'
+import { ChevronLeft } from 'lucide-react'
 import Navbar from '../features/navigation/component/Navbar'
 import { useAdminCameraEdit } from '../features/camera-model/hooks/useAdminCameraEdit'
 import CameraEditForm from '../features/admin-cameras/component/CameraEditForm'
@@ -24,9 +25,7 @@ export default function AdminCameraEditPage() {
           to="/admin/manage/cameras"
           className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors mb-4 no-underline"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 19l-7-7 7-7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          <ChevronLeft size={16} />
           Camera Models
         </Link>
 

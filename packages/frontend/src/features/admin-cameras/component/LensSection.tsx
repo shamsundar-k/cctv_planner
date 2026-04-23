@@ -1,8 +1,8 @@
 import type { CameraModelCreate } from '../../../types/cameramodel.types'
-import Section from './Section'
+import CollapsibleSection from '../../../components/ui/CollapsibleSection'
 import Field from './Field'
 import InputWithUnit from './InputWithUnit'
-import Toggle from './Toggle'
+import ToggleSwitch from '../../../components/ui/ToggleSwitch'
 import { inputClass, selectClass } from './formStyles'
 
 interface Props {
@@ -16,7 +16,7 @@ interface Props {
 
 export default function LensSection({ form, errors, set, setForm, handleLensTypeChange, isFixed }: Props) {
   return (
-    <Section title="Lens">
+    <CollapsibleSection title="Lens">
       <div className="grid grid-cols-2 gap-4">
         <Field label="Lens Type">
           <select
@@ -160,11 +160,11 @@ export default function LensSection({ form, errors, set, setForm, handleLensType
 
         <Field label="IR Cut Filter">
           <div className="flex items-center gap-3 h-9">
-            <Toggle checked={form.ir_cut_filter} onChange={(v) => set('ir_cut_filter', v)} />
+            <ToggleSwitch checked={form.ir_cut_filter} onChange={(v) => set('ir_cut_filter', v)} />
             <span className="text-sm text-muted">Enabled</span>
           </div>
         </Field>
       </div>
-    </Section>
+    </CollapsibleSection>
   )
 }

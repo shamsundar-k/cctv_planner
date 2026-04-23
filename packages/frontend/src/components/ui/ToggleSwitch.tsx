@@ -1,4 +1,4 @@
-export default function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
+export default function ToggleSwitch({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
   return (
     <button
       type="button"

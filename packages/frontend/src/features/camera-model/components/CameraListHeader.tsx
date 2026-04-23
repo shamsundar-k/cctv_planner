@@ -1,4 +1,5 @@
 import { Link } from 'react-router'
+import { Plus } from 'lucide-react'
 
 export default function CameraListHeader() {
   return (
@@ -13,9 +14,7 @@ export default function CameraListHeader() {
         to="/admin/manage/cameras/new"
         className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-lg no-underline transition-colors"
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-        </svg>
+        <Plus size={16} />
         Add Camera Model
       </Link>
     </div>

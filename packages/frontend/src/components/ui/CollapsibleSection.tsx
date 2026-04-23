@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ChevronDown } from 'lucide-react'
 
 interface Props {
   title: string
@@ -6,7 +7,7 @@ interface Props {
   defaultOpen?: boolean
 }
 
-export default function Section({ title, children, defaultOpen = true }: Props) {
+export default function CollapsibleSection({ title, children, defaultOpen = true }: Props) {
   const [open, setOpen] = useState(defaultOpen)
   return (
     <section className="border border-border rounded-xl overflow-hidden bg-card shadow-sm">
@@ -16,20 +17,7 @@ export default function Section({ title, children, defaultOpen = true }: Props) 
         className="w-full flex items-center justify-between px-5 py-3 bg-surface hover:bg-border/30 transition-colors border-b border-border"
       >
         <h2 className="text-[11px] font-semibold text-muted uppercase tracking-widest m-0">{title}</h2>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className={`text-muted transition-transform ${open ? 'rotate-180' : ''}`}
-        >
-          <polyline points="6 9 12 15 18 9" />
-        </svg>
+        <ChevronDown size={16} className={`text-muted transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
       {open && <div className="p-5">{children}</div>}
     </section>

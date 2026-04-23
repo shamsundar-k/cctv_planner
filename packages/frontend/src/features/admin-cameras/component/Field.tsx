@@ -1,4 +1,4 @@
-import Tooltip from './Tooltip'
+import Tooltip from '@/components/ui/Tooltip'
 
 interface Props {
   label: string

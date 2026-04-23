@@ -22,6 +22,7 @@
  * If `id` is absent from params, the user is immediately redirected to /.
  */
 import { useNavigate, Link } from 'react-router'
+import { ChevronLeft } from 'lucide-react'
 import Navbar from '../features/navigation/component/Navbar'
 import BasicInfoTab from '../features/project-manage/components/BasicInfoTab'
 import MapLocationTab from '../features/project-manage/components/MapLocationTab'
@@ -71,9 +72,7 @@ export default function ProjectManagePage() {
           to="/"
           className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-primary transition-colors mb-4 no-underline"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M15 19l-7-7 7-7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          <ChevronLeft size={16} />
           Dashboard
         </Link>
 

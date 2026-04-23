@@ -30,6 +30,7 @@
  *   spinner animation on the refresh button icon.
  */
 import { useEffect, useRef, useState } from 'react'
+import { RefreshCw } from 'lucide-react'
 import { useProjectStore } from '../../../store/projectSlice'
 import type { FilterType, SortBy } from '../../../store/projectSlice'
 
@@ -240,25 +241,7 @@ export default function ProjectToolbar({
           aria-label="Refresh projects"
           className="w-9 h-9 bg-transparent border border-surface/30 rounded-lg cursor-pointer flex items-center justify-center text-muted/70 hover:bg-surface/20 hover:text-primary transition-colors"
         >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            style={{
-              animation: spinning || isFetching ? 'spin 0.6s linear infinite' : 'none',
-            }}
-          >
-            <style>{`@keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }`}</style>
-            <path
-              d="M4 12a8 8 0 0 1 14.93-4H15m3.93-4l.07 4-4-.07"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <RefreshCw size={16} className={(spinning || isFetching) ? 'animate-spin' : ''} />
         </button>
       </div>
 

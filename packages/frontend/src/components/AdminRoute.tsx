@@ -1,4 +1,5 @@
 import { Link, Outlet } from 'react-router'
+import { Info, ChevronLeft } from 'lucide-react'
 import { useAuthStore } from '../store/authSlice'
 
 function Forbidden() {
@@ -7,11 +8,7 @@ function Forbidden() {
       <div className="bg-card border border-border rounded-2xl p-10 max-w-md w-full text-center shadow-lg">
         <div className="mb-6 flex justify-center">
           <div className="w-16 h-16 rounded-full bg-surface border border-border flex items-center justify-center">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="10" stroke="var(--theme-accent)" strokeWidth="1.5" />
-              <path d="M12 7v6" stroke="var(--theme-accent)" strokeWidth="1.5" strokeLinecap="round" />
-              <circle cx="12" cy="16.5" r="0.75" fill="var(--theme-accent)" />
-            </svg>
+            <Info size={32} stroke="var(--theme-accent)" />
           </div>
         </div>
 
@@ -25,9 +22,7 @@ function Forbidden() {
           to="/"
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-accent text-on-accent text-sm font-medium hover:bg-accent-hover transition-colors no-underline"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 19l-7-7 7-7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          <ChevronLeft size={16} />
           Back to Dashboard
         </Link>
       </div>

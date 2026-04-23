@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { X } from 'lucide-react'
 import { useImportedCameras } from '../../../../api/projects'
 import { useCameraInstanceStore } from '../../../../store/cameraInstanceStore'
 import { useCameraLayerStore } from '../../../../store/cameraLayerSlice'
@@ -179,9 +180,7 @@ export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPan
               onMouseLeave={e => (e.currentTarget.style.color = 'var(--theme-text-secondary)')}
               aria-label="Close panel"
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M18 6L6 18M6 6l12 12" />
-              </svg>
+              <X size={14} />
             </button>
           </div>
 

@@ -1,4 +1,5 @@
 import { Link } from 'react-router'
+import { ChevronRight } from 'lucide-react'
 import InviteGenerateCard from '../../invites/component/InviteGenerateCard'
 import type { LatestInvite } from '../../invites/component/InviteGenerateCard'
 
@@ -93,9 +94,7 @@ export default function OverviewTab(props: OverviewTabProps) {
               <div className="text-xs" style={{ color: 'var(--theme-text-secondary)' }}>Add, edit and manage the camera catalog</div>
             </div>
           </div>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ color: 'var(--theme-accent-text)', flexShrink: 0 }}>
-            <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          <ChevronRight size={16} style={{ color: 'var(--theme-accent-text)', flexShrink: 0 }} />
         </Link>
       </div>
     </div>

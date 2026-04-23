@@ -1,8 +1,8 @@
 import type { CameraModelCreate } from '../../../types/cameramodel.types'
-import Section from './Section'
+import CollapsibleSection from '../../../components/ui/CollapsibleSection'
 import Field from './Field'
 import InputWithUnit from './InputWithUnit'
-import Toggle from './Toggle'
+import ToggleSwitch from '../../../components/ui/ToggleSwitch'
 import { inputClass } from './formStyles'
 
 interface Props {
@@ -12,7 +12,7 @@ interface Props {
 
 export default function AdvancedSection({ form, set }: Props) {
   return (
-    <Section title="Advanced" defaultOpen={false}>
+    <CollapsibleSection title="Advanced" defaultOpen={false}>
       <div className="grid grid-cols-2 gap-4">
         <Field
           label="IR Range"
@@ -33,7 +33,7 @@ export default function AdvancedSection({ form, set }: Props) {
 
         <Field label="WDR" tooltip="Wide Dynamic Range — improves image quality in high-contrast scenes">
           <div className="flex items-center gap-3 h-9">
-            <Toggle checked={form.wdr} onChange={(v) => set('wdr', v)} />
+            <ToggleSwitch checked={form.wdr} onChange={(v) => set('wdr', v)} />
             <span className="text-sm text-muted">Enabled</span>
           </div>
         </Field>
@@ -54,6 +54,6 @@ export default function AdvancedSection({ form, set }: Props) {
           </Field>
         )}
       </div>
-    </Section>
+    </CollapsibleSection>
   )
 }

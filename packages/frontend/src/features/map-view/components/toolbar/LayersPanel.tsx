@@ -1,4 +1,4 @@
-import { X } from 'lucide-react'
+import { X, Check } from 'lucide-react'
 import { LAYER_NAMES, type LayerName } from '../../../../config/mapConfig'
 import { useMapContext } from '../../../../context/MapContext'
 
@@ -56,9 +56,7 @@ export default function LayersPanel({ onClose }: Props) {
                 }}
               >
                 {isVisible && (
-                  <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
-                    <path d="M1 4L3 6L7 2" stroke="var(--theme-accent-text)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
+                  <Check size={8} stroke="var(--theme-accent-text)" strokeWidth={1.5} />
                 )}
               </div>
               <span

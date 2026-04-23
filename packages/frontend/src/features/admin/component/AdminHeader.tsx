@@ -1,4 +1,5 @@
 import { Link } from 'react-router'
+import { ChevronLeft } from 'lucide-react'
 
 export default function AdminHeader() {
   return (
@@ -10,9 +11,7 @@ export default function AdminHeader() {
         onMouseEnter={e => (e.currentTarget.style.color = 'var(--theme-text-primary)')}
         onMouseLeave={e => (e.currentTarget.style.color = 'color-mix(in srgb, var(--theme-text-secondary) 70%, transparent)')}
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M15 19l-7-7 7-7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
+        <ChevronLeft size={16} aria-hidden="true" />
         Back to Dashboard
       </Link>
       <h1 className="text-[28px] font-extrabold m-0 tracking-tight" style={{ color: 'var(--theme-text-primary)' }}>Admin Dashboard</h1>

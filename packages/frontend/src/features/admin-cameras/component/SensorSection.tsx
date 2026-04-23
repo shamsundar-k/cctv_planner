@@ -1,7 +1,7 @@
 import type { CameraModelCreate } from '../../../types/cameramodel.types'
 import { SENSOR_FORMATS } from '../../../constants/sensorFormats'
 import { calcMegapixels, calcAspectRatio } from '../utils/cameraFormHelpers'
-import Section from './Section'
+import CollapsibleSection from '../../../components/ui/CollapsibleSection'
 import Field from './Field'
 import InputWithUnit from './InputWithUnit'
 import { inputClass, selectClass } from './formStyles'
@@ -16,7 +16,7 @@ interface Props {
 
 export default function SensorSection({ form, errors, set, sensorIsCustom, setSensorIsCustom }: Props) {
   return (
-    <Section title="Sensor">
+    <CollapsibleSection title="Sensor">
       <div className="grid grid-cols-2 gap-4">
         <Field label="Resolution H *">
           <InputWithUnit unit="px">
@@ -121,6 +121,6 @@ export default function SensorSection({ form, errors, set, sensorIsCustom, setSe
           </InputWithUnit>
         </Field>
       </div>
-    </Section>
+    </CollapsibleSection>
   )
 }
