@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import type { CameraModel } from '@/types/cameramodel.types'
 import CameraCard from './CameraCard/CameraCard'
 import CameraSearchBar from './CameraSearchBar'
-import DeleteConfirmModal from '../../admin-cameras/component/DeleteConfirmModal'
+import DeleteConfirmModal from './CameraForm/DeleteConfirmModal'
 import { useCameraModelDelete } from '../hooks/useCameraModelDelete'
 
 const SEARCH_FIELDS: (keyof CameraModel)[] = ['name', 'manufacturer', 'model_number']

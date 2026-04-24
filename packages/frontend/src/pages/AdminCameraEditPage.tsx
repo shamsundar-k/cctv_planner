@@ -2,13 +2,12 @@ import { Link } from 'react-router'
 import { ChevronLeft } from 'lucide-react'
 import Navbar from '../features/navigation/component/Navbar'
 import { useAdminCameraEdit } from '../features/camera-model/hooks/useAdminCameraEdit'
-import CameraEditForm from '../features/admin-cameras/component/CameraEditForm'
+import CameraEditForm from '../features/camera-model/components/CameraForm/CameraEditForm'
 
 export default function AdminCameraEditPage() {
-  const editProps = useAdminCameraEdit()
-  const { isNew, isLoading } = editProps
+  const { isLoading, ...formProps } = useAdminCameraEdit()
 
-  if (!isNew && isLoading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-900">
         <Navbar />
@@ -29,11 +28,9 @@ export default function AdminCameraEditPage() {
           Camera Models
         </Link>
 
-        <h1 className="text-[26px] font-bold text-primary m-0 mb-8">
-          {isNew ? 'Add Camera Model' : 'Edit Camera Model'}
-        </h1>
+        <h1 className="text-[26px] font-bold text-primary m-0 mb-8">Edit Camera Model</h1>
 
-        <CameraEditForm {...editProps} />
+        <CameraEditForm {...formProps} />
       </div>
     </div>
   )

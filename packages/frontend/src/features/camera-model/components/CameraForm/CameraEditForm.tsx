@@ -1,4 +1,4 @@
-import type { CameraModelCreate } from '../../../types/cameramodel.types'
+import type { CameraModelCreate } from '../../../../types/cameramodel.types'
 import IdentitySection from './IdentitySection'
 import LensSection from './LensSection'
 import SensorSection from './SensorSection'
@@ -6,7 +6,6 @@ import AdvancedSection from './AdvancedSection'
 import FormActions from './FormActions'
 
 interface Props {
-  isNew: boolean
   form: CameraModelCreate
   setForm: React.Dispatch<React.SetStateAction<CameraModelCreate>>
   errors: Record<string, string>
@@ -20,7 +19,6 @@ interface Props {
 }
 
 export default function CameraEditForm({
-  isNew,
   form,
   setForm,
   errors,
@@ -51,7 +49,7 @@ export default function CameraEditForm({
         setSensorIsCustom={setSensorIsCustom}
       />
       <AdvancedSection form={form} set={set} />
-      <FormActions isPending={isPending} isNew={isNew} />
+      <FormActions isPending={isPending} submitLabel="Save Changes" />
     </form>
   )
 }

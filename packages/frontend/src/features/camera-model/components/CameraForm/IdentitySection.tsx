@@ -1,7 +1,7 @@
-import type { CameraModelCreate } from '../../../types/cameramodel.types'
-import CollapsibleSection from '../../../components/ui/CollapsibleSection'
-import Field from '../../../components/ui/FormField'
-import SelectField from '../../../components/ui/SelectField'
+import type { CameraModelCreate } from '../../../../types/cameramodel.types'
+import CollapsibleSection from '../../../../components/ui/CollapsibleSection'
+import Field from '../../../../components/ui/FormField'
+import SelectField from '../../../../components/ui/SelectField'
 import { inputClass } from './formStyles'
 
 interface Props {

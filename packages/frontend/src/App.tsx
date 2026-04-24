@@ -26,6 +26,7 @@ import DashboardPage from './pages/DashboardPage'
 import AdminPage from './pages/AdminPage'
 import AdminCamerasPage from './pages/AdminCamerasPage'
 import AdminCameraEditPage from './pages/AdminCameraEditPage'
+import AdminCameraCreatePage from './pages/AdminCameraCreatePage'
 import ProjectManagePage from './pages/ProjectManagePage'
 import ProjectMapViewPage from './pages/ProjectMapView'
 import { ToastProvider } from './components/ui/Toast'
@@ -51,6 +52,7 @@ function App() {
             <Route element={<AdminRoute />}>
               <Route path="/admin/manage" element={<AdminPage />} />
               <Route path="/admin/manage/cameras" element={<AdminCamerasPage />} />
+              <Route path="/admin/manage/cameras/new" element={<AdminCameraCreatePage />} />
               <Route path="/admin/manage/cameras/:id" element={<AdminCameraEditPage />} />
             </Route>
           </Route>

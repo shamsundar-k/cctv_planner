@@ -1,10 +1,10 @@
-import type { CameraModelCreate } from '../../../types/cameramodel.types'
-import { SENSOR_FORMATS } from '../../../constants/sensorFormats'
-import { calcMegapixels, calcAspectRatio } from '../utils/cameraFormHelpers'
-import CollapsibleSection from '../../../components/ui/CollapsibleSection'
-import Field from '../../../components/ui/FormField'
-import InputWithUnit from '../../../components/ui/InputWithUnit'
-import SelectField from '../../../components/ui/SelectField'
+import type { CameraModelCreate } from '../../../../types/cameramodel.types'
+import { SENSOR_FORMATS } from '../../../../constants/sensorFormats'
+import { calcMegapixels, calcAspectRatio } from './cameraFormHelpers'
+import CollapsibleSection from '../../../../components/ui/CollapsibleSection'
+import Field from '../../../../components/ui/FormField'
+import InputWithUnit from '../../../../components/ui/InputWithUnit'
+import SelectField from '../../../../components/ui/SelectField'
 import { inputClass } from './formStyles'
 
 interface Props {
@@ -14,6 +14,8 @@ interface Props {
   sensorIsCustom: boolean
   setSensorIsCustom: (v: boolean) => void
 }
+
+
 
 export default function SensorSection({ form, errors, set, sensorIsCustom, setSensorIsCustom }: Props) {
   return (

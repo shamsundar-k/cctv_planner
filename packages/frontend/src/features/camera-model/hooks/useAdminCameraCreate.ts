@@ -1,22 +1,14 @@
-import { useEffect } from 'react'
-import { useNavigate, useParams } from 'react-router'
-import { useCameraModel, useUpdateCameraModel } from '../../../api/camerasModels'
+import { useNavigate } from 'react-router'
+import { useCreateCameraModel } from '../../../api/camerasModels'
 import { useToast } from '../../../components/ui/Toast'
 import type { CameraModelCreate } from '../../../types/cameramodel.types'
 import { useCameraFormState } from './useCameraFormState'
 
-export function useAdminCameraEdit() {
-  const { id } = useParams<{ id: string }>()
+export function useAdminCameraCreate() {
   const navigate = useNavigate()
   const showToast = useToast()
-
-  const { data: existing, isLoading } = useCameraModel(id!)
-  const updateCamera = useUpdateCameraModel()
+  const createCamera = useCreateCameraModel()
   const formState = useCameraFormState()
-
-  useEffect(() => {
-    if (existing) formState.initFrom(existing)
-  }, [existing])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -30,16 +22,16 @@ export function useAdminCameraEdit() {
     }
 
     try {
-      await updateCamera.mutateAsync({ id: id!, body: payload })
-      showToast('Camera model updated', 'success')
+      await createCamera.mutateAsync(payload)
+      showToast('Camera model created', 'success')
       navigate('/admin/manage/cameras')
     } catch (err: unknown) {
       const msg =
         (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail ??
-        'Failed to update camera model'
-      showToast(typeof msg === 'string' ? msg : 'Failed to update camera model', 'error')
+        'Failed to create camera model'
+      showToast(typeof msg === 'string' ? msg : 'Failed to create camera model', 'error')
     }
   }
 
-  return { ...formState, isLoading, handleSubmit, isPending: updateCamera.isPending }
+  return { ...formState, handleSubmit, isPending: createCamera.isPending }
 }
