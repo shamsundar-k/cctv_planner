@@ -38,7 +38,7 @@ export default function LeftSidebar({ projectId }: LeftSidebarProps) {
       </div>
 
       {activeTab && (
-        <div className="absolute top-0 left-9 flex flex-col overflow-hidden shadow-2xl w-59 h-full z-1000 bg-card border-r border-surface/20">
+        <div className="absolute top-0 left-9 flex flex-col overflow-hidden shadow-2xl w-76 h-full z-1000 bg-card border-r border-surface/20">
           {activeTab === 'models' && <ModelSelectorPanel />}
           {activeTab === 'cameras' && <CamerasTab projectId={projectId} />}
         </div>

@@ -5,6 +5,7 @@ import ManufacturerFilter from './ManufacturerFilter'
 import ModelDropdown from './ModelDropdown'
 import PlaceCameraButton from './PlaceCameraButton'
 import PanelHeader from './PanelHeader'
+import CameraBrief from './CameraBrief'
 
 function LoadingSkeleton() {
     return (
@@ -54,6 +55,7 @@ export default function ModelSelectorPanel() {
                             selected={selectedModel}
                             onSelect={setSelectedModel}
                         />
+                        {selectedModel && <CameraBrief model={selectedModel} />}
                     </>
                 )}
             </div>
