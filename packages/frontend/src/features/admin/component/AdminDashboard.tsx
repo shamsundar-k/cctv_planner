@@ -41,7 +41,7 @@ export default function AdminDashboard() {
           projectsLoading={data.projectsLoading}
           usersCount={data.filteredUsers.length}
           projectsCount={data.allProjects.length}
-          totalCameras={data.totalCameras}
+          totalCameraModels={data.totalCameraModels}
           activeInviteCount={data.adminInvites.length}
           generateInvitePending={invites.generateInvitePending}
           latestCreatedInvite={invites.latestCreatedInvite}

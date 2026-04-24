@@ -62,7 +62,7 @@ export default function UserMenu({ onClose, exitProjectPath }: UserMenuProps) {
         </button>
         {isAdmin && (
           <button className={itemCls} onClick={() => { navigate('/admin/manage'); onClose() }}>
-            Manage Users
+            Manage App
           </button>
         )}
         <button className={itemCls} onClick={() => { navigate('/docs'); onClose() }}>

@@ -8,7 +8,7 @@ interface OverviewTabProps {
   projectsLoading: boolean
   usersCount: number
   projectsCount: number
-  totalCameras: number
+  totalCameraModels: number
   activeInviteCount: number
   generateInvitePending: boolean
   latestCreatedInvite: LatestInvite | null
@@ -23,7 +23,7 @@ export default function OverviewTab(props: OverviewTabProps) {
     projectsLoading,
     usersCount,
     projectsCount,
-    totalCameras,
+    totalCameraModels,
     activeInviteCount,
     generateInvitePending,
     latestCreatedInvite,
@@ -34,8 +34,8 @@ export default function OverviewTab(props: OverviewTabProps) {
 
   const summaryRows = [
     { label: 'Total Users', value: usersLoading ? '…' : usersCount },
-    { label: 'Total Projects', value: projectsLoading ? '…' : projectsCount },
-    { label: 'Total Cameras', value: totalCameras },
+    { label: 'Total Projects created', value: projectsLoading ? '…' : projectsCount },
+    { label: 'Available Camera Models', value: totalCameraModels },
     { label: 'Active Invites', value: activeInviteCount },
   ]
 

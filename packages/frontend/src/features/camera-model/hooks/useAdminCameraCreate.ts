@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router'
-import { useCreateCameraModel } from '../../../api/camerasModels'
-import { useToast } from '../../../components/ui/Toast'
-import type { CameraModelCreate } from '../../../types/cameramodel.types'
+import { useCreateCameraModel } from '@/api/camerasModels'
+import { useToast } from '@/components/ui/Toast'
+import type { CameraModelCreate } from '@/types/cameramodel.types'
 import { useCameraFormState } from './useCameraFormState'
 
 export function useAdminCameraCreate() {

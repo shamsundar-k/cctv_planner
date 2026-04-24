@@ -5,6 +5,7 @@ import {
   useAllProjects,
 } from '../api/admin'
 import { useAllInvites } from '../../invites/api/invites'
+import { useAllCameraModels } from '@/api/camerasModels'
 
 export function useAdminData() {
   const [userSearch, setUserSearch] = useState('')
@@ -13,9 +14,10 @@ export function useAdminData() {
   const { data: filteredUsers = [], isLoading: usersLoading } = useSearchUsers(userSearch)
   const { data: filteredProjects = [], isLoading: projectsLoading } = useSearchProjects(projectSearch)
   const { data: allProjects = [] } = useAllProjects()
+  const { data: allCameraModels = [] } = useAllCameraModels()
   const { data: adminInvites = [], isLoading: invitesLoading } = useAllInvites()
 
-  const totalCameras = allProjects.reduce((sum, p) => sum + p.camera_count, 0)
+  const totalCameraModels = allCameraModels.length
 
   return {
     filteredUsers,
@@ -25,7 +27,7 @@ export function useAdminData() {
     allProjects,
     adminInvites,
     invitesLoading,
-    totalCameras,
+    totalCameraModels,
     userSearch,
     setUserSearch,
     projectSearch,
