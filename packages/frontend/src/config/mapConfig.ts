@@ -52,9 +52,3 @@ export const BASE_MAPS: Record<
 export type BaseMapKey = BasemapStyle
 
 export const DEFAULT_BASE_MAP: BaseMapKey = 'alidade_smooth'
-
-// ── Layer registry ─────────────────────────────────────────────────────────────
-
-export type LayerName = 'cameras' | 'FOV' | 'Draw'
-
-export const LAYER_NAMES: LayerName[] = ['cameras', 'FOV', 'Draw']

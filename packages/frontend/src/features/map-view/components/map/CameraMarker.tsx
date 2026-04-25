@@ -1,19 +1,13 @@
-/**
- * CameraMarker — manages one Leaflet marker for one camera.
- *
- * Subscribes to `cameraRecords[cameraId].camera` in the Zustand store so it only
- * re-renders when *this* camera's data changes.
- */
-import { useEffect, useRef } from 'react'
-import type { Marker, LeafletMouseEvent, LayerGroup } from 'leaflet'
-import { useCameraInstanceStore } from '../../../../store/cameraInstanceStore'
-import { useCameraLayerStore } from '../../../../store/cameraLayerSlice'
+import { useEffect, type RefObject } from 'react'
+import L from 'leaflet'
+import { useCameraInstanceStore } from '@/store/cameraInstanceStore'
+import { useCameraLayerStore } from '@/store/cameraLayerSlice'
 
-function buildCameraIcon(colour: string, selected: boolean, bearing: number): string {
+function buildCameraIcon(colour: string, selected: boolean, bearing: number): L.DivIcon {
   const selectionRing = selected
     ? `<circle cx="16" cy="24" r="14" fill="none" stroke="white" stroke-width="2.5"/>`
     : ''
-  return `
+  const html = `
     <div style="width:32px;height:40px;transform:rotate(${bearing}deg);transform-origin:16px 24px;">
       <svg width="32" height="40" viewBox="0 0 32 40" fill="none">
         <polygon points="16,2 11,14 21,14" fill="${colour}"/>
@@ -27,74 +21,70 @@ function buildCameraIcon(colour: string, selected: boolean, bearing: number): st
       </svg>
     </div>
   `
+  return L.divIcon({ html, className: '', iconSize: [32, 40], iconAnchor: [16, 24] })
 }
 
 interface CameraMarkerProps {
   cameraId: string
-  layer: LayerGroup | null
+  groupRef: RefObject<L.LayerGroup | null>
 }
 
-export default function CameraMarker({ cameraId, layer }: CameraMarkerProps) {
-  const camera = useCameraInstanceStore((s) => s.cameraRecords[cameraId]?.camera)
-  const selectedCameraId = useCameraLayerStore((s) => s.selectedCameraId)
+export default function CameraMarker({ cameraId, groupRef }: CameraMarkerProps) {
   const selectCamera = useCameraLayerStore((s) => s.selectCamera)
-
-  const markerRef = useRef<Marker | null>(null)
-  const selectedCameraIdRef = useRef(selectedCameraId)
-  useEffect(() => { selectedCameraIdRef.current = selectedCameraId }, [selectedCameraId])
+  const updateCamera = useCameraInstanceStore((s) => s.updateCamera)
 
   useEffect(() => {
-    if (!layer || !camera) return
+    const group = groupRef.current
+    const camera = useCameraInstanceStore.getState().cameraRecords[cameraId]?.camera
+    if (!group || !camera) return
 
-    let mounted = true
-    import('leaflet').then((L) => {
-      if (!mounted || markerRef.current) return
+    const marker = L.marker([camera.lat, camera.lng], {
+      icon: buildCameraIcon(
+        camera.colour,
+        useCameraLayerStore.getState().selectedCameraId === cameraId,
+        camera.bearing,
+      ),
+      draggable: true,
+    }).addTo(group)
 
-      const marker = L.marker([camera.lat, camera.lng], {
-        icon: L.divIcon({
-          html: buildCameraIcon(camera.colour, cameraId === selectedCameraIdRef.current, camera.bearing),
-          className: '',
-          iconSize: [32, 40],
-          iconAnchor: [16, 24],
-        }),
-      }).addTo(layer)
-
-      marker.on('click', (e: LeafletMouseEvent) => {
-        e.originalEvent.stopPropagation()
-        const currentSelected = selectedCameraIdRef.current
-        selectCamera(cameraId === currentSelected ? null : cameraId)
-      })
-
-      markerRef.current = marker
+    // Click — always select, no toggle
+    marker.on('click', (e: L.LeafletMouseEvent) => {
+      e.originalEvent.stopPropagation()
+      selectCamera(cameraId)
     })
+
+    // Drag end — write new position to store
+    marker.on('dragend', () => {
+      const { lat, lng } = marker.getLatLng()
+      updateCamera(cameraId, { lat, lng })
+    })
+
+    // Selection change — update icon imperatively, no re-render
+    const unsubSelection = useCameraLayerStore.subscribe(
+      (s) => s.selectedCameraId,
+      (selectedId) => {
+        const cam = useCameraInstanceStore.getState().cameraRecords[cameraId]?.camera
+        if (cam) marker.setIcon(buildCameraIcon(cam.colour, selectedId === cameraId, cam.bearing))
+      }
+    )
+
+    // Camera data change — update icon and position imperatively
+    const unsubCamera = useCameraInstanceStore.subscribe(
+      (s) => s.cameraRecords[cameraId]?.camera,
+      (cam) => {
+        if (!cam) return
+        const selected = useCameraLayerStore.getState().selectedCameraId === cameraId
+        marker.setIcon(buildCameraIcon(cam.colour, selected, cam.bearing))
+        marker.setLatLng([cam.lat, cam.lng])
+      }
+    )
 
     return () => {
-      mounted = false
-      markerRef.current?.remove()
-      markerRef.current = null
+      unsubSelection()
+      unsubCamera()
+      marker.remove()
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [layer])
-
-  useEffect(() => {
-    if (!camera || !markerRef.current) return
-    import('leaflet').then((L) => {
-      markerRef.current?.setIcon(
-        L.divIcon({
-          html: buildCameraIcon(camera.colour, cameraId === selectedCameraId, camera.bearing),
-          className: '',
-          iconSize: [32, 40],
-          iconAnchor: [16, 24],
-        }),
-      )
-    })
-  }, [camera?.colour, camera?.bearing, selectedCameraId, cameraId])
-
-  useEffect(() => {
-    if (camera && markerRef.current) {
-      markerRef.current.setLatLng([camera.lat, camera.lng])
-    }
-  }, [camera?.lat, camera?.lng])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return null
 }

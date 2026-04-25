@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useAllCameraModels } from '../../../api/camerasModels'
-import { useCameraSelectorStore } from '../../../store/cameraSelectorSlice'
+import { useCameraLayerStore } from '../../../store/cameraLayerSlice'
 import ManufacturerFilter from './ManufacturerFilter'
 import ModelDropdown from './ModelDropdown'
 import PlaceCameraButton from './PlaceCameraButton'
@@ -19,7 +19,8 @@ function LoadingSkeleton() {
 
 export default function ModelSelectorPanel() {
     const { data: models = [], isLoading } = useAllCameraModels()
-    const { selectedModel, setSelectedModel } = useCameraSelectorStore()
+    const selectedModel = useCameraLayerStore((s) => s.selectedModel)
+    const setSelectedModel = useCameraLayerStore((s) => s.setSelectedModel)
     const [selectedManufacturer, setSelectedManufacturer] = useState('')
 
     const manufacturers = useMemo(

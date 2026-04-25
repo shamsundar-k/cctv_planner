@@ -2,7 +2,6 @@ import { useMapView } from '../../features/map-view/hooks/useMapView'
 import MapNavbar from '../../features/map-view/components/MapNavbar/MapNavbar'
 import Map from '../../features/map-view/components/map/Map'
 import CameraLayer from '../../features/map-view/components/map/CameraLayer'
-import FovLayer from '../../features/map-view/components/map/FovLayer'
 import CameraPropertiesPanel from '../../features/map-view/components/map/CameraPropertiesPanel'
 import LeftSidebar from './LeftSidebar'
 
@@ -31,7 +30,10 @@ export default function ProjectMapView() {
 
       <div className="flex-1 flex overflow-hidden relative">
         <LeftSidebar projectId={id} />
-        <Map zoom={defaultZoom} center={center} />
+        <Map zoom={defaultZoom} center={center}>
+          <CameraLayer projectId={id} />
+        </Map>
+        <CameraPropertiesPanel projectId={id} />
       </div>
     </div>
   )

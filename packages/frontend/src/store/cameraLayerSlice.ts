@@ -1,34 +1,31 @@
 import { create } from 'zustand'
-import { useMapViewStore } from './mapViewSlice'
 import type { CameraModel } from '../types/cameramodel.types'
 
 interface CameraLayerState {
-  // Selection (single camera at a time)
   selectedCameraId: string | null
-
-  // Active camera model for placement
   selectedModel: CameraModel | null
-
-  // Actions
-  selectCamera: (id: string | null, zoomLevel?: number) => void
+  hiddenCameraIds: string[]
+  selectCamera: (id: string | null) => void
   clearSelection: () => void
   setSelectedModel: (model: CameraModel | null) => void
+  toggleCameraVisibility: (id: string) => void
 }
 
 export const useCameraLayerStore = create<CameraLayerState>((set) => ({
   selectedCameraId: null,
   selectedModel: null,
   hiddenCameraIds: [],
-  showCameraLabels: true,
 
-  selectCamera: (id, zoomLevel) => {
-    set({ selectedCameraId: id })
-    if (id !== null && zoomLevel !== undefined) {
-      useMapViewStore.getState().leafletMap?.setZoom(zoomLevel)
-    }
-  },
+  selectCamera: (id) => set({ selectedCameraId: id }),
 
   clearSelection: () => set({ selectedCameraId: null }),
 
   setSelectedModel: (model) => set({ selectedModel: model }),
+
+  toggleCameraVisibility: (id) =>
+    set((s) => ({
+      hiddenCameraIds: s.hiddenCameraIds.includes(id)
+        ? s.hiddenCameraIds.filter((x) => x !== id)
+        : [...s.hiddenCameraIds, id],
+    })),
 }))
