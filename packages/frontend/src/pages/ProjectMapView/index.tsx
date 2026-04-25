@@ -29,7 +29,7 @@ export default function ProjectMapView() {
     <div className="h-screen flex flex-col overflow-hidden bg-slate-900">
       <MapNavbar projectId={id} projectName={project.name} />
 
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden relative">
         <LeftSidebar projectId={id} />
         <Map zoom={defaultZoom} center={center} />
       </div>

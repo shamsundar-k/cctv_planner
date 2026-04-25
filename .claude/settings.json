@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \"const l = require\\('c:/Drive_D/cctv_planner/packages/frontend/node_modules/lucide-react/dist/cjs/lucide-react.js'\\); const names = Object.keys\\(l\\); console.log\\(names.filter\\(n => /Pentagon|Spline|Ruler|Waypoints|Route|Shapes|Polygon|Pencil|SquarePen|Crosshair|Scan/.test\\(n\\)\\).join\\(', '\\)\\)\")"
+    ]
+  }
+}

@@ -7,10 +7,10 @@
 import L from 'leaflet'
 import { useState, useEffect } from 'react'
 import type { LeafletMouseEvent, LayerGroup } from 'leaflet'
-import { useMapViewStore } from '../../../../store/mapViewSlice'
-import { useCameraInstanceStore } from '../../../../store/cameraInstanceStore'
-import { generateDefaultCameraInstance } from '../../../../lib/cameraGenerator'
-import { useCameraLayerStore } from '../../../../store/cameraLayerSlice'
+import { useMapViewStore } from '@/store/mapViewSlice'
+import { useCameraInstanceStore } from '@/store/cameraInstanceStore'
+import { generateDefaultCameraInstance } from '@/lib/cameraGenerator'
+import { useCameraLayerStore } from '@/store/cameraLayerSlice'
 import CameraMarker from './CameraMarker'
 
 interface CameraLayerProps {
