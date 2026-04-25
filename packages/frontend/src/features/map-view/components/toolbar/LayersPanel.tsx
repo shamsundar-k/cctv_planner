@@ -1,19 +1,15 @@
 import { X, Check } from 'lucide-react'
-import { LAYER_NAMES, type LayerName } from '../../../../config/mapConfig'
-import { useMapContext } from '../../../../context/MapContext'
+import { useLayerRegistryStore } from '@/store/layerRegistryStore'
 
 interface Props {
   onClose: () => void
 }
 
-const LAYER_LABELS: Record<LayerName, string> = {
-  cameras: 'Cameras',
-  FOV: 'FOV',
-  Draw: 'Draw',
-}
-
 export default function LayersPanel({ onClose }: Props) {
-  const { visibleLayers, toggleLayer } = useMapContext()
+  const layers = useLayerRegistryStore((s) => s.layers)
+  const toggleLayer = useLayerRegistryStore((s) => s.toggleLayer)
+
+  const entries = Object.entries(layers)
 
   return (
     <div
@@ -32,43 +28,42 @@ export default function LayersPanel({ onClose }: Props) {
         </span>
         <button
           onClick={onClose}
-          className="transition-colors p-0.5 rounded"
+          className="transition-colors p-0.5 rounded hover:text-[var(--theme-text-primary)]"
           style={{ color: 'var(--theme-text-secondary)' }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--theme-text-primary)')}
-          onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--theme-text-secondary)')}
           aria-label="Close panel"
         >
           <X size={13} />
         </button>
       </div>
 
-      <div className="flex flex-col gap-1.5">
-        {LAYER_NAMES.map((name) => {
-          const isVisible = visibleLayers[name] ?? true
-          return (
-            <label key={name} className="flex items-center gap-2 cursor-pointer group">
+      {entries.length === 0 ? (
+        <p className="text-[11px]" style={{ color: 'var(--theme-text-secondary)' }}>
+          No layers active.
+        </p>
+      ) : (
+        <div className="flex flex-col gap-1.5">
+          {entries.map(([name, { label, visible }]) => (
+            <label key={name} className="flex items-center gap-2 cursor-pointer">
               <div
                 onClick={() => toggleLayer(name)}
                 className="w-3.5 h-3.5 rounded flex items-center justify-center flex-shrink-0 transition-all"
                 style={{
-                  background: isVisible ? 'var(--theme-accent)' : 'transparent',
-                  border: `1.5px solid ${isVisible ? 'var(--theme-accent)' : 'color-mix(in srgb, var(--theme-surface) 60%, transparent)'}`,
+                  background: visible ? 'var(--theme-accent)' : 'transparent',
+                  border: `1.5px solid ${visible ? 'var(--theme-accent)' : 'color-mix(in srgb, var(--theme-surface) 60%, transparent)'}`,
                 }}
               >
-                {isVisible && (
-                  <Check size={8} stroke="var(--theme-accent-text)" strokeWidth={1.5} />
-                )}
+                {visible && <Check size={8} stroke="var(--theme-accent-text)" strokeWidth={1.5} />}
               </div>
               <span
                 className="text-[12px] transition-colors"
-                style={{ color: isVisible ? 'var(--theme-text-primary)' : 'var(--theme-text-secondary)' }}
+                style={{ color: visible ? 'var(--theme-text-primary)' : 'var(--theme-text-secondary)' }}
               >
-                {LAYER_LABELS[name]}
+                {label}
               </span>
             </label>
-          )
-        })}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
