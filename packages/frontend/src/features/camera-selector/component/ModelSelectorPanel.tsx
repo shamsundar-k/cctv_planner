@@ -17,7 +17,11 @@ function LoadingSkeleton() {
     )
 }
 
-export default function ModelSelectorPanel() {
+interface ModelSelectorPanelProps {
+    onClose: () => void
+}
+
+export default function ModelSelectorPanel({ onClose }: ModelSelectorPanelProps) {
     const { data: models = [], isLoading } = useAllCameraModels()
     const [selectedManufacturer, setSelectedManufacturer] = useState('')
     const [draftModel, setDraftModel] = useState<CameraModel | null>(null)
@@ -60,7 +64,7 @@ export default function ModelSelectorPanel() {
                 )}
             </div>
             <div className="mt-auto p-3">
-                <SelectCameraModel model={draftModel} />
+                <SelectCameraModel model={draftModel} onClose={onClose} />
             </div>
         </div>
     )
