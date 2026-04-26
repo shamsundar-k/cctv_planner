@@ -29,7 +29,7 @@ export default function MapActionsToolbar() {
         tooltip={placeCameraTooltip}
         isActive={activeTool === 'place-camera'}
         disabled={selectedCameraModel === null}
-        onClick={() => setActiveTool('place-camera')}
+        onClick={() => setActiveTool(activeTool === 'place-camera' ? 'pan' : 'place-camera')}
       />
 
       {DIVIDER}

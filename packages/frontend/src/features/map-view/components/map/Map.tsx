@@ -5,6 +5,7 @@ import { MapContext } from '@/context/MapContext'
 import BaseTile from './BaseTile'
 import MapToolbar from '../toolbar/MapToolbar'
 import { MapActionsToolbar } from '../map-actions'
+import MapModeOverlay from './MapModeOverlay'
 
 interface MapProps {
   center?: L.LatLngExpression
@@ -39,6 +40,7 @@ export default function Map({ center = [51.5, -0.09], zoom = 13, children }: Map
         {mapReady && <BaseTile />}
         {mapReady && <MapToolbar />}
         {mapReady && <MapActionsToolbar />}
+        {mapReady && <MapModeOverlay />}
         {mapReady && children}
       </div>
     </MapContext.Provider>

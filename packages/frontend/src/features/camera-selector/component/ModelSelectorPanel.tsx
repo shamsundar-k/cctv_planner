@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
-import { useAllCameraModels } from '../../../api/camerasModels'
-import type { CameraModel } from '../../../types/cameramodel.types'
+import { useAllCameraModels } from '@/api/camerasModels'
+import type { CameraModel } from '@/types/cameramodel.types'
+import { useSelectedCameraModelStore } from '@/store/selectedCameraModelSlice'
 import ManufacturerFilter from './ManufacturerFilter'
 import ModelDropdown from './ModelDropdown'
 import SelectCameraModel from './SelectCameraModel'
@@ -23,8 +24,9 @@ interface ModelSelectorPanelProps {
 
 export default function ModelSelectorPanel({ onClose }: ModelSelectorPanelProps) {
     const { data: models = [], isLoading } = useAllCameraModels()
-    const [selectedManufacturer, setSelectedManufacturer] = useState('')
-    const [draftModel, setDraftModel] = useState<CameraModel | null>(null)
+    const { selectedCameraModel } = useSelectedCameraModelStore()
+    const [selectedManufacturer, setSelectedManufacturer] = useState(selectedCameraModel?.manufacturer ?? '')
+    const [draftModel, setDraftModel] = useState<CameraModel | null>(selectedCameraModel)
 
     const manufacturers = useMemo(
         () => Array.from(new Set(models.map((m) => m.manufacturer))).sort(),
