@@ -3,24 +3,30 @@ import type { ReactNode } from 'react'
 interface Props {
   icon: ReactNode
   label: string
+  tooltip?: string
   isActive?: boolean
+  disabled?: boolean
   onClick?: () => void
 }
 
-export default function MapActionButton({ icon, label, isActive = false, onClick }: Props) {
+export default function MapActionButton({ icon, label, tooltip, isActive = false, disabled = false, onClick }: Props) {
   return (
     <div className="relative group">
       <button
         onClick={onClick}
-        className="w-8 h-8 flex items-center justify-center rounded-lg cursor-pointer border transition-all"
+        disabled={disabled}
+        className="w-8 h-8 flex items-center justify-center rounded-lg border transition-all"
         style={{
           background: isActive ? 'var(--theme-accent)' : 'var(--theme-bg-card)',
           borderColor: isActive
             ? 'var(--theme-accent)'
             : 'color-mix(in srgb, var(--theme-surface) 30%, transparent)',
+          cursor: disabled ? 'not-allowed' : 'pointer',
+          opacity: disabled ? 0.4 : 1,
         }}
         aria-label={label}
         aria-pressed={isActive}
+        aria-disabled={disabled}
       >
         <span
           style={{
@@ -39,7 +45,7 @@ export default function MapActionButton({ icon, label, isActive = false, onClick
           border: '1px solid color-mix(in srgb, var(--theme-surface) 25%, transparent)',
         }}
       >
-        {label}
+        {tooltip ?? label}
       </div>
     </div>
   )

@@ -1,4 +1,6 @@
 import { Camera, Plus, Ruler, Spline, Pentagon } from 'lucide-react'
+import { useSelectedCameraModelStore } from '../../../../store/selectedCameraModelSlice'
+import { useMapViewStore } from '../../../../store/mapViewSlice'
 import MapActionButton from './MapActionButton'
 
 function PlaceCameraIcon() {
@@ -23,6 +25,15 @@ const DIVIDER = (
 )
 
 export default function MapActionsToolbar() {
+  const selectedCameraModel = useSelectedCameraModelStore((s) => s.selectedCameraModel)
+  const activeTool = useMapViewStore((s) => s.activeTool)
+  const setActiveTool = useMapViewStore((s) => s.setActiveTool)
+
+  const placeCameraDisabled = selectedCameraModel === null
+  const placeCameraTooltip = selectedCameraModel
+    ? selectedCameraModel.name
+    : 'Select a camera model'
+
   return (
     <div
       className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1 px-2.5 py-1.5 rounded-xl"
@@ -34,7 +45,14 @@ export default function MapActionsToolbar() {
         boxShadow: '0 4px 16px color-mix(in srgb, var(--theme-bg-base) 50%, transparent)',
       }}
     >
-      <MapActionButton icon={<PlaceCameraIcon />} label="Place Camera" />
+      <MapActionButton
+        icon={<PlaceCameraIcon />}
+        label="Place Camera"
+        tooltip={placeCameraTooltip}
+        isActive={activeTool === 'place-camera'}
+        disabled={placeCameraDisabled}
+        onClick={() => setActiveTool('place-camera')}
+      />
 
       {DIVIDER}
 
