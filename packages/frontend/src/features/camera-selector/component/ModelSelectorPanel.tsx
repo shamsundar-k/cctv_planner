@@ -3,7 +3,7 @@ import { useAllCameraModels } from '../../../api/camerasModels'
 import { useCameraLayerStore } from '../../../store/cameraLayerSlice'
 import ManufacturerFilter from './ManufacturerFilter'
 import ModelDropdown from './ModelDropdown'
-import PlaceCameraButton from './PlaceCameraButton'
+import SelectCameraModel from './SelectCameraModel'
 import PanelHeader from './PanelHeader'
 import CameraBrief from './CameraBrief'
 
@@ -61,7 +61,7 @@ export default function ModelSelectorPanel() {
                 )}
             </div>
             <div className="mt-auto p-3">
-                <PlaceCameraButton />
+                <SelectCameraModel />
             </div>
         </div>
     )
