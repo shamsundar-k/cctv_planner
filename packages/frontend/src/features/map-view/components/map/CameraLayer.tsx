@@ -4,6 +4,7 @@ import { useMapContext } from '@/context/MapContext'
 import { useMapViewStore } from '@/store/mapViewSlice'
 import { useCameraInstanceStore } from '@/store/cameraInstanceStore'
 import { useCameraLayerStore } from '@/store/cameraLayerSlice'
+import { useSelectedCameraModelStore } from '@/store/selectedCameraModelSlice'
 import { useLayerRegistryStore } from '@/store/layerRegistryStore'
 import { generateDefaultCameraInstance } from '@/lib/cameraGenerator'
 import CameraMarker from './CameraMarker'
@@ -20,7 +21,7 @@ export default function CameraLayer({ projectId }: CameraLayerProps) {
   const addCamera = useCameraInstanceStore((s) => s.addCamera)
   const activeTool = useMapViewStore((s) => s.activeTool)
   const setActiveTool = useMapViewStore((s) => s.setActiveTool)
-  const selectedModel = useCameraLayerStore((s) => s.selectedModel)
+  const selectedCameraModel = useSelectedCameraModelStore((s) => s.selectedCameraModel)
   const selectCamera = useCameraLayerStore((s) => s.selectCamera)
   const clearSelection = useCameraLayerStore((s) => s.clearSelection)
 
@@ -57,9 +58,9 @@ export default function CameraLayer({ projectId }: CameraLayerProps) {
     if (!map) return
 
     const handler = (e: L.LeafletMouseEvent) => {
-      if (activeTool === 'place-camera' && selectedModel) {
+      if (activeTool === 'place-camera' && selectedCameraModel) {
         const localCamera = generateDefaultCameraInstance(
-          selectedModel.id,
+          selectedCameraModel.id,
           { lat: e.latlng.lat, lng: e.latlng.lng },
           projectId,
         )
@@ -75,7 +76,7 @@ export default function CameraLayer({ projectId }: CameraLayerProps) {
 
     map.on('click', handler)
     return () => { map.off('click', handler) }
-  }, [activeTool, selectedModel, projectId, addCamera, selectCamera, clearSelection, setActiveTool]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [activeTool, selectedCameraModel, projectId, addCamera, selectCamera, clearSelection, setActiveTool]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>
