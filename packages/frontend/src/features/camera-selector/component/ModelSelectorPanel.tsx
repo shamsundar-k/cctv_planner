@@ -1,9 +1,9 @@
 import { useState, useMemo } from 'react'
 import { useAllCameraModels } from '../../../api/camerasModels'
-import { useCameraLayerStore } from '../../../store/cameraLayerSlice'
+import type { CameraModel } from '../../../types/cameramodel.types'
 import ManufacturerFilter from './ManufacturerFilter'
 import ModelDropdown from './ModelDropdown'
-import PlaceCameraButton from './PlaceCameraButton'
+import SelectCameraModel from './SelectCameraModel'
 import PanelHeader from './PanelHeader'
 import CameraBrief from './CameraBrief'
 
@@ -17,11 +17,14 @@ function LoadingSkeleton() {
     )
 }
 
-export default function ModelSelectorPanel() {
+interface ModelSelectorPanelProps {
+    onClose: () => void
+}
+
+export default function ModelSelectorPanel({ onClose }: ModelSelectorPanelProps) {
     const { data: models = [], isLoading } = useAllCameraModels()
-    const selectedModel = useCameraLayerStore((s) => s.selectedModel)
-    const setSelectedModel = useCameraLayerStore((s) => s.setSelectedModel)
     const [selectedManufacturer, setSelectedManufacturer] = useState('')
+    const [draftModel, setDraftModel] = useState<CameraModel | null>(null)
 
     const manufacturers = useMemo(
         () => Array.from(new Set(models.map((m) => m.manufacturer))).sort(),
@@ -35,7 +38,7 @@ export default function ModelSelectorPanel() {
 
     const handleManufacturerSelect = (manufacturer: string) => {
         setSelectedManufacturer(manufacturer)
-        setSelectedModel(null)
+        setDraftModel(null)
     }
 
     return (
@@ -53,15 +56,15 @@ export default function ModelSelectorPanel() {
                         />
                         <ModelDropdown
                             models={filteredModels}
-                            selected={selectedModel}
-                            onSelect={setSelectedModel}
+                            selected={draftModel}
+                            onSelect={setDraftModel}
                         />
-                        {selectedModel && <CameraBrief model={selectedModel} />}
+                        {draftModel && <CameraBrief model={draftModel} />}
                     </>
                 )}
             </div>
             <div className="mt-auto p-3">
-                <PlaceCameraButton />
+                <SelectCameraModel model={draftModel} onClose={onClose} />
             </div>
         </div>
     )
