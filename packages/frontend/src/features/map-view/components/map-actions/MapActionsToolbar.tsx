@@ -7,50 +7,28 @@ function PlaceCameraIcon() {
   return (
     <span className="relative inline-flex items-center justify-center">
       <Camera size={15} />
-      <Plus
-        size={8}
-        strokeWidth={3}
-        className="absolute -top-1 -right-1"
-        style={{ color: 'var(--theme-accent)' }}
-      />
+      <Plus size={8} strokeWidth={3} className="absolute -top-1 -right-1 text-accent" />
     </span>
   )
 }
 
-const DIVIDER = (
-  <div
-    className="w-px h-4 mx-0.5 flex-shrink-0"
-    style={{ background: 'color-mix(in srgb, var(--theme-surface) 40%, transparent)' }}
-  />
-)
+const DIVIDER = <div className="w-px h-4 mx-0.5 shrink-0 bg-surface/40" />
 
 export default function MapActionsToolbar() {
   const selectedCameraModel = useSelectedCameraModelStore((s) => s.selectedCameraModel)
   const activeTool = useMapViewStore((s) => s.activeTool)
   const setActiveTool = useMapViewStore((s) => s.setActiveTool)
 
-  const placeCameraDisabled = selectedCameraModel === null
-  const placeCameraTooltip = selectedCameraModel
-    ? selectedCameraModel.name
-    : 'Select a camera model'
+  const placeCameraTooltip = selectedCameraModel ? selectedCameraModel.name : 'Select a camera model'
 
   return (
-    <div
-      className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1 px-2.5 py-1.5 rounded-xl"
-      style={{
-        zIndex: 1000,
-        background: 'color-mix(in srgb, var(--theme-bg-card) 80%, transparent)',
-        border: '1px solid color-mix(in srgb, var(--theme-surface) 25%, transparent)',
-        backdropFilter: 'blur(8px)',
-        boxShadow: '0 4px 16px color-mix(in srgb, var(--theme-bg-base) 50%, transparent)',
-      }}
-    >
+    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[1000] flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-card/80 border border-surface/25 backdrop-blur-[8px] shadow-xl">
       <MapActionButton
         icon={<PlaceCameraIcon />}
         label="Place Camera"
         tooltip={placeCameraTooltip}
         isActive={activeTool === 'place-camera'}
-        disabled={placeCameraDisabled}
+        disabled={selectedCameraModel === null}
         onClick={() => setActiveTool('place-camera')}
       />
 

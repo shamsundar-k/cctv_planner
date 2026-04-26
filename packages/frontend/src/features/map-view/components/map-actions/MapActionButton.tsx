@@ -15,36 +15,21 @@ export default function MapActionButton({ icon, label, tooltip, isActive = false
       <button
         onClick={onClick}
         disabled={disabled}
-        className="w-8 h-8 flex items-center justify-center rounded-lg border transition-all"
-        style={{
-          background: isActive ? 'var(--theme-accent)' : 'var(--theme-bg-card)',
-          borderColor: isActive
-            ? 'var(--theme-accent)'
-            : 'color-mix(in srgb, var(--theme-surface) 30%, transparent)',
-          cursor: disabled ? 'not-allowed' : 'pointer',
-          opacity: disabled ? 0.4 : 1,
-        }}
+        className={[
+          'w-8 h-8 flex items-center justify-center rounded-lg border transition-all',
+          isActive ? 'bg-accent border-accent' : 'bg-card border-surface/30',
+          disabled ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer',
+        ].join(' ')}
         aria-label={label}
         aria-pressed={isActive}
         aria-disabled={disabled}
       >
-        <span
-          style={{
-            color: isActive ? 'var(--theme-accent-text)' : 'var(--theme-text-secondary)',
-          }}
-        >
+        <span className={isActive ? 'text-on-accent' : 'text-muted'}>
           {icon}
         </span>
       </button>
 
-      <div
-        className="absolute bottom-[calc(100%+6px)] left-1/2 -translate-x-1/2 px-2 py-1 rounded text-[11px] whitespace-nowrap pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150"
-        style={{
-          background: 'color-mix(in srgb, var(--theme-bg-base) 90%, transparent)',
-          color: 'var(--theme-text-primary)',
-          border: '1px solid color-mix(in srgb, var(--theme-surface) 25%, transparent)',
-        }}
-      >
+      <div className="absolute bottom-[calc(100%+6px)] left-1/2 -translate-x-1/2 px-2 py-1 rounded text-[11px] whitespace-nowrap pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 bg-canvas/90 text-primary border border-surface/25">
         {tooltip ?? label}
       </div>
     </div>
