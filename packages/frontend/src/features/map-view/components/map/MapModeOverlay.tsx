@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { X } from 'lucide-react'
-import { useMapViewStore } from '@/store/mapViewSlice'
+import { useMapActionsStore } from '@/store/mapActionsSlice'
 import { useSelectedCameraModelStore } from '@/store/selectedCameraModelSlice'
 import { useMapContext } from '@/context/MapContext'
 
@@ -21,8 +21,8 @@ const RETICLE_CURSOR = (() => {
 })()
 
 export default function MapModeOverlay() {
-    const activeTool = useMapViewStore((s) => s.activeTool)
-    const setActiveTool = useMapViewStore((s) => s.setActiveTool)
+    const activeTool = useMapActionsStore((s) => s.activeTool)
+    const setActiveTool = useMapActionsStore((s) => s.setActiveTool)
     const selectedCameraModel = useSelectedCameraModelStore((s) => s.selectedCameraModel)
     const { mapRef } = useMapContext()
 

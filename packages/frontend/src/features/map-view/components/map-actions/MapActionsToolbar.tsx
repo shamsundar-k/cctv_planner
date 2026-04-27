@@ -1,6 +1,6 @@
 import { Camera, Plus, Ruler, Spline, Pentagon } from 'lucide-react'
 import { useSelectedCameraModelStore } from '../../../../store/selectedCameraModelSlice'
-import { useMapViewStore } from '../../../../store/mapViewSlice'
+import { useMapActionsStore } from '../../../../store/mapActionsSlice'
 import MapActionButton from './MapActionButton'
 
 function PlaceCameraIcon() {
@@ -16,8 +16,8 @@ const DIVIDER = <div className="w-px h-4 mx-0.5 shrink-0 bg-surface/40" />
 
 export default function MapActionsToolbar() {
   const selectedCameraModel = useSelectedCameraModelStore((s) => s.selectedCameraModel)
-  const activeTool = useMapViewStore((s) => s.activeTool)
-  const setActiveTool = useMapViewStore((s) => s.setActiveTool)
+  const activeTool = useMapActionsStore((s) => s.activeTool)
+  const setActiveTool = useMapActionsStore((s) => s.setActiveTool)
 
   const placeCameraTooltip = selectedCameraModel ? selectedCameraModel.name : 'Select a camera model'
 
@@ -35,8 +35,8 @@ export default function MapActionsToolbar() {
       {DIVIDER}
 
       <MapActionButton icon={<Ruler size={15} />} label="Measure Distance" />
-      <MapActionButton icon={<Spline size={15} />} label="Draw Line" />
-      <MapActionButton icon={<Pentagon size={15} />} label="Draw Polygon" />
+      <MapActionButton icon={<Spline size={15} />} label="Draw Line" onClick={() => setActiveTool(activeTool === 'draw-line' ? 'pan' : 'draw-line')} isActive={activeTool === 'draw-line'} />
+      <MapActionButton icon={<Pentagon size={15} />} label="Draw Polygon" onClick={() => setActiveTool(activeTool === 'draw-polygon' ? 'pan' : 'draw-polygon')} isActive={activeTool === 'draw-polygon'} />
     </div>
   )
 }

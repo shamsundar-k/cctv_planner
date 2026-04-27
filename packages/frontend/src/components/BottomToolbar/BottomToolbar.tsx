@@ -1,12 +1,12 @@
 import { useCallback } from 'react'
-import { useMapViewStore } from '../../store/mapViewSlice'
+import { useMapActionsStore } from '../../store/mapActionsSlice'
 import { ToolGroup } from './ToolGroup'
 import { TOOL_GROUPS } from './toolbarConfig'
 import { useToolbarKeyboard } from '../../hooks/useToolbarKeyboard'
 
 export default function BottomToolbar() {
-  const activeTool = useMapViewStore((s) => s.activeTool)
-  const setActiveTool = useMapViewStore((s) => s.setActiveTool)
+  const activeTool = useMapActionsStore((s) => s.activeTool)
+  const setActiveTool = useMapActionsStore((s) => s.setActiveTool)
 
   const resetTool = useCallback(() => setActiveTool('pan'), [setActiveTool])
   useToolbarKeyboard(resetTool)

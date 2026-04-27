@@ -1,5 +1,5 @@
 import { toolIcons } from './toolIcons'
-import type { ActiveTool } from '../../store/mapViewSlice'
+import type { ActiveTool } from '../../store/mapActionsSlice'
 
 interface ToolButtonProps {
   label: string

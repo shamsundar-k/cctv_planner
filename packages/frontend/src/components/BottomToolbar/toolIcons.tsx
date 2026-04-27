@@ -1,5 +1,5 @@
 import { Hand, MousePointer, Camera, Hexagon, Slash, Ruler, Trash2 } from 'lucide-react'
-import type { ActiveTool } from '../../store/mapViewSlice'
+import type { ActiveTool } from '../../store/mapActionsSlice'
 
 export type ToolIcon = React.ComponentType<{ size?: number }>
 

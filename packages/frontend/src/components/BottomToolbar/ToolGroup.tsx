@@ -1,5 +1,5 @@
 import { ToolButton } from './ToolButton'
-import type { ActiveTool } from '../../store/mapViewSlice'
+import type { ActiveTool } from '../../store/mapActionsSlice'
 import type { Tool } from './toolbarConfig'
 
 interface ToolGroupProps {

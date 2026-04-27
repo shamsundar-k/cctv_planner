@@ -1,4 +1,4 @@
-import type { ActiveTool } from '../../store/mapViewSlice'
+import type { ActiveTool } from '../../store/mapActionsSlice'
 
 export interface Tool {
   id: ActiveTool
