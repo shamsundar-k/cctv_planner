@@ -6,7 +6,7 @@ import LayersPanel from './LayersPanel'
 
 type PanelKey = 'layers' | 'basemap'
 
-export default function MapToolbar() {
+export default function MapLayersControl() {
   const [openPanel, setOpenPanel] = useState<PanelKey | null>(null)
 
   const toggle = (key: PanelKey) =>

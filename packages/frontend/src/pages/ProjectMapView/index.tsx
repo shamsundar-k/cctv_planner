@@ -1,14 +1,14 @@
-import { useMapView } from '../../features/map-view/hooks/useMapView'
-import MapNavbar from '../../features/map-view/components/MapNavbar/MapNavbar'
-import Map from '../../features/map-view/components/map/Map'
-import BaseTile from '../../features/map-view/components/map/BaseTile'
-import MapModeOverlay from '../../features/map-view/components/map/MapModeOverlay'
-import MapToolbar from '../../features/map-view/components/toolbar/MapToolbar'
-import { MapActionsToolbar } from '../../features/map-view/components/map-actions'
-import CameraLayer from '../../features/map-view/components/map/CameraLayer'
-import CameraPropertiesPanel from '../../features/map-view/components/map/CameraPropertiesPanel'
+import { useMapView } from '@/features/map-view/hooks/useMapView'
+import MapNavbar from '@/features/map-view/components/MapNavbar/MapNavbar'
+import Map from '@/features/map-view/components/map/Map'
+import BaseTile from '@/features/map-view/components/map/BaseTile'
+import MapModeOverlay from '@/features/map-view/components/map/MapModeOverlay'
+import { MapActionsToolbar } from '@/features/map-view/components/map-actions'
+import CameraLayer from '@/features/map-view/components/map/CameraLayer'
+import CameraPropertiesPanel from '@/features/map-view/components/map/CameraPropertiesPanel'
 import LeftSidebar from './LeftSidebar'
-import { useLayerVisibilityStore } from '../../store/layerVisibilityStore'
+import { useLayerVisibilityStore } from '@/store/layerVisibilityStore'
+import MapLayersControl from '@/features/map-view/components/toolbar/MapLayersControl'
 
 export default function ProjectMapView() {
   const { id, project, isLoading, isError, center, defaultZoom } = useMapView()
@@ -38,7 +38,7 @@ export default function ProjectMapView() {
         <LeftSidebar projectId={id} />
         <Map zoom={defaultZoom} center={center}>
           <BaseTile />
-          <MapToolbar />
+          <MapLayersControl />
           <MapActionsToolbar />
           <MapModeOverlay />
           {cameraLayerVisible && <CameraLayer projectId={id} />}

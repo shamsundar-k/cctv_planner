@@ -18,10 +18,12 @@ export default function Map({ center = [51.5, -0.09], zoom = 13, children }: Map
   useEffect(() => {
     if (mapInstanceRef.current || !mapDivRef.current) return
 
+
     const map = L.map(mapDivRef.current).setView(center, zoom)
     map.zoomControl.setPosition('topright')
     mapInstanceRef.current = map
     setMapReady(true)
+    console.log('Map initialized')
 
     return () => {
       mapInstanceRef.current?.remove()

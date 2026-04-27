@@ -15,6 +15,7 @@ export default function BaseTile() {
 
     const { attribution, get_url } = BASE_MAPS[activeBaseMap]
     tileLayerRef.current = L.tileLayer(get_url(), { attribution }).addTo(mapRef.current)
+    console.log('BaseTile initialized')
 
     return () => {
       tileLayerRef.current?.remove()
@@ -26,6 +27,7 @@ export default function BaseTile() {
   useEffect(() => {
     if (!tileLayerRef.current) return
     tileLayerRef.current.setUrl(BASE_MAPS[activeBaseMap].get_url())
+    console.log('BaseTile updated')
   }, [activeBaseMap])
 
   return null

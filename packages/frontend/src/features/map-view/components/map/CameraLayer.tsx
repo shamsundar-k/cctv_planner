@@ -30,6 +30,7 @@ export default function CameraLayer({ projectId }: CameraLayerProps) {
 
     const group = L.layerGroup().addTo(map)
     groupRef.current = group
+    console.log('CameraLayer initialized')
 
     return () => {
       group.remove()
@@ -43,20 +44,22 @@ export default function CameraLayer({ projectId }: CameraLayerProps) {
     if (!map) return
 
     const handler = (e: L.LeafletMouseEvent) => {
-      if (activeTool === 'place-camera' && selectedCameraModel) {
-        const localCamera = generateDefaultCameraInstance(
-          selectedCameraModel.id,
-          { lat: e.latlng.lat, lng: e.latlng.lng },
-          projectId,
-        )
-        if (localCamera) {
-          const uid = addCamera(localCamera)
-          selectCamera(uid)
-        }
-      } else if (activeTool === 'select' || activeTool === 'pan') {
-        clearSelection()
-      }
+      console.log('CameraLayer clicked')
+      // if (activeTool === 'place-camera' && selectedCameraModel) {
+      //   const localCamera = generateDefaultCameraInstance(
+      //     selectedCameraModel.id,
+      //     { lat: e.latlng.lat, lng: e.latlng.lng },
+      //     projectId,
+      //   )
+      //   if (localCamera) {
+      //     const uid = addCamera(localCamera)
+      //     selectCamera(uid)
+      //   }
+      // } else if (activeTool === 'select' || activeTool === 'pan') {
+      //   clearSelection()
+      // }
     }
+    console.log('Adding map event for CameraLayer')
 
     map.on('click', handler)
     return () => { map.off('click', handler) }
