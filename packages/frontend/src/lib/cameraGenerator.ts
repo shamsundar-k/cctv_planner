@@ -62,6 +62,11 @@ export function generateDefaultCamera(camera_model_id: string, position: geo_pos
     tempCamera.fov_visible_geojson = geo_fov
     tempCamera.tilt_angle = result.tilt_angle
 
+    if (camera_model_data.ir_range > 0) {
+        const ir_result = computeFovCartesian({ ...fov_calc_input_data, target_distance: camera_model_data.ir_range })
+        tempCamera.fov_ir_geojson = computeFovGeoCorners(ir_result, tempCamera.lat, tempCamera.lng, tempCamera.bearing)
+    }
+
     // suppress unused projectId warning — callers may pass it for context
     void projectId
 

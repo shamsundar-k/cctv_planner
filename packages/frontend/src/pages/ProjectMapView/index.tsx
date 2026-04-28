@@ -5,6 +5,7 @@ import BaseTile from '@/features/map-view/components/map/BaseTile'
 import MapModeOverlay from '@/features/map-view/components/map/MapModeOverlay'
 import { MapActionsToolbar } from '@/features/map-view/components/map-actions'
 import CameraLayer from '@/features/map-view/components/layers/CameraLayer'
+import FovLayer from '@/features/map-view/components/layers/FovLayer'
 import CameraPropertiesPanel from '@/features/map-view/components/map/CameraPropertiesPanel'
 import LeftSidebar from './LeftSidebar'
 import { useLayerVisibilityStore } from '@/store/layerVisibilityStore'
@@ -15,6 +16,7 @@ export default function ProjectMapView() {
   const { id, project, isLoading, isError, center, defaultZoom } = useMapView()
   const cameraLayerVisible = useLayerVisibilityStore((s) => s.visible.cameras)
   const drawLayerVisible = useLayerVisibilityStore((s) => s.visible.draw)
+  const fovLayerVisible = useLayerVisibilityStore((s) => s.visible.fov || s.visible.ir)
 
   if (isLoading) {
     return (
@@ -44,7 +46,8 @@ export default function ProjectMapView() {
           <MapActionsToolbar />
           <MapModeOverlay />
           {cameraLayerVisible && <CameraLayer projectId={id} />}
-          {drawLayerVisible && <DrawLayer />}
+          {fovLayerVisible && <FovLayer />}
+          {drawLayerVisible && <DrawLayer projectId={id} />}
         </Map>
         <CameraPropertiesPanel projectId={id} />
       </div>

@@ -34,7 +34,7 @@ export default function MapActionsToolbar() {
 
       {DIVIDER}
 
-      <MapActionButton icon={<Ruler size={15} />} label="Measure Distance" />
+      <MapActionButton icon={<Ruler size={15} />} label="Measure Distance" onClick={() => setActiveTool(activeTool === 'measure' ? 'pan' : 'measure')} isActive={activeTool === 'measure'} />
       <MapActionButton icon={<Spline size={15} />} label="Draw Line" onClick={() => setActiveTool(activeTool === 'draw-line' ? 'pan' : 'draw-line')} isActive={activeTool === 'draw-line'} />
       <MapActionButton icon={<Pentagon size={15} />} label="Draw Polygon" onClick={() => setActiveTool(activeTool === 'draw-polygon' ? 'pan' : 'draw-polygon')} isActive={activeTool === 'draw-polygon'} />
     </div>
