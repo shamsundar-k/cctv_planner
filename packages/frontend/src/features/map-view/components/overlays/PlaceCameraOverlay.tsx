@@ -31,13 +31,11 @@ const RETICLE_CURSOR = (() => {
         return `<${tag} ${attrStr}/>`
     }).join('')
 
-    // Shadow pass (dark outline) + main pass (white fill)
-    const shadow = elems
-        .replace(/stroke='[^']*'/g, `stroke='rgba(0,0,0,0.5)'`)
-        .replace(/stroke-width='[^']*'/g, `stroke-width='3'`)
-    const main = elems
-        .replace(/stroke='[^']*'/g, `stroke='white'`)
-        .replace(/stroke-width='[^']*'/g, `stroke-width='1.5'`)
+    // Shadow pass (dark outline) + main pass (white).
+    // Lucide's __iconNode entries carry only geometric attrs (cx, cy, r, x1…), not stroke,
+    // so we set stroke via a <g> wrapper that all children inherit.
+    const shadow = `<g stroke='rgba(0,0,0,0.5)' stroke-width='3'>${elems}</g>`
+    const main = `<g stroke='white' stroke-width='1.5'>${elems}</g>`
 
     const svg =
         `<svg xmlns='http://www.w3.org/2000/svg' width='${size}' height='${size}' ` +
