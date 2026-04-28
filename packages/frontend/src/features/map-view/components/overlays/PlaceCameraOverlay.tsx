@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { X } from 'lucide-react'
+import { X, Crosshair } from 'lucide-react'
 import { useParams } from 'react-router'
 import { useMapContext } from '@/context/MapContext'
 import { useMapActionsStore } from '@/store/mapActionsSlice'
@@ -8,20 +8,44 @@ import { useCameraStore } from '@/store/cameraStore'
 import { useCameraLayerStore } from '@/store/cameraLayerSlice'
 import { generateDefaultCamera } from '@/lib/cameraGenerator'
 
+// Derive cursor SVG from the Lucide Crosshair icon node list at module load time.
+// Crosshair icon node: circle r=10 + 4 line stubs, all on a 24×24 grid.
 const RETICLE_CURSOR = (() => {
-    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'>
-  <line x1='16' y1='2' x2='16' y2='12' stroke='rgba(0,0,0,0.5)' stroke-width='3' stroke-linecap='round'/>
-  <line x1='16' y1='20' x2='16' y2='30' stroke='rgba(0,0,0,0.5)' stroke-width='3' stroke-linecap='round'/>
-  <line x1='2' y1='16' x2='12' y2='16' stroke='rgba(0,0,0,0.5)' stroke-width='3' stroke-linecap='round'/>
-  <line x1='20' y1='16' x2='30' y2='16' stroke='rgba(0,0,0,0.5)' stroke-width='3' stroke-linecap='round'/>
-  <circle cx='16' cy='16' r='5' stroke='rgba(0,0,0,0.5)' stroke-width='2.5' fill='none'/>
-  <line x1='16' y1='2' x2='16' y2='12' stroke='white' stroke-width='1.5' stroke-linecap='round'/>
-  <line x1='16' y1='20' x2='16' y2='30' stroke='white' stroke-width='1.5' stroke-linecap='round'/>
-  <line x1='2' y1='16' x2='12' y2='16' stroke='white' stroke-width='1.5' stroke-linecap='round'/>
-  <line x1='20' y1='16' x2='30' y2='16' stroke='white' stroke-width='1.5' stroke-linecap='round'/>
-  <circle cx='16' cy='16' r='5' stroke='white' stroke-width='1.5' fill='none'/>
-</svg>`
-    return `url("data:image/svg+xml,${encodeURIComponent(svg)}") 16 16, crosshair`
+    const size = 32
+    const scale = size / 24          // map Lucide's 24-unit grid → 32 px
+    const iconNodes = (Crosshair as unknown as { __iconNode?: [string, Record<string, string | number>][] }).__iconNode ?? []
+
+    const elems = iconNodes.map(([tag, attrs]) => {
+        const scaled = Object.fromEntries(
+            Object.entries(attrs).map(([k, v]) => [
+                k,
+                ['cx', 'cy', 'r', 'x1', 'x2', 'y1', 'y2'].includes(k)
+                    ? String(Number(v) * scale)
+                    : v,
+            ]),
+        )
+        const attrStr = Object.entries(scaled)
+            .filter(([k]) => k !== 'key')
+            .map(([k, v]) => `${k}='${v}'`)
+            .join(' ')
+        return `<${tag} ${attrStr}/>`
+    }).join('')
+
+    // Shadow pass (dark outline) + main pass (white fill)
+    const shadow = elems
+        .replace(/stroke='[^']*'/g, `stroke='rgba(0,0,0,0.5)'`)
+        .replace(/stroke-width='[^']*'/g, `stroke-width='3'`)
+    const main = elems
+        .replace(/stroke='[^']*'/g, `stroke='white'`)
+        .replace(/stroke-width='[^']*'/g, `stroke-width='1.5'`)
+
+    const svg =
+        `<svg xmlns='http://www.w3.org/2000/svg' width='${size}' height='${size}' ` +
+        `viewBox='0 0 ${size} ${size}' fill='none' stroke-linecap='round' stroke-linejoin='round'>` +
+        shadow + main +
+        `</svg>`
+
+    return `url("data:image/svg+xml,${encodeURIComponent(svg)}") ${size / 2} ${size / 2}, crosshair`
 })()
 
 /**
@@ -68,9 +92,8 @@ export default function PlaceCameraOverlay() {
                 projectId,
             )
             if (localCamera) {
-                const uid = useCameraStore.getState().addCamera(localCamera)
-                useCameraLayerStore.getState().selectCamera(uid)
-                useMapActionsStore.getState().setActiveTool('pan')
+                useCameraStore.getState().addCamera(localCamera)
+
             }
         }
 
