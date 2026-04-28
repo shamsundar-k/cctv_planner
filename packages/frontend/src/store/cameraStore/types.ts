@@ -1,4 +1,4 @@
-import type { CameraInstance } from '../../types/cameraInstances.types'
+import type { Camera } from '../../types/camera.types'
 
 // ── Tracking ───────────────────────────────────────────────────────────────────
 
@@ -12,13 +12,13 @@ export interface CameraTrackingEntry {
 }
 
 export interface CameraRecord {
-  camera: CameraInstance        // pure server data — what gets sent to API
+  camera: Camera        // pure server data — what gets sent to API
   tracking: CameraTrackingEntry // client sync state — never sent to API
 }
 
 // ── Store interface ────────────────────────────────────────────────────────────
 
-export interface CameraInstanceStoreState {
+export interface CameraStoreState {
   // Ordered list of camera UIDs — drives render order
   uids: string[]
   cameraRecords: Record<string, CameraRecord>
@@ -45,10 +45,10 @@ export interface CameraInstanceStoreState {
   loadCameras: (projectId: string) => Promise<void>
 
   // Place a new camera locally — no server call; returns uid
-  addCamera: (camera: CameraInstance) => string
+  addCamera: (camera: Camera) => string
 
   // Patch camera data fields — called from properties panel
-  updateCamera: (uid: string, patch: Partial<CameraInstance>) => void
+  updateCamera: (uid: string, patch: Partial<Camera>) => void
 
   // Remove camera from map:
   //   - if isNew (never saved)   → drop entirely, no server call

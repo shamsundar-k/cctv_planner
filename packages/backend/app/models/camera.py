@@ -16,7 +16,7 @@ from .camera_model import CameraModel
 from .project import Project
 
 
-class CameraInstance(Document):
+class Camera(Document):
     uid: str
     project: Link[Project]
     camera_model: Link[CameraModel]

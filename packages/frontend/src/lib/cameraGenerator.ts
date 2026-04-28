@@ -1,4 +1,4 @@
-import type { CameraInstance } from '../types/cameraInstances.types'
+import type { Camera } from '../types/camera.types'
 import { getCameraModelDetails } from '../api/projects'
 import type { CameraType } from '../types/cameramodel.types'
 import type { fov_input_params, FovCartesian } from './fovCalculations'
@@ -15,7 +15,7 @@ const CAMERA_TYPE_LABELS: Record<CameraType, string> = {
     bullet: 'Bullet camera',
 }
 
-export function generateDefaultCameraInstance(camera_model_id: string, position: geo_position, projectId: string): CameraInstance | null {
+export function generateDefaultCamera(camera_model_id: string, position: geo_position, projectId: string): Camera | null {
     const uid = crypto.randomUUID()
 
     const camera_model_data = getCameraModelDetails(camera_model_id)
@@ -25,7 +25,7 @@ export function generateDefaultCameraInstance(camera_model_id: string, position:
         return null
     }
 
-    const tempCamera: CameraInstance = {
+    const tempCamera: Camera = {
         uid,
         label: CAMERA_TYPE_LABELS[camera_model_data.camera_type] ?? 'Unknown',
         lat: position.lat,
@@ -38,7 +38,7 @@ export function generateDefaultCameraInstance(camera_model_id: string, position:
         visible: true,
         fov_visible_geojson: null,
         fov_ir_geojson: null,
-        target_distance: 50,
+        target_distance: camera_model_data.ir_range > 0 ? camera_model_data.ir_range : 50,
         target_height: 1.8,
         camera_model_id,
     }

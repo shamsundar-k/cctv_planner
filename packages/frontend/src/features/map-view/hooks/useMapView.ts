@@ -1,11 +1,11 @@
 import { useEffect } from 'react'
 import { useParams } from 'react-router'
 import { useProject } from '../../../api/projects'
-import { useCameraInstanceStore } from '../../../store/cameraInstanceStore'
+import { useCameraStore } from '../../../store/cameraStore'
 
 export function useMapView() {
   const { id = '' } = useParams<{ id: string }>()
-  const loadCameras = useCameraInstanceStore((s) => s.loadCameras)
+  const loadCameras = useCameraStore((s) => s.loadCameras)
 
   useEffect(() => {
     if (id) loadCameras(id)

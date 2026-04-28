@@ -6,15 +6,15 @@ from beanie import PydanticObjectId
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.core.deps import get_current_user
-from app.models.camera_instance import CameraInstance
+from app.models.camera import Camera
 from app.models.project import Project
 from app.models.user import User
 from app.models.zone import Zone
 from app.models.camera_model import CameraModel
 from app.schemas.camera_model import CameraModelResponse
-from app.schemas.camera_instance import CameraInstanceCreate, CameraInstanceUpdate
+from app.schemas.camera import CameraCreate, CameraUpdate
 from app.schemas.project import (
-    CameraInstanceSummary,
+    CameraSummary,
     ImportedCameraItem,
     ProjectCreate,
     ProjectDetailResponse,
@@ -75,15 +75,15 @@ def _to_project_response(p: Project, camera_count: int = 0, zone_count: int = 0)
     )
 
 
-def _camera_model_id(cam: CameraInstance) -> str:
+def _camera_model_id(cam: Camera) -> str:
     cm = cam.camera_model
     if isinstance(cm, CameraModel):
         return str(cm.id)
     return str(cm.ref.id)  # type: ignore[union-attr]
 
 
-def _to_camera_summary(cam: CameraInstance) -> CameraInstanceSummary:
-    return CameraInstanceSummary(
+def _to_camera_summary(cam: Camera) -> CameraSummary:
+    return CameraSummary(
         id=str(cam.id),
         client_id=cam.client_id,
         label=cam.label,
@@ -140,8 +140,8 @@ async def list_projects(
     # Fetch counts per project (<100 projects per spec so N queries is acceptable)
     result = []
     for p in projects:
-        cam_count = await CameraInstance.find(
-            CameraInstance.project.id == p.id  # type: ignore[union-attr]
+        cam_count = await Camera.find(
+            Camera.project.id == p.id  # type: ignore[union-attr]
         ).count()
         zone_count = await Zone.find(
             Zone.project.id == p.id  # type: ignore[union-attr]
@@ -187,8 +187,8 @@ async def get_project(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
     _require_access(project, current_user)
 
-    cameras = await CameraInstance.find(
-        CameraInstance.project.id == project.id  # type: ignore[union-attr]
+    cameras = await Camera.find(
+        Camera.project.id == project.id  # type: ignore[union-attr]
     ).to_list()
     zones = await Zone.find(
         Zone.project.id == project.id  # type: ignore[union-attr]
@@ -219,8 +219,8 @@ async def update_project(
         await project.set(updates)
 
     # Re-fetch counts after update
-    cam_count = await CameraInstance.find(
-        CameraInstance.project.id == project.id  # type: ignore[union-attr]
+    cam_count = await Camera.find(
+        Camera.project.id == project.id  # type: ignore[union-attr]
     ).count()
     zone_count = await Zone.find(
         Zone.project.id == project.id  # type: ignore[union-attr]
@@ -240,8 +240,8 @@ async def delete_project(
     _require_owner(project, current_user)
 
     # Cascade delete cameras and zones
-    await CameraInstance.find(
-        CameraInstance.project.id == project.id  # type: ignore[union-attr]
+    await Camera.find(
+        Camera.project.id == project.id  # type: ignore[union-attr]
     ).delete()
     await Zone.find(
         Zone.project.id == project.id  # type: ignore[union-attr]
@@ -299,9 +299,9 @@ async def list_imported_cameras(
         cm = await CameraModel.get(model_id)
         if cm is None:
             continue
-        placed_count = await CameraInstance.find(
-            CameraInstance.project.id == project.id,  # type: ignore[union-attr]
-            CameraInstance.camera_model.id == model_id,  # type: ignore[union-attr]
+        placed_count = await Camera.find(
+            Camera.project.id == project.id,  # type: ignore[union-attr]
+            Camera.camera_model.id == model_id,  # type: ignore[union-attr]
         ).count()
         result.append(ImportedCameraItem(
             camera_model=_to_camera_model_response(cm),
@@ -349,9 +349,9 @@ async def remove_imported_camera(
     if model_id not in project.imported_camera_model_ids:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Camera model not imported")
 
-    placed_count = await CameraInstance.find(
-        CameraInstance.project.id == project.id,  # type: ignore[union-attr]
-        CameraInstance.camera_model.id == model_id,  # type: ignore[union-attr]
+    placed_count = await Camera.find(
+        Camera.project.id == project.id,  # type: ignore[union-attr]
+        Camera.camera_model.id == model_id,  # type: ignore[union-attr]
     ).count()
     if placed_count > 0:
         raise HTTPException(
@@ -370,15 +370,15 @@ async def _get_camera_for_project(
     project_id: PydanticObjectId,
     client_id: str,
     current_user: User,
-) -> tuple[Project, CameraInstance]:
+) -> tuple[Project, Camera]:
     project = await Project.get(project_id)
     if project is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
     _require_access(project, current_user)
 
-    cam = await CameraInstance.find_one(
-        CameraInstance.project.id == project.id,  # type: ignore[union-attr]
-        CameraInstance.client_id == client_id,
+    cam = await Camera.find_one(
+        Camera.project.id == project.id,  # type: ignore[union-attr]
+        Camera.client_id == client_id,
     )
     if cam is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Camera instance not found")
@@ -386,28 +386,28 @@ async def _get_camera_for_project(
     return project, cam
 
 
-@router.get("/{project_id}/cameras", response_model=list[CameraInstanceSummary])
+@router.get("/{project_id}/cameras", response_model=list[CameraSummary])
 async def list_camera_instances(
     project_id: PydanticObjectId,
     current_user: User = Depends(get_current_user),
-) -> list[CameraInstanceSummary]:
+) -> list[CameraSummary]:
     project = await Project.get(project_id)
     if project is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
     _require_access(project, current_user)
 
-    cameras = await CameraInstance.find(
-        CameraInstance.project.id == project.id  # type: ignore[union-attr]
+    cameras = await Camera.find(
+        Camera.project.id == project.id  # type: ignore[union-attr]
     ).to_list()
     return [_to_camera_summary(c) for c in cameras]
 
 
-@router.post("/{project_id}/cameras", response_model=CameraInstanceSummary, status_code=status.HTTP_201_CREATED)
+@router.post("/{project_id}/cameras", response_model=CameraSummary, status_code=status.HTTP_201_CREATED)
 async def place_camera_instance(
     project_id: PydanticObjectId,
-    body: CameraInstanceCreate,
+    body: CameraCreate,
     current_user: User = Depends(get_current_user),
-) -> CameraInstanceSummary:
+) -> CameraSummary:
     project = await Project.get(project_id)
     if project is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
@@ -429,12 +429,12 @@ async def place_camera_instance(
         )
 
     # Re-instantiate with ir_range_hint so the validator can default target_distance
-    body = CameraInstanceCreate(
+    body = CameraCreate(
         **body.model_dump(exclude={"ir_range_hint"}),
         ir_range_hint=cm.ir_range,
     )
 
-    instance = CameraInstance(
+    instance = Camera(
         client_id=body.client_id,
         project=project,  # type: ignore[arg-type]
         camera_model=cm,  # type: ignore[arg-type]
@@ -456,23 +456,23 @@ async def place_camera_instance(
     return _to_camera_summary(instance)
 
 
-@router.get("/{project_id}/cameras/{client_id}", response_model=CameraInstanceSummary)
+@router.get("/{project_id}/cameras/{client_id}", response_model=CameraSummary)
 async def get_camera_instance(
     project_id: PydanticObjectId,
     client_id: str,
     current_user: User = Depends(get_current_user),
-) -> CameraInstanceSummary:
+) -> CameraSummary:
     _, cam = await _get_camera_for_project(project_id, client_id, current_user)
     return _to_camera_summary(cam)
 
 
-@router.put("/{project_id}/cameras/{client_id}", response_model=CameraInstanceSummary)
+@router.put("/{project_id}/cameras/{client_id}", response_model=CameraSummary)
 async def update_camera_instance(
     project_id: PydanticObjectId,
     client_id: str,
-    body: CameraInstanceUpdate,
+    body: CameraUpdate,
     current_user: User = Depends(get_current_user),
-) -> CameraInstanceSummary:
+) -> CameraSummary:
     _, cam = await _get_camera_for_project(project_id, client_id, current_user)
 
     updates = body.model_dump(exclude_none=True, exclude={"ir_range_hint"})

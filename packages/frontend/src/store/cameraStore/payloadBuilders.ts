@@ -1,6 +1,6 @@
-import type { CameraInstance, CameraInstanceCreatePayload, CameraInstanceUpdatePayload } from '../../types/cameraInstances.types'
+import type { Camera, CameraCreatePayload, CameraUpdatePayload } from '../../types/camera.types'
 
-export function buildCreatePayload(camera: CameraInstance): CameraInstanceCreatePayload {
+export function buildCreatePayload(camera: Camera): CameraCreatePayload {
   return {
     uid: camera.uid,
     camera_model_id: camera.camera_model_id,
@@ -20,7 +20,7 @@ export function buildCreatePayload(camera: CameraInstance): CameraInstanceCreate
   }
 }
 
-export function buildUpdatePayload(camera: CameraInstance): CameraInstanceUpdatePayload {
+export function buildUpdatePayload(camera: Camera): CameraUpdatePayload {
   return {
     label: camera.label,
     lat: camera.lat,

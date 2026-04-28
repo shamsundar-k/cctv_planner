@@ -1,6 +1,6 @@
 import { useEffect, type RefObject } from 'react'
 import L from 'leaflet'
-import { useCameraInstanceStore } from '@/store/cameraInstanceStore'
+import { useCameraStore } from '@/store/cameraStore'
 import { useCameraLayerStore } from '@/store/cameraLayerSlice'
 
 function buildCameraIcon(colour: string, selected: boolean, bearing: number): L.DivIcon {
@@ -31,11 +31,11 @@ interface CameraMarkerProps {
 
 export default function CameraMarker({ cameraId, groupRef }: CameraMarkerProps) {
   const selectCamera = useCameraLayerStore((s) => s.selectCamera)
-  const updateCamera = useCameraInstanceStore((s) => s.updateCamera)
+  const updateCamera = useCameraStore((s) => s.updateCamera)
 
   useEffect(() => {
     const group = groupRef.current
-    const camera = useCameraInstanceStore.getState().cameraRecords[cameraId]?.camera
+    const camera = useCameraStore.getState().cameraRecords[cameraId]?.camera
     if (!group || !camera) return
 
     const marker = L.marker([camera.lat, camera.lng], {
@@ -63,13 +63,13 @@ export default function CameraMarker({ cameraId, groupRef }: CameraMarkerProps) 
     const unsubSelection = useCameraLayerStore.subscribe(
       (s) => s.selectedCameraId,
       (selectedId) => {
-        const cam = useCameraInstanceStore.getState().cameraRecords[cameraId]?.camera
+        const cam = useCameraStore.getState().cameraRecords[cameraId]?.camera
         if (cam) marker.setIcon(buildCameraIcon(cam.colour, selectedId === cameraId, cam.bearing))
       }
     )
 
     // Camera data change — update icon and position imperatively
-    const unsubCamera = useCameraInstanceStore.subscribe(
+    const unsubCamera = useCameraStore.subscribe(
       (s) => s.cameraRecords[cameraId]?.camera,
       (cam) => {
         if (!cam) return

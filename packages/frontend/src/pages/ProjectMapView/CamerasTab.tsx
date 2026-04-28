@@ -1,4 +1,4 @@
-import { useCameraInstanceStore } from '../../store/cameraInstanceStore'
+import { useCameraStore } from '../../store/cameraStore'
 import { useCameraLayerStore } from '../../store/cameraLayerSlice'
 
 interface CamerasTabProps {
@@ -6,9 +6,9 @@ interface CamerasTabProps {
 }
 
 export default function CamerasTab({ projectId: _projectId }: CamerasTabProps) {
-  const uids = useCameraInstanceStore((s) => s.uids)
-  const cameraRecords = useCameraInstanceStore((s) => s.cameraRecords)
-  const isLoading = useCameraInstanceStore((s) => s.isLoading)
+  const uids = useCameraStore((s) => s.uids)
+  const cameraRecords = useCameraStore((s) => s.cameraRecords)
+  const isLoading = useCameraStore((s) => s.isLoading)
   const cameras = uids.map((id) => cameraRecords[id]?.camera).filter(Boolean)
   const { selectedCameraId, hiddenCameraIds, selectCamera, toggleCameraVisibility } = useCameraLayerStore()
 

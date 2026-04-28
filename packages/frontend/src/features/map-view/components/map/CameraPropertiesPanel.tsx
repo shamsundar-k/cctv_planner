@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { X } from 'lucide-react'
 import { useImportedCameras } from '../../../../api/projects'
-import { useCameraInstanceStore } from '../../../../store/cameraInstanceStore'
+import { useCameraStore } from '../../../../store/cameraStore'
 import { useCameraLayerStore } from '../../../../store/cameraLayerSlice'
-import type { CameraInstance } from '../../../../types/cameraInstances.types'
+import type { Camera } from '../../../../types/camera.types'
 import type { fov_input_params } from '../../../../lib/fovCalculations'
 import { computeFovCartesian, computeFovGeoCorners } from '../../../../lib/fovCalculations'
 
@@ -44,7 +44,7 @@ const inputCls = 'rounded-md text-xs px-2 py-1.5 w-full focus:outline-none'
 
 function recomputeFov(
   form: FormValues,
-  camera: CameraInstance,
+  camera: Camera,
   cameraModel: { focal_length_min: number; focal_length_max: number; h_fov_min: number; h_fov_max: number; v_fov_min: number; v_fov_max: number } | null,
 ) {
   if (!cameraModel || form.target_distance === '' || form.target_distance <= 0) return null
@@ -75,13 +75,13 @@ export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPan
   const selectedCameraId = useCameraLayerStore((s) => s.selectedCameraId)
   const clearSelection = useCameraLayerStore((s) => s.clearSelection)
 
-  const camera = useCameraInstanceStore((s) =>
+  const camera = useCameraStore((s) =>
     selectedCameraId ? s.cameraRecords[selectedCameraId]?.camera ?? null : null,
   )
-  const uids = useCameraInstanceStore((s) => s.uids)
-  const updateCamera = useCameraInstanceStore((s) => s.updateCamera)
-  const removeCamera = useCameraInstanceStore((s) => s.removeCamera)
-  const saveStatus = useCameraInstanceStore((s) =>
+  const uids = useCameraStore((s) => s.uids)
+  const updateCamera = useCameraStore((s) => s.updateCamera)
+  const removeCamera = useCameraStore((s) => s.removeCamera)
+  const saveStatus = useCameraStore((s) =>
     selectedCameraId ? s.cameraRecords[selectedCameraId]?.tracking.status ?? null : null,
   )
 
@@ -125,7 +125,7 @@ export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPan
     const next = { ...form, [key]: value }
     setForm(next)
 
-    const patch: Partial<CameraInstance> = { [key]: value }
+    const patch: Partial<Camera> = { [key]: value }
 
     const fovFields: (keyof FormValues)[] = ['camera_height', 'target_distance', 'target_height', 'focal_length_chosen', 'bearing']
     if (fovFields.includes(key)) {

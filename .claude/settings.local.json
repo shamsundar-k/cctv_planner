@@ -19,7 +19,11 @@
       "Bash(cat /home/office/DEV/cctv_planner/packages/backend/tests/*.py)",
       "Bash(pnpm --filter frontend exec tsc --noEmit)",
       "Bash(pnpm --filter frontend build)",
-      "Bash(node -e \"const l = require\\('c:/Drive_D/cctv_planner/node_modules/lucide-react'\\); const names = Object.keys\\(l\\); console.log\\(names.filter\\(n => /Pentagon|Spline|Ruler|Waypoints|Route|Shapes|Scan|SquareDashed|Polygon|DrawingPin|Pencil|Brush/.test\\(n\\)\\).join\\(', '\\)\\)\")"
+      "Bash(node -e \"const l = require\\('c:/Drive_D/cctv_planner/node_modules/lucide-react'\\); const names = Object.keys\\(l\\); console.log\\(names.filter\\(n => /Pentagon|Spline|Ruler|Waypoints|Route|Shapes|Scan|SquareDashed|Polygon|DrawingPin|Pencil|Brush/.test\\(n\\)\\).join\\(', '\\)\\)\")",
+      "Bash(mv app/models/camera_instance.py app/models/camera.py)",
+      "Bash(mv app/schemas/camera_instance.py app/schemas/camera.py)",
+      "Bash(mv types/cameraInstances.types.ts types/camera.types.ts)",
+      "Bash(mv store/cameraInstanceStore store/cameraStore)"
     ]
   }
 }

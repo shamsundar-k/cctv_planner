@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useCameraInstanceStore } from '../../../store/cameraInstanceStore'
+import { useCameraStore } from '../../../store/cameraStore'
 import { useToast } from '../../../components/ui/Toast'
 
 interface UseSaveActionReturn {
@@ -15,8 +15,8 @@ export function useSaveAction(projectId: string, onSave?: () => Promise<void>): 
   // tick forces re-render every 30 s so relative timestamp stays fresh
   const [, setTick] = useState(0)
 
-  const isDirty = useCameraInstanceStore((s) => s.getIsDirty())
-  const saveAll = useCameraInstanceStore((s) => s.saveAll)
+  const isDirty = useCameraStore((s) => s.getIsDirty())
+  const saveAll = useCameraStore((s) => s.saveAll)
   const showToast = useToast()
 
   useEffect(() => {

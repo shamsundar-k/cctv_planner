@@ -26,7 +26,7 @@ class ProjectUpdate(BaseModel):
 
 
 
-class CameraInstanceSummary(BaseModel):
+class CameraSummary(BaseModel):
     id: str
     client_id: str
     label: str
@@ -79,5 +79,5 @@ class ProjectResponse(BaseModel):
 
 
 class ProjectDetailResponse(ProjectResponse):
-    cameras: list[CameraInstanceSummary]
+    cameras: list[CameraSummary]
     zones: list[ZoneSummary]

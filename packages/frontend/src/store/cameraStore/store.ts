@@ -1,12 +1,12 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
-import type { CameraInstance, CameraInstanceCreatePayload, CameraInstanceUpdatePayload } from '../../types/cameraInstances.types'
+import type { Camera, CameraCreatePayload, CameraUpdatePayload } from '../../types/camera.types'
 import client from '../../api/client'
-import type { CameraInstanceStoreState, CameraRecord } from './types'
+import type { CameraStoreState, CameraRecord } from './types'
 import { filterCameras, withTrackingPatch } from './helpers'
 import { buildCreatePayload, buildUpdatePayload, errorMessage } from './payloadBuilders'
 
-export const useCameraInstanceStore = create<CameraInstanceStoreState>()(
+export const useCameraStore = create<CameraStoreState>()(
   devtools(
     (set, get) => ({
       uids: [],
@@ -38,7 +38,7 @@ export const useCameraInstanceStore = create<CameraInstanceStoreState>()(
         set({ isLoading: true, loadError: null })
         try {
           console.log("Fetching project cameras")
-          const res = await client.get<CameraInstance[]>(`/projects/${projectId}/cameras`)
+          const res = await client.get<Camera[]>(`/projects/${projectId}/cameras`)
           console.log("Project cameras fetched", res.data)
 
           const cameraRecords: Record<string, CameraRecord> = {}
@@ -202,8 +202,8 @@ export const useCameraInstanceStore = create<CameraInstanceStoreState>()(
           ...toPost.map(async (record) => {
             const uid = record.camera.uid
             try {
-              const payload: CameraInstanceCreatePayload = buildCreatePayload(record.camera)
-              await client.post<CameraInstance>(`/projects/${projectId}/cameras`, payload)
+              const payload: CameraCreatePayload = buildCreatePayload(record.camera)
+              await client.post<Camera>(`/projects/${projectId}/cameras`, payload)
               get().markSaved(uid)
             } catch (e) {
               get().markFailed(uid, errorMessage(e))
@@ -214,7 +214,7 @@ export const useCameraInstanceStore = create<CameraInstanceStoreState>()(
           ...toPut.map(async (record) => {
             const uid = record.camera.uid
             try {
-              const payload: CameraInstanceUpdatePayload = buildUpdatePayload(record.camera)
+              const payload: CameraUpdatePayload = buildUpdatePayload(record.camera)
               await client.put(`/projects/${projectId}/cameras/${uid}`, payload)
               get().markSaved(uid)
             } catch (e) {
@@ -235,6 +235,6 @@ export const useCameraInstanceStore = create<CameraInstanceStoreState>()(
         ])
       },
     }),
-    { name: 'CameraInstanceStore' },
+    { name: 'CameraStore' },
   ),
 )

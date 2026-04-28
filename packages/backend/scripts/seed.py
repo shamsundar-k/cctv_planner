@@ -1,4 +1,4 @@
-"""M1.5 seed script. Inserts one test document of each Beanie model (User, InviteToken, CameraModel, Project, CameraInstance, Zone) into MongoDB. Run: uv run python scripts/seed.py from packages/backend."""
+"""M1.5 seed script. Inserts one test document of each Beanie model (User, InviteToken, CameraModel, Project, Camera, Zone) into MongoDB. Run: uv run python scripts/seed.py from packages/backend."""
 
 import asyncio
 import hashlib
@@ -13,7 +13,7 @@ import motor.motor_asyncio
 from beanie import init_beanie
 
 from app.core.config import settings
-from app.models.camera_instance import CameraInstance
+from app.models.camera import Camera
 from app.models.camera_model import CameraModel, CameraType, LensType, SensorType
 from app.models.invite_token import InviteToken
 from app.models.project import Project
@@ -26,7 +26,7 @@ async def seed() -> None:
     db = client.get_default_database()
     await init_beanie(
         database=db,
-        document_models=[User, InviteToken, CameraModel, Project, CameraInstance, Zone],
+        document_models=[User, InviteToken, CameraModel, Project, Camera, Zone],
     )
 
     # 1. User
@@ -89,8 +89,8 @@ async def seed() -> None:
     await project.insert()
     print(f"[+] Project:        {project.id}  ({project.name})")
 
-    # 5. CameraInstance
-    cam_instance = CameraInstance(
+    # 5. Camera
+    cam_instance = Camera(
         project=project,
         camera_model=cam_model,
         label="CAM-01",
@@ -102,7 +102,7 @@ async def seed() -> None:
         focal_length_chosen=6.0,
     )
     await cam_instance.insert()
-    print(f"[+] CameraInstance: {cam_instance.id}  ({cam_instance.label})")
+    print(f"[+] Camera: {cam_instance.id}  ({cam_instance.label})")
 
     # 6. Zone
     zone = Zone(

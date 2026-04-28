@@ -1,9 +1,9 @@
-"""Pydantic request schemas for camera instance endpoints."""
+"""Pydantic request schemas for camera endpoints."""
 
 from pydantic import BaseModel, Field, model_validator
 
 
-class CameraInstanceCreate(BaseModel):
+class CameraCreate(BaseModel):
     uid: str
     camera_model_id: str
     label: str = ""
@@ -22,13 +22,13 @@ class CameraInstanceCreate(BaseModel):
     ir_range_hint: float = Field(default=0.0, exclude=True)  # injected by route, not stored
 
     @model_validator(mode="after")
-    def resolve_target_distance_default(self) -> "CameraInstanceCreate":
+    def resolve_target_distance_default(self) -> "CameraCreate":
         if self.target_distance is None and self.ir_range_hint > 0:
             self.target_distance = self.ir_range_hint
         return self
 
 
-class CameraInstanceUpdate(BaseModel):
+class CameraUpdate(BaseModel):
     label: str | None = None
     lat: float | None = None
     lng: float | None = None
@@ -45,7 +45,7 @@ class CameraInstanceUpdate(BaseModel):
     ir_range_hint: float = Field(default=0.0, exclude=True)  # injected by route, not stored
 
     @model_validator(mode="after")
-    def resolve_target_distance_default(self) -> "CameraInstanceUpdate":
+    def resolve_target_distance_default(self) -> "CameraUpdate":
         if self.target_distance is None and self.ir_range_hint > 0:
             self.target_distance = self.ir_range_hint
         return self
