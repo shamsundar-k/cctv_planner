@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { X, Crosshair } from 'lucide-react'
+import { X } from 'lucide-react'
 import { useParams } from 'react-router'
 import { useMapContext } from '@/context/MapContext'
 import { useMapActionsStore } from '@/store/mapActionsSlice'
@@ -8,42 +8,23 @@ import { useCameraStore } from '@/store/cameraStore'
 import { useCameraLayerStore } from '@/store/cameraLayerSlice'
 import { generateDefaultCamera } from '@/lib/cameraGenerator'
 
-// Derive cursor SVG from the Lucide Crosshair icon node list at module load time.
-// Crosshair icon node: circle r=10 + 4 line stubs, all on a 24×24 grid.
+// Lucide Crosshair geometry scaled from 24×24 → 32×32 (factor 4/3).
+// Hardcoded so we don't rely on Lucide's internal __iconNode property.
+const _CROSSHAIR_ELEMS =
+    `<circle cx='16' cy='16' r='13.33'/>` +
+    `<line x1='29.33' x2='24' y1='16' y2='16'/>` +
+    `<line x1='8' x2='2.67' y1='16' y2='16'/>` +
+    `<line x1='16' x2='16' y1='2.67' y2='8'/>` +
+    `<line x1='16' x2='16' y1='24' y2='29.33'/>`
+
 const RETICLE_CURSOR = (() => {
-    const size = 32
-    const scale = size / 24          // map Lucide's 24-unit grid → 32 px
-    const iconNodes = (Crosshair as unknown as { __iconNode?: [string, Record<string, string | number>][] }).__iconNode ?? []
-
-    const elems = iconNodes.map(([tag, attrs]) => {
-        const scaled = Object.fromEntries(
-            Object.entries(attrs).map(([k, v]) => [
-                k,
-                ['cx', 'cy', 'r', 'x1', 'x2', 'y1', 'y2'].includes(k)
-                    ? String(Number(v) * scale)
-                    : v,
-            ]),
-        )
-        const attrStr = Object.entries(scaled)
-            .filter(([k]) => k !== 'key')
-            .map(([k, v]) => `${k}='${v}'`)
-            .join(' ')
-        return `<${tag} ${attrStr}/>`
-    }).join('')
-
-    // Shadow pass (dark outline) + main pass (white).
-    // Lucide's __iconNode entries carry only geometric attrs (cx, cy, r, x1…), not stroke,
-    // so we set stroke via a <g> wrapper that all children inherit.
-    const shadow = `<g stroke='rgba(0,0,0,0.5)' stroke-width='3'>${elems}</g>`
-    const main = `<g stroke='white' stroke-width='1.5'>${elems}</g>`
-
     const svg =
-        `<svg xmlns='http://www.w3.org/2000/svg' width='${size}' height='${size}' ` +
-        `viewBox='0 0 ${size} ${size}' fill='none' stroke-linecap='round' stroke-linejoin='round'>` +
-        shadow + main +
+        `<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' ` +
+        `viewBox='0 0 32 32' fill='none' stroke-linecap='round' stroke-linejoin='round'>` +
+        `<g stroke='rgba(0,0,0,0.5)' stroke-width='3'>${_CROSSHAIR_ELEMS}</g>` +
+        `<g stroke='white' stroke-width='1.5'>${_CROSSHAIR_ELEMS}</g>` +
         `</svg>`
-
-    return `url("data:image/svg+xml,${encodeURIComponent(svg)}") ${size / 2} ${size / 2}, crosshair`
+    return `url("data:image/svg+xml,${encodeURIComponent(svg)}") 16 16, crosshair`
 })()
 
 /**
