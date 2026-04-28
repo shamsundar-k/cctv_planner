@@ -45,7 +45,7 @@ const inputCls = 'rounded-md text-xs px-2 py-1.5 w-full focus:outline-none'
 function recomputeFov(
   form: FormValues,
   camera: Camera,
-  cameraModel: { focal_length_min: number; focal_length_max: number; h_fov_min: number; h_fov_max: number; v_fov_min: number; v_fov_max: number } | null,
+  cameraModel: { focal_length_min: number; focal_length_max: number; h_fov_min: number; h_fov_max: number; v_fov_min: number; v_fov_max: number; ir_range: number } | null,
 ) {
   if (!cameraModel || form.target_distance === '' || form.target_distance <= 0) return null
 
@@ -64,7 +64,14 @@ function recomputeFov(
 
   const result = computeFovCartesian(params)
   const geo_fov = computeFovGeoCorners(result, camera.lat, camera.lng, form.bearing)
-  return { result, geo_fov }
+
+  let ir_geo_fov = camera.fov_ir_geojson
+  if (cameraModel.ir_range > 0) {
+    const ir_result = computeFovCartesian({ ...params, target_distance: cameraModel.ir_range })
+    ir_geo_fov = computeFovGeoCorners(ir_result, camera.lat, camera.lng, form.bearing)
+  }
+
+  return { result, geo_fov, ir_geo_fov }
 }
 
 interface CameraPropertiesPanelProps {
@@ -133,6 +140,7 @@ export default function CameraPropertiesPanel({ projectId }: CameraPropertiesPan
       if (fovResult) {
         patch.fov_visible_geojson = fovResult.geo_fov
         patch.tilt_angle = fovResult.result.tilt_angle
+        patch.fov_ir_geojson = fovResult.ir_geo_fov
       }
     }
 
