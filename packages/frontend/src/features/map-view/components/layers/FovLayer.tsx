@@ -6,24 +6,24 @@ import FovPolygon from './FovPolygon'
 
 export default function FovLayer() {
   const { mapRef } = useMapContext()
-  const groupRef = useRef<L.LayerGroup | null>(null)
+  const layerRef = useRef<L.LayerGroup | null>(null)
   const uids = useCameraStore((s) => s.uids)
 
   useEffect(() => {
     const map = mapRef.current
     if (!map) return
     const group = L.layerGroup().addTo(map)
-    groupRef.current = group
+    layerRef.current = group
     return () => {
       group.remove()
-      groupRef.current = null
+      layerRef.current = null
     }
   }, [mapRef]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>
       {uids.map((uid) => (
-        <FovPolygon key={uid} cameraId={uid} groupRef={groupRef} />
+        <FovPolygon key={uid} cameraId={uid} layerRef={layerRef} />
       ))}
     </>
   )
