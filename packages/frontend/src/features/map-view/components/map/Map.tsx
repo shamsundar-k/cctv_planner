@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { MapContext } from '@/context/MapContext'
+import { useMapActionsStore } from '@/store/mapActionsSlice'
 
 interface MapProps {
   center?: L.LatLngExpression
@@ -18,10 +19,14 @@ export default function Map({ center = [51.5, -0.09], zoom = 13, children }: Map
   useEffect(() => {
     if (mapInstanceRef.current || !mapDivRef.current) return
 
-
     const map = L.map(mapDivRef.current).setView(center, zoom)
     map.zoomControl.setPosition('topright')
     mapInstanceRef.current = map
+
+    const { setZoom } = useMapActionsStore.getState()
+    setZoom(map.getZoom())
+    map.on('zoomend', () => setZoom(map.getZoom()))
+
     setMapReady(true)
     console.log('Map initialized')
 

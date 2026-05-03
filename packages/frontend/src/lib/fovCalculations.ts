@@ -138,8 +138,8 @@ export function computeFovCartesian(params: fov_input_params): FovCartesian {
     params.focal_length_chosen
   );
 
-  console.log("H Angle", hAngle);
-  console.log("V Angle", vAngle);
+  //console.log("H Angle", hAngle);
+  //console.log("V Angle", vAngle);
 
   // Derive tilt from target position.
   // Top FOV ray is aimed to pass through (target_distance, target_height).
@@ -151,41 +151,41 @@ export function computeFovCartesian(params: fov_input_params): FovCartesian {
     Math.atan2(params.camera_height - params.target_height, params.target_distance)
   );
 
-  console.log("Top Ray Angle", topRayAngle);
+  //console.log("Top Ray Angle", topRayAngle);
 
   // Optical axis sits V/2 below the top ray
   const tilt = topRayAngle + vAngle / 2;
 
-  console.log("Tilt", tilt);
+  // console.log("Tilt", tilt);
 
   // Bottom ray angle from horizontal = top ray angle + full vAngle
   // (both angles measured downward from horizontal)
   const bottomRayAngle = topRayAngle + vAngle;
 
-  console.log("Bottom Ray Angle", bottomRayAngle);
+  // console.log("Bottom Ray Angle", bottomRayAngle);
 
   // Case 1: both rays point skyward — no ground intersection possible
   if (bottomRayAngle <= 0) {
-    console.log("Both rays point skyward")
+    //console.log("Both rays point skyward")
     return makeInvalidResult('invalid_both_rays_up', hAngle, vAngle, topRayAngle, tilt);
   }
 
   // Step 1B: D_near — where the bottom ray hits the ground
   // Right triangle: opposite = camera_height, angle = bottomRayAngle from horizontal
   const d_near = params.camera_height / Math.tan(toRad(bottomRayAngle));
-  console.log("D Near", d_near);
+  //console.log("D Near", d_near);
 
   // Cases 2, 3, 5: target at or above camera height — top ray points upward or horizontal
   // D_far is infinite so cap to D_FAR_CAP
   if (params.target_height >= params.camera_height) {
-    console.log("Target at or above camera height")
+    //console.log("Target at or above camera height")
 
     const d_far = D_FAR_CAP;
-    console.log("D Far", d_far);
+    //console.log("D Far", d_far);
 
     // Guard: d_near must not reach or exceed d_far cap
     if (d_near >= d_far) {
-      console.log("D Near >= D Far")
+      //console.log("D Near >= D Far")
       return makeInvalidResult('invalid_both_rays_up', hAngle, vAngle, topRayAngle, tilt);
     }
 
@@ -195,7 +195,7 @@ export function computeFovCartesian(params: fov_input_params): FovCartesian {
       ? 'valid_partial_target'
       : 'valid_dfar_capped';
 
-    console.log("Status", status);
+    //console.log("Status", status);
 
     return makeValidResult(status, hAngle, vAngle, topRayAngle, tilt, d_near, d_far, params.target_distance);
   }
@@ -204,13 +204,13 @@ export function computeFovCartesian(params: fov_input_params): FovCartesian {
   // Both near and far rays hit ground at finite distances.
   // top_ray_angle is +ve here so tan is always positive and d_far is finite.
   const d_far_raw = params.camera_height / Math.tan(toRad(topRayAngle));
-  console.log("D Far Raw", d_far_raw);
+  //console.log("D Far Raw", d_far_raw);
 
   // Cap d_far in case top ray is very shallow (near-horizontal), producing very large values
   const d_far = d_far_raw > D_FAR_CAP ? D_FAR_CAP : d_far_raw;
   const status: FovStatus = d_far === D_FAR_CAP ? 'valid_dfar_capped' : 'valid';
 
-  console.log("Status", status);
+  //console.log("Status", status);
 
   return makeValidResult(status, hAngle, vAngle, topRayAngle, tilt, d_near, d_far, params.target_distance);
 }

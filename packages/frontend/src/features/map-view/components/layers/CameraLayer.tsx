@@ -2,6 +2,7 @@ import L from 'leaflet'
 import { useEffect, useRef } from 'react'
 import { useMapContext } from '@/context/MapContext'
 import { useCameraStore } from '@/store/cameraStore'
+import { useMapActionsStore } from '@/store/mapActionsSlice'
 import CameraMarker from '@/features/map-view/components//CameraMarker'
 
 interface CameraLayerProps {
@@ -17,6 +18,8 @@ export default function CameraLayer({ projectId: _projectId }: CameraLayerProps)
   const groupRef = useRef<L.LayerGroup | null>(null)
 
   const uids = useCameraStore((s) => s.uids)
+  const zoom = useMapActionsStore((s) => s.currentZoom)
+
 
   // Mount: create Leaflet group; unmount removes it
   useEffect(() => {
@@ -36,7 +39,7 @@ export default function CameraLayer({ projectId: _projectId }: CameraLayerProps)
   return (
     <>
       {uids.map((uid) => (
-        <CameraMarker key={uid} cameraId={uid} groupRef={groupRef} />
+        <CameraMarker key={uid} cameraId={uid} groupRef={groupRef} zoom={zoom} />
       ))}
     </>
   )

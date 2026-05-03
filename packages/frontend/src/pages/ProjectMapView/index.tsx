@@ -6,7 +6,7 @@ import MapModeOverlay from '@/features/map-view/components/map/MapModeOverlay'
 import { MapActionsToolbar } from '@/features/map-view/components/map-actions'
 import CameraLayer from '@/features/map-view/components/layers/CameraLayer'
 import FovLayer from '@/features/map-view/components/layers/FovLayer'
-import CameraPropertiesPanel from '@/features/map-view/components/map/CameraPropertiesPanel'
+import CameraPanel from '@/features/map-view/components/CameraPanel'
 import LeftSidebar from './LeftSidebar'
 import { useLayerVisibilityStore } from '@/store/layerVisibilityStore'
 import MapLayersControl from '@/features/map-view/components/toolbar/MapLayersControl'
@@ -49,7 +49,7 @@ export default function ProjectMapView() {
           {fovLayerVisible && <FovLayer />}
           {drawLayerVisible && <DrawLayer projectId={id} />}
         </Map>
-        <CameraPropertiesPanel projectId={id} />
+        <CameraPanel projectId={id} />
       </div>
     </div>
   )

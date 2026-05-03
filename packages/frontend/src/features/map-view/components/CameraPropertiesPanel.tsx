@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import { X } from 'lucide-react'
-import { useImportedCameras } from '../../../../api/projects'
-import { useCameraStore } from '../../../../store/cameraStore'
-import { useCameraLayerStore } from '../../../../store/cameraLayerSlice'
-import type { Camera } from '../../../../types/camera.types'
-import type { fov_input_params } from '../../../../lib/fovCalculations'
-import { computeFovCartesian, computeFovGeoCorners } from '../../../../lib/fovCalculations'
+import { useImportedCameras } from '../../../api/projects'
+import { useCameraStore } from '../../../store/cameraStore'
+import { useCameraLayerStore } from '../../../store/cameraLayerSlice'
+import type { Camera } from '../../../types/camera.types'
+import type { fov_input_params } from '../../../lib/fovCalculations'
+import { computeFovCartesian, computeFovGeoCorners } from '../../../lib/fovCalculations'
 
 interface FormValues {
   label: string

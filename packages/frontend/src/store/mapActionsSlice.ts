@@ -5,9 +5,13 @@ export type ActiveTool = 'pan' | 'select' | 'place-camera' | 'draw-polygon' | 'd
 interface MapActionsState {
   activeTool: ActiveTool
   setActiveTool: (tool: ActiveTool) => void
+  currentZoom: number
+  setZoom: (zoom: number) => void
 }
 
 export const useMapActionsStore = create<MapActionsState>((set) => ({
   activeTool: 'pan',
   setActiveTool: (tool) => set({ activeTool: tool }),
+  currentZoom: 13,
+  setZoom: (zoom) => set({ currentZoom: zoom }),
 }))
