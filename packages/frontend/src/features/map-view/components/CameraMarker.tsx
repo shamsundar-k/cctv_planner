@@ -30,20 +30,21 @@ interface CameraMarkerProps {
 }
 
 export default function CameraMarker({ cameraId, groupRef }: CameraMarkerProps) {
+  const camera = useCameraInstanceStore((s) => s.cameraRecords[cameraId]?.camera)
+  const isSelected = useCameraLayerStore((s) => s.selectedCameraId === cameraId)
   const selectCamera = useCameraLayerStore((s) => s.selectCamera)
   const updateCamera = useCameraStore((s) => s.updateCamera)
 
   useEffect(() => {
     const group = groupRef.current
+<<<<<<< Updated upstream:packages/frontend/src/features/map-view/components/CameraMarker.tsx
     const camera = useCameraStore.getState().cameraRecords[cameraId]?.camera
+=======
+>>>>>>> Stashed changes:packages/frontend/src/features/map-view/components/map/CameraMarker.tsx
     if (!group || !camera) return
 
     const marker = L.marker([camera.lat, camera.lng], {
-      icon: buildCameraIcon(
-        camera.colour,
-        useCameraLayerStore.getState().selectedCameraId === cameraId,
-        camera.bearing,
-      ),
+      icon: buildCameraIcon(camera.colour, isSelected, camera.bearing),
       draggable: true,
     }).addTo(group)
 
@@ -59,6 +60,7 @@ export default function CameraMarker({ cameraId, groupRef }: CameraMarkerProps) 
       updateCamera(cameraId, { lat, lng })
     })
 
+<<<<<<< Updated upstream:packages/frontend/src/features/map-view/components/CameraMarker.tsx
     // Selection change — update icon imperatively, no re-render
     const unsubSelection = useCameraLayerStore.subscribe(
       (s) => s.selectedCameraId,
@@ -78,13 +80,14 @@ export default function CameraMarker({ cameraId, groupRef }: CameraMarkerProps) 
         marker.setLatLng([cam.lat, cam.lng])
       }
     )
+=======
+
+>>>>>>> Stashed changes:packages/frontend/src/features/map-view/components/map/CameraMarker.tsx
 
     return () => {
-      unsubSelection()
-      unsubCamera()
       marker.remove()
     }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [camera, isSelected, cameraId, selectCamera, updateCamera])
 
   return null
 }
