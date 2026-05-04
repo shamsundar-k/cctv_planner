@@ -3,7 +3,6 @@ import { create } from 'zustand'
 export const LAYERS = [
   { key: 'cameras' as const, label: 'Cameras' },
   { key: 'fov' as const, label: 'FOV' },
-  { key: 'ir' as const, label: 'IR Range' },
   { key: 'draw' as const, label: 'Draw' },
 ] satisfies { key: string; label: string }[]
 

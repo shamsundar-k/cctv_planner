@@ -19,7 +19,6 @@ export function generateDefaultCamera(camera_model_id: string, position: geo_pos
     const uid = crypto.randomUUID()
 
     const camera_model_data = getCameraModelDetails(camera_model_id)
-    console.log("camera_model_data", camera_model_data)
 
     if (!camera_model_data) {
         return null
