@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useImportedCameras } from '@/api/projects'
+import { useAllCameraModels } from '@/api/camerasModels'
 import { useCameraStore } from '@/store/cameraStore'
 import { useCameraLayerStore } from '@/store/cameraLayerSlice'
 import type { Camera } from '@/types/camera.types'
@@ -50,10 +50,8 @@ export function useCameraPanel(projectId: string) {
     selectedCameraId ? s.cameraRecords[selectedCameraId]?.tracking.status ?? null : null,
   )
 
-  const { data: importedItems } = useImportedCameras(projectId)
-  const cameraModel =
-    importedItems?.find((item) => item.camera_model.id === camera?.camera_model_id)
-      ?.camera_model ?? null
+  const { data: allCameraModels } = useAllCameraModels()
+  const cameraModel = allCameraModels?.find((cm) => cm.id === camera?.camera_model_id) ?? null
 
   const [form, setForm] = useState<FormValues | null>(null)
   const [confirmDelete, setConfirmDelete] = useState(false)

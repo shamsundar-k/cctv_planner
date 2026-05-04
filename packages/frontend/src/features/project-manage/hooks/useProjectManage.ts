@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useParams } from 'react-router'
 import { useProject } from '../../../api/projects'
 
-export type Tab = 'basic' | 'map' | 'cameras'
+export type Tab = 'basic' | 'map'
 
 export const TABS: { id: Tab; label: string }[] = [
   { id: 'basic', label: 'Basic Info' },
