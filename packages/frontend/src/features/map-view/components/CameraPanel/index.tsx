@@ -1,6 +1,7 @@
 import { useCameraPanel } from './useCameraPanel'
 import PanelHeader from './PanelHeader'
 import CameraInfoSection from './CameraInfoSection'
+import DoriMetricsSection from './DoriMetricsSection'
 import CameraForm from './CameraForm'
 import PanelFooter from './PanelFooter'
 
@@ -16,6 +17,7 @@ export default function CameraPanel({ projectId }: CameraPanelProps) {
     cameraModel,
     saveStatus,
     form,
+    fovMetrics,
     confirmDelete,
     setConfirmDelete,
     setField,
@@ -37,6 +39,7 @@ export default function CameraPanel({ projectId }: CameraPanelProps) {
         <div className="flex flex-col h-full w-[312px]">
           <PanelHeader saveStatus={saveStatus} onClose={clearSelection} />
           <CameraInfoSection modelName={cameraModel?.name ?? '—'} lat={camera.lat} lng={camera.lng} />
+          <DoriMetricsSection metrics={fovMetrics} />
           <CameraForm form={form} setField={setField} cameraModel={cameraModel} parseNullableNumber={parseNullableNumber} />
           <PanelFooter
             confirmDelete={confirmDelete}

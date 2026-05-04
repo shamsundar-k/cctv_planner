@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useAllCameraModels } from '@/api/camerasModels'
 import { useCameraStore } from '@/store/cameraStore'
 import { useCameraLayerStore } from '@/store/cameraLayerSlice'
 import type { Camera } from '@/types/camera.types'
 import type { CameraModel } from '@/types/cameramodel.types'
-import type { fov_input_params } from '@/lib/fovCalculations'
+import type { fov_input_params, FovCartesian } from '@/lib/fovCalculations'
 import { computeFovCartesian, computeFovGeoCorners } from '@/lib/fovCalculations'
 import type { FormValues } from './types'
 
@@ -55,6 +55,23 @@ export function useCameraPanel(projectId: string) {
 
   const [form, setForm] = useState<FormValues | null>(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
+
+  const fovMetrics = useMemo<FovCartesian | null>(() => {
+    if (!form || !cameraModel || form.target_distance === '' || form.target_distance <= 0) return null
+    const params: fov_input_params = {
+      camera_height: form.camera_height,
+      target_distance: form.target_distance,
+      target_height: form.target_height,
+      focal_length_min: cameraModel.focal_length_min,
+      focal_length_max: cameraModel.focal_length_max,
+      h_fov_wide: cameraModel.h_fov_max,
+      h_fov_tele: cameraModel.h_fov_min,
+      v_fov_wide: cameraModel.v_fov_max,
+      v_fov_tele: cameraModel.v_fov_min,
+      focal_length_chosen: form.focal_length_chosen !== '' ? form.focal_length_chosen : cameraModel.focal_length_min,
+    }
+    return computeFovCartesian(params)
+  }, [form, cameraModel])
 
   useEffect(() => {
     if (!camera) { setForm(null); return }
@@ -121,6 +138,7 @@ export function useCameraPanel(projectId: string) {
     cameraModel,
     saveStatus,
     form,
+    fovMetrics,
     confirmDelete,
     setConfirmDelete,
     setField,
