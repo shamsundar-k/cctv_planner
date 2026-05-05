@@ -1,5 +1,3 @@
-import type { CameraModel } from '../types/cameramodel.types'
-
 export interface Collaborator {
   user_id: string
   role: 'editor' | 'viewer'
@@ -16,14 +14,8 @@ export interface Project {
   default_zoom: number | null
   camera_count: number
   zone_count: number
-  imported_camera_model_count: number
   created_at: string
   updated_at: string
-}
-
-export interface ImportedCameraItem {
-  camera_model: CameraModel
-  placed_count: number
 }
 
 export interface CreateProjectDTO {

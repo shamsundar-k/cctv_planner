@@ -11,11 +11,10 @@
  *     to the dashboard.
  *   - Loaded: renders the full tabbed settings UI.
  *
- * Tab navigation — Three tabs are available (type Tab = 'basic' | 'map' |
- *   'cameras'), each rendering the corresponding sub-component:
- *   - 'basic'   → <BasicInfoTab project={project} />
- *   - 'map'     → <MapLocationTab project={project} />
- *   - 'cameras' → <ImportedCamerasTab projectId={project.id} />
+ * Tab navigation — Two tabs are available (type Tab = 'basic' | 'map'),
+ *   each rendering the corresponding sub-component:
+ *   - 'basic' → <BasicInfoTab project={project} />
+ *   - 'map'   → <MapLocationTab project={project} />
  *
  * A breadcrumb "← Dashboard" link navigates back to /.
  * The page title shows the project name.
