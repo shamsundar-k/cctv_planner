@@ -14,11 +14,13 @@ export default function FovLayer() {
     if (!map) return
     const group = L.layerGroup().addTo(map)
     layerRef.current = group
+    console.log('FovLayer initialized')
     return () => {
       group.remove()
       layerRef.current = null
+      console.log('FovLayer unmounted')
     }
-  }, [mapRef]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [mapRef])
 
   return (
     <>

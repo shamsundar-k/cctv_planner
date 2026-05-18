@@ -5,15 +5,14 @@ import { useCameraStore } from '@/store/cameraStore'
 import { useMapActionsStore } from '@/store/mapActionsSlice'
 import CameraMarker from '@/features/map-view/components//CameraMarker'
 
-interface CameraLayerProps {
-  projectId: string
-}
+
 
 /**
  * Purely visual layer. Manages the Leaflet LayerGroup lifecycle and
  * renders a CameraMarker per camera uid. Zero tool awareness.
+ * @returns React fragment with CameraMarkers
  */
-export default function CameraLayer({ projectId: _projectId }: CameraLayerProps) {
+export default function CameraLayer() {
   const { mapRef } = useMapContext()
   const groupRef = useRef<L.LayerGroup | null>(null)
 
@@ -33,8 +32,9 @@ export default function CameraLayer({ projectId: _projectId }: CameraLayerProps)
     return () => {
       group.remove()
       groupRef.current = null
+      console.log('CameraLayer unmounted')
     }
-  }, [mapRef]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [mapRef])
 
   return (
     <>
