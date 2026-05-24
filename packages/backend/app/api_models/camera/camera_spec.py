@@ -1,3 +1,4 @@
+from datetime import datetime
 from enum import Enum
 
 from pydantic import BaseModel, Field
@@ -48,3 +49,9 @@ class CameraSpec(BaseModel):
             ]
         }
     }
+
+
+class CameraSpecResponse(CameraSpec):
+    id: str
+    created_at: datetime
+    updated_at: datetime
