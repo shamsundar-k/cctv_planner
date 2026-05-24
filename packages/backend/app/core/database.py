@@ -7,6 +7,7 @@ import redis.asyncio as aioredis
 from beanie import init_beanie
 from fastapi import HTTPException, status
 
+from app.db_schemas.camera_specification import CameraSpecification
 from app.models.camera import Camera
 from app.models.camera_model import CameraModel
 from app.models.invite_token import InviteToken
@@ -31,7 +32,15 @@ async def init_db() -> None:
     await motor_client.admin.command("ping")
     await init_beanie(
         database=db,
-        document_models=[User, InviteToken, CameraModel, Project, Camera, Zone],
+        document_models=[
+            User,
+            InviteToken,
+            CameraModel,
+            CameraSpecification,
+            Project,
+            Camera,
+            Zone,
+        ],
     )
     logger.info("MongoDB connected: %s", db.name)
 
