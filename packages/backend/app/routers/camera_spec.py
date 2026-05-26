@@ -1,11 +1,18 @@
 from datetime import datetime, timezone
 import logging
 
+<<<<<<< HEAD
 from beanie import PydanticObjectId
 from fastapi import APIRouter, HTTPException, status
 from pymongo.errors import DuplicateKeyError
 
 from app.api_models.camera.camera_spec import CameraSpec, CameraSpecResponse, CameraSpecUpdate
+=======
+from fastapi import APIRouter, HTTPException, status
+from pymongo.errors import DuplicateKeyError
+
+from app.api_models.camera.camera_spec import CameraSpec, CameraSpecResponse
+>>>>>>> origin/main
 from app.db_schemas.camera_specification import CameraSpecification
 from app.mappers.camera_spec_mapper import to_camera_spec_response
 
@@ -20,12 +27,15 @@ async def health_check():
     return {"status": "ok", "timestamp": datetime.now(timezone.utc).isoformat()}
 
 
+<<<<<<< HEAD
 @router.get("", response_model=list[CameraSpecResponse])
 async def list_camera_specs() -> list[CameraSpecResponse]:
     camera_specs = await CameraSpecification.find_all().to_list()
     return [to_camera_spec_response(camera_spec) for camera_spec in camera_specs]
 
 
+=======
+>>>>>>> origin/main
 @router.post("", response_model=CameraSpecResponse, status_code=status.HTTP_201_CREATED)
 async def create_camera_spec(body: CameraSpec) -> CameraSpecResponse:
     camera_spec = CameraSpecification(**body.model_dump())
@@ -40,6 +50,7 @@ async def create_camera_spec(body: CameraSpec) -> CameraSpecResponse:
 
     return to_camera_spec_response(camera_spec)
 
+<<<<<<< HEAD
 
 @router.put("/{camera_spec_id}", response_model=CameraSpecResponse)
 async def update_camera_spec(
@@ -84,3 +95,5 @@ async def delete_camera_spec(camera_spec_id: PydanticObjectId) -> None:
         )
 
     await camera_spec.delete()
+=======
+>>>>>>> origin/main
