@@ -51,6 +51,16 @@ class CameraSpec(BaseModel):
     }
 
 
+class CameraSpecUpdate(BaseModel):
+    name: str | None = Field(None, min_length=1)
+    manufacturer: str | None = Field(None, min_length=1)
+    model: str | None = Field(None, min_length=1)
+    camera_type: CameraType | None = None
+    lens_spec: CameraLensSpec | None = None
+    sensor_spec: CameraSensorSpec | None = None
+    ir_range: float | None = Field(None, ge=0, description="IR illumination range in meters")
+
+
 class CameraSpecResponse(CameraSpec):
     id: str
     created_at: datetime
