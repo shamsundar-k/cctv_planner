@@ -16,7 +16,7 @@ export default function CameraSearchBar({ search, onSearch, count, isLoading }: 
         className="h-9 px-3 text-sm rounded-md bg-slate-800 border border-slate-700 text-slate-100 placeholder-slate-500 outline-none focus:border-blue-500 transition-colors w-72"
       />
       <span className="text-sm text-slate-500">
-        {isLoading ? '…' : `${count} model${count !== 1 ? 's' : ''}`}
+        {isLoading ? '…' : `${count} spec${count !== 1 ? 's' : ''}`}
       </span>
     </div>
   )

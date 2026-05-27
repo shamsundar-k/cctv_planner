@@ -1,12 +1,12 @@
 import { Link } from 'react-router'
 import { ChevronLeft } from 'lucide-react'
 import Navbar from '../features/navigation/component/Navbar'
-import { useCameraModelList } from '../features/camera-model/hooks/useCameraModelList'
+import { useCameraSpecList } from '../features/camera-model/hooks/useCameraModelList'
 import CameraListHeader from '../features/camera-model/components/CameraListHeader'
 import CameraGrid from '../features/camera-model/components/CameraGrid'
 
 export default function AdminCamerasPage() {
-  const { cameras, isLoading } = useCameraModelList()
+  const { cameras, isLoading } = useCameraSpecList()
 
   return (
     <div className="min-h-screen bg-slate-900">
@@ -26,4 +26,3 @@ export default function AdminCamerasPage() {
     </div>
   )
 }
-

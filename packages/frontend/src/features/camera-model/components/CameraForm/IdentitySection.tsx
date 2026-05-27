@@ -1,13 +1,13 @@
-import type { CameraModelCreate } from '../../../../types/cameramodel.types'
+import type { CameraSpecForm } from '@/types/camera'
 import CollapsibleSection from '../../../../components/ui/CollapsibleSection'
 import Field from '../../../../components/ui/FormField'
 import SelectField from '../../../../components/ui/SelectField'
 import { inputClass } from './formStyles'
 
 interface Props {
-  form: CameraModelCreate
+  form: CameraSpecForm
   errors: Record<string, string>
-  set: <K extends keyof CameraModelCreate>(key: K, value: CameraModelCreate[K]) => void
+  set: <K extends keyof CameraSpecForm>(key: K, value: CameraSpecForm[K]) => void
 }
 
 export default function IdentitySection({ form, errors, set }: Props) {
@@ -26,50 +26,33 @@ export default function IdentitySection({ form, errors, set }: Props) {
 
         <Field label="Manufacturer">
           <input
-            className={inputClass}
+            className={`${inputClass} ${errors.manufacturer ? 'border-red-400 focus:border-red-400 focus:ring-red-400' : ''}`}
             value={form.manufacturer}
             onChange={(e) => set('manufacturer', e.target.value)}
             placeholder="Manufacturer"
           />
+          {errors.manufacturer && <p className="text-xs text-red-500 mt-1 mb-0">{errors.manufacturer}</p>}
         </Field>
 
-        <Field label="Model Number">
+        <Field label="Model">
           <input
-            className={inputClass}
-            value={form.model_number}
-            onChange={(e) => set('model_number', e.target.value)}
-            placeholder="Model Number"
+            className={`${inputClass} ${errors.model ? 'border-red-400 focus:border-red-400 focus:ring-red-400' : ''}`}
+            value={form.model}
+            onChange={(e) => set('model', e.target.value)}
+            placeholder="Model"
           />
+          {errors.model && <p className="text-xs text-red-500 mt-1 mb-0">{errors.model}</p>}
         </Field>
 
         <Field label="Camera Type">
           <SelectField
             value={form.camera_type}
-            onChange={(e) => set('camera_type', e.target.value as CameraModelCreate['camera_type'])}
+            onChange={(e) => set('camera_type', e.target.value as CameraSpecForm['camera_type'])}
           >
             <option value="bullet">Bullet</option>
-            <option value="fixed_dome">Fixed Dome</option>
+            <option value="dome">Dome</option>
             <option value="ptz">PTZ</option>
           </SelectField>
-        </Field>
-
-        <Field label="Location/Environment">
-          <SelectField
-            value={form.location}
-            onChange={(e) => set('location', e.target.value)}
-          >
-            <option value="outdoor">Outdoor</option>
-            <option value="indoor">Indoor</option>
-          </SelectField>
-        </Field>
-
-        <Field label="Notes">
-          <input
-            className={inputClass}
-            value={form.notes ?? ''}
-            onChange={(e) => set('notes', e.target.value)}
-            placeholder="Notes"
-          />
         </Field>
       </div>
     </CollapsibleSection>

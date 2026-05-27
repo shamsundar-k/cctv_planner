@@ -16,7 +16,7 @@ export default function FormActions({ isPending, submitLabel }: Props) {
         {isPending ? 'Saving…' : submitLabel}
       </button>
       <Link
-        to="/admin/manage/cameras"
+        to="/admin/manage/camera_specs"
         className="px-6 py-2.5 bg-surface hover:bg-border text-primary text-sm font-semibold rounded-lg no-underline transition-colors"
       >
         Cancel

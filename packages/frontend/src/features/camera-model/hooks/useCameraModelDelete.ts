@@ -1,12 +1,12 @@
 import { useState } from 'react'
-import { useDeleteCameraModel } from '../../../api/camerasModels'
+import { useDeleteCameraSpec } from '@/api/cameraSpecs'
 import { useToast } from '../../../components/ui/Toast'
-import type { CameraModel } from '@/types/cameramodel.types'
+import type { CameraSpecResponse } from '@/types/camera'
 
 export function useCameraModelDelete() {
   const showToast = useToast()
-  const deleteCamera = useDeleteCameraModel()
-  const [deleteTarget, setDeleteTarget] = useState<CameraModel | null>(null)
+  const deleteCamera = useDeleteCameraSpec()
+  const [deleteTarget, setDeleteTarget] = useState<CameraSpecResponse | null>(null)
 
   async function handleDelete() {
     if (!deleteTarget) return
@@ -14,7 +14,7 @@ export function useCameraModelDelete() {
       await deleteCamera.mutateAsync(deleteTarget.id)
       showToast(`"${deleteTarget.name}" deleted`, 'success')
     } catch {
-      showToast('Failed to delete camera model', 'error')
+      showToast('Failed to delete camera specification', 'error')
     } finally {
       setDeleteTarget(null)
     }

@@ -1,6 +1,6 @@
-import type { CameraModelCreate } from '../../../../types/cameramodel.types'
+import type { CameraSpecForm } from '@/types/camera'
 import { SENSOR_FORMATS } from '../../../../constants/sensorFormats'
-import { calcMegapixels, calcAspectRatio } from './cameraFormHelpers'
+import { calcMegapixels } from './cameraFormHelpers'
 import CollapsibleSection from '../../../../components/ui/CollapsibleSection'
 import Field from '../../../../components/ui/FormField'
 import InputWithUnit from '../../../../components/ui/InputWithUnit'
@@ -8,15 +8,12 @@ import SelectField from '../../../../components/ui/SelectField'
 import { inputClass } from './formStyles'
 
 interface Props {
-  form: CameraModelCreate
+  form: CameraSpecForm
   errors: Record<string, string>
-  set: <K extends keyof CameraModelCreate>(key: K, value: CameraModelCreate[K]) => void
+  set: <K extends keyof CameraSpecForm>(key: K, value: CameraSpecForm[K]) => void
   sensorIsCustom: boolean
   setSensorIsCustom: (v: boolean) => void
 }
-
-
-
 export default function SensorSection({ form, errors, set, sensorIsCustom, setSensorIsCustom }: Props) {
   return (
     <CollapsibleSection title="Sensor">
@@ -58,14 +55,6 @@ export default function SensorSection({ form, errors, set, sensorIsCustom, setSe
           </div>
         </Field>
 
-        <Field label="Aspect Ratio">
-          <div className="h-9 flex items-center">
-            <span className="text-base font-semibold text-primary">
-              {calcAspectRatio(form.resolution_h, form.resolution_v)}
-            </span>
-          </div>
-        </Field>
-
         <Field
           label="Sensor Size"
           hint={
@@ -103,28 +92,6 @@ export default function SensorSection({ form, errors, set, sensorIsCustom, setSe
               placeholder="Enter sensor width in mm (e.g. 5.50)"
             />
           )}
-        </Field>
-
-        <Field label="Sensor Type">
-          <SelectField
-            value={form.sensor_type}
-            onChange={(e) => set('sensor_type', e.target.value as CameraModelCreate['sensor_type'])}
-          >
-            <option value="cmos">CMOS</option>
-          </SelectField>
-        </Field>
-
-        <Field label="Min Illumination" hint="0 = works in total darkness (IR)">
-          <InputWithUnit unit="lux">
-            <input
-              type="number"
-              min={0}
-              step={0.001}
-              className={`${inputClass} pr-12`}
-              value={form.min_illumination}
-              onChange={(e) => set('min_illumination', parseFloat(e.target.value) || 0)}
-            />
-          </InputWithUnit>
         </Field>
       </div>
     </CollapsibleSection>

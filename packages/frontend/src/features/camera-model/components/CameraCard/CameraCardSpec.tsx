@@ -1,16 +1,16 @@
-import type { CameraModel } from '@/types/cameramodel.types'
+import type { CameraSpecResponse } from '@/types/camera'
 
 interface Props {
-  camera: CameraModel
+  camera: CameraSpecResponse
 }
 
-const map: Record<CameraModel['camera_type'], string> = {
-  fixed_dome: 'Fixed Dome',
+const map: Record<CameraSpecResponse['camera_type'], string> = {
+  dome: 'Dome',
   ptz: 'PTZ',
   bullet: 'Bullet',
 }
 
-function CameraTypeLabel({ type }: { type: CameraModel['camera_type'] }) {
+function CameraTypeLabel({ type }: { type: CameraSpecResponse['camera_type'] }) {
   return <span>{map[type] ?? type}</span>
 }
 
@@ -30,7 +30,8 @@ function CameraSpecResolution({ camera }: Props) {
     <>
       <span className="text-muted">Resolution</span>
       <span className="text-primary">
-        {camera.resolution_h}×{camera.resolution_v} ({camera.megapixels}MP)
+        {camera.sensor_spec.resolution.horizontal}×{camera.sensor_spec.resolution.vertical}
+        {camera.sensor_spec.megapixel ? ` (${camera.sensor_spec.megapixel}MP)` : ''}
       </span>
     </>
   )
@@ -41,9 +42,9 @@ function CameraSpecHorizontalFOV({ camera }: Props) {
     <>
       <span className="text-muted">H-FOV</span>
       <span className="text-primary">
-        {camera.h_fov_min === camera.h_fov_max
-          ? `${camera.h_fov_min}°`
-          : `${camera.h_fov_min}°–${camera.h_fov_max}°`}
+        {camera.lens_spec.h_fov.min === camera.lens_spec.h_fov.max
+          ? `${camera.lens_spec.h_fov.min}°`
+          : `${camera.lens_spec.h_fov.min}°–${camera.lens_spec.h_fov.max}°`}
       </span>
     </>
   )
@@ -54,9 +55,9 @@ function CameraSpecFocalLength({ camera }: Props) {
     <>
       <span className="text-muted">Focal length</span>
       <span className="text-primary">
-        {camera.focal_length_min === camera.focal_length_max
-          ? `${camera.focal_length_min} mm`
-          : `${camera.focal_length_min}–${camera.focal_length_max} mm`}
+        {camera.lens_spec.focal_length.min === camera.lens_spec.focal_length.max
+          ? `${camera.lens_spec.focal_length.min} mm`
+          : `${camera.lens_spec.focal_length.min}–${camera.lens_spec.focal_length.max} mm`}
       </span>
     </>
   )

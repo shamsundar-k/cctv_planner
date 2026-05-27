@@ -1,7 +1,7 @@
-import { useAllCameraModels } from '../../../api/camerasModels'
+import { useAllCameraSpecs } from '@/api/cameraSpecs'
 
-export function useCameraModelList() {
-  const { data: cameras = [], isLoading } = useAllCameraModels()
+export function useCameraSpecList() {
+  const { data: cameras = [], isLoading } = useAllCameraSpecs()
 
   return { cameras, isLoading }
 }

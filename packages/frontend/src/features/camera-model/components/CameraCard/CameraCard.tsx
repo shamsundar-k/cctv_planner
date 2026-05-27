@@ -1,11 +1,11 @@
-import type { CameraModel } from '@/types/cameramodel.types'
+import type { CameraSpecResponse } from '@/types/camera'
 import CameraCardHeader from './CameraCardHeader'
 import CameraCardSpec from './CameraCardSpec'
 import CameraCardActions from './CameraCardActions'
 
 interface Props {
-  camera: CameraModel
-  onDelete: (camera: CameraModel) => void
+  camera: CameraSpecResponse
+  onDelete: (camera: CameraSpecResponse) => void
 }
 
 export default function CameraCard({ camera, onDelete }: Props) {
@@ -21,10 +21,6 @@ export default function CameraCard({ camera, onDelete }: Props) {
         <CameraCardSpec.FocalLength camera={camera} />
         <CameraCardSpec.IRRange camera={camera} />
       </div>
-
-      {camera.notes && (
-        <p className="text-xs text-muted italic m-0 line-clamp-2">{camera.notes}</p>
-      )}
 
       <CameraCardActions camera={camera} onDelete={onDelete} />
     </div>

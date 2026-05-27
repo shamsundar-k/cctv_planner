@@ -1,35 +1,30 @@
 import { useNavigate } from 'react-router'
-import { useCreateCameraModel } from '@/api/camerasModels'
+import { useCreateCameraSpec } from '@/api/cameraSpecs'
 import { useToast } from '@/components/ui/Toast'
-import type { CameraModelCreate } from '@/types/cameramodel.types'
+import { toCameraSpecPayload } from '../components/CameraForm/cameraFormHelpers'
 import { useCameraFormState } from './useCameraFormState'
 
 export function useAdminCameraCreate() {
   const navigate = useNavigate()
   const showToast = useToast()
-  const createCamera = useCreateCameraModel()
+  const createCamera = useCreateCameraSpec()
   const formState = useCameraFormState()
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!formState.validate()) return
 
-    const payload: CameraModelCreate = {
-      ...formState.form,
-      notes: formState.form.notes || null,
-      sensor_size: formState.form.sensor_size || null,
-      wdr_db: formState.form.wdr ? formState.form.wdr_db : null,
-    }
+    const payload = toCameraSpecPayload(formState.form)
 
     try {
       await createCamera.mutateAsync(payload)
-      showToast('Camera model created', 'success')
-      navigate('/admin/manage/cameras')
+      showToast('Camera specification created', 'success')
+      navigate('/admin/manage/camera_specs')
     } catch (err: unknown) {
       const msg =
         (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail ??
-        'Failed to create camera model'
-      showToast(typeof msg === 'string' ? msg : 'Failed to create camera model', 'error')
+        'Failed to create camera specification'
+      showToast(typeof msg === 'string' ? msg : 'Failed to create camera specification', 'error')
     }
   }
 

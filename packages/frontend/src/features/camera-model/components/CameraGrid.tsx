@@ -1,14 +1,18 @@
 import { useMemo, useState } from 'react'
-import type { CameraModel } from '@/types/cameramodel.types'
+import type { CameraSpecResponse } from '@/types/camera'
 import CameraCard from './CameraCard/CameraCard'
 import CameraSearchBar from './CameraSearchBar'
 import DeleteConfirmModal from './CameraForm/DeleteConfirmModal'
 import { useCameraModelDelete } from '../hooks/useCameraModelDelete'
 
-const SEARCH_FIELDS: (keyof CameraModel)[] = ['name', 'manufacturer', 'model_number']
+const SEARCH_FIELDS: (keyof Pick<CameraSpecResponse, 'name' | 'manufacturer' | 'model'>)[] = [
+  'name',
+  'manufacturer',
+  'model',
+]
 
 interface Props {
-  cameras: CameraModel[]
+  cameras: CameraSpecResponse[]
   isLoading: boolean
 }
 
@@ -52,7 +56,7 @@ export default function CameraGrid({ cameras, isLoading }: Props) {
         <LoadingSkeleton />
       ) : filtered.length === 0 ? (
         <div className="text-center py-20 text-slate-600">
-          {searchTerm ? 'No camera models match your search.' : 'No camera models yet. Add the first one.'}
+          {searchTerm ? 'No camera specifications match your search.' : 'No camera specifications yet. Add the first one.'}
         </div>
       ) : (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
@@ -73,4 +77,3 @@ export default function CameraGrid({ cameras, isLoading }: Props) {
     </>
   )
 }
-

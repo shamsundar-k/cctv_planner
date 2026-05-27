@@ -1,16 +1,16 @@
 import { Link } from 'react-router'
-import type { CameraModel } from '@/types/cameramodel.types'
+import type { CameraSpecResponse } from '@/types/camera'
 
 interface Props {
-  camera: CameraModel
-  onDelete: (camera: CameraModel) => void
+  camera: CameraSpecResponse
+  onDelete: (camera: CameraSpecResponse) => void
 }
 
 export default function CameraCardActions({ camera, onDelete }: Props) {
   return (
     <div className="flex gap-2 mt-auto pt-1">
       <Link
-        to={`/admin/manage/cameras/${camera.id}`}
+        to={`/admin/manage/camera_specs/${camera.id}`}
         className="flex-1 text-center px-3 py-1.5 text-xs font-medium bg-surface hover:bg-accent/20 text-primary rounded-md no-underline transition-colors"
       >
         Edit

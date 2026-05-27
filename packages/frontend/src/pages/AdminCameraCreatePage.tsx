@@ -12,14 +12,14 @@ export default function AdminCameraCreatePage() {
       <Navbar />
       <div className="px-10 py-8 max-w-5xl mx-auto">
         <Link
-          to="/admin/manage/cameras"
+          to="/admin/manage/camera_specs"
           className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-primary transition-colors mb-4 no-underline"
         >
           <ChevronLeft size={16} />
-          Camera Models
+          Camera Specifications
         </Link>
 
-        <h1 className="text-[26px] font-bold text-primary m-0 mb-8">Add Camera Model</h1>
+        <h1 className="text-[26px] font-bold text-primary m-0 mb-8">Add Camera Specification</h1>
 
         <CameraCreateForm {...formProps} />
       </div>

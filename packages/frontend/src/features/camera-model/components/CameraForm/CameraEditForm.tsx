@@ -1,4 +1,4 @@
-import type { CameraModelCreate } from '../../../../types/cameramodel.types'
+import type { CameraSpecForm } from '@/types/camera'
 import IdentitySection from './IdentitySection'
 import LensSection from './LensSection'
 import SensorSection from './SensorSection'
@@ -6,13 +6,13 @@ import AdvancedSection from './AdvancedSection'
 import FormActions from './FormActions'
 
 interface Props {
-  form: CameraModelCreate
-  setForm: React.Dispatch<React.SetStateAction<CameraModelCreate>>
+  form: CameraSpecForm
+  setForm: React.Dispatch<React.SetStateAction<CameraSpecForm>>
   errors: Record<string, string>
   sensorIsCustom: boolean
   setSensorIsCustom: (v: boolean) => void
-  set: <K extends keyof CameraModelCreate>(key: K, value: CameraModelCreate[K]) => void
-  handleLensTypeChange: (lt: CameraModelCreate['lens_type']) => void
+  set: <K extends keyof CameraSpecForm>(key: K, value: CameraSpecForm[K]) => void
+  handleLensTypeChange: (lt: CameraSpecForm['lens_type']) => void
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void
   isPending: boolean
   isFixed: boolean
@@ -48,7 +48,7 @@ export default function CameraEditForm({
         sensorIsCustom={sensorIsCustom}
         setSensorIsCustom={setSensorIsCustom}
       />
-      <AdvancedSection form={form} set={set} />
+      <AdvancedSection form={form} errors={errors} set={set} />
       <FormActions isPending={isPending} submitLabel="Save Changes" />
     </form>
   )

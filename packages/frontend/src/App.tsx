@@ -12,7 +12,7 @@
  *         /accept-invite. Authenticated users visiting these are redirected to
  *         the dashboard.
  *       • Protected routes (wrapped in <ProtectedRoute>): /, /admin/manage,
- *         /admin/manage/cameras, /admin/manage/cameras/:id, and
+ *         /admin/manage/camera_specs, /admin/manage/camera_specs/:id, and
  *         /project/manage/:id. Unauthenticated users are redirected to /login.
  *   - A wildcard fallback <Navigate to="/" replace /> for unknown URLs.
  */
@@ -51,9 +51,9 @@ function App() {
             {/* Admin-only routes */}
             <Route element={<AdminRoute />}>
               <Route path="/admin/manage" element={<AdminPage />} />
-              <Route path="/admin/manage/cameras" element={<AdminCamerasPage />} />
-              <Route path="/admin/manage/cameras/new" element={<AdminCameraCreatePage />} />
-              <Route path="/admin/manage/cameras/:id" element={<AdminCameraEditPage />} />
+              <Route path="/admin/manage/camera_specs" element={<AdminCamerasPage />} />
+              <Route path="/admin/manage/camera_specs/new" element={<AdminCameraCreatePage />} />
+              <Route path="/admin/manage/camera_specs/:id" element={<AdminCameraEditPage />} />
             </Route>
           </Route>
 
@@ -66,4 +66,3 @@ function App() {
 }
 
 export default App
-

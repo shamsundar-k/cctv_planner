@@ -35,7 +35,7 @@ export default function OverviewTab(props: OverviewTabProps) {
   const summaryRows = [
     { label: 'Total Users', value: usersLoading ? '…' : usersCount },
     { label: 'Total Projects created', value: projectsLoading ? '…' : projectsCount },
-    { label: 'Available Camera Models', value: totalCameraModels },
+    { label: 'Available Camera Specifications', value: totalCameraModels },
     { label: 'Active Invites', value: activeInviteCount },
   ]
 
@@ -76,7 +76,7 @@ export default function OverviewTab(props: OverviewTabProps) {
       >
         <h2 className="text-base font-bold mt-0 mb-5" style={{ color: 'var(--theme-text-primary)' }}>Management</h2>
         <Link
-          to="/admin/manage/cameras"
+          to="/admin/manage/camera_specs"
           className="flex items-center justify-between w-full px-4 py-3 rounded-lg no-underline transition-colors"
           style={{ background: 'color-mix(in srgb, var(--theme-accent) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--theme-accent) 25%, transparent)' }}
           onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'color-mix(in srgb, var(--theme-accent) 20%, transparent)' }}
@@ -90,8 +90,8 @@ export default function OverviewTab(props: OverviewTabProps) {
               📷
             </span>
             <div>
-              <div className="text-sm font-semibold" style={{ color: 'var(--theme-accent-text)' }}>Camera Models</div>
-              <div className="text-xs" style={{ color: 'var(--theme-text-secondary)' }}>Add, edit and manage the camera catalog</div>
+              <div className="text-sm font-semibold" style={{ color: 'var(--theme-accent-text)' }}>Camera Specifications</div>
+              <div className="text-xs" style={{ color: 'var(--theme-text-secondary)' }}>Add, edit and manage the camera specification catalog</div>
             </div>
           </div>
           <ChevronRight size={16} style={{ color: 'var(--theme-accent-text)', flexShrink: 0 }} />

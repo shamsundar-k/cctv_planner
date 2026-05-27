@@ -25,7 +25,7 @@ export default function AdminDashboard() {
       <AdminStatCards
         usersValue={data.usersLoading ? '—' : data.filteredUsers.length}
         projectsValue={data.allProjects.length}
-        camerasValue={data.totalCameras}
+        camerasValue={data.totalCameraModels}
         invitesValue={data.invitesLoading ? '—' : data.adminInvites.length}
       />
 

@@ -54,3 +54,21 @@ export interface CameraSpecResponse extends CameraSpec {
   created_at: string
   updated_at: string
 }
+
+export interface CameraSpecForm {
+  name: string
+  manufacturer: string
+  model: string
+  camera_type: CameraType
+  lens_type: SpecLensType
+  focal_length_min: number
+  focal_length_max: number
+  h_fov_min: number
+  h_fov_max: number
+  v_fov_min: number
+  v_fov_max: number
+  resolution_h: number
+  resolution_v: number
+  sensor_size: string | null
+  ir_range: number
+}

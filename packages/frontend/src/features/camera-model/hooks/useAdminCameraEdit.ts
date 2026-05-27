@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router'
-import { useCameraModel, useUpdateCameraModel } from '../../../api/camerasModels'
+import { useCameraSpec, useUpdateCameraSpec } from '@/api/cameraSpecs'
 import { useToast } from '../../../components/ui/Toast'
-import type { CameraModelCreate } from '../../../types/cameramodel.types'
+import { toCameraSpecPayload } from '../components/CameraForm/cameraFormHelpers'
 import { useCameraFormState } from './useCameraFormState'
 
 export function useAdminCameraEdit() {
@@ -10,8 +10,8 @@ export function useAdminCameraEdit() {
   const navigate = useNavigate()
   const showToast = useToast()
 
-  const { data: existing, isLoading } = useCameraModel(id!)
-  const updateCamera = useUpdateCameraModel()
+  const { data: existing, isLoading } = useCameraSpec(id!)
+  const updateCamera = useUpdateCameraSpec()
   const formState = useCameraFormState()
 
   useEffect(() => {
@@ -22,22 +22,17 @@ export function useAdminCameraEdit() {
     e.preventDefault()
     if (!formState.validate()) return
 
-    const payload: CameraModelCreate = {
-      ...formState.form,
-      notes: formState.form.notes || null,
-      sensor_size: formState.form.sensor_size || null,
-      wdr_db: formState.form.wdr ? formState.form.wdr_db : null,
-    }
+    const payload = toCameraSpecPayload(formState.form)
 
     try {
       await updateCamera.mutateAsync({ id: id!, body: payload })
-      showToast('Camera model updated', 'success')
-      navigate('/admin/manage/cameras')
+      showToast('Camera specification updated', 'success')
+      navigate('/admin/manage/camera_specs')
     } catch (err: unknown) {
       const msg =
         (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail ??
-        'Failed to update camera model'
-      showToast(typeof msg === 'string' ? msg : 'Failed to update camera model', 'error')
+        'Failed to update camera specification'
+      showToast(typeof msg === 'string' ? msg : 'Failed to update camera specification', 'error')
     }
   }
 
