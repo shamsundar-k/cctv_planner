@@ -42,6 +42,21 @@ async def create_camera_spec(body: CameraSpec, current_user: User = Depends(get_
     return to_camera_spec_response(camera_spec)
 
 
+@router.get("/{camera_spec_id}", response_model=CameraSpecResponse)
+async def get_camera_spec(
+    camera_spec_id: PydanticObjectId,
+    current_user: User = Depends(get_current_user),
+) -> CameraSpecResponse:
+    camera_spec = await CameraSpecification.get(camera_spec_id)
+    if camera_spec is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Camera specification not found",
+        )
+
+    return to_camera_spec_response(camera_spec)
+
+
 @router.put("/{camera_spec_id}", response_model=CameraSpecResponse)
 async def update_camera_spec(
     camera_spec_id: PydanticObjectId,
