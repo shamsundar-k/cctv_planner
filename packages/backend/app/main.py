@@ -7,7 +7,7 @@ from scalar_fastapi import get_scalar_api_reference
 
 from app.core.database import close_db, init_db
 from app.core.seed import seed_first_admin
-from app.routers import admin, auth, camera_models, projects, camera_spec
+from app.routers import admin, auth, projects, camera_spec
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
@@ -28,7 +28,6 @@ app = FastAPI(
 
 app.include_router(auth.router, prefix="/api/v1")
 app.include_router(admin.router, prefix="/api/v1")
-app.include_router(camera_models.router, prefix="/api/v1")
 app.include_router(camera_spec.router, prefix="/api/v1")
 app.include_router(projects.router, prefix="/api/v1")
 
