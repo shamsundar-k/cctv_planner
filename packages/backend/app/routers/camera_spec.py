@@ -2,9 +2,10 @@ from datetime import datetime, timezone
 import logging
 
 from beanie import PydanticObjectId
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from pymongo.errors import DuplicateKeyError
-
+from app.core.deps import get_current_user
+from app.models.user import User
 from app.api_models.camera.camera_spec import CameraSpec, CameraSpecResponse, CameraSpecUpdate
 from app.db_schemas.camera_specification import CameraSpecification
 from app.mappers.camera_spec_mapper import to_camera_spec_response
@@ -21,7 +22,7 @@ async def health_check():
 
 
 @router.get("", response_model=list[CameraSpecResponse])
-async def list_camera_specs() -> list[CameraSpecResponse]:
+async def list_camera_specs(current_user: User = Depends(get_current_user),) -> list[CameraSpecResponse]:
     camera_specs = await CameraSpecification.find_all().to_list()
     return [to_camera_spec_response(camera_spec) for camera_spec in camera_specs]
 

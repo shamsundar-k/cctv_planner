@@ -17,7 +17,7 @@ from app.core.security import (
 from app.core.config import settings
 from app.models.invite_token import InviteToken
 from app.models.user import User
-from app.schemas.auth import (
+from packages.backend.app.api_models.auth import (
     AcceptInvitePreview,
     AcceptInviteRequest,
     LoginRequest,
