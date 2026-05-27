@@ -28,7 +28,7 @@ async def list_camera_specs(current_user: User = Depends(get_current_user),) -> 
 
 
 @router.post("", response_model=CameraSpecResponse, status_code=status.HTTP_201_CREATED)
-async def create_camera_spec(body: CameraSpec) -> CameraSpecResponse:
+async def create_camera_spec(body: CameraSpec, current_user: User = Depends(get_current_user),) -> CameraSpecResponse:
     camera_spec = CameraSpecification(**body.model_dump())
 
     try:
@@ -46,6 +46,7 @@ async def create_camera_spec(body: CameraSpec) -> CameraSpecResponse:
 async def update_camera_spec(
     camera_spec_id: PydanticObjectId,
     body: CameraSpecUpdate,
+    current_user: User = Depends(get_current_user),
 ) -> CameraSpecResponse:
     camera_spec = await CameraSpecification.get(camera_spec_id)
     if camera_spec is None:
@@ -76,7 +77,7 @@ async def update_camera_spec(
 
 
 @router.delete("/{camera_spec_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_camera_spec(camera_spec_id: PydanticObjectId) -> None:
+async def delete_camera_spec(camera_spec_id: PydanticObjectId,current_user: User = Depends(get_current_user),) -> None:
     camera_spec = await CameraSpecification.get(camera_spec_id)
     if camera_spec is None:
         raise HTTPException(
