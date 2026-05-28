@@ -1,4 +1,4 @@
-export type Tab = 'overview' | 'users' | 'projects' | 'invites'
+export type Tab = 'overview' | 'users' | 'projects' | 'cameras' | 'invites'
 
 export type DeleteModalState =
   | { open: false }

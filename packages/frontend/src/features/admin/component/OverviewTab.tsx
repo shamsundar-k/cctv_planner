@@ -1,5 +1,3 @@
-import { Link } from 'react-router'
-import { ChevronRight } from 'lucide-react'
 import InviteGenerateCard from '../../invites/component/InviteGenerateCard'
 import type { LatestInvite } from '../../invites/component/InviteGenerateCard'
 
@@ -35,7 +33,7 @@ export default function OverviewTab(props: OverviewTabProps) {
   const summaryRows = [
     { label: 'Total Users', value: usersLoading ? '…' : usersCount },
     { label: 'Total Projects created', value: projectsLoading ? '…' : projectsCount },
-    { label: 'Available Camera Specifications', value: totalCameraModels },
+    { label: 'Available Camera Models', value: totalCameraModels },
     { label: 'Active Invites', value: activeInviteCount },
   ]
 
@@ -68,35 +66,6 @@ export default function OverviewTab(props: OverviewTabProps) {
         onGenerateInvite={onGenerateInvite}
         onCopyInvite={onCopyInvite}
       />
-
-      {/* Management Links */}
-      <div
-        className="rounded-xl p-6"
-        style={{ background: 'color-mix(in srgb, var(--theme-bg-card) 80%, transparent)', border: '1px solid color-mix(in srgb, var(--theme-surface) 25%, transparent)' }}
-      >
-        <h2 className="text-base font-bold mt-0 mb-5" style={{ color: 'var(--theme-text-primary)' }}>CCTV Camera Management</h2>
-        <Link
-          to="/admin/manage/camera_specs"
-          className="flex items-center justify-between w-full px-4 py-3 rounded-lg no-underline transition-colors"
-          style={{ background: 'color-mix(in srgb, var(--theme-accent) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--theme-accent) 25%, transparent)' }}
-          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'color-mix(in srgb, var(--theme-accent) 20%, transparent)' }}
-          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'color-mix(in srgb, var(--theme-accent) 10%, transparent)' }}
-        >
-          <div className="flex items-center gap-3">
-            <span
-              className="w-9 h-9 rounded-lg flex items-center justify-center text-base"
-              style={{ background: 'color-mix(in srgb, var(--theme-accent) 20%, transparent)' }}
-            >
-              📷
-            </span>
-            <div>
-              <div className="text-sm font-semibold" style={{ color: 'var(--theme-text-primary)' }}>Camera Specifications</div>
-              <div className="text-xs" style={{ color: 'var(--theme-text-secondary)' }}>Add, edit and manage the camera specification catalog</div>
-            </div>
-          </div>
-          <ChevronRight size={16} style={{ color: 'var(--theme-accent)', flexShrink: 0 }} />
-        </Link>
-      </div>
     </div>
   )
 }

@@ -7,6 +7,7 @@ import AdminTabNav from './AdminTabNav'
 import OverviewTab from './OverviewTab'
 import UsersTab from './UsersTab'
 import ProjectsTab from './ProjectsTab'
+import CameraManagementTab from './CameraManagementTab'
 import DeleteModal from './DeleteModal'
 import InvitesTab from '../../invites/component/InvitesTab'
 
@@ -69,6 +70,10 @@ export default function AdminDashboard() {
           onSearchChange={data.setProjectSearch}
           onDeleteProject={(id, name) => actions.setDeleteModal({ open: true, type: 'project', id, name })}
         />
+      )}
+
+      {actions.activeTab === 'cameras' && (
+        <CameraManagementTab totalCameraModels={data.totalCameraModels} />
       )}
 
       {actions.activeTab === 'invites' && (
