@@ -4,7 +4,6 @@ import { useInvites } from '../../invites/hooks/useInvites'
 import AdminHeader from './AdminHeader'
 import AdminStatCards from './AdminStatCards'
 import AdminTabNav from './AdminTabNav'
-import OverviewTab from './OverviewTab'
 import UsersTab from './UsersTab'
 import ProjectsTab from './ProjectsTab'
 import CameraManagementTab from './CameraManagementTab'
@@ -36,22 +35,6 @@ export default function AdminDashboard() {
         inviteCount={data.adminInvites.length}
       />
 
-      {actions.activeTab === 'overview' && (
-        <OverviewTab
-          usersLoading={data.usersLoading}
-          projectsLoading={data.projectsLoading}
-          usersCount={data.filteredUsers.length}
-          projectsCount={data.allProjects.length}
-          totalCameraModels={data.totalCameraModels}
-          activeInviteCount={data.adminInvites.length}
-          generateInvitePending={invites.generateInvitePending}
-          latestCreatedInvite={invites.latestCreatedInvite}
-          copiedId={invites.copiedId}
-          onGenerateInvite={invites.handleGenerateInvite}
-          onCopyInvite={invites.handleCopyInvite}
-        />
-      )}
-
       {actions.activeTab === 'users' && (
         <UsersTab
           users={data.filteredUsers}
@@ -80,7 +63,10 @@ export default function AdminDashboard() {
         <InvitesTab
           invites={data.adminInvites}
           isLoading={data.invitesLoading}
+          generateInvitePending={invites.generateInvitePending}
+          latestCreatedInvite={invites.latestCreatedInvite}
           copiedId={invites.copiedId}
+          onGenerateInvite={invites.handleGenerateInvite}
           onCopyInvite={invites.handleCopyInvite}
           onRevokeInvite={(id, email) => actions.setDeleteModal({ open: true, type: 'invite', id, name: email })}
         />

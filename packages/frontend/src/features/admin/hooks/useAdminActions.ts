@@ -7,7 +7,7 @@ import type { DeleteModalState } from '../component/types'
 export function useAdminActions() {
   const showToast = useToast()
 
-  const [activeTab, setActiveTab] = useState<import('../component/types').Tab>('overview')
+  const [activeTab, setActiveTab] = useState<import('../component/types').Tab>('users')
   const [deleteModal, setDeleteModal] = useState<DeleteModalState>({ open: false })
 
   const deleteUser = useDeleteUser()

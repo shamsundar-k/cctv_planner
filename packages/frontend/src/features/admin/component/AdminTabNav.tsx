@@ -1,11 +1,10 @@
 import type { Tab } from './types'
 
 const TABS: { id: Tab; label: string }[] = [
-  { id: 'overview', label: 'Overview' },
   { id: 'users', label: 'Users' },
   { id: 'projects', label: 'Projects' },
   { id: 'cameras', label: 'Camera Specs' },
-  { id: 'invites', label: 'Active Invites' },
+  { id: 'invites', label: 'Invites' },
 ]
 
 interface AdminTabNavProps {
