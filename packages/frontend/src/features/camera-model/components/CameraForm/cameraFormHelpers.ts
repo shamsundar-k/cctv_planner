@@ -1,19 +1,9 @@
 import type { CameraSpec, CameraSpecForm } from '@/types/camera'
 
-export function gcd(a: number, b: number): number {
-  return b === 0 ? a : gcd(b, a % b)
-}
-
 export function calcMegapixels(h: number | '', v: number | ''): string {
-  if (!h || !v) return '—'
+  if (!h || !v) return '-'
   const mp = (h * v) / 1_000_000
   return mp < 1 ? mp.toFixed(2) : mp.toFixed(1)
-}
-
-export function calcAspectRatio(h: number, v: number): string {
-  if (!h || !v) return '—'
-  const g = gcd(h, v)
-  return `${h / g}:${v / g}`
 }
 
 export function calcMegapixelNumber(h: number, v: number): number | null {

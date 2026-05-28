@@ -157,6 +157,102 @@ export const THEMES = {
       accentText: '#ededed',
     },
   },
+
+  /** Charcoal, steel, and signal green — crisp control-room theme */
+  graphiteSignal: {
+    label: 'Graphite Signal',
+    colors: {
+      bgBase: '#101418',
+      bgCard: '#1b2329',
+      surface: '#263039',
+      border: '#3a4852',
+      textPrimary: '#edf2f4',
+      textSecondary: '#9fb1bc',
+      accent: '#20a46b',
+      accentHover: '#39c685',
+      accentText: '#07120d',
+    },
+  },
+
+  /** Deep forest and mineral teal with clear mint actions */
+  forestGrid: {
+    label: 'Forest Grid',
+    colors: {
+      bgBase: '#071512',
+      bgCard: '#12241f',
+      surface: '#1d3730',
+      border: '#31564c',
+      textPrimary: '#e4f3ec',
+      textSecondary: '#94c7b4',
+      accent: '#2fb284',
+      accentHover: '#5dd6aa',
+      accentText: '#06130f',
+    },
+  },
+
+  /** Ink black and violet-gray with an electric blue operator accent */
+  midnightCircuit: {
+    label: 'Midnight Circuit',
+    colors: {
+      bgBase: '#0b0d17',
+      bgCard: '#171b2b',
+      surface: '#242a42',
+      border: '#3b4362',
+      textPrimary: '#edf0ff',
+      textSecondary: '#a2abc9',
+      accent: '#4f8cff',
+      accentHover: '#77a7ff',
+      accentText: '#071026',
+    },
+  },
+
+  /** Warm concrete neutrals with copper action states */
+  copperStone: {
+    label: 'Copper Stone',
+    colors: {
+      bgBase: '#181716',
+      bgCard: '#282522',
+      surface: '#37322d',
+      border: '#574d43',
+      textPrimary: '#f0e7dc',
+      textSecondary: '#b9a795',
+      accent: '#c66a31',
+      accentHover: '#e18a55',
+      accentText: '#1a0d06',
+    },
+  },
+
+  /** Dark olive and slate with amber highlights for dense dashboards */
+  oliveTerminal: {
+    label: 'Olive Terminal',
+    colors: {
+      bgBase: '#10140f',
+      bgCard: '#1d241b',
+      surface: '#2b3328',
+      border: '#46503e',
+      textPrimary: '#edf2df',
+      textSecondary: '#b4c09d',
+      accent: '#d0a22f',
+      accentHover: '#e6bd52',
+      accentText: '#171204',
+    },
+  },
+
+  /** High-contrast light theme for bright offices and print-like reports */
+  daylightOps: {
+    label: 'Daylight Ops',
+    colors: {
+      bgBase: '#f4f7f8',
+      bgCard: '#ffffff',
+      surface: '#e8eef1',
+      border: '#c8d4da',
+      textPrimary: '#172129',
+      textSecondary: '#5c6f7a',
+      accent: '#116d8c',
+      accentHover: '#1687ad',
+      accentText: '#ffffff',
+    },
+  },
 } satisfies Record<string, Theme>
 
 // ── Active theme ───────────────────────────────────────────────────────────────
@@ -164,4 +260,4 @@ export const THEMES = {
  * Change this string to switch the entire app's colour scheme.
  * Must be one of the keys in THEMES above.
  */
-export const ACTIVE_THEME: ThemeKey = 'aurora'
+export const ACTIVE_THEME: ThemeKey = 'daylightOps'

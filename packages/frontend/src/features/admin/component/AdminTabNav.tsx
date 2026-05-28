@@ -25,8 +25,12 @@ export default function AdminTabNav({ activeTab, onTabChange, inviteCount }: Adm
           onClick={() => onTabChange(id)}
           className="px-5 py-2.5 text-sm font-semibold bg-transparent border-none cursor-pointer whitespace-nowrap transition-all border-b-2 -mb-px"
           style={{
-            color: activeTab === id ? 'var(--theme-accent-text)' : 'color-mix(in srgb, var(--theme-text-secondary) 70%, transparent)',
+            color: activeTab === id ? 'var(--theme-text-primary)' : 'color-mix(in srgb, var(--theme-text-secondary) 70%, transparent)',
             borderBottomColor: activeTab === id ? 'var(--theme-accent)' : 'transparent',
+            textDecoration: activeTab === id ? 'underline' : 'none',
+            textDecorationColor: 'var(--theme-accent)',
+            textUnderlineOffset: '6px',
+            textDecorationThickness: '2px',
           }}
           onMouseEnter={e => { if (activeTab !== id) e.currentTarget.style.color = 'var(--theme-text-primary)' }}
           onMouseLeave={e => { if (activeTab !== id) e.currentTarget.style.color = 'color-mix(in srgb, var(--theme-text-secondary) 70%, transparent)' }}
@@ -35,7 +39,12 @@ export default function AdminTabNav({ activeTab, onTabChange, inviteCount }: Adm
           {id === 'invites' && inviteCount > 0 && (
             <span
               className="ml-2 px-1.5 py-0.5 text-[11px] font-bold rounded-full"
-              style={{ background: 'color-mix(in srgb, var(--theme-accent) 20%, transparent)', color: 'var(--theme-accent-text)' }}
+              style={{
+                background: activeTab === id
+                  ? 'var(--theme-accent)'
+                  : 'color-mix(in srgb, var(--theme-accent) 15%, transparent)',
+                color: activeTab === id ? 'var(--theme-accent-text)' : 'var(--theme-accent)',
+              }}
             >
               {inviteCount}
             </span>

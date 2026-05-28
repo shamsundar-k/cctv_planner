@@ -9,12 +9,12 @@ export default function AdminCamerasPage() {
   const { cameras, isLoading } = useCameraSpecList()
 
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen bg-canvas">
       <Navbar />
       <div className="px-10 py-8">
         <Link
           to="/admin/manage"
-          className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-200 transition-colors mb-4 no-underline"
+          className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-primary transition-colors mb-4 no-underline"
         >
           <ChevronLeft size={16} />
           Admin Dashboard

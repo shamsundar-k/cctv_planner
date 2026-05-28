@@ -99,7 +99,7 @@ export default function UsersTab({
                     <span
                       className="px-2.5 py-0.5 rounded-full text-xs font-bold border"
                       style={{
-                        color: user.system_role === 'admin' ? 'var(--theme-accent-text)' : 'var(--theme-text-secondary)',
+                        color: user.system_role === 'admin' ? 'var(--theme-accent)' : 'var(--theme-text-secondary)',
                         background: user.system_role === 'admin' ? 'color-mix(in srgb, var(--theme-accent) 20%, transparent)' : 'color-mix(in srgb, var(--theme-surface) 15%, transparent)',
                         borderColor: user.system_role === 'admin' ? 'color-mix(in srgb, var(--theme-accent) 40%, transparent)' : 'color-mix(in srgb, var(--theme-surface) 30%, transparent)',
                       }}

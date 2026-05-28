@@ -9,7 +9,7 @@ export default function AdminCameraEditPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-900">
+      <div className="min-h-screen bg-canvas">
         <Navbar />
         <div className="px-10 py-8 text-muted text-sm">Loading…</div>
       </div>
@@ -17,7 +17,7 @@ export default function AdminCameraEditPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen bg-canvas">
       <Navbar />
       <div className="px-10 py-8 max-w-5xl mx-auto">
         <Link

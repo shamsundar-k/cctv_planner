@@ -1,4 +1,5 @@
 import type { CameraSpecForm } from '@/types/camera'
+import { deriveAspectRatioFromResolution } from '@/lib/aspectRatio'
 import { SENSOR_FORMATS } from '../../../../constants/sensorFormats'
 import { calcMegapixels, parseIntegerInput } from './cameraFormHelpers'
 import CollapsibleSection from '../../../../components/ui/CollapsibleSection'
@@ -15,7 +16,7 @@ interface Props {
 export default function SensorSection({ form, errors, set }: Props) {
   return (
     <CollapsibleSection title="Sensor">
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <Field label="Resolution H *">
           <InputWithUnit unit="px">
             <input
@@ -50,6 +51,14 @@ export default function SensorSection({ form, errors, set }: Props) {
               {calcMegapixels(form.resolution_h, form.resolution_v)}
             </span>
             <span className="text-xs text-muted">MP</span>
+          </div>
+        </Field>
+
+        <Field label="Aspect Ratio">
+          <div className="h-9 flex items-center">
+            <span className="text-base font-semibold text-primary">
+              {deriveAspectRatioFromResolution(form.resolution_h, form.resolution_v)}
+            </span>
           </div>
         </Field>
 

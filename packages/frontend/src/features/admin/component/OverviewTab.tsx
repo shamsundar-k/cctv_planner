@@ -74,7 +74,7 @@ export default function OverviewTab(props: OverviewTabProps) {
         className="rounded-xl p-6"
         style={{ background: 'color-mix(in srgb, var(--theme-bg-card) 80%, transparent)', border: '1px solid color-mix(in srgb, var(--theme-surface) 25%, transparent)' }}
       >
-        <h2 className="text-base font-bold mt-0 mb-5" style={{ color: 'var(--theme-text-primary)' }}>Management</h2>
+        <h2 className="text-base font-bold mt-0 mb-5" style={{ color: 'var(--theme-text-primary)' }}>CCTV Camera Management</h2>
         <Link
           to="/admin/manage/camera_specs"
           className="flex items-center justify-between w-full px-4 py-3 rounded-lg no-underline transition-colors"
@@ -90,11 +90,11 @@ export default function OverviewTab(props: OverviewTabProps) {
               📷
             </span>
             <div>
-              <div className="text-sm font-semibold" style={{ color: 'var(--theme-accent-text)' }}>Camera Specifications</div>
+              <div className="text-sm font-semibold" style={{ color: 'var(--theme-text-primary)' }}>Camera Specifications</div>
               <div className="text-xs" style={{ color: 'var(--theme-text-secondary)' }}>Add, edit and manage the camera specification catalog</div>
             </div>
           </div>
-          <ChevronRight size={16} style={{ color: 'var(--theme-accent-text)', flexShrink: 0 }} />
+          <ChevronRight size={16} style={{ color: 'var(--theme-accent)', flexShrink: 0 }} />
         </Link>
       </div>
     </div>

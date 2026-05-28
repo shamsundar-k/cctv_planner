@@ -8,7 +8,7 @@ export default function AdminCameraCreatePage() {
   const formProps = useAdminCameraCreate()
 
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen bg-canvas">
       <Navbar />
       <div className="px-10 py-8 max-w-5xl mx-auto">
         <Link
