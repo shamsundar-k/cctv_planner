@@ -9,8 +9,6 @@ interface Props {
   form: CameraSpecForm
   setForm: React.Dispatch<React.SetStateAction<CameraSpecForm>>
   errors: Record<string, string>
-  sensorIsCustom: boolean
-  setSensorIsCustom: (v: boolean) => void
   set: <K extends keyof CameraSpecForm>(key: K, value: CameraSpecForm[K]) => void
   handleLensTypeChange: (lt: CameraSpecForm['lens_type']) => void
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void
@@ -22,8 +20,6 @@ export default function CameraEditForm({
   form,
   setForm,
   errors,
-  sensorIsCustom,
-  setSensorIsCustom,
   set,
   handleLensTypeChange,
   handleSubmit,
@@ -45,8 +41,6 @@ export default function CameraEditForm({
         form={form}
         errors={errors}
         set={set}
-        sensorIsCustom={sensorIsCustom}
-        setSensorIsCustom={setSensorIsCustom}
       />
       <AdvancedSection form={form} errors={errors} set={set} />
       <FormActions isPending={isPending} submitLabel="Save Changes" />

@@ -164,4 +164,4 @@ export const THEMES = {
  * Change this string to switch the entire app's colour scheme.
  * Must be one of the keys in THEMES above.
  */
-export const ACTIVE_THEME: ThemeKey = 'nebula'
+export const ACTIVE_THEME: ThemeKey = 'aurora'

@@ -2,6 +2,7 @@ import type { CameraSpecForm } from '@/types/camera'
 import CollapsibleSection from '../../../../components/ui/CollapsibleSection'
 import Field from '../../../../components/ui/FormField'
 import InputWithUnit from '../../../../components/ui/InputWithUnit'
+import { parseNumberInput } from './cameraFormHelpers'
 import { inputClass } from './formStyles'
 
 interface Props {
@@ -26,7 +27,7 @@ export default function AdvancedSection({ form, errors, set }: Props) {
               step={1}
               className={`${inputClass} pr-8 ${errors.ir_range ? 'border-red-400' : ''}`}
               value={form.ir_range}
-              onChange={(e) => set('ir_range', parseFloat(e.target.value) || 0)}
+              onChange={(e) => set('ir_range', parseNumberInput(e.target.value))}
             />
           </InputWithUnit>
           {errors.ir_range && <p className="text-xs text-red-500 mt-1 mb-0">{errors.ir_range}</p>}

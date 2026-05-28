@@ -1,6 +1,6 @@
 import type { CameraSpecForm } from '@/types/camera'
 import { SENSOR_FORMATS } from '../../../../constants/sensorFormats'
-import { calcMegapixels } from './cameraFormHelpers'
+import { calcMegapixels, parseIntegerInput } from './cameraFormHelpers'
 import CollapsibleSection from '../../../../components/ui/CollapsibleSection'
 import Field from '../../../../components/ui/FormField'
 import InputWithUnit from '../../../../components/ui/InputWithUnit'
@@ -11,10 +11,8 @@ interface Props {
   form: CameraSpecForm
   errors: Record<string, string>
   set: <K extends keyof CameraSpecForm>(key: K, value: CameraSpecForm[K]) => void
-  sensorIsCustom: boolean
-  setSensorIsCustom: (v: boolean) => void
 }
-export default function SensorSection({ form, errors, set, sensorIsCustom, setSensorIsCustom }: Props) {
+export default function SensorSection({ form, errors, set }: Props) {
   return (
     <CollapsibleSection title="Sensor">
       <div className="grid grid-cols-4 gap-4">
@@ -26,7 +24,7 @@ export default function SensorSection({ form, errors, set, sensorIsCustom, setSe
               step={1}
               className={`${inputClass} pr-8 ${errors.resolution_h ? 'border-red-400' : ''}`}
               value={form.resolution_h}
-              onChange={(e) => set('resolution_h', parseInt(e.target.value) || 0)}
+              onChange={(e) => set('resolution_h', parseIntegerInput(e.target.value))}
             />
           </InputWithUnit>
           {errors.resolution_h && <p className="text-xs text-red-500 mt-1 mb-0">{errors.resolution_h}</p>}
@@ -40,7 +38,7 @@ export default function SensorSection({ form, errors, set, sensorIsCustom, setSe
               step={1}
               className={`${inputClass} pr-8 ${errors.resolution_v ? 'border-red-400' : ''}`}
               value={form.resolution_v}
-              onChange={(e) => set('resolution_v', parseInt(e.target.value) || 0)}
+              onChange={(e) => set('resolution_v', parseIntegerInput(e.target.value))}
             />
           </InputWithUnit>
           {errors.resolution_v && <p className="text-xs text-red-500 mt-1 mb-0">{errors.resolution_v}</p>}
@@ -56,42 +54,27 @@ export default function SensorSection({ form, errors, set, sensorIsCustom, setSe
         </Field>
 
         <Field
-          label="Sensor Size"
+          label="Sensor"
           hint={
-            !sensorIsCustom && form.sensor_size
+            form.sensor_size
               ? `Physical width: ${SENSOR_FORMATS.find((f) => f.format === form.sensor_size)?.widthMm} mm`
               : undefined
           }
         >
           <SelectField
-            value={sensorIsCustom ? 'Custom' : (form.sensor_size ?? '')}
+            value={form.sensor_size ?? ''}
             onChange={(e) => {
               const val = e.target.value
-              if (val === 'Custom') {
-                setSensorIsCustom(true)
-                set('sensor_size', null)
-              } else {
-                setSensorIsCustom(false)
-                set('sensor_size', val || null)
-              }
+              set('sensor_size', val || null)
             }}
           >
             <option value="">— select format —</option>
-            {SENSOR_FORMATS.filter((f) => f.format !== 'Custom').map(({ format, widthMm }) => (
+            {SENSOR_FORMATS.filter((f) => f.format !== 'Custom').map(({ format }) => (
               <option key={format} value={format}>
-                {format} ({widthMm} mm)
+                {format}
               </option>
             ))}
-            <option value="Custom">Custom (enter width in mm)</option>
           </SelectField>
-          {sensorIsCustom && (
-            <input
-              className={`${inputClass} mt-2`}
-              value={form.sensor_size ?? ''}
-              onChange={(e) => set('sensor_size', e.target.value || null)}
-              placeholder="Enter sensor width in mm (e.g. 5.50)"
-            />
-          )}
         </Field>
       </div>
     </CollapsibleSection>

@@ -4,7 +4,7 @@ export function gcd(a: number, b: number): number {
   return b === 0 ? a : gcd(b, a % b)
 }
 
-export function calcMegapixels(h: number, v: number): string {
+export function calcMegapixels(h: number | '', v: number | ''): string {
   if (!h || !v) return '—'
   const mp = (h * v) / 1_000_000
   return mp < 1 ? mp.toFixed(2) : mp.toFixed(1)
@@ -21,7 +21,36 @@ export function calcMegapixelNumber(h: number, v: number): number | null {
   return Number(((h * v) / 1_000_000).toFixed(2))
 }
 
+export function parseNumberInput(value: string): number | '' {
+  if (value === '') return ''
+  const parsed = Number(value)
+  return Number.isNaN(parsed) ? '' : parsed
+}
+
+export function parseIntegerInput(value: string): number | '' {
+  if (value === '') return ''
+  const parsed = parseInt(value, 10)
+  return Number.isNaN(parsed) ? '' : parsed
+}
+
+function requireNumber(value: number | ''): number {
+  if (value === '') {
+    throw new Error('Camera form has empty numeric values')
+  }
+  return value
+}
+
 export function toCameraSpecPayload(form: CameraSpecForm): CameraSpec {
+  const focalLengthMin = requireNumber(form.focal_length_min)
+  const focalLengthMax = requireNumber(form.focal_length_max)
+  const hFovMin = requireNumber(form.h_fov_min)
+  const hFovMax = requireNumber(form.h_fov_max)
+  const vFovMin = requireNumber(form.v_fov_min)
+  const vFovMax = requireNumber(form.v_fov_max)
+  const resolutionH = requireNumber(form.resolution_h)
+  const resolutionV = requireNumber(form.resolution_v)
+  const irRange = requireNumber(form.ir_range)
+
   return {
     name: form.name.trim(),
     manufacturer: form.manufacturer.trim(),
@@ -30,27 +59,27 @@ export function toCameraSpecPayload(form: CameraSpecForm): CameraSpec {
     lens_spec: {
       lens_type: form.lens_type,
       focal_length: {
-        min: form.focal_length_min,
-        max: form.focal_length_max,
+        min: focalLengthMin,
+        max: focalLengthMax,
       },
       h_fov: {
-        min: form.h_fov_min,
-        max: form.h_fov_max,
+        min: hFovMin,
+        max: hFovMax,
       },
       v_fov: {
-        min: form.v_fov_min,
-        max: form.v_fov_max,
+        min: vFovMin,
+        max: vFovMax,
       },
     },
     sensor_spec: {
       resolution: {
-        horizontal: form.resolution_h,
-        vertical: form.resolution_v,
+        horizontal: resolutionH,
+        vertical: resolutionV,
       },
-      megapixel: calcMegapixelNumber(form.resolution_h, form.resolution_v),
+      megapixel: calcMegapixelNumber(resolutionH, resolutionV),
       sensor_size: form.sensor_size ? form.sensor_size.trim() : null,
     },
-    ir_range: form.ir_range,
+    ir_range: irRange,
   }
 }
 
