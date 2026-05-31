@@ -7,6 +7,7 @@ import redis.asyncio as aioredis
 from beanie import init_beanie
 from fastapi import HTTPException, status
 
+from app.db_schemas.camera_placement import CameraPlacementDocument
 from app.db_schemas.camera_specification import CameraSpecification
 from app.models.camera import Camera
 from app.models.camera_model import CameraModel
@@ -38,6 +39,7 @@ async def init_db() -> None:
             CameraModel,
             CameraSpecification,
             Project,
+            CameraPlacementDocument,
             Camera,
             Zone,
         ],
