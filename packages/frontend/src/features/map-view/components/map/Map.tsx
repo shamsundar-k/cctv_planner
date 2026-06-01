@@ -29,6 +29,12 @@ export default function Map({ center = [51.5, -0.09], zoom = 13, children }: Map
     setZoom(map.getZoom())
     map.on('zoomend', () => setZoom(map.getZoom()))
 
+    map.pm.addControls({  
+  position: 'topleft',  
+  drawCircleMarker: false,
+  rotateMode: false,
+});
+
     setMapReady(true)
     console.log('Map initialized')
 
