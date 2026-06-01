@@ -6,7 +6,6 @@ from pymongo.errors import DuplicateKeyError
 
 from app.api_models.camera.camera_placement import (
     CameraPlacement,
-    CameraPlacementResponse,
     CameraPlacementUpdate,
 )
 from app.core.deps import get_current_user
@@ -82,11 +81,11 @@ async def _get_camera_placement_for_project(
     return camera_placement
 
 
-@router.get("", response_model=list[CameraPlacementResponse])
+@router.get("", response_model=list[CameraPlacement])
 async def list_camera_placements(
     project_id: PydanticObjectId,
     current_user: User = Depends(get_current_user),
-) -> list[CameraPlacementResponse]:
+) -> list[CameraPlacement]:
     project = await _get_project_for_user(project_id, current_user)
 
     camera_placements = await CameraPlacementDocument.find(
@@ -100,14 +99,14 @@ async def list_camera_placements(
 
 @router.post(
     "",
-    response_model=CameraPlacementResponse,
+    response_model=CameraPlacement,
     status_code=status.HTTP_201_CREATED,
 )
 async def create_camera_placement(
     project_id: PydanticObjectId,
     body: CameraPlacement,
     current_user: User = Depends(get_current_user),
-) -> CameraPlacementResponse:
+) -> CameraPlacement:
     project = await _get_project_for_user(project_id, current_user)
     camera_spec = await _get_camera_spec(body.camera_spec_id)
 
@@ -133,24 +132,24 @@ async def create_camera_placement(
     return to_camera_placement_response(camera_placement)
 
 
-@router.get("/{uid}", response_model=CameraPlacementResponse)
+@router.get("/{uid}", response_model=CameraPlacement)
 async def get_camera_placement(
     project_id: PydanticObjectId,
     uid: str,
     current_user: User = Depends(get_current_user),
-) -> CameraPlacementResponse:
+) -> CameraPlacement:
     project = await _get_project_for_user(project_id, current_user)
     camera_placement = await _get_camera_placement_for_project(project, uid)
     return to_camera_placement_response(camera_placement)
 
 
-@router.put("/{uid}", response_model=CameraPlacementResponse)
+@router.put("/{uid}", response_model=CameraPlacement)
 async def update_camera_placement(
     project_id: PydanticObjectId,
     uid: str,
     body: CameraPlacementUpdate,
     current_user: User = Depends(get_current_user),
-) -> CameraPlacementResponse:
+) -> CameraPlacement:
     project = await _get_project_for_user(project_id, current_user)
     camera_placement = await _get_camera_placement_for_project(project, uid)
 

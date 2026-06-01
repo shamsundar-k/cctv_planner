@@ -1,4 +1,4 @@
-from app.api_models.camera.camera_placement import CameraPlacementResponse
+from app.api_models.camera.camera_placement import CameraPlacement
 from app.db_schemas.camera_placement import CameraPlacementDocument
 from app.db_schemas.camera_specification import CameraSpecification
 
@@ -12,8 +12,8 @@ def _camera_spec_id(camera_placement: CameraPlacementDocument) -> str:
 
 def to_camera_placement_response(
     camera_placement: CameraPlacementDocument,
-) -> CameraPlacementResponse:
-    return CameraPlacementResponse(
+) -> CameraPlacement:
+    return CameraPlacement(
         uid=camera_placement.uid,
         camera_spec_id=_camera_spec_id(camera_placement),
         location=camera_placement.location,

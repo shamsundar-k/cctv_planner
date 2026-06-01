@@ -26,6 +26,8 @@ class CameraPlacement(BaseModel):
         pattern=r"^#[0-9A-Fa-f]{6}$",
         description="Hex color used for rendering this camera placement",
     )
+    created_at: datetime | None = None
+    updated_at: datetime | None = None
 
     model_config = {
         "json_schema_extra": {
@@ -41,6 +43,8 @@ class CameraPlacement(BaseModel):
                     "bearing": 45.0,
                     "label": "Main gate camera",
                     "color": "#3B82F6",
+                    "created_at": "2026-06-01T10:00:00Z",
+                    "updated_at": "2026-06-01T10:00:00Z",
                 }
             ]
         }
@@ -56,6 +60,4 @@ class CameraPlacementUpdate(BaseModel):
     color: str | None = Field(None, pattern=r"^#[0-9A-Fa-f]{6}$")
 
 
-class CameraPlacementResponse(CameraPlacement):
-    created_at: datetime
-    updated_at: datetime
+CameraPlacementResponse = CameraPlacement
