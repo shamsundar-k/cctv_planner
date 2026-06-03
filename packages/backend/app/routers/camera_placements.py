@@ -119,6 +119,8 @@ async def create_camera_placement(
         bearing=body.bearing,
         label=body.label,
         color=body.color,
+        coverage_area=body.coverage_area,
+        target_data=body.target_data,
     )
 
     try:

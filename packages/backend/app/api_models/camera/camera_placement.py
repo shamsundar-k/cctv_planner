@@ -2,6 +2,8 @@ from datetime import datetime
 
 from pydantic import BaseModel, Field
 
+from app.api_models.camera.coverage_area import CoverageArea
+from app.api_models.camera.target_data import TargetData
 from app.api_models.geo_location import GeoLocation
 
 
@@ -26,6 +28,8 @@ class CameraPlacement(BaseModel):
         pattern=r"^#[0-9A-Fa-f]{6}$",
         description="Hex color used for rendering this camera placement",
     )
+    coverage_area: CoverageArea | None = None
+    target_data: TargetData = Field(default_factory=TargetData)
     created_at: datetime | None = None
     updated_at: datetime | None = None
 
@@ -43,6 +47,18 @@ class CameraPlacement(BaseModel):
                     "bearing": 45.0,
                     "label": "Main gate camera",
                     "color": "#3B82F6",
+                    "coverage_area": {
+                        "points": [
+                            {"latitude": 40.7128, "longitude": -74.0060},
+                            {"latitude": 40.7130, "longitude": -74.0055},
+                            {"latitude": 40.7125, "longitude": -74.0050},
+                            {"latitude": 40.7122, "longitude": -74.0057},
+                        ]
+                    },
+                    "target_data": {
+                        "distance": 40.0,
+                        "height": 1.5,
+                    },
                     "created_at": "2026-06-01T10:00:00Z",
                     "updated_at": "2026-06-01T10:00:00Z",
                 }
@@ -58,6 +74,8 @@ class CameraPlacementUpdate(BaseModel):
     bearing: float | None = Field(None, ge=0, lt=360)
     label: str | None = Field(None, max_length=120)
     color: str | None = Field(None, pattern=r"^#[0-9A-Fa-f]{6}$")
+    coverage_area: CoverageArea | None = None
+    target_data: TargetData | None = None
 
 
 CameraPlacementResponse = CameraPlacement

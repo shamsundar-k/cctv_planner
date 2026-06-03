@@ -21,6 +21,8 @@ def to_camera_placement_response(
         bearing=camera_placement.bearing,
         label=camera_placement.label,
         color=camera_placement.color,
+        coverage_area=camera_placement.coverage_area,
+        target_data=camera_placement.target_data,
         created_at=camera_placement.created_at,
         updated_at=camera_placement.updated_at,
     )
