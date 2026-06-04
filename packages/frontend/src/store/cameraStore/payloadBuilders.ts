@@ -1,40 +1,29 @@
-import type { Camera, CameraCreatePayload, CameraUpdatePayload } from '../../types/camera.types'
+import type { CameraPlacement, CameraPlacementUpdate } from '@/types/camera'
 
-export function buildCreatePayload(camera: Camera): CameraCreatePayload {
+export function buildCreatePayload(camera: CameraPlacement): CameraPlacement {
   return {
     uid: camera.uid,
-    camera_model_id: camera.camera_model_id,
-    label: camera.label,
-    lat: camera.lat,
-    lng: camera.lng,
+    camera_spec_id: camera.camera_spec_id,
+    location: camera.location,
+    height: camera.height,
     bearing: camera.bearing,
-    camera_height: camera.camera_height,
-    tilt_angle: camera.tilt_angle,
-    focal_length_chosen: camera.focal_length_chosen,
-    colour: camera.colour,
-    visible: camera.visible,
-    fov_visible_geojson: camera.fov_visible_geojson,
-    fov_ir_geojson: camera.fov_ir_geojson,
-    target_distance: camera.target_distance,
-    target_height: camera.target_height,
+    label: camera.label,
+    color: camera.color,
+    coverage_area: camera.coverage_area,
+    target_data: camera.target_data,
   }
 }
 
-export function buildUpdatePayload(camera: Camera): CameraUpdatePayload {
+export function buildUpdatePayload(camera: CameraPlacement): CameraPlacementUpdate {
   return {
-    label: camera.label,
-    lat: camera.lat,
-    lng: camera.lng,
+    camera_spec_id: camera.camera_spec_id,
+    location: camera.location,
+    height: camera.height,
     bearing: camera.bearing,
-    camera_height: camera.camera_height,
-    tilt_angle: camera.tilt_angle,
-    focal_length_chosen: camera.focal_length_chosen,
-    colour: camera.colour,
-    visible: camera.visible,
-    fov_visible_geojson: camera.fov_visible_geojson,
-    fov_ir_geojson: camera.fov_ir_geojson,
-    target_distance: camera.target_distance,
-    target_height: camera.target_height,
+    label: camera.label,
+    color: camera.color,
+    coverage_area: camera.coverage_area,
+    target_data: camera.target_data,
   }
 }
 

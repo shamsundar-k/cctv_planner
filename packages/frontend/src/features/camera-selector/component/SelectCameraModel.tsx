@@ -1,8 +1,8 @@
-import type { CameraModel } from '../../../types/cameramodel.types'
+import type { CameraSpecRecord } from '@/types/camera'
 import { useSelectedCameraModelStore } from '../../../store/selectedCameraModelSlice'
 
 interface SelectCameraModelProps {
-    model: CameraModel | null
+    model: CameraSpecRecord | null
     onClose: () => void
 }
 

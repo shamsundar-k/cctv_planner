@@ -1,7 +1,6 @@
-import type { Camera } from '../types/camera.types'
-import { getCameraModelDetails } from '../api/projects'
-import type { CameraType } from '../types/cameramodel.types'
-import type { fov_input_params, FovCartesian } from './fovCalculations'
+import type { CameraPlacement, CoverageArea } from '@/types/camera'
+import type { CameraSpecRecord, CameraType } from '@/types/camera'
+import type { fov_input_params } from './fovCalculations'
 import { computeFovCartesian, computeFovGeoCorners } from './fovCalculations'
 
 type geo_position = {
@@ -10,64 +9,70 @@ type geo_position = {
 }
 
 const CAMERA_TYPE_LABELS: Record<CameraType, string> = {
-    fixed_dome: 'Dome Camera',
+    dome: 'Dome Camera',
     ptz: 'PTZ camera',
     bullet: 'Bullet camera',
 }
 
-export function generateDefaultCamera(camera_model_id: string, position: geo_position, projectId: string): Camera | null {
+function buildCoverageArea(camera: CameraPlacement, cameraSpec: CameraSpecRecord): CoverageArea | null {
+    const targetDistance = camera.target_data.distance
+    if (targetDistance <= 0) return null
+
+    const params: fov_input_params = {
+        camera_height: camera.height,
+        target_distance: targetDistance,
+        target_height: camera.target_data.height,
+        focal_length_min: cameraSpec.lens_spec.focal_length.min,
+        focal_length_max: cameraSpec.lens_spec.focal_length.max,
+        h_fov_wide: cameraSpec.lens_spec.h_fov.max,
+        h_fov_tele: cameraSpec.lens_spec.h_fov.min,
+        v_fov_wide: cameraSpec.lens_spec.v_fov.max,
+        v_fov_tele: cameraSpec.lens_spec.v_fov.min,
+        focal_length_chosen: cameraSpec.lens_spec.focal_length.min,
+    }
+
+    const result = computeFovCartesian(params)
+    const corners = computeFovGeoCorners(
+        result,
+        camera.location.latitude,
+        camera.location.longitude,
+        camera.bearing,
+    )
+    if (!corners) return null
+
+    return {
+        points: corners.map((corner) => ({
+            latitude: corner.lat,
+            longitude: corner.lng,
+        })),
+    }
+}
+
+export function generateDefaultCamera(cameraSpec: CameraSpecRecord, position: geo_position, projectId: string): CameraPlacement {
     const uid = crypto.randomUUID()
 
-    const camera_model_data = getCameraModelDetails(camera_model_id)
-
-    if (!camera_model_data) {
-        return null
-    }
-
-    const tempCamera: Camera = {
+    const camera: CameraPlacement = {
         uid,
-        label: CAMERA_TYPE_LABELS[camera_model_data.camera_type] ?? 'Unknown',
-        lat: position.lat,
-        lng: position.lng,
-        tilt_angle: 15,
+        camera_spec_id: cameraSpec.id,
+        location: {
+            latitude: position.lat,
+            longitude: position.lng,
+        },
+        height: 3,
         bearing: 0,
-        camera_height: 5,
-        focal_length_chosen: camera_model_data.focal_length_min,
-        colour: '#3B82F6',
-        visible: true,
-        fov_visible_geojson: null,
-        fov_ir_geojson: null,
-        target_distance: camera_model_data.ir_range > 0 ? camera_model_data.ir_range : 50,
-        target_height: 1.8,
-        camera_model_id,
+        label: CAMERA_TYPE_LABELS[cameraSpec.camera_type] ?? 'Unknown camera',
+        color: '#3B82F6',
+        coverage_area: null,
+        target_data: {
+            distance: cameraSpec.ir_range > 0 ? cameraSpec.ir_range : 40,
+            height: 1.5,
+        },
     }
 
-    const fov_calc_input_data: fov_input_params = {
-        camera_height: tempCamera.camera_height,
-        target_distance: tempCamera.target_distance!,
-        target_height: tempCamera.target_height,
-        focal_length_min: camera_model_data.focal_length_min,
-        focal_length_max: camera_model_data.focal_length_max,
-        h_fov_wide: camera_model_data.h_fov_max,
-        h_fov_tele: camera_model_data.h_fov_min,
-        v_fov_wide: camera_model_data.v_fov_max,
-        v_fov_tele: camera_model_data.v_fov_min,
-        focal_length_chosen: tempCamera.focal_length_chosen!,
-    }
-
-    const result: FovCartesian = computeFovCartesian(fov_calc_input_data)
-    const geo_fov = computeFovGeoCorners(result, tempCamera.lat, tempCamera.lng, tempCamera.bearing)
-
-    tempCamera.fov_visible_geojson = geo_fov
-    tempCamera.tilt_angle = result.tilt_angle
-
-    if (camera_model_data.ir_range > 0) {
-        const ir_result = computeFovCartesian({ ...fov_calc_input_data, target_distance: camera_model_data.ir_range })
-        tempCamera.fov_ir_geojson = computeFovGeoCorners(ir_result, tempCamera.lat, tempCamera.lng, tempCamera.bearing)
-    }
+    camera.coverage_area = buildCoverageArea(camera, cameraSpec)
 
     // suppress unused projectId warning — callers may pass it for context
     void projectId
 
-    return tempCamera
+    return camera
 }

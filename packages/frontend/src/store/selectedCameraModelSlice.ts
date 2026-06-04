@@ -1,9 +1,9 @@
 import { create } from 'zustand'
-import type { CameraModel } from '../types/cameramodel.types'
+import type { CameraSpecRecord } from '@/types/camera'
 
 interface SelectedCameraModelState {
-    selectedCameraModel: CameraModel | null
-    setSelectedCameraModel: (model: CameraModel | null) => void
+    selectedCameraModel: CameraSpecRecord | null
+    setSelectedCameraModel: (model: CameraSpecRecord | null) => void
 }
 
 export const useSelectedCameraModelStore = create<SelectedCameraModelState>((set) => ({

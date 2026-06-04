@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
-import type { Camera, CameraCreatePayload, CameraUpdatePayload } from '../../types/camera.types'
+import type { CameraPlacement, CameraPlacementUpdate } from '@/types/camera'
 import client from '../../api/client'
 import type { CameraStoreState, CameraRecord } from './types'
 import { filterCameras, withTrackingPatch } from './helpers'
@@ -38,7 +38,7 @@ export const useCameraStore = create<CameraStoreState>()(
         set({ isLoading: true, loadError: null })
         try {
           console.log("Fetching project cameras")
-          const res = await client.get<Camera[]>(`/projects/${projectId}/cameras`)
+          const res = await client.get<CameraPlacement[]>(`/projects/${projectId}/camera-placements`)
           console.log("Project cameras fetched", res.data)
 
           const cameraRecords: Record<string, CameraRecord> = {}
@@ -202,8 +202,8 @@ export const useCameraStore = create<CameraStoreState>()(
           ...toPost.map(async (record) => {
             const uid = record.camera.uid
             try {
-              const payload: CameraCreatePayload = buildCreatePayload(record.camera)
-              await client.post<Camera>(`/projects/${projectId}/cameras`, payload)
+              const payload: CameraPlacement = buildCreatePayload(record.camera)
+              await client.post<CameraPlacement>(`/projects/${projectId}/camera-placements`, payload)
               get().markSaved(uid)
             } catch (e) {
               get().markFailed(uid, errorMessage(e))
@@ -214,8 +214,8 @@ export const useCameraStore = create<CameraStoreState>()(
           ...toPut.map(async (record) => {
             const uid = record.camera.uid
             try {
-              const payload: CameraUpdatePayload = buildUpdatePayload(record.camera)
-              await client.put(`/projects/${projectId}/cameras/${uid}`, payload)
+              const payload: CameraPlacementUpdate = buildUpdatePayload(record.camera)
+              await client.put(`/projects/${projectId}/camera-placements/${uid}`, payload)
               get().markSaved(uid)
             } catch (e) {
               get().markFailed(uid, errorMessage(e))
@@ -225,7 +225,7 @@ export const useCameraStore = create<CameraStoreState>()(
           // DELETE — removed cameras
           ...toDelete.map(async (uid) => {
             try {
-              await client.delete(`/projects/${projectId}/cameras/${uid}`)
+              await client.delete(`/projects/${projectId}/camera-placements/${uid}`)
               get().markDeleted(uid)
             } catch (e) {
               // markDeleted not called — uid stays in deletedCameras for retry
