@@ -3,6 +3,15 @@ export interface GeoLocation {
   longitude: number
 }
 
+export interface CoverageArea {
+  points: GeoLocation[]
+}
+
+export interface TargetData {
+  distance: number
+  height: number
+}
+
 export interface CameraPlacement {
   uid: string
   camera_spec_id: string
@@ -11,10 +20,21 @@ export interface CameraPlacement {
   bearing: number
   label: string
   color: string
+  coverage_area?: CoverageArea | null
+  target_data: TargetData
   created_at?: string | null
   updated_at?: string | null
 }
 
-export type CameraPlacementUpdate = Partial<
-  Omit<CameraPlacement, 'uid' | 'created_at' | 'updated_at'>
->
+export interface CameraPlacementUpdate {
+  camera_spec_id?: string | null
+  location?: GeoLocation | null
+  height?: number | null
+  bearing?: number | null
+  label?: string | null
+  color?: string | null
+  coverage_area?: CoverageArea | null
+  target_data?: TargetData | null
+}
+
+export type CameraPlacementResponse = CameraPlacement

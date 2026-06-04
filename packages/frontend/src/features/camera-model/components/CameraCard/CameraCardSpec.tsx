@@ -1,16 +1,16 @@
-import type { CameraSpecResponse } from '@/types/camera'
+import type { CameraSpecRecord } from '@/types/camera'
 
 interface Props {
-  camera: CameraSpecResponse
+  camera: CameraSpecRecord
 }
 
-const map: Record<CameraSpecResponse['camera_type'], string> = {
+const map: Record<CameraSpecRecord['camera_type'], string> = {
   dome: 'Dome',
   ptz: 'PTZ',
   bullet: 'Bullet',
 }
 
-function CameraTypeLabel({ type }: { type: CameraSpecResponse['camera_type'] }) {
+function CameraTypeLabel({ type }: { type: CameraSpecRecord['camera_type'] }) {
   return <span>{map[type] ?? type}</span>
 }
 

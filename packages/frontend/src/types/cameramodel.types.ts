@@ -1,46 +1,56 @@
-export type CameraType = 'fixed_dome' | 'ptz' | 'bullet'
-export type LensType = 'fixed' | 'varifocal'
-export type SensorType = 'cmos'
+export type CameraType = 'dome' | 'bullet' | 'ptz'
+export type LensType = 'varifocal' | 'fixed'
 
-export interface CameraModel {
-  id: string
+export interface FocalLength {
+  min: number
+  max: number
+}
+
+export interface FOV {
+  min: number
+  max: number
+}
+
+export interface CameraLensSpec {
+  lens_type: LensType
+  focal_length: FocalLength
+  h_fov: FOV
+  v_fov: FOV
+}
+
+export interface Resolution {
+  horizontal: number
+  vertical: number
+}
+
+export interface CameraSensorSpec {
+  resolution: Resolution
+  megapixel: number | null
+  sensor_size: string | null
+}
+
+export interface CameraSpec {
   name: string
   manufacturer: string
-  model_number: string
+  model: string
   camera_type: CameraType
-  location: string
-  notes: string | null
-
-  focal_length_min: number
-  focal_length_max: number
-  h_fov_min: number
-  h_fov_max: number
-  v_fov_min: number
-  v_fov_max: number
-  lens_type: LensType
-  ir_cut_filter: boolean
+  lens_spec: CameraLensSpec
+  sensor_spec: CameraSensorSpec
   ir_range: number
+}
 
-  resolution_h: number
-  resolution_v: number
-  megapixels: number
-  aspect_ratio: string
-  sensor_size: string | null
-  sensor_type: SensorType
-  min_illumination: number
-  wdr: boolean
-  wdr_db: number | null
+export interface CameraSpecUpdate {
+  name?: string | null
+  manufacturer?: string | null
+  model?: string | null
+  camera_type?: CameraType | null
+  lens_spec?: CameraLensSpec | null
+  sensor_spec?: CameraSensorSpec | null
+  ir_range?: number | null
+}
 
-  created_by: string
+export interface CameraSpecRecord extends CameraSpec {
+  id: string
   created_at: string
   updated_at: string
 }
-
-export type CameraModelCreate = Omit<CameraModel, 'id' | 'megapixels' | 'aspect_ratio' | 'created_by' | 'created_at' | 'updated_at' | 'notes' | 'sensor_size'> & {
-  megapixels?: number
-  aspect_ratio?: string
-  notes: string | null
-  sensor_size: string | null
-}
-
-export type CameraModelUpdate = Partial<CameraModelCreate>

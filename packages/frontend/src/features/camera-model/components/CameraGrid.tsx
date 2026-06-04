@@ -1,18 +1,18 @@
 import { useMemo, useState } from 'react'
-import type { CameraSpecResponse } from '@/types/camera'
+import type { CameraSpecRecord } from '@/types/camera'
 import CameraCard from './CameraCard/CameraCard'
 import CameraSearchBar from './CameraSearchBar'
 import DeleteConfirmModal from './CameraForm/DeleteConfirmModal'
 import { useCameraModelDelete } from '../hooks/useCameraModelDelete'
 
-const SEARCH_FIELDS: (keyof Pick<CameraSpecResponse, 'name' | 'manufacturer' | 'model'>)[] = [
+const SEARCH_FIELDS: (keyof Pick<CameraSpecRecord, 'name' | 'manufacturer' | 'model'>)[] = [
   'name',
   'manufacturer',
   'model',
 ]
 
 interface Props {
-  cameras: CameraSpecResponse[]
+  cameras: CameraSpecRecord[]
   isLoading: boolean
 }
 

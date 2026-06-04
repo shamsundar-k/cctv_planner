@@ -1,9 +1,9 @@
 import { Link } from 'react-router'
-import type { CameraSpecResponse } from '@/types/camera'
+import type { CameraSpecRecord } from '@/types/camera'
 
 interface Props {
-  camera: CameraSpecResponse
-  onDelete: (camera: CameraSpecResponse) => void
+  camera: CameraSpecRecord
+  onDelete: (camera: CameraSpecRecord) => void
 }
 
 export default function CameraCardActions({ camera, onDelete }: Props) {

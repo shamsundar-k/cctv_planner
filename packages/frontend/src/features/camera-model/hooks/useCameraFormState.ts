@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { CameraSpecForm, CameraSpecResponse } from '@/types/camera'
+import type { CameraSpecForm, CameraSpecRecord } from '@/types/camera'
 import { emptyForm } from '../components/CameraForm/cameraFormHelpers'
 
 function asNumber(value: number | ''): number {
@@ -73,7 +73,7 @@ export function useCameraFormState() {
     return Object.keys(e).length === 0
   }
 
-  function initFrom(existing: CameraSpecResponse) {
+  function initFrom(existing: CameraSpecRecord) {
     const sensorSize = existing.sensor_spec.sensor_size ?? null
     setForm({
       name: existing.name,

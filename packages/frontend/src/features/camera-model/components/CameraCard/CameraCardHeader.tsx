@@ -1,11 +1,11 @@
-import type { CameraSpecResponse } from '@/types/camera'
+import type { CameraSpecRecord } from '@/types/camera'
 
 const lensTypeMap: Record<string, string> = {
   fixed: 'Fixed',
   varifocal: 'Varifocal',
 }
 
-export default function CameraCardHeader({ camera }: { camera: CameraSpecResponse }) {
+export default function CameraCardHeader({ camera }: { camera: CameraSpecRecord }) {
   return (
     <div className="flex items-start justify-between gap-2">
       <div className="min-w-0">

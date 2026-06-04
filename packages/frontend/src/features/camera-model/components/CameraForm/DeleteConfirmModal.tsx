@@ -1,7 +1,7 @@
-import type { CameraSpecResponse } from '@/types/camera'
+import type { CameraSpecRecord } from '@/types/camera'
 
 interface Props {
-  camera: CameraSpecResponse
+  camera: CameraSpecRecord
   onConfirm: () => void
   onCancel: () => void
   isDeleting: boolean

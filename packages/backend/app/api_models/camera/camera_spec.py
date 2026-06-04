@@ -61,7 +61,7 @@ class CameraSpecUpdate(BaseModel):
     ir_range: float | None = Field(None, ge=0, description="IR illumination range in meters")
 
 
-class CameraSpecResponse(CameraSpec):
+class CameraSpecRecord(CameraSpec):
     id: str
     created_at: datetime
     updated_at: datetime

@@ -1,11 +1,11 @@
-import type { CameraSpecResponse } from '@/types/camera'
+import type { CameraSpecRecord } from '@/types/camera'
 import CameraCardHeader from './CameraCardHeader'
 import CameraCardSpec from './CameraCardSpec'
 import CameraCardActions from './CameraCardActions'
 
 interface Props {
-  camera: CameraSpecResponse
-  onDelete: (camera: CameraSpecResponse) => void
+  camera: CameraSpecRecord
+  onDelete: (camera: CameraSpecRecord) => void
 }
 
 export default function CameraCard({ camera, onDelete }: Props) {

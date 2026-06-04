@@ -1,9 +1,9 @@
-from app.api_models.camera.camera_spec import CameraSpecResponse
+from app.api_models.camera.camera_spec import CameraSpecRecord
 from app.db_schemas.camera_specification import CameraSpecification
 
 
-def to_camera_spec_response(camera_spec: CameraSpecification) -> CameraSpecResponse:
-    return CameraSpecResponse(
+def to_camera_spec_record(camera_spec: CameraSpecification) -> CameraSpecRecord:
+    return CameraSpecRecord(
         id=str(camera_spec.id),
         name=camera_spec.name,
         manufacturer=camera_spec.manufacturer,

@@ -1,32 +1,32 @@
 export type CameraType = 'dome' | 'bullet' | 'ptz'
-export type SpecLensType = 'fixed' | 'varifocal'
+export type LensType = 'varifocal' | 'fixed'
 
-export interface FocalLengthSpec {
+export interface FocalLength {
   min: number
   max: number
 }
 
-export interface FovSpec {
+export interface FOV {
   min: number
   max: number
 }
 
 export interface CameraLensSpec {
-  lens_type: SpecLensType
-  focal_length: FocalLengthSpec
-  h_fov: FovSpec
-  v_fov: FovSpec
+  lens_type: LensType
+  focal_length: FocalLength
+  h_fov: FOV
+  v_fov: FOV
 }
 
-export interface CameraResolutionSpec {
+export interface Resolution {
   horizontal: number
   vertical: number
 }
 
 export interface CameraSensorSpec {
-  resolution: CameraResolutionSpec
-  megapixel: number | null
-  sensor_size: string | null
+  resolution: Resolution
+  megapixel?: number | null
+  sensor_size?: string | null
 }
 
 export interface CameraSpec {
@@ -39,17 +39,17 @@ export interface CameraSpec {
   ir_range: number
 }
 
-export type CameraSpecUpdate = Partial<{
-  name: string | null
-  manufacturer: string | null
-  model: string | null
-  camera_type: CameraType | null
-  lens_spec: CameraLensSpec | null
-  sensor_spec: CameraSensorSpec | null
-  ir_range: number | null
-}>
+export interface CameraSpecUpdate {
+  name?: string | null
+  manufacturer?: string | null
+  model?: string | null
+  camera_type?: CameraType | null
+  lens_spec?: CameraLensSpec | null
+  sensor_spec?: CameraSensorSpec | null
+  ir_range?: number | null
+}
 
-export interface CameraSpecResponse extends CameraSpec {
+export interface CameraSpecRecord extends CameraSpec {
   id: string
   created_at: string
   updated_at: string
@@ -60,7 +60,7 @@ export interface CameraSpecForm {
   manufacturer: string
   model: string
   camera_type: CameraType
-  lens_type: SpecLensType
+  lens_type: LensType
   focal_length_min: number | ''
   focal_length_max: number | ''
   h_fov_min: number | ''
