@@ -52,8 +52,8 @@ export default function CameraMarker({ cameraId, groupRef, zoom }: CameraMarkerP
     const group = groupRef.current
     if (!group || !camera) return
 
-    const marker = L.marker([camera.lat, camera.lng], {
-      icon: buildCameraIcon(camera.colour, isSelected, camera.bearing, camera.label, zoom),
+    const marker = L.marker([camera.location.latitude, camera.location.longitude], {
+      icon: buildCameraIcon(camera.color, isSelected, camera.bearing, camera.label, zoom),
       draggable: true,
     }).addTo(group)
 
@@ -66,7 +66,12 @@ export default function CameraMarker({ cameraId, groupRef, zoom }: CameraMarkerP
     // Drag end — write new position to store
     marker.on('dragend', () => {
       const { lat, lng } = marker.getLatLng()
-      updateCamera(cameraId, { lat, lng })
+      updateCamera(cameraId, {
+        location: {
+          latitude: lat,
+          longitude: lng,
+        },
+      })
     })
 
     return () => {

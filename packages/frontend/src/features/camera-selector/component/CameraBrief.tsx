@@ -1,25 +1,28 @@
-import type { CameraModel } from '../../../types/cameramodel.types'
+import type { CameraSpecRecord } from '@/types/camera'
 
-const CAMERA_TYPE_LABEL: Record<CameraModel['camera_type'], string> = {
-    fixed_dome: 'Fixed Dome',
+const CAMERA_TYPE_LABEL: Record<CameraSpecRecord['camera_type'], string> = {
+    dome: 'Dome',
     ptz: 'PTZ',
     bullet: 'Bullet',
 }
 
 interface Props {
-    model: CameraModel
+    model: CameraSpecRecord
 }
 
 export default function CameraBrief({ model }: Props) {
+    const hFov = model.lens_spec.h_fov
+    const focalLength = model.lens_spec.focal_length
+    const resolution = model.sensor_spec.resolution
     const fovLabel =
-        model.h_fov_min === model.h_fov_max
-            ? `${model.h_fov_min}°`
-            : `${model.h_fov_min}–${model.h_fov_max}°`
+        hFov.min === hFov.max
+            ? `${hFov.min}°`
+            : `${hFov.min}–${hFov.max}°`
 
     const focalLabel =
-        model.focal_length_min === model.focal_length_max
-            ? `${model.focal_length_min} mm`
-            : `${model.focal_length_min} mm – ${model.focal_length_max} mm`
+        focalLength.min === focalLength.max
+            ? `${focalLength.min} mm`
+            : `${focalLength.min} mm – ${focalLength.max} mm`
 
     return (
         <div className="rounded-xl border-2 border-border bg-surface/10 backdrop-blur-sm overflow-hidden">
@@ -42,14 +45,18 @@ export default function CameraBrief({ model }: Props) {
             {/* Model  */}
             <div className="px-4 pt-3 pb-2.5">
                 <p className="text-[13px] font-semibold text-primary leading-tight truncate">
-                    <span className="text-muted">Model:</span> {model.model_number}
+                    <span className="text-muted">Model:</span> {model.model}
                 </p>
 
             </div>
 
             {/* Spec grid */}
             <div className="px-4 pb-4 grid grid-cols-2 gap-x-4 gap-y-3">
-                <Spec label="Resolution" value={`${model.resolution_h}×${model.resolution_v}`} sub={`${model.megapixels} MP`} />
+                <Spec
+                    label="Resolution"
+                    value={`${resolution.horizontal}×${resolution.vertical}`}
+                    sub={model.sensor_spec.megapixel ? `${model.sensor_spec.megapixel} MP` : undefined}
+                />
                 <Spec label="H-FOV" value={fovLabel} />
                 <Spec label="Focal length" value={focalLabel} />
                 <Spec label="IR range" value={`${model.ir_range} m`} />

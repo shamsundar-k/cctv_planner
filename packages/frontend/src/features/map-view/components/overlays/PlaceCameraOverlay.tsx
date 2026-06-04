@@ -65,12 +65,12 @@ export default function PlaceCameraOverlay() {
             if (!selectedCameraModel) return
 
             const localCamera = generateDefaultCamera(
-                selectedCameraModel.id,
+                selectedCameraModel,
                 { lat: e.latlng.lat, lng: e.latlng.lng },
                 projectId,
             )
             if (localCamera) {
-                console.log('Placing camera:', localCamera.uid, 'at', localCamera.lat, localCamera.lng) // Debug log
+                console.log('Placing camera:', localCamera.uid, 'at', localCamera.location.latitude, localCamera.location.longitude) // Debug log
                 useCameraStore.getState().addCamera(localCamera)
                 console.log('Camera store:', useCameraStore.getState()) // Debug log
             }

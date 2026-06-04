@@ -55,7 +55,7 @@ export default function CamerasTab({ projectId: _projectId }: CamerasTabProps) {
             >
               <span
                 className="w-2.5 h-2.5 rounded-full shrink-0"
-                style={{ backgroundColor: cam.colour }}
+                style={{ backgroundColor: cam.color }}
               />
               <span className="flex-1 text-xs truncate select-none">{displayLabel}</span>
               <button

@@ -38,9 +38,13 @@ export default function CameraPanel({ projectId }: CameraPanelProps) {
       {selectedCameraId && form && camera && (
         <div className="flex flex-col h-full w-[312px]">
           <PanelHeader saveStatus={saveStatus} onClose={clearSelection} />
-          <CameraInfoSection modelName={cameraModel?.name ?? '—'} lat={camera.lat} lng={camera.lng} />
+          <CameraInfoSection
+            modelName={cameraModel?.name ?? '—'}
+            lat={camera.location.latitude}
+            lng={camera.location.longitude}
+          />
           <DoriMetricsSection metrics={fovMetrics} />
-          <CameraForm form={form} setField={setField} cameraModel={cameraModel} parseNullableNumber={parseNullableNumber} />
+          <CameraForm form={form} setField={setField} parseNullableNumber={parseNullableNumber} />
           <PanelFooter
             confirmDelete={confirmDelete}
             onRequestDelete={() => setConfirmDelete(true)}

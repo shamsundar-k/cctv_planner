@@ -1,42 +1,55 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useAllCameraModels } from '@/api/camerasModels'
+import { useAllCameraSpecs } from '@/api/cameraSpecs'
 import { useCameraStore } from '@/store/cameraStore'
 import { useCameraLayerStore } from '@/store/cameraLayerSlice'
-import type { Camera } from '@/types/camera.types'
-import type { CameraModel } from '@/types/cameramodel.types'
+import type { CameraPlacement, CameraSpecRecord, CoverageArea } from '@/types/camera'
 import type { fov_input_params, FovCartesian } from '@/lib/fovCalculations'
 import { computeFovCartesian, computeFovGeoCorners } from '@/lib/fovCalculations'
 import type { FormValues } from './types'
 
-function recomputeFov(form: FormValues, camera: Camera, cameraModel: CameraModel | null) {
+function recomputeCoverageArea(
+  form: FormValues,
+  camera: CameraPlacement,
+  cameraModel: CameraSpecRecord | null,
+): { result: FovCartesian, coverage_area: CoverageArea | null } | null {
   if (!cameraModel || form.target_distance === '' || form.target_distance <= 0) return null
 
   const params: fov_input_params = {
-    camera_height: form.camera_height,
+    camera_height: form.height,
     target_distance: form.target_distance,
     target_height: form.target_height,
-    focal_length_min: cameraModel.focal_length_min,
-    focal_length_max: cameraModel.focal_length_max,
-    h_fov_wide: cameraModel.h_fov_max,
-    h_fov_tele: cameraModel.h_fov_min,
-    v_fov_wide: cameraModel.v_fov_max,
-    v_fov_tele: cameraModel.v_fov_min,
-    focal_length_chosen: form.focal_length_chosen !== '' ? form.focal_length_chosen : cameraModel.focal_length_min,
+    focal_length_min: cameraModel.lens_spec.focal_length.min,
+    focal_length_max: cameraModel.lens_spec.focal_length.max,
+    h_fov_wide: cameraModel.lens_spec.h_fov.max,
+    h_fov_tele: cameraModel.lens_spec.h_fov.min,
+    v_fov_wide: cameraModel.lens_spec.v_fov.max,
+    v_fov_tele: cameraModel.lens_spec.v_fov.min,
+    focal_length_chosen: cameraModel.lens_spec.focal_length.min,
   }
 
   const result = computeFovCartesian(params)
-  const geo_fov = computeFovGeoCorners(result, camera.lat, camera.lng, form.bearing)
+  const corners = computeFovGeoCorners(
+    result,
+    camera.location.latitude,
+    camera.location.longitude,
+    form.bearing,
+  )
 
-  let ir_geo_fov = camera.fov_ir_geojson
-  if (cameraModel.ir_range > 0) {
-    const ir_result = computeFovCartesian({ ...params, target_distance: cameraModel.ir_range })
-    ir_geo_fov = computeFovGeoCorners(ir_result, camera.lat, camera.lng, form.bearing)
+  return {
+    result,
+    coverage_area: corners
+      ? {
+          points: corners.map((corner) => ({
+            latitude: corner.lat,
+            longitude: corner.lng,
+          })),
+        }
+      : null,
   }
-
-  return { result, geo_fov, ir_geo_fov }
 }
 
 export function useCameraPanel(projectId: string) {
+  void projectId
   const selectedCameraId = useCameraLayerStore((s) => s.selectedCameraId)
   const clearSelection = useCameraLayerStore((s) => s.clearSelection)
 
@@ -50,8 +63,8 @@ export function useCameraPanel(projectId: string) {
     selectedCameraId ? s.cameraRecords[selectedCameraId]?.tracking.status ?? null : null,
   )
 
-  const { data: allCameraModels } = useAllCameraModels()
-  const cameraModel = allCameraModels?.find((cm) => cm.id === camera?.camera_model_id) ?? null
+  const { data: allCameraModels } = useAllCameraSpecs()
+  const cameraModel = allCameraModels?.find((cm) => cm.id === camera?.camera_spec_id) ?? null
 
   const [form, setForm] = useState<FormValues | null>(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
@@ -59,16 +72,16 @@ export function useCameraPanel(projectId: string) {
   const fovMetrics = useMemo<FovCartesian | null>(() => {
     if (!form || !cameraModel || form.target_distance === '' || form.target_distance <= 0) return null
     const params: fov_input_params = {
-      camera_height: form.camera_height,
+      camera_height: form.height,
       target_distance: form.target_distance,
       target_height: form.target_height,
-      focal_length_min: cameraModel.focal_length_min,
-      focal_length_max: cameraModel.focal_length_max,
-      h_fov_wide: cameraModel.h_fov_max,
-      h_fov_tele: cameraModel.h_fov_min,
-      v_fov_wide: cameraModel.v_fov_max,
-      v_fov_tele: cameraModel.v_fov_min,
-      focal_length_chosen: form.focal_length_chosen !== '' ? form.focal_length_chosen : cameraModel.focal_length_min,
+      focal_length_min: cameraModel.lens_spec.focal_length.min,
+      focal_length_max: cameraModel.lens_spec.focal_length.max,
+      h_fov_wide: cameraModel.lens_spec.h_fov.max,
+      h_fov_tele: cameraModel.lens_spec.h_fov.min,
+      v_fov_wide: cameraModel.lens_spec.v_fov.max,
+      v_fov_tele: cameraModel.lens_spec.v_fov.min,
+      focal_length_chosen: cameraModel.lens_spec.focal_length.min,
     }
     return computeFovCartesian(params)
   }, [form, cameraModel])
@@ -77,12 +90,11 @@ export function useCameraPanel(projectId: string) {
     if (!camera) { setForm(null); return }
     setForm({
       label: camera.label,
-      colour: camera.colour,
-      camera_height: camera.camera_height,
+      color: camera.color,
+      height: camera.height,
       bearing: camera.bearing,
-      target_distance: camera.target_distance ?? '',
-      target_height: camera.target_height,
-      focal_length_chosen: camera.focal_length_chosen ?? '',
+      target_distance: camera.target_data.distance,
+      target_height: camera.target_data.height,
     })
     setConfirmDelete(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -104,15 +116,23 @@ export function useCameraPanel(projectId: string) {
     const next = { ...form, [key]: value }
     setForm(next)
 
-    const patch: Partial<Camera> = { [key]: value }
+    const patch: Partial<CameraPlacement> = {}
 
-    const fovFields: (keyof FormValues)[] = ['camera_height', 'target_distance', 'target_height', 'focal_length_chosen', 'bearing']
+    if (key === 'target_distance' || key === 'target_height') {
+      patch.target_data = {
+        ...camera.target_data,
+        distance: next.target_distance === '' ? camera.target_data.distance : next.target_distance,
+        height: next.target_height,
+      }
+    } else {
+      Object.assign(patch, { [key]: value })
+    }
+
+    const fovFields: (keyof FormValues)[] = ['height', 'target_distance', 'target_height', 'bearing']
     if (fovFields.includes(key)) {
-      const fovResult = recomputeFov(next, camera, cameraModel)
+      const fovResult = recomputeCoverageArea(next, camera, cameraModel)
       if (fovResult) {
-        patch.fov_visible_geojson = fovResult.geo_fov
-        patch.tilt_angle = fovResult.result.tilt_angle
-        patch.fov_ir_geojson = fovResult.ir_geo_fov
+        patch.coverage_area = fovResult.coverage_area
       }
     }
 

@@ -1,9 +1,9 @@
-import type { CameraModel } from '../../../types/cameramodel.types'
+import type { CameraSpecRecord } from '@/types/camera'
 
 interface ModelDropdownProps {
-    models: CameraModel[]
-    selected: CameraModel | null
-    onSelect: (model: CameraModel | null) => void
+    models: CameraSpecRecord[]
+    selected: CameraSpecRecord | null
+    onSelect: (model: CameraSpecRecord | null) => void
 }
 
 export default function ModelDropdown({ models, selected, onSelect }: ModelDropdownProps) {
