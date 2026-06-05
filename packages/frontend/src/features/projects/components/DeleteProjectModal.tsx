@@ -23,7 +23,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { TriangleAlert } from 'lucide-react'
 import { useDeleteProject } from '../../../api/projects'
-import type { Project } from '../../../api/projects.types'
+import type { Project } from '../../../types/projects.types'
 import { useToast } from '../../../components/ui/Toast'
 
 interface DeleteProjectModalProps {

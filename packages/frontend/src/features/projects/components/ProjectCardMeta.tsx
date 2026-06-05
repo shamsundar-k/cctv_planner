@@ -1,4 +1,4 @@
-import type { Project } from '../../../api/projects.types'
+import type { Project } from '../../../types/projects.types'
 import { formatCoord } from '../utils/projectCardFormat'
 
 interface ProjectCardMetaProps {

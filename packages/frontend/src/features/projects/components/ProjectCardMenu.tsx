@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import type { Project } from '../../../api/projects.types'
+import type { Project } from '../../../types/projects.types'
 
 interface ProjectCardMenuProps {
   project: Project

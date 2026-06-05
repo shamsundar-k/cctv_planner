@@ -6,7 +6,7 @@
  * All logic lives in useDashboard; all UI components live under features/.
  */
 import { useCallback } from 'react'
-import type { Project } from '../api/projects.types'
+import type { Project } from '../types/projects.types'
 import Navbar from '../features/navigation/component/Navbar'
 import { useDashboard } from '../features/dashboard/hooks/useDashboard'
 import DashboardErrorBanner from '../features/dashboard/components/DashboardErrorBanner'

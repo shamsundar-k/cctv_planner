@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { AxiosError } from 'axios'
 import client from './client'
-import type { Project, CreateProjectDTO, UpdateProjectDTO } from './projects.types'
+import type { Project, CreateProjectDTO, UpdateProjectDTO } from '../types/projects.types'
 
 // ── Query keys ─────────────────────────────────────────────────────────────────
 

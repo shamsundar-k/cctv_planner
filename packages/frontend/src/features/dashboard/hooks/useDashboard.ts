@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useAuthStore } from '../../../store/authSlice'
 import { useProjectStore } from '../../../store/projectSlice'
 import { useProjects } from '../../../api/projects'
-import type { Project } from '../../../api/projects.types'
+import type { Project } from '../../../types/projects.types'
 
 export type ModalState =
   | { type: 'none' }
