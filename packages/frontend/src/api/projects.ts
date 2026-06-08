@@ -62,7 +62,8 @@ export function useUpdateProject() {
       const res = await client.put<Project>(`/projects/${projectId}`, updates)
       return res.data
     },
-    onSuccess: () => {
+    onSuccess: (project, { projectId }) => {
+      queryClient.setQueryData(projectKeys.detail(projectId), project)
       queryClient.invalidateQueries({ queryKey: projectKeys.all })
     },
   })

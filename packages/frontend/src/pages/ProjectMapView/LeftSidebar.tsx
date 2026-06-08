@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import ModelSelectorPanel from '../../features/camera-selector/component/ModelSelectorPanel'
 import CamerasTab from './CamerasTab'
-import ZonesTab from './ZonesTab'
 
 type TabId = 'models' | 'cameras' | 'zones'
 
@@ -42,7 +41,7 @@ export default function LeftSidebar({ projectId }: LeftSidebarProps) {
         <div className="absolute top-0 left-9 flex flex-col overflow-hidden shadow-2xl w-76 h-full z-1000 bg-card border-r border-surface/20">
           {activeTab === 'models' && <ModelSelectorPanel onClose={() => setActiveTab(null)} />}
           {activeTab === 'cameras' && <CamerasTab projectId={projectId} />}
-          {activeTab === 'zones' && <ZonesTab projectId={projectId} />}
+          
         </div>
       )}
     </div>

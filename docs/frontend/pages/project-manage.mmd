@@ -1,0 +1,13 @@
+flowchart TD
+  useNavigate -- hook --> ProjectManagePage
+  useProjectManage -- hook --> ProjectManagePage
+  useProject -- hook --> useProjectManage
+  activeTab -- state --> useProjectManage
+
+  ProjectManagePage -- renders --> Navbar
+  ProjectManagePage -- renders --> Header
+  ProjectManagePage -- renders --> Tabs
+  Tabs -- activeTab: basic --> BasicInfoTab
+  Tabs -- activeTab: map --> MapLocationTab
+  useUpdateProject -- hook --> BasicInfoTab
+  Project_API --> useUpdateProject

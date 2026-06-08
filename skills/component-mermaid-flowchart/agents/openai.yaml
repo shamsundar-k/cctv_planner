@@ -1,0 +1,4 @@
+interface:
+  display_name: "Component Mermaid Flowchart"
+  short_description: "Create simple Mermaid flowcharts for component hierarchy."
+  default_prompt: "Create a simple Mermaid flowchart explaining this component hierarchy."

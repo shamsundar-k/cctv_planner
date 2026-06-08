@@ -20,7 +20,7 @@
  * The page title shows the project name.
  * If `id` is absent from params, the user is immediately redirected to /.
  */
-import { useNavigate, Link } from 'react-router'
+import { Navigate, Link } from 'react-router'
 import { ChevronLeft } from 'lucide-react'
 import Navbar from '../features/navigation/component/Navbar'
 import BasicInfoTab from '../features/project-manage/components/BasicInfoTab'
@@ -28,12 +28,10 @@ import MapLocationTab from '../features/project-manage/components/MapLocationTab
 import { useProjectManage, TABS } from '../features/project-manage/hooks/useProjectManage'
 
 export default function ProjectManagePage() {
-  const navigate = useNavigate()
   const { id, project, isLoading, isError, activeTab, setActiveTab } = useProjectManage()
 
   if (!id) {
-    navigate('/', { replace: true })
-    return null
+    return <Navigate to="/" replace />
   }
 
   if (isLoading) {
