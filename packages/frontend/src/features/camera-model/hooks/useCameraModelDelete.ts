@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useDeleteCameraSpec } from '@/api/cameraSpecs'
+import { useDeleteCameraSpec } from '@/hooks/useCameraSpecs'
 import { useToast } from '../../../components/ui/Toast'
 import type { CameraSpecRecord } from '@/types/camera'
 

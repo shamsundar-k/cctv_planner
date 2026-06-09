@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { useAllCameraSpecs } from '@/api/cameraSpecs'
+import { useAllCameraSpecs } from '@/hooks/useCameraSpecs'
 import type { CameraSpecRecord } from '@/types/camera'
 import { useSelectedCameraModelStore } from '@/store/selectedCameraModelSlice'
 import ManufacturerFilter from './ManufacturerFilter'

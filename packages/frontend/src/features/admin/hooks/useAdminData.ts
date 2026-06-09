@@ -5,7 +5,7 @@ import {
   useAllProjects,
 } from '../api/admin'
 import { useAllInvites } from '../../invites/api/invites'
-import { useAllCameraSpecs } from '@/api/cameraSpecs'
+import { useAllCameraSpecs } from '@/hooks/useCameraSpecs'
 
 export function useAdminData() {
   const [userSearch, setUserSearch] = useState('')
