@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router'
-import { useCameraSpec, useUpdateCameraSpec } from '@/api/cameraSpecs'
+import { useCameraSpec, useUpdateCameraSpec } from '@/hooks/useCameraSpecs'
 import { useToast } from '../../../components/ui/Toast'
 import { toCameraSpecPayload } from '../components/CameraForm/cameraFormHelpers'
 import { useCameraFormState } from './useCameraFormState'

@@ -24,7 +24,7 @@
  * mutation is in flight.
  */
 import { useEffect, useRef, useState } from 'react'
-import { useCreateProject } from '../../../api/projects'
+import { useCreateProject } from '@/hooks/useProjects'
 import { useToast } from '../../../components/ui/Toast'
 
 interface CreateProjectModalProps {

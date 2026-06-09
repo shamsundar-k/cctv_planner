@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useAllCameraSpecs } from '@/api/cameraSpecs'
+import { useAllCameraSpecs } from '@/hooks/useCameraSpecs'
 import { useCameraStore } from '@/store/cameraStore'
 import { useCameraLayerStore } from '@/store/cameraLayerSlice'
 import type { CameraPlacement, CameraSpecRecord, CoverageArea } from '@/types/camera'

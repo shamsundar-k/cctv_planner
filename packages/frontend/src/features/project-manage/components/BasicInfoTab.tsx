@@ -22,7 +22,7 @@
  */
 import { useState, useEffect } from 'react'
 import type { Project, UpdateProjectDTO } from '../../../types/projects.types'
-import { useUpdateProject } from '../../../api/projects'
+import { useUpdateProject } from '@/hooks/useProjects'
 import { useToast } from '../../../components/ui/Toast'
 
 interface BasicInfoTabProps {

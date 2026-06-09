@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useParams } from 'react-router'
-import { useProject } from '../../../api/projects'
+import { useProject } from '@/hooks/useProjects'
 import { useCameraStore } from '../../../store/cameraStore'
 
 export function useMapView() {

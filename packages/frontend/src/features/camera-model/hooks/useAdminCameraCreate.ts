@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router'
-import { useCreateCameraSpec } from '@/api/cameraSpecs'
+import { useCreateCameraSpec } from '@/hooks/useCameraSpecs'
 import { useToast } from '@/components/ui/Toast'
 import { toCameraSpecPayload } from '../components/CameraForm/cameraFormHelpers'
 import { useCameraFormState } from './useCameraFormState'

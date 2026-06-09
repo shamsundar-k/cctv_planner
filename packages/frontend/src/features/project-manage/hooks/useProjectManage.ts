@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams } from 'react-router'
-import { useProject } from '../../../api/projects'
+import { useProject } from '@/hooks/useProjects'
 
 export type Tab = 'basic' | 'map'
 

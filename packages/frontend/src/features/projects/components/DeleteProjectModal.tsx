@@ -22,7 +22,7 @@
  */
 import { useEffect, useRef, useState } from 'react'
 import { TriangleAlert } from 'lucide-react'
-import { useDeleteProject } from '../../../api/projects'
+import { useDeleteProject } from '@/hooks/useProjects'
 import type { Project } from '../../../types/projects.types'
 import { useToast } from '../../../components/ui/Toast'
 

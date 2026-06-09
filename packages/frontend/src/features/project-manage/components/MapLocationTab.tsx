@@ -26,7 +26,7 @@ import 'leaflet/dist/leaflet.css'
 import { useState, useEffect, useRef } from 'react'
 import type { Map as LeafletMap, Marker as LeafletMarker } from 'leaflet'
 import type { Project, UpdateProjectDTO } from '../../../types/projects.types'
-import { useUpdateProject } from '../../../api/projects'
+import { useUpdateProject } from '@/hooks/useProjects'
 import { useToast } from '../../../components/ui/Toast'
 
 interface MapLocationTabProps {
