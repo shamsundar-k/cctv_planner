@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from 'react'
-import type { Project } from '../../../types/projects.types'
+import type { ProjectRecord } from '../../../types/projects.types'
 
 interface ProjectCardMenuProps {
-  project: Project
-  onDelete: (project: Project) => void
+  project: ProjectRecord
+  onDelete: (project: ProjectRecord) => void
 }
 
 export default function ProjectCardMenu({ project, onDelete }: ProjectCardMenuProps) {

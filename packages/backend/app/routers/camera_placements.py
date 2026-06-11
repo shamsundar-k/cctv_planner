@@ -21,15 +21,15 @@ router = APIRouter(
 )
 
 
-def _is_owner(project: Project, user: User) -> bool:
-    owner = project.owner
-    if isinstance(owner, User):
-        return owner.id == user.id
-    return owner.ref.id == user.id  # type: ignore[union-attr]
+def _is_creator(project: Project, user: User) -> bool:
+    created_by = project.created_by
+    if isinstance(created_by, User):
+        return created_by.id == user.id
+    return created_by.ref.id == user.id  # type: ignore[union-attr]
 
 
 def _require_access(project: Project, user: User) -> None:
-    if not _is_owner(project, user) and user.system_role != "admin":
+    if not _is_creator(project, user) and user.system_role != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Access denied",

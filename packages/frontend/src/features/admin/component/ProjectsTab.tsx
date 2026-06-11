@@ -59,7 +59,7 @@ export default function ProjectsTab({
                   {project.name}
                 </h3>
                 <p className="text-xs m-0 font-mono" style={{ color: 'color-mix(in srgb, var(--theme-text-secondary) 60%, transparent)' }}>
-                  Owner: {project.owner_id}
+                  Creator: {project.created_by_id}
                 </p>
               </div>
 

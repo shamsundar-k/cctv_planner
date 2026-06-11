@@ -6,8 +6,8 @@
  *
  * DeleteProjectModal({ project, onClose }) — Renders a fixed-overlay modal
  *   with:
- *   - An amber warning banner explaining that all cameras, zones, and reports
- *     associated with the project will be permanently deleted.
+ *   - An amber warning banner explaining that all cameras associated with the
+ *     project will be permanently deleted.
  *   - A text input that the user must fill with the exact project name. The
  *     input border turns red when the typed text does not match.
  *   - A "Delete Project" button (red) that is disabled until the confirmation
@@ -23,11 +23,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { TriangleAlert } from 'lucide-react'
 import { useDeleteProject } from '@/hooks/useProjects'
-import type { Project } from '../../../types/projects.types'
+import type { ProjectRecord } from '../../../types/projects.types'
 import { useToast } from '../../../components/ui/Toast'
 
 interface DeleteProjectModalProps {
-  project: Project
+  project: ProjectRecord
   onClose: () => void
 }
 
@@ -98,8 +98,8 @@ export default function DeleteProjectModal({ project, onClose }: DeleteProjectMo
                 Permanently delete &ldquo;{project.name}&rdquo;?
               </p>
               <p className="text-sm text-muted m-0 leading-relaxed">
-                This action cannot be undone. All cameras, zones, and reports associated with this
-                project will be permanently deleted.
+                This action cannot be undone. All cameras associated with this project will be
+                permanently deleted.
               </p>
             </div>
           </div>

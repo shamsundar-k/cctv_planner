@@ -2,15 +2,15 @@ import { useMemo, useState } from 'react'
 import { useAuthStore } from '../../../store/authSlice'
 import { useProjectStore } from '../../../store/projectSlice'
 import { useProjects } from '@/hooks/useProjects'
-import type { Project } from '../../../types/projects.types'
+import type { ProjectRecord } from '../../../types/projects.types'
 
 export type ModalState =
   | { type: 'none' }
   | { type: 'create' }
-  | { type: 'delete'; project: Project }
+  | { type: 'delete'; project: ProjectRecord }
 
 function applyFiltersAndSort(
-  projects: Project[],
+  projects: ProjectRecord[],
   {
     searchQuery,
     filterType,
@@ -22,7 +22,7 @@ function applyFiltersAndSort(
     sortBy: string
     currentUserId: string
   }
-): Project[] {
+): ProjectRecord[] {
   let result = [...projects]
 
   // Search filter
@@ -33,7 +33,7 @@ function applyFiltersAndSort(
 
   // Filter type (only 'mine' needs processing; 'archived' requires backend support)
   if (filterType === 'mine') {
-    result = result.filter((p) => p.owner_id === currentUserId)
+    result = result.filter((p) => p.created_by_id === currentUserId)
   }
 
   // Sort

@@ -9,7 +9,7 @@ export interface AdminUser {
 export interface AdminProject {
   id: string
   name: string
-  owner_id: string
+  created_by_id: string
   camera_count: number
   created_at: string
 }

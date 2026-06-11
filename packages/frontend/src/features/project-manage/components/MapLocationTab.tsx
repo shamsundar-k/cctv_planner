@@ -25,12 +25,12 @@
 import 'leaflet/dist/leaflet.css'
 import { useState, useEffect, useRef } from 'react'
 import type { Map as LeafletMap, Marker as LeafletMarker } from 'leaflet'
-import type { Project, UpdateProjectDTO } from '../../../types/projects.types'
+import type { ProjectRecord, ProjectUpdate } from '../../../types/projects.types'
 import { useUpdateProject } from '@/hooks/useProjects'
 import { useToast } from '../../../components/ui/Toast'
 
 interface MapLocationTabProps {
-  project: Project
+  project: ProjectRecord
 }
 
 const DEFAULT_LAT = 12.9716
@@ -118,7 +118,7 @@ export default function MapLocationTab({ project }: MapLocationTabProps) {
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   async function handleSave() {
-    const updates: UpdateProjectDTO = {
+    const updates: ProjectUpdate = {
       center_lat: lat,
       center_lng: lng,
       default_zoom: zoom,

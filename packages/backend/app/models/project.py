@@ -1,4 +1,4 @@
-"""Beanie document for survey projects. Fields: name, description, owner (User link), collaborators (list of {user_id, role}), created_at, updated_at."""
+"""Beanie document for survey projects."""
 
 from datetime import datetime, timezone
 
@@ -12,11 +12,11 @@ from .user import User
 class Project(Document):
     name: str
     description: str = ""
-    owner: Link[User]
     # Optional base map location
     center_lat: float | None = None
     center_lng: float | None = None
     default_zoom: int | None = None
+    created_by: Link[User]
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
@@ -24,7 +24,7 @@ class Project(Document):
         name = "projects"
         indexes = [
             IndexModel(
-                [("owner.$id", ASCENDING), ("name", ASCENDING)],
+                [("created_by.$id", ASCENDING), ("name", ASCENDING)],
                 unique=True,
             )
         ]

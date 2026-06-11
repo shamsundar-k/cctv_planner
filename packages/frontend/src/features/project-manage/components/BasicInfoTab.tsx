@@ -12,7 +12,7 @@
  *     changes (`isDirty` is false), the name is empty, or a save is in
  *     progress.
  *
- * handleSave() — Builds an UpdateProjectDTO containing only the changed
+ * handleSave() — Builds a ProjectUpdate containing only the changed
  *   fields, then calls the useUpdateProject mutation. Shows a success or error
  *   toast via useToast().
  *
@@ -21,12 +21,12 @@
  * reflects any externally updated values.
  */
 import { useState, useEffect } from 'react'
-import type { Project, UpdateProjectDTO } from '../../../types/projects.types'
+import type { ProjectRecord, ProjectUpdate } from '../../../types/projects.types'
 import { useUpdateProject } from '@/hooks/useProjects'
 import { useToast } from '../../../components/ui/Toast'
 
 interface BasicInfoTabProps {
-  project: Project
+  project: ProjectRecord
 }
 
 export default function BasicInfoTab({ project }: BasicInfoTabProps) {
@@ -45,7 +45,7 @@ export default function BasicInfoTab({ project }: BasicInfoTabProps) {
 
   async function handleSave() {
     if (!name.trim()) return
-    const updates: UpdateProjectDTO = {}
+    const updates: ProjectUpdate = {}
     if (name !== project.name) updates.name = name.trim()
     if (description !== project.description) updates.description = description
     try {

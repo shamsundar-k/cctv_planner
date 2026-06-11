@@ -6,7 +6,7 @@
  * All logic lives in useDashboard; all UI components live under features/.
  */
 import { useCallback } from 'react'
-import type { Project } from '../types/projects.types'
+import type { ProjectRecord } from '../types/projects.types'
 import Navbar from '../features/navigation/component/Navbar'
 import { useDashboard } from '../features/dashboard/hooks/useDashboard'
 import DashboardErrorBanner from '../features/dashboard/components/DashboardErrorBanner'
@@ -21,7 +21,7 @@ export default function DashboardPage() {
   const handleOpenCreate = useCallback(() => setModal({ type: 'create' }), [setModal])
   const handleCloseModal = useCallback(() => setModal({ type: 'none' }), [setModal])
   const handleDelete = useCallback(
-    (project: Project) => setModal({ type: 'delete', project }),
+    (project: ProjectRecord) => setModal({ type: 'delete', project }),
     [setModal],
   )
   return (

@@ -1,9 +1,9 @@
-import type { Project } from '../../../types/projects.types'
+import type { ProjectRecord } from '../../../types/projects.types'
 import ProjectCardMenu from './ProjectCardMenu'
 
 interface ProjectCardHeaderProps {
-  project: Project
-  onDelete: (project: Project) => void
+  project: ProjectRecord
+  onDelete: (project: ProjectRecord) => void
 }
 
 export default function ProjectCardHeader({ project, onDelete }: ProjectCardHeaderProps) {

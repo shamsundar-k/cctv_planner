@@ -1,23 +1,23 @@
 import client from '../../api/client'
-import type { Project, CreateProjectDTO, UpdateProjectDTO } from '../../types/projects.types'
+import type { Project, ProjectDetailRecord, ProjectRecord, ProjectUpdate } from '../../types/projects.types'
 
-export async function fetchProject(id: string): Promise<Project> {
-  const res = await client.get<Project>(`/projects/${id}`)
+export async function fetchProject(id: string): Promise<ProjectDetailRecord> {
+  const res = await client.get<ProjectDetailRecord>(`/projects/${id}`)
   return res.data
 }
 
-export async function fetchProjects(): Promise<Project[]> {
-  const res = await client.get<Project[]>('/projects')
+export async function fetchProjects(): Promise<ProjectRecord[]> {
+  const res = await client.get<ProjectRecord[]>('/projects')
   return res.data
 }
 
-export async function createProject(data: CreateProjectDTO): Promise<Project> {
-  const res = await client.post<Project>('/projects', data)
+export async function createProject(data: Project): Promise<ProjectRecord> {
+  const res = await client.post<ProjectRecord>('/projects', data)
   return res.data
 }
 
-export async function updateProject(projectId: string, updates: UpdateProjectDTO): Promise<Project> {
-  const res = await client.put<Project>(`/projects/${projectId}`, updates)
+export async function updateProject(projectId: string, updates: ProjectUpdate): Promise<ProjectRecord> {
+  const res = await client.put<ProjectRecord>(`/projects/${projectId}`, updates)
   return res.data
 }
 

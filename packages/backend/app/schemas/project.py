@@ -5,8 +5,7 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
-
-class ProjectCreate(BaseModel):
+class Project(BaseModel):
     name: str
     description: str = ""
     center_lat: float | None = None
@@ -20,8 +19,6 @@ class ProjectUpdate(BaseModel):
     center_lat: float | None = None
     center_lng: float | None = None
     default_zoom: int | None = None
-
-
 
 
 class CameraSummary(BaseModel):
@@ -45,31 +42,13 @@ class CameraSummary(BaseModel):
     updated_at: datetime
 
 
-class ZoneSummary(BaseModel):
+class ProjectRecord(Project):
     id: str
-    label: str
-    zone_type: str
-    colour: str
-    visible: bool
-    geojson: dict
-    created_at: datetime
-    updated_at: datetime
-
-
-class ProjectResponse(BaseModel):
-    id: str
-    name: str
-    description: str
-    owner_id: str
-    center_lat: float | None = None
-    center_lng: float | None = None
-    default_zoom: int | None = None
+    created_by_id: str
     camera_count: int = 0
-    zone_count: int = 0
     created_at: datetime
     updated_at: datetime
 
 
-class ProjectDetailResponse(ProjectResponse):
+class ProjectDetailRecord(ProjectRecord):
     cameras: list[CameraSummary]
-    zones: list[ZoneSummary]

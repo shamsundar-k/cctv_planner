@@ -75,7 +75,7 @@ export default function CreateProjectModal({ onClose }: CreateProjectModalProps)
     try {
       await createProject({
         name: name.trim(),
-        description: description.trim() || undefined,
+        description: description.trim(),
         center_lat: latNum,
         center_lng: lngNum,
         default_zoom: hasLocation ? zoomNum : null,

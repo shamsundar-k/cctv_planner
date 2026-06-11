@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { AxiosError } from 'axios'
-import type { Project, CreateProjectDTO, UpdateProjectDTO } from '../types/projects.types'
+import type { Project, ProjectRecord, ProjectUpdate } from '../types/projects.types'
 import {
   createProject,
   deleteProject,
@@ -39,7 +39,7 @@ export function useProjects() {
 export function useCreateProject() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (data: CreateProjectDTO): Promise<Project> => createProject(data),
+    mutationFn: (data: Project): Promise<ProjectRecord> => createProject(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: projectKeys.all })
     },
@@ -54,8 +54,8 @@ export function useUpdateProject() {
       updates,
     }: {
       projectId: string
-      updates: UpdateProjectDTO
-    }): Promise<Project> => updateProject(projectId, updates),
+      updates: ProjectUpdate
+    }): Promise<ProjectRecord> => updateProject(projectId, updates),
     onSuccess: (project, { projectId }) => {
       queryClient.setQueryData(projectKeys.detail(projectId), project)
       queryClient.invalidateQueries({ queryKey: projectKeys.all })

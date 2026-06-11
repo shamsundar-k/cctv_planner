@@ -17,14 +17,14 @@
  * SkeletonCard() — Internal component that renders a fixed-height animated
  *   skeleton placeholder matching the approximate dimensions of a ProjectCard.
  */
-import type { Project } from '../../../types/projects.types'
+import type { ProjectRecord } from '../../../types/projects.types'
 import ProjectCard from '../../projects/components/ProjectCard'
 import EmptyState from './EmptyState'
 
 interface ProjectListProps {
-  projects: Project[]
+  projects: ProjectRecord[]
   isLoading: boolean
-  onDelete: (project: Project) => void
+  onDelete: (project: ProjectRecord) => void
   onCreateClick: () => void
 }
 

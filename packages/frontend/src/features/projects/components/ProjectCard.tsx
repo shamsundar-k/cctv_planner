@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import type { Project } from '../../../types/projects.types'
+import type { ProjectRecord } from '../../../types/projects.types'
 import ProjectCardHeader from './ProjectCardHeader'
 import ProjectCardMeta from './ProjectCardMeta'
 import ProjectCardDescription from './ProjectCardDescription'
@@ -7,8 +7,8 @@ import ProjectCardTimestamps from './ProjectCardTimestamps'
 import ProjectCardActions from './ProjectCardActions'
 
 interface ProjectCardProps {
-  project: Project
-  onDelete: (project: Project) => void
+  project: ProjectRecord
+  onDelete: (project: ProjectRecord) => void
 }
 
 function ProjectCard({ project, onDelete }: ProjectCardProps) {
@@ -18,7 +18,6 @@ function ProjectCard({ project, onDelete }: ProjectCardProps) {
 
       <ProjectCardMeta
         cameraCount={project.camera_count}
-        zoneCount={project.zone_count}
         centerLat={project.center_lat}
         centerLng={project.center_lng}
       />
