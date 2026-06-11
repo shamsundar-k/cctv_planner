@@ -5,19 +5,19 @@ from datetime import datetime, timezone
 from beanie import PydanticObjectId
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.core.deps import get_current_user
-from app.models.camera import Camera
-from app.models.project import Project as ProjectDocument
-from app.models.user import User
-from app.models.camera_model import CameraModel
-from app.schemas.camera import CameraCreate, CameraUpdate
-from app.schemas.project import (
+from app.api_models.project import (
     CameraSummary,
     Project as ProjectPayload,
     ProjectDetailRecord,
     ProjectRecord,
     ProjectUpdate,
 )
+from app.core.deps import get_current_user
+from app.models.camera import Camera
+from app.models.project import Project as ProjectDocument
+from app.models.user import User
+from app.models.camera_model import CameraModel
+from app.schemas.camera import CameraCreate, CameraUpdate
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 
