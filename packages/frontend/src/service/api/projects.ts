@@ -1,8 +1,8 @@
 import client from '../../api/client'
-import type { Project, ProjectDetailRecord, ProjectRecord, ProjectUpdate } from '../../types/projects.types'
+import type { Project, ProjectRecord, ProjectUpdate } from '../../types/projects.types'
 
-export async function fetchProject(id: string): Promise<ProjectDetailRecord> {
-  const res = await client.get<ProjectDetailRecord>(`/projects/${id}`)
+export async function fetchProject(id: string): Promise<ProjectRecord> {
+  const res = await client.get<ProjectRecord>(`/projects/${id}`)
   return res.data
 }
 

@@ -6,6 +6,7 @@ from app.api_models.camera.coverage_area import CoverageArea
 from app.api_models.camera.target_data import TargetData
 from app.api_models.geo_location import GeoLocation
 
+# Model for placed cameras on map
 
 class CameraPlacement(BaseModel):
     uid: str = Field(..., min_length=1, description="Frontend-generated placement id")
