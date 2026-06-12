@@ -2,7 +2,7 @@ import logging
 
 from app.core.config import settings
 from app.core.security import hash_password
-from app.models.user import User
+from app.db_schemas.user import User
 
 logger = logging.getLogger(__name__)
 

@@ -9,11 +9,11 @@ from fastapi import HTTPException, status
 
 from app.db_schemas.camera_placement import CameraPlacementDocument
 from app.db_schemas.camera_specification import CameraSpecification
+from app.db_schemas.project import Project
+from app.db_schemas.user import User
 from app.models.camera import Camera
 from app.models.camera_model import CameraModel
 from app.models.invite_token import InviteToken
-from app.models.project import Project
-from app.models.user import User
 from app.models.zone import Zone
 
 from .config import settings

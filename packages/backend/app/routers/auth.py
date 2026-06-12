@@ -16,7 +16,6 @@ from app.core.security import (
 )
 from app.core.config import settings
 from app.models.invite_token import InviteToken
-from app.models.user import User
 from app.api_models.auth import (
     AcceptInvitePreview,
     AcceptInviteRequest,
@@ -24,6 +23,8 @@ from app.api_models.auth import (
     RefreshRequest,
     TokenResponse,
 )
+from app.api_models.user import UserCreate
+from app.db_schemas.user import User
 
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -124,11 +125,12 @@ async def accept_invite(
     if existing is not None:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email already registered")
 
-    user = User(
+    user_create = UserCreate(
         email=invite.email,
         full_name=body.full_name,
         hashed_password=hash_password(body.password),
     )
+    user = User(**user_create.model_dump())
     await user.insert()
 
     invite.used = True

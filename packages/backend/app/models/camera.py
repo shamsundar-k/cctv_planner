@@ -13,7 +13,7 @@ from pydantic import Field
 from pymongo import ASCENDING, IndexModel
 
 from .camera_model import CameraModel
-from .project import Project
+from app.db_schemas.project import Project
 
 
 class Camera(Document):

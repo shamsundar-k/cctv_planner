@@ -5,7 +5,7 @@ from beanie import PydanticObjectId
 from fastapi import APIRouter, HTTPException, status, Depends
 from pymongo.errors import DuplicateKeyError
 from app.core.deps import get_current_user
-from app.models.user import User
+from app.db_schemas.user import User
 from app.api_models.camera.camera_spec import CameraSpec, CameraSpecRecord, CameraSpecUpdate
 from app.db_schemas.camera_specification import CameraSpecification
 from app.mappers.camera_spec_mapper import to_camera_spec_record

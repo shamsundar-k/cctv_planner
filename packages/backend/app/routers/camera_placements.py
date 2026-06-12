@@ -11,9 +11,9 @@ from app.api_models.camera.camera_placement import (
 from app.core.deps import get_current_user
 from app.db_schemas.camera_placement import CameraPlacementDocument
 from app.db_schemas.camera_specification import CameraSpecification
+from app.db_schemas.project import Project
+from app.db_schemas.user import User
 from app.mappers.camera_placement_mapper import to_camera_placement_response
-from app.models.project import Project
-from app.models.user import User
 
 router = APIRouter(
     prefix="/projects/{project_id}/camera-placements",

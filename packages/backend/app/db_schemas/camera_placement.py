@@ -8,7 +8,7 @@ from app.api_models.camera.coverage_area import CoverageArea
 from app.api_models.camera.target_data import TargetData
 from app.api_models.geo_location import GeoLocation
 from app.db_schemas.camera_specification import CameraSpecification
-from app.models.project import Project
+from app.db_schemas.project import Project
 
 
 class CameraPlacementDocument(Document):

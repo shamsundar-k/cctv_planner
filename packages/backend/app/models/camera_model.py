@@ -19,7 +19,7 @@ from beanie import Document, Link
 from pydantic import Field, model_validator
 from pymongo import ASCENDING, IndexModel
 
-from .user import User
+from app.db_schemas.user import User
 
 
 class CameraType(str, Enum):
@@ -136,4 +136,3 @@ class CameraModel(Document):
                 unique=True,
             )
         ]
-

@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from beanie import Document, Link
 from pydantic import Field
 
-from .user import User
+from app.db_schemas.user import User
 
 
 class InviteToken(Document):

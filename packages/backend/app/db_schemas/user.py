@@ -1,20 +1,16 @@
-"""Beanie document for system users. Fields: email, full_name, hashed_password, system_role (admin|user), created_at."""
+"""Beanie document for system users."""
 
 from datetime import datetime, timezone
-from enum import Enum
 
 from beanie import Document
 from pydantic import EmailStr, Field
 
-
-class SystemRole(str, Enum):
-    admin = "admin"
-    user = "user"
+from app.api_models.user import SystemRole
 
 
 class User(Document):
     email: EmailStr
-    full_name: str
+    full_name: str = Field(..., min_length=1)
     hashed_password: str
     system_role: SystemRole = SystemRole.user
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

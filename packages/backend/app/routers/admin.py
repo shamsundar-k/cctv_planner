@@ -11,13 +11,13 @@ from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.core.config import settings
 from app.core.deps import require_admin
+from app.api_models.user import UserRecord
+from app.db_schemas.user import User
 from app.models.invite_token import InviteToken
-from app.models.user import User
 from app.schemas.admin import (
     InviteListItem,
     InviteRequest,
     InviteResponse,
-    UserResponse,
 )
 
 router = APIRouter(prefix="/admin", tags=["admin"])
@@ -108,15 +108,15 @@ async def revoke_invite(
     await invite.delete()
 
 
-@router.get("/users", response_model=list[UserResponse])
-async def list_users(_: User = Depends(require_admin)) -> list[UserResponse]:
+@router.get("/users", response_model=list[UserRecord])
+async def list_users(_: User = Depends(require_admin)) -> list[UserRecord]:
     users = await User.find_all().to_list()
     return [
-        UserResponse(
+        UserRecord(
             id=str(u.id),
             email=u.email,
             full_name=u.full_name,
-            system_role=u.system_role.value,
+            system_role=u.system_role,
             created_at=u.created_at,
         )
         for u in users

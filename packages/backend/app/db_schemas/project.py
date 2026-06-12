@@ -6,7 +6,7 @@ from beanie import Document, Link
 from pydantic import Field
 from pymongo import ASCENDING, IndexModel
 
-from .user import User
+from app.db_schemas.user import User
 
 
 class Project(Document):

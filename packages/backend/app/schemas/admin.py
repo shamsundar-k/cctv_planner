@@ -22,10 +22,3 @@ class InviteListItem(BaseModel):
     created_at: datetime
     expires_at: datetime
 
-
-class UserResponse(BaseModel):
-    id: str
-    email: str
-    full_name: str
-    system_role: str
-    created_at: datetime
