@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router'
 import { useAuthStore } from '../../../store/authSlice'
 import FormField from './FormField'
 import LoginErrorBanner from './LoginErrorBanner'
-import LoginSubmitButton from './LoginSubmitButton'
 import { loginUser } from '../api/api'
 
 export default function LoginForm() {
@@ -50,12 +49,18 @@ export default function LoginForm() {
         autoComplete="current-password"
         value={password}
         onChange={setPassword}
-        placeholder="••••••••"
+        placeholder="password"
       />
 
       {error && <LoginErrorBanner message={error} />}
 
-      <LoginSubmitButton loading={loading} />
+      <button
+        type="submit"
+        disabled={loading}
+        className="mt-3 disabled:opacity-50 disabled:cursor-not-allowed font-bold rounded-xl px-4 py-4 text-base tracking-wide shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 ease-in-out bg-accent text-on-accent hover:bg-accent-hover hover:text-canvas"
+      >
+        {loading ? 'Signing in...' : 'Sign in'}
+      </button>
     </form>
   )
 }
