@@ -1,11 +1,11 @@
-import LoginBackgroundOrbs from '../features/login/component/LoginBackgroundOrbs'
+import BackgroundOrbs from '../components/BackgroundOrbs'
 import LoginCard from '../features/login/component/LoginCard'
 import AcceptInvitePanel from '../features/accept-invite/component/AcceptInvitePanel'
 
 export default function AcceptInvitePage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-canvas font-sans bg-gradient-to-br from-canvas via-card/60 to-canvas">
-      <LoginBackgroundOrbs />
+      <BackgroundOrbs />
 
       <div className="relative w-full max-w-md m-4">
         <LoginCard>

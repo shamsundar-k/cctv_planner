@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router'
 import { useAuthStore } from '../../../store/authSlice'
 import FormField from './FormField'
 import LoginErrorBanner from './LoginErrorBanner'
-import { loginUser } from '../api/api'
+import { loginUser } from '../../../api/login'
 
 export default function LoginForm() {
   const navigate = useNavigate()

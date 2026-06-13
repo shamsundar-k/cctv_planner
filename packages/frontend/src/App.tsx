@@ -17,7 +17,7 @@
  *   - A wildcard fallback <Navigate to="/" replace /> for unknown URLs.
  */
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router'
-import LoginPage from './pages/LoginPage'
+import LoginPage from './features/login/LoginPage'
 import AcceptInvitePage from './pages/AcceptInvitePage'
 import ProtectedRoute from './components/ProtectedRoute'
 import AdminRoute from './components/AdminRoute'

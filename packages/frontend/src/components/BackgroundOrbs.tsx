@@ -1,4 +1,4 @@
-export default function LoginBackgroundOrbs() {
+export default function BackgroundOrbs() {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full blur-3xl opacity-30 bg-surface" />
