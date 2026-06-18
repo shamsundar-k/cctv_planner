@@ -25,7 +25,7 @@
  */
 import type { AxiosError, InternalAxiosRequestConfig } from 'axios'
 import client from './client'
-import { useAuthStore } from '../store/authSlice'
+import { useAuthStore } from '../features/auth'
 
 interface RetryableRequest extends InternalAxiosRequestConfig {
   _retry?: boolean

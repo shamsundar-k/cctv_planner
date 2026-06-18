@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router'
-import { useAuthStore } from '../store/authSlice'
+import { useAuthStore } from '../features/auth'
 
 interface UserMenuProps {
   onClose: () => void

@@ -1,6 +1,6 @@
-import client from '../../api/client'
-import type { AuthUser } from '../../store/authSlice'
-import { decodeJwt } from '../../utils/jwt'
+import client from '../../../api/client'
+import type { AuthUser } from '../stores/authStore'
+import { decodeJwt } from '../../../utils/jwt'
 
 interface TokenResponse {
   access_token: string

@@ -14,7 +14,7 @@
  * also enforces authentication on every API endpoint.
  */
 import { Navigate, Outlet } from 'react-router'
-import { useAuthStore } from '../store/authSlice'
+import { useAuthStore } from '../features/auth'
 
 export default function ProtectedRoute() {
   const accessToken = useAuthStore((s) => s.accessToken)

@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { useNavigate, useSearchParams } from 'react-router'
-import { useAuthStore } from '../../../store/authSlice'
+import { useAuthStore } from '../../auth'
 import { validateInviteToken, acceptInvite } from '../api/acceptInvite'
 import type { InvitePreview, Stage } from '../api/acceptInvite.types'
 
