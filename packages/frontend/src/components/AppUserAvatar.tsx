@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { ChevronDown } from 'lucide-react'
-import { useAuthStore } from '../store/authSlice'
+import { useAuthStore } from '../features/auth'
 import UserMenu from './UserMenu'
 
 interface AppUserAvatarProps {

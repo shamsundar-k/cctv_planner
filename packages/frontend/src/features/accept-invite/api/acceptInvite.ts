@@ -1,6 +1,6 @@
 import client from '../../../api/interceptors'
 import { decodeJwt } from '../../../utils/jwt'
-import type { AuthUser } from '../../../store/authSlice'
+import type { AuthUser } from '../../auth'
 import type { InvitePreview, TokenResponse } from './acceptInvite.types'
 
 export async function validateInviteToken(token: string): Promise<InvitePreview> {

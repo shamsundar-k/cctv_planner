@@ -1,9 +1,9 @@
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router'
-import { useAuthStore } from '../../../store/authSlice'
+import { useAuthStore } from '../stores/authStore'
 import FormField from './FormField'
 import LoginErrorBanner from './LoginErrorBanner'
-import { loginUser } from '../../../api/login'
+import { loginUser } from '../api/login'
 
 export default function LoginForm() {
   const navigate = useNavigate()

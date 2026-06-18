@@ -12,7 +12,7 @@
  *     route's component (LoginPage or AcceptInvitePage).
  */
 import { Navigate, Outlet } from 'react-router'
-import { useAuthStore } from '../store/authSlice'
+import { useAuthStore } from '../features/auth'
 
 export default function PublicOnlyRoute() {
   const accessToken = useAuthStore((s) => s.accessToken)

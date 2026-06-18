@@ -1,6 +1,6 @@
 import { Link, Outlet } from 'react-router'
 import { Info, ChevronLeft } from 'lucide-react'
-import { useAuthStore } from '../store/authSlice'
+import { useAuthStore } from '../features/auth'
 
 function Forbidden() {
   return (

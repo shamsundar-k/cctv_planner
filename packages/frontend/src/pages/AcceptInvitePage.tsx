@@ -1,5 +1,5 @@
 import BackgroundOrbs from '../components/BackgroundOrbs'
-import LoginCard from '../features/login/component/LoginCard'
+import LoginCard from '../features/auth/components/LoginCard'
 import AcceptInvitePanel from '../features/accept-invite/component/AcceptInvitePanel'
 
 export default function AcceptInvitePage() {

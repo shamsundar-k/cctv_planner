@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { useAuthStore } from '../../../store/authSlice'
+import { useAuthStore } from '../../auth'
 import { useProjectStore } from '../../../store/projectSlice'
 import { useProjects } from '@/hooks/useProjects'
 import type { ProjectRecord } from '../../../types/projects.types'

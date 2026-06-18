@@ -1,12 +1,12 @@
 /*
- * FILE SUMMARY - src/features/login/LoginPage.tsx
+ * FILE SUMMARY - src/features/auth/LoginPage.tsx
  *
  * Login page shown to unauthenticated users at /login. Accessible only via
  * the PublicOnlyRoute guard (authenticated users are redirected to /).
  */
 import BackgroundOrbs from '../../components/BackgroundOrbs'
-import LoginCard from './component/LoginCard'
-import LoginForm from './component/LoginForm'
+import LoginCard from './components/LoginCard'
+import LoginForm from './components/LoginForm'
 
 export default function LoginPage() {
   return (
