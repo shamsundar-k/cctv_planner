@@ -29,6 +29,7 @@ import AdminCameraEditPage from './pages/AdminCameraEditPage'
 import AdminCameraCreatePage from './pages/AdminCameraCreatePage'
 import ProjectManagePage from './pages/ProjectManagePage'
 import ProjectMapViewPage from './pages/ProjectMapView'
+import ThreeDFovVisualiserPage from './pages/ThreeDFovVisualiserPage'
 import { ToastProvider } from './components/ui/Toast'
 
 function App() {
@@ -45,6 +46,7 @@ function App() {
           {/* Protected routes */}
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<DashboardPage />} />
+            <Route path="/tools/3d-fov-visualiser" element={<ThreeDFovVisualiserPage />} />
             <Route path="/project/manage/:id" element={<ProjectManagePage />} />
             <Route path="/projects/:id" element={<ProjectMapViewPage />} />
 

@@ -30,6 +30,7 @@
  *   spinner animation on the refresh button icon.
  */
 import { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router'
 import { RefreshCw } from 'lucide-react'
 import { useProjectStore } from '../../../store/projectSlice'
 import type { FilterType, SortBy } from '../../../store/projectSlice'
@@ -90,7 +91,8 @@ export default function ProjectToolbar({
   // Sync localSearch when searchQuery changes externally (e.g. from Navbar)
   useEffect(() => {
     if (!isTypingRef.current) {
-      setLocalSearch(searchQuery)
+      const timer = window.setTimeout(() => setLocalSearch(searchQuery), 0)
+      return () => window.clearTimeout(timer)
     }
   }, [searchQuery])
   const filterRef = useRef<HTMLDivElement>(null)
@@ -164,6 +166,13 @@ export default function ProjectToolbar({
         >
           + Create Project
         </button>
+
+        <Link
+          to="/tools/3d-fov-visualiser"
+          className="h-9 px-4 border border-accent/40 rounded-lg text-sm font-bold text-accent bg-accent/10 hover:bg-accent/20 transition-colors flex items-center"
+        >
+          3D fov visualiser
+        </Link>
 
         {/* Search */}
         <div className="relative">
