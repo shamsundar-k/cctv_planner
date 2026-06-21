@@ -31,7 +31,7 @@ export default function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-5 xl:gap-6">
       <FormField
         id="email"
         label="Email Address"
@@ -57,7 +57,7 @@ export default function LoginForm() {
       <button
         type="submit"
         disabled={loading}
-        className="mt-2 rounded-xl bg-accent px-4 py-3.5 text-base font-bold tracking-wide text-on-accent shadow-lg shadow-black/10 transition-all duration-200 ease-in-out hover:-translate-y-0.5 hover:bg-accent-hover active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50"
+        className="mt-1 rounded-lg bg-accent px-4 py-4 text-base font-bold tracking-wide text-on-accent shadow-lg shadow-black/10 transition-all duration-200 ease-in-out hover:-translate-y-0.5 hover:bg-accent-hover active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {loading ? 'Signing in...' : 'Sign in'}
       </button>

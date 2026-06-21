@@ -10,8 +10,8 @@ interface FormFieldProps {
 
 export default function FormField({ id, label, type, autoComplete, value, onChange, placeholder }: FormFieldProps) {
   return (
-    <div className="flex flex-col gap-2">
-      <label htmlFor={id} className="text-xs font-bold uppercase tracking-[0.18em] text-muted">
+    <div className="flex flex-col gap-3">
+      <label htmlFor={id} className="text-sm font-semibold text-primary">
         {label}
       </label>
       <input
@@ -21,7 +21,7 @@ export default function FormField({ id, label, type, autoComplete, value, onChan
         required
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="rounded-xl border border-border bg-surface/40 px-4 py-3.5 text-sm text-primary outline-none transition-all duration-200 placeholder:text-muted/60 focus:border-accent focus:bg-card focus:ring-2 focus:ring-accent/15"
+        className="min-h-14 rounded-lg border border-border bg-card px-4 text-base text-primary outline-none transition-all duration-200 placeholder:text-muted/60 focus:border-accent focus:ring-2 focus:ring-accent/15"
         placeholder={placeholder}
       />
     </div>

@@ -1,5 +1,5 @@
 import { useMapActionsStore } from '@/store/mapActionsSlice'
-import { DefaultOverlay, PlaceCameraOverlay, DrawLineOverlay, DrawPolygonOverlay, MeasureOverlay } from '../overlays'
+import { DefaultOverlay, PlaceCameraOverlay } from '../overlays'
 
 /**
  * Single subscriber to `activeTool`.
@@ -15,12 +15,6 @@ export default function MapModeOverlay() {
             return <DefaultOverlay />
         case 'place-camera':
             return <PlaceCameraOverlay />
-        case 'draw-line':
-            return <DrawLineOverlay />
-        case 'draw-polygon':
-            return <DrawPolygonOverlay />
-        case 'measure':
-            return <MeasureOverlay />
         default:
             return null
     }
