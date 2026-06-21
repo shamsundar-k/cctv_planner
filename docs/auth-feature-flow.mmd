@@ -1,0 +1,20 @@
+flowchart TD
+  App -- /login route --> PublicOnlyRoute
+  PublicOnlyRoute -- renders when unauthenticated --> LoginPage
+
+  LoginPage -- renders --> BackgroundOrbs
+  LoginPage -- renders --> LoginCard
+  LoginCard -- wraps --> LoginForm
+
+  LoginForm -- renders --> FormFieldEmail[FormField: email]
+  LoginForm -- renders --> FormFieldPassword[FormField: password]
+  LoginForm -- error branch --> LoginErrorBanner
+
+  LoginForm -- on submit --> loginUser
+  loginUser -- post /auth/login --> ApiClient[client]
+  loginUser -- decodes token --> decodeJwt
+
+  LoginForm -- setAuth --> useAuthStore
+  useAuthStore -- persists --> LocalStorage[cctv-auth]
+
+  LoginForm -- success --> NavigateHome[navigate /]

@@ -43,6 +43,11 @@ function notifySubscribers(token: string) {
   refreshSubscribers = []
 }
 
+function shouldSkipRefresh(original: RetryableRequest | undefined) {
+  const url = original?.url ?? ''
+  return url.includes('/auth/login') || url.includes('/auth/refresh')
+}
+
 // Attach access token to every outgoing request
 client.interceptors.request.use((config) => {
   const token = useAuthStore.getState().accessToken
@@ -58,7 +63,12 @@ client.interceptors.response.use(
   async (error: AxiosError) => {
     const original = error.config as RetryableRequest | undefined
 
-    if (error.response?.status === 401 && original && !original._retry) {
+    if (
+      error.response?.status === 401 &&
+      original &&
+      !original._retry &&
+      !shouldSkipRefresh(original)
+    ) {
       original._retry = true
 
       // Another request is already refreshing — queue this one
