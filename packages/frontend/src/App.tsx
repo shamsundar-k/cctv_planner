@@ -31,12 +31,14 @@ import ProjectManagePage from './pages/ProjectManagePage'
 import ProjectMapViewPage from './pages/ProjectMapView'
 import ThreeDFovVisualiserPage from './pages/ThreeDFovVisualiserPage'
 import { ToastProvider } from './components/ui/Toast'
+import UITest from './pages/UITest'
 
 function App() {
   return (
     <ToastProvider>
       <BrowserRouter>
         <Routes>
+          <Route path="/test" element={<UITest />} />
           {/* Public-only routes — redirect to / if already logged in */}
           <Route element={<PublicOnlyRoute />}>
             <Route path="/login" element={<LoginPage />} />

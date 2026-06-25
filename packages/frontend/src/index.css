@@ -15,7 +15,22 @@
  */
 @import "tailwindcss";
 
-@theme {
+:root {
+    --app-primary: #2563eb;
+    --app-background: white;
+}
+
+[data-theme="dark"] {
+    --app-primary: #708090;
+    --app-background: #111827;
+}
+
+@theme inline {
+    --color-primary: var(--app-primary);
+    --color-background: var(--app-background);
+}
+
+/* @theme {
   --color-canvas:       var(--theme-bg-base);
   --color-card:         var(--theme-bg-card);
   --color-surface:      var(--theme-surface);
@@ -25,4 +40,4 @@
   --color-accent:       var(--theme-accent);
   --color-accent-hover: var(--theme-accent-hover);
   --color-on-accent:    var(--theme-accent-text);
-}
+} */
