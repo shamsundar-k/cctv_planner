@@ -1,0 +1,453 @@
+/* cctv-themes.css
+   Theme tokens for CCTV / map-based UI.
+   Apply a theme using: <html data-theme="light">, <html data-theme="dark">, etc.
+*/
+
+/* -------------------------------------------------------
+   Default / Light Theme
+------------------------------------------------------- */
+
+:root,
+[data-theme="light"] {
+    /* Base UI */
+    --app-background: #f8fafc;
+    --app-foreground: #0f172a;
+    --app-panel: #ffffff;
+    --app-panel-foreground: #0f172a;
+    --app-panel-border: #cbd5e1;
+    --app-muted-text: #64748b;
+    --app-divider: #e2e8f0;
+
+    /* Text */
+    --app-text-primary: #0f172a;
+    --app-text-secondary: #334155;
+    --app-text-muted: #64748b;
+    --app-text-subtle: #94a3b8;
+    --app-text-disabled: #94a3b8;
+    --app-text-inverse: #ffffff;
+    --app-text-link: #2563eb;
+    --app-text-link-hover: #1d4ed8;
+
+    /* Action */
+    --app-primary: #2563eb;
+    --app-primary-hover: #1d4ed8;
+    --app-primary-foreground: #ffffff;
+
+    --app-secondary: #475569;
+    --app-secondary-hover: #334155;
+    --app-secondary-foreground: #ffffff;
+
+    --app-disabled: #94a3b8;
+    --app-disabled-foreground: #f8fafc;
+
+    /* Map / Object */
+    --app-camera-marker: #2563eb;
+    --app-camera-marker-foreground: #ffffff;
+
+    --app-selected-camera: #f59e0b;
+    --app-selected-camera-foreground: #111827;
+
+    --app-reference-point: #a855f7;
+    --app-reference-point-foreground: #ffffff;
+
+    --app-distance-line: #f97316;
+    --app-distance-line-foreground: #111827;
+
+    --app-measurement-text: #0284c7;
+    --app-measurement-text-foreground: #ffffff;
+
+    /* Coverage / Overlay */
+    --app-fov-fill: rgba(37, 99, 235, 0.22);
+    --app-fov-border: #2563eb;
+
+    --app-blind-zone-fill: rgba(239, 68, 68, 0.22);
+    --app-blind-zone-border: #ef4444;
+
+    --app-ir-fill: rgba(34, 197, 94, 0.18);
+    --app-ir-border: #22c55e;
+
+    /* Status */
+    --app-success: #16a34a;
+    --app-success-foreground: #ffffff;
+
+    --app-warning: #f59e0b;
+    --app-warning-foreground: #111827;
+
+    --app-error: #dc2626;
+    --app-error-foreground: #ffffff;
+
+    --app-info: #0284c7;
+    --app-info-foreground: #ffffff;
+}
+
+/* -------------------------------------------------------
+   Dark Theme
+------------------------------------------------------- */
+
+[data-theme="dark"] {
+    /* Base UI */
+    --app-background: #0b0f19;
+    --app-foreground: #e2e8f0;
+    --app-panel: #111827;
+    --app-panel-foreground: #e2e8f0;
+    --app-panel-border: #1f2937;
+    --app-muted-text: #94a3b8;
+    --app-divider: #334155;
+
+    /* Text */
+    --app-text-primary: #e2e8f0;
+    --app-text-secondary: #cbd5e1;
+    --app-text-muted: #94a3b8;
+    --app-text-subtle: #64748b;
+    --app-text-disabled: #64748b;
+    --app-text-inverse: #0b0f19;
+    --app-text-link: #60a5fa;
+    --app-text-link-hover: #93c5fd;
+
+    /* Action */
+    --app-primary: #3b82f6;
+    --app-primary-hover: #2563eb;
+    --app-primary-foreground: #ffffff;
+
+    --app-secondary: #64748b;
+    --app-secondary-hover: #475569;
+    --app-secondary-foreground: #ffffff;
+
+    --app-disabled: #334155;
+    --app-disabled-foreground: #94a3b8;
+
+    /* Map / Object */
+    --app-camera-marker: #3b82f6;
+    --app-camera-marker-foreground: #ffffff;
+
+    --app-selected-camera: #fbbf24;
+    --app-selected-camera-foreground: #111827;
+
+    --app-reference-point: #c084fc;
+    --app-reference-point-foreground: #111827;
+
+    --app-distance-line: #fb923c;
+    --app-distance-line-foreground: #111827;
+
+    --app-measurement-text: #38bdf8;
+    --app-measurement-text-foreground: #0b0f19;
+
+    /* Coverage / Overlay */
+    --app-fov-fill: rgba(59, 130, 246, 0.22);
+    --app-fov-border: #3b82f6;
+
+    --app-blind-zone-fill: rgba(248, 113, 113, 0.22);
+    --app-blind-zone-border: #f87171;
+
+    --app-ir-fill: rgba(74, 222, 128, 0.18);
+    --app-ir-border: #4ade80;
+
+    /* Status */
+    --app-success: #22c55e;
+    --app-success-foreground: #0b0f19;
+
+    --app-warning: #fbbf24;
+    --app-warning-foreground: #111827;
+
+    --app-error: #f87171;
+    --app-error-foreground: #111827;
+
+    --app-info: #38bdf8;
+    --app-info-foreground: #0b0f19;
+}
+
+/* -------------------------------------------------------
+   Blue Theme
+------------------------------------------------------- */
+
+[data-theme="blue"] {
+    /* Base UI */
+    --app-background: #eff6ff;
+    --app-foreground: #0f172a;
+    --app-panel: #ffffff;
+    --app-panel-foreground: #0f172a;
+    --app-panel-border: #bfdbfe;
+    --app-muted-text: #475569;
+    --app-divider: #dbeafe;
+
+    /* Text */
+    --app-text-primary: #0f172a;
+    --app-text-secondary: #334155;
+    --app-text-muted: #475569;
+    --app-text-subtle: #64748b;
+    --app-text-disabled: #93c5fd;
+    --app-text-inverse: #ffffff;
+    --app-text-link: #1e40af;
+    --app-text-link-hover: #1d4ed8;
+
+    /* Action */
+    --app-primary: #1e40af;
+    --app-primary-hover: #1d4ed8;
+    --app-primary-foreground: #ffffff;
+
+    --app-secondary: #475569;
+    --app-secondary-hover: #334155;
+    --app-secondary-foreground: #ffffff;
+
+    --app-disabled: #93c5fd;
+    --app-disabled-foreground: #1e3a8a;
+
+    /* Map / Object */
+    --app-camera-marker: #1e40af;
+    --app-camera-marker-foreground: #ffffff;
+
+    --app-selected-camera: #f59e0b;
+    --app-selected-camera-foreground: #111827;
+
+    --app-reference-point: #7c3aed;
+    --app-reference-point-foreground: #ffffff;
+
+    --app-distance-line: #ea580c;
+    --app-distance-line-foreground: #ffffff;
+
+    --app-measurement-text: #0369a1;
+    --app-measurement-text-foreground: #ffffff;
+
+    /* Coverage / Overlay */
+    --app-fov-fill: rgba(30, 64, 175, 0.22);
+    --app-fov-border: #1e40af;
+
+    --app-blind-zone-fill: rgba(220, 38, 38, 0.22);
+    --app-blind-zone-border: #dc2626;
+
+    --app-ir-fill: rgba(22, 163, 74, 0.18);
+    --app-ir-border: #16a34a;
+
+    /* Status */
+    --app-success: #16a34a;
+    --app-success-foreground: #ffffff;
+
+    --app-warning: #f59e0b;
+    --app-warning-foreground: #111827;
+
+    --app-error: #dc2626;
+    --app-error-foreground: #ffffff;
+
+    --app-info: #0369a1;
+    --app-info-foreground: #ffffff;
+}
+
+/* -------------------------------------------------------
+   Green Theme
+------------------------------------------------------- */
+
+[data-theme="green"] {
+    /* Base UI */
+    --app-background: #f0fdf4;
+    --app-foreground: #052e16;
+    --app-panel: #ffffff;
+    --app-panel-foreground: #052e16;
+    --app-panel-border: #bbf7d0;
+    --app-muted-text: #365f46;
+    --app-divider: #dcfce7;
+
+    /* Text */
+    --app-text-primary: #052e16;
+    --app-text-secondary: #14532d;
+    --app-text-muted: #365f46;
+    --app-text-subtle: #4d7c0f;
+    --app-text-disabled: #86efac;
+    --app-text-inverse: #ffffff;
+    --app-text-link: #15803d;
+    --app-text-link-hover: #166534;
+
+    /* Action */
+    --app-primary: #16a34a;
+    --app-primary-hover: #15803d;
+    --app-primary-foreground: #ffffff;
+
+    --app-secondary: #485563;
+    --app-secondary-hover: #334155;
+    --app-secondary-foreground: #ffffff;
+
+    --app-disabled: #86efac;
+    --app-disabled-foreground: #14532d;
+
+    /* Map / Object */
+    --app-camera-marker: #16a34a;
+    --app-camera-marker-foreground: #ffffff;
+
+    --app-selected-camera: #f59e0b;
+    --app-selected-camera-foreground: #111827;
+
+    --app-reference-point: #9333ea;
+    --app-reference-point-foreground: #ffffff;
+
+    --app-distance-line: #ea580c;
+    --app-distance-line-foreground: #ffffff;
+
+    --app-measurement-text: #047857;
+    --app-measurement-text-foreground: #ffffff;
+
+    /* Coverage / Overlay */
+    --app-fov-fill: rgba(22, 163, 74, 0.22);
+    --app-fov-border: #16a34a;
+
+    --app-blind-zone-fill: rgba(220, 38, 38, 0.22);
+    --app-blind-zone-border: #dc2626;
+
+    --app-ir-fill: rgba(34, 197, 94, 0.18);
+    --app-ir-border: #22c55e;
+
+    /* Status */
+    --app-success: #16a34a;
+    --app-success-foreground: #ffffff;
+
+    --app-warning: #f59e0b;
+    --app-warning-foreground: #111827;
+
+    --app-error: #dc2626;
+    --app-error-foreground: #ffffff;
+
+    --app-info: #0d9488;
+    --app-info-foreground: #ffffff;
+}
+
+/* -------------------------------------------------------
+   High Contrast Theme
+------------------------------------------------------- */
+
+[data-theme="high-contrast"] {
+    /* Base UI */
+    --app-background: #000000;
+    --app-foreground: #ffffff;
+    --app-panel: #111111;
+    --app-panel-foreground: #ffffff;
+    --app-panel-border: #333333;
+    --app-muted-text: #cccccc;
+    --app-divider: #444444;
+
+    /* Text */
+    --app-text-primary: #ffffff;
+    --app-text-secondary: #e5e5e5;
+    --app-text-muted: #cccccc;
+    --app-text-subtle: #999999;
+    --app-text-disabled: #b3b3b3;
+    --app-text-inverse: #000000;
+    --app-text-link: #00ffff;
+    --app-text-link-hover: #ffff00;
+
+    /* Action */
+    --app-primary: #ffff00;
+    --app-primary-hover: #ffe100;
+    --app-primary-foreground: #000000;
+
+    --app-secondary: #00ffff;
+    --app-secondary-hover: #00dddd;
+    --app-secondary-foreground: #000000;
+
+    --app-disabled: #666666;
+    --app-disabled-foreground: #ffffff;
+
+    /* Map / Object */
+    --app-camera-marker: #00bfff;
+    --app-camera-marker-foreground: #000000;
+
+    --app-selected-camera: #ff7f00;
+    --app-selected-camera-foreground: #000000;
+
+    --app-reference-point: #ff00ff;
+    --app-reference-point-foreground: #000000;
+
+    --app-distance-line: #ff7f00;
+    --app-distance-line-foreground: #000000;
+
+    --app-measurement-text: #00ffff;
+    --app-measurement-text-foreground: #000000;
+
+    /* Coverage / Overlay */
+    --app-fov-fill: rgba(0, 191, 255, 0.3);
+    --app-fov-border: #00bfff;
+
+    --app-blind-zone-fill: rgba(255, 0, 0, 0.3);
+    --app-blind-zone-border: #ff4444;
+
+    --app-ir-fill: rgba(0, 255, 0, 0.25);
+    --app-ir-border: #00ff00;
+
+    /* Status */
+    --app-success: #00ff00;
+    --app-success-foreground: #000000;
+
+    --app-warning: #ffff00;
+    --app-warning-foreground: #000000;
+
+    --app-error: #ff3333;
+    --app-error-foreground: #000000;
+
+    --app-info: #00ffff;
+    --app-info-foreground: #000000;
+}
+
+/* -------------------------------------------------------
+   Tailwind CSS v4 Token Mapping
+   Import this file after @import "tailwindcss" or include this section
+   in the same CSS file as your Tailwind import.
+------------------------------------------------------- */
+
+@theme inline {
+    /* Base UI */
+    --color-background: var(--app-background);
+    --color-foreground: var(--app-foreground);
+    --color-panel: var(--app-panel);
+    --color-panel-foreground: var(--app-panel-foreground);
+    --color-panel-border: var(--app-panel-border);
+    --color-muted-text: var(--app-muted-text);
+    --color-divider: var(--app-divider);
+
+    /* Text */
+    --color-text-primary: var(--app-text-primary);
+    --color-text-secondary: var(--app-text-secondary);
+    --color-text-muted: var(--app-text-muted);
+    --color-text-subtle: var(--app-text-subtle);
+    --color-text-disabled: var(--app-text-disabled);
+    --color-text-inverse: var(--app-text-inverse);
+    --color-text-link: var(--app-text-link);
+    --color-text-link-hover: var(--app-text-link-hover);
+
+    /* Action */
+    --color-primary: var(--app-primary);
+    --color-primary-hover: var(--app-primary-hover);
+    --color-primary-foreground: var(--app-primary-foreground);
+
+    --color-secondary: var(--app-secondary);
+    --color-secondary-hover: var(--app-secondary-hover);
+    --color-secondary-foreground: var(--app-secondary-foreground);
+
+    --color-disabled: var(--app-disabled);
+    --color-disabled-foreground: var(--app-disabled-foreground);
+
+    /* Map / Object */
+    --color-camera-marker: var(--app-camera-marker);
+    --color-camera-marker-foreground: var(--app-camera-marker-foreground);
+
+    --color-selected-camera: var(--app-selected-camera);
+    --color-selected-camera-foreground: var(--app-selected-camera-foreground);
+
+    --color-reference-point: var(--app-reference-point);
+    --color-reference-point-foreground: var(--app-reference-point-foreground);
+
+    --color-distance-line: var(--app-distance-line);
+    --color-distance-line-foreground: var(--app-distance-line-foreground);
+
+    --color-measurement-text: var(--app-measurement-text);
+    --color-measurement-text-foreground: var(--app-measurement-text-foreground);
+
+    /* Status */
+    --color-success: var(--app-success);
+    --color-success-foreground: var(--app-success-foreground);
+
+    --color-warning: var(--app-warning);
+    --color-warning-foreground: var(--app-warning-foreground);
+
+    --color-error: var(--app-error);
+    --color-error-foreground: var(--app-error-foreground);
+
+    --color-info: var(--app-info);
+    --color-info-foreground: var(--app-info-foreground);
+}

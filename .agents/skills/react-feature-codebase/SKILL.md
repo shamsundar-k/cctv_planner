@@ -1,3 +1,10 @@
+---
+name: react-feature-codebase
+description: Organizes React codebases using feature-based architecture.
+instructions: Apply this skill when creating, moving, or refactoring React files.
+
+---
+
 # React Feature-Based Code Organization
 
 ## Principles

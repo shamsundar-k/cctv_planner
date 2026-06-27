@@ -14,30 +14,4 @@
  * restart the dev server / rebuild.
  */
 @import "tailwindcss";
-
-:root {
-    --app-primary: #2563eb;
-    --app-background: white;
-}
-
-[data-theme="dark"] {
-    --app-primary: #708090;
-    --app-background: #111827;
-}
-
-@theme inline {
-    --color-primary: var(--app-primary);
-    --color-background: var(--app-background);
-}
-
-/* @theme {
-  --color-canvas:       var(--theme-bg-base);
-  --color-card:         var(--theme-bg-card);
-  --color-surface:      var(--theme-surface);
-  --color-border:       var(--theme-border);
-  --color-primary:      var(--theme-text-primary);
-  --color-muted:        var(--theme-text-secondary);
-  --color-accent:       var(--theme-accent);
-  --color-accent-hover: var(--theme-accent-hover);
-  --color-on-accent:    var(--theme-accent-text);
-} */
+@import "./styles/cctv-themes.css";
