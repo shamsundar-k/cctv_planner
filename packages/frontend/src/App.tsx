@@ -16,23 +16,23 @@
  *         /project/manage/:id. Unauthenticated users are redirected to /login.
  *   - A wildcard fallback <Navigate to="/" replace /> for unknown URLs.
  */
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router'
-import { LoginPage } from './features/auth'
-import AcceptInvitePage from './pages/AcceptInvitePage'
-import ProtectedRoute from './components/ProtectedRoute'
-import AdminRoute from './components/AdminRoute'
-import PublicOnlyRoute from './components/PublicOnlyRoute'
-import DashboardPage from './pages/DashboardPage'
-import AdminPage from './pages/AdminPage'
-import AdminCamerasPage from './pages/AdminCamerasPage'
-import AdminCameraEditPage from './pages/AdminCameraEditPage'
-import AdminCameraCreatePage from './pages/AdminCameraCreatePage'
-import ProjectManagePage from './pages/ProjectManagePage'
-import ProjectCreatePage from './pages/ProjectCreatePage'
-import ProjectMapViewPage from './pages/ProjectMapView'
-import ThreeDFovVisualiserPage from './pages/ThreeDFovVisualiserPage'
-import { ToastProvider } from './components/ui/Toast'
-import UITest from './pages/UITest'
+import { BrowserRouter, Routes, Route, Navigate } from "react-router";
+import { LoginPage } from "./features/auth";
+import AcceptInvitePage from "./pages/AcceptInvitePage";
+import ProtectedRoute from "./components/ProtectedRoute";
+import AdminRoute from "./components/AdminRoute";
+import PublicOnlyRoute from "./components/PublicOnlyRoute";
+import DashboardPage from "./pages/DashboardPage";
+import AdminPage from "./pages/AdminPage";
+import AdminCamerasPage from "./pages/AdminCamerasPage";
+import AdminCameraEditPage from "./pages/AdminCameraEditPage";
+import AdminCameraCreatePage from "./pages/AdminCameraCreatePage";
+import ProjectManagePage from "./pages/ProjectManagePage";
+import { ProjectCreatePage } from "./features/projects/create";
+import ProjectMapViewPage from "./pages/ProjectMapView";
+import ThreeDFovVisualiserPage from "./pages/ThreeDFovVisualiserPage";
+import { ToastProvider } from "./components/ui/Toast";
+import UITest from "./pages/UITest";
 
 function App() {
   return (
@@ -49,7 +49,10 @@ function App() {
           {/* Protected routes */}
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<DashboardPage />} />
-            <Route path="/tools/3d-fov-visualiser" element={<ThreeDFovVisualiserPage />} />
+            <Route
+              path="/tools/3d-fov-visualiser"
+              element={<ThreeDFovVisualiserPage />}
+            />
             <Route path="/projects/new" element={<ProjectCreatePage />} />
             <Route path="/project/manage/:id" element={<ProjectManagePage />} />
             <Route path="/projects/:id" element={<ProjectMapViewPage />} />
@@ -57,9 +60,18 @@ function App() {
             {/* Admin-only routes */}
             <Route element={<AdminRoute />}>
               <Route path="/admin/manage" element={<AdminPage />} />
-              <Route path="/admin/manage/camera_specs" element={<AdminCamerasPage />} />
-              <Route path="/admin/manage/camera_specs/new" element={<AdminCameraCreatePage />} />
-              <Route path="/admin/manage/camera_specs/:id" element={<AdminCameraEditPage />} />
+              <Route
+                path="/admin/manage/camera_specs"
+                element={<AdminCamerasPage />}
+              />
+              <Route
+                path="/admin/manage/camera_specs/new"
+                element={<AdminCameraCreatePage />}
+              />
+              <Route
+                path="/admin/manage/camera_specs/:id"
+                element={<AdminCameraEditPage />}
+              />
             </Route>
           </Route>
 
@@ -68,7 +80,7 @@ function App() {
         </Routes>
       </BrowserRouter>
     </ToastProvider>
-  )
+  );
 }
 
-export default App
+export default App;
