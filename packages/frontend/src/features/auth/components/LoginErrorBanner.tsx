@@ -1,10 +1,13 @@
+import { AlertTriangle } from 'lucide-react'
+
 interface LoginErrorBannerProps {
   message: string
 }
 
 export default function LoginErrorBanner({ message }: LoginErrorBannerProps) {
   return (
-    <p className="text-sm text-red-200 bg-red-900/30 border border-red-500/30 rounded-xl px-4 py-3">
+    <p className="flex items-center gap-2 rounded-md border border-error bg-error/10 px-4 py-3 text-sm font-medium text-error">
+      <AlertTriangle className="h-4 w-4 shrink-0" />
       {message}
     </p>
   )

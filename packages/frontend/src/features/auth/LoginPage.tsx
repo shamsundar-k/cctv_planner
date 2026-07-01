@@ -4,82 +4,133 @@
  * Login page shown to unauthenticated users at /login. Accessible only via
  * the PublicOnlyRoute guard (authenticated users are redirected to /).
  */
+import { Camera, ClipboardCheck, Layers3, Palette, TimerReset } from 'lucide-react'
 import LoginCard from './components/LoginCard'
 import LoginForm from './components/LoginForm'
+import { themeOptions, type Theme } from '../../styles/theme'
+import { useTheme } from '../../styles/useTheme'
 
-const workflowItems = [
-  { step: '01', title: 'Create project', detail: 'Define the site workspace and planning context.' },
-  { step: '02', title: 'Place cameras', detail: 'Map camera positions and coverage intent.' },
-  { step: '03', title: 'Analyse the coverage', detail: 'Review visibility and coverage decisions before deployment.' },
+const benefitItems = [
+  {
+    icon: Layers3,
+    title: 'Organized projects',
+    detail: 'Keep plans, camera details, and project context together for every site.',
+  },
+  {
+    icon: TimerReset,
+    title: 'Faster planning',
+    detail: 'Move from project setup to camera placement with fewer manual steps.',
+  },
+  {
+    icon: ClipboardCheck,
+    title: 'Clear decisions',
+    detail: 'Review layouts and planning notes in one place before handoff.',
+  },
 ]
 
-function WorkflowPanel() {
-  return (
-    <div className="w-full max-w-2xl rounded-2xl border border-border bg-card/70 p-5 shadow-sm xl:p-6">
-      <p className="text-xs font-bold uppercase tracking-[0.24em] text-muted">Planning workflow</p>
-      <h2 className="mt-3 text-2xl font-extrabold tracking-tight text-primary xl:text-3xl">
-        From site layout to coverage review.
-      </h2>
-      <p className="mt-3 max-w-xl text-sm leading-6 text-muted xl:text-base xl:leading-7">
-        Sign in to manage CCTV projects, camera placement, and coverage decisions from one secure workspace.
-      </p>
+function ThemeSelector() {
+  const { theme, setTheme } = useTheme()
 
-      <div className="mt-5 grid gap-3 xl:mt-8">
-        {workflowItems.map((item) => (
-          <div key={item.step} className="grid grid-cols-[3.5rem_1fr] gap-4 rounded-xl border border-border bg-surface/35 p-3 xl:p-4">
-            <span className="text-sm font-extrabold tracking-widest text-accent">{item.step}</span>
-            <span>
-              <span className="block text-sm font-bold text-primary">{item.title}</span>
-              <span className="mt-1 block text-sm leading-6 text-muted">{item.detail}</span>
-            </span>
-          </div>
+  return (
+    <label className="flex items-center gap-2 text-sm font-semibold text-text-secondary">
+      <Palette className="h-4 w-4 text-primary" />
+      <span className="sr-only">Theme</span>
+      <select
+        value={theme}
+        onChange={(event) => setTheme(event.target.value as Theme)}
+        className="h-10 w-40 max-w-[42vw] rounded-md border border-panel-border bg-background px-3 text-sm font-semibold text-text-primary outline-none transition-colors hover:border-primary focus:border-primary"
+      >
+        {themeOptions.map((item) => (
+          <option key={item.id} value={item.id}>
+            {item.label}
+          </option>
         ))}
-      </div>
-    </div>
+      </select>
+    </label>
   )
 }
 
 export default function LoginPage() {
   return (
-    <main className="h-screen overflow-hidden bg-canvas p-3 text-primary font-sans sm:p-4 lg:p-6">
-      <div className="grid h-full overflow-hidden rounded-2xl border border-border bg-card shadow-[0_24px_80px_rgba(15,23,42,0.08)] lg:grid-cols-[minmax(0,1fr)_minmax(500px,1fr)]">
-        <section className="relative hidden overflow-hidden bg-gradient-to-br from-canvas via-card to-surface/40 px-8 py-8 lg:flex lg:flex-col xl:px-10 xl:py-10">
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,var(--theme-border)_1px,transparent_1px),linear-gradient(to_bottom,var(--theme-border)_1px,transparent_1px)] bg-[size:72px_72px] opacity-35" />
-          <div className="absolute inset-0 bg-gradient-to-b from-card/40 via-transparent to-card/80" />
+    <main className="h-dvh overflow-hidden bg-background p-3 font-sans text-foreground sm:p-4 lg:p-6">
+      <div className="grid h-full overflow-hidden rounded-lg border border-panel-border bg-panel shadow-[0_24px_80px_rgba(15,23,42,0.10)] lg:grid-cols-[minmax(0,0.95fr)_minmax(420px,0.8fr)]">
+        <section className="relative hidden overflow-hidden bg-background px-8 py-8 lg:flex lg:flex-col lg:justify-between xl:px-10">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,var(--app-divider)_1px,transparent_1px),linear-gradient(to_bottom,var(--app-divider)_1px,transparent_1px)] bg-[size:72px_72px] opacity-60" />
+          <div className="absolute left-[11%] top-[28%] h-72 w-72 rounded-full border border-primary/20" />
+          <div className="absolute right-[8%] top-[17%] h-56 w-56 rounded-full border border-reference-point/20" />
+          <div className="absolute inset-x-0 bottom-0 h-1/2 bg-[linear-gradient(to_bottom,transparent,var(--app-panel))]" />
 
-          <div className="relative z-10">
-            <h1 className="text-5xl font-extrabold tracking-tight text-primary">CCTV Planner</h1>
-            <p className="mt-3 text-lg leading-7 text-muted xl:text-xl xl:leading-8">
-              Secure project and camera coverage planning
-            </p>
+          <div className="relative z-10 flex items-start justify-between gap-6">
+            <div>
+              <div className="flex items-center gap-4">
+                <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-camera-marker text-camera-marker-foreground">
+                  <Camera className="h-5 w-5" />
+                </span>
+                <h1 className="text-5xl font-semibold tracking-normal text-text-primary xl:text-6xl">CCTV Planner</h1>
+              </div>
+              <p className="mt-4 max-w-md text-lg leading-7 text-text-secondary">
+                Sign in to continue to your workspace.
+              </p>
+            </div>
+            <div className="hidden xl:block">
+              <ThemeSelector />
+            </div>
           </div>
 
-          <div className="relative z-10 flex flex-1 items-center py-6">
-            <WorkflowPanel />
+          <div className="relative z-10 my-8 grid max-w-3xl gap-3 xl:grid-cols-3">
+            {benefitItems.map((item) => {
+              const Icon = item.icon
+
+              return (
+                <div key={item.title} className="rounded-md border border-panel-border bg-panel/85 p-4 shadow-sm backdrop-blur">
+                  <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-md bg-primary/10 text-primary">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <h2 className="text-base font-semibold text-text-primary">{item.title}</h2>
+                  <p className="mt-2 text-sm leading-6 text-text-secondary">{item.detail}</p>
+                </div>
+              )
+            })}
+          </div>
+
+          <div className="relative z-10 max-w-xl rounded-md border border-panel-border bg-panel/75 p-4 shadow-sm backdrop-blur">
+            <p className="text-sm font-semibold text-text-primary">Built for practical CCTV planning</p>
+            <p className="mt-2 text-sm leading-6 text-text-muted">
+              Work with a clean project workspace, consistent camera data, and a focused planning flow for daily operations.
+            </p>
           </div>
         </section>
 
-        <section className="flex h-full items-center justify-center overflow-hidden bg-card px-5 py-6 sm:px-8 lg:border-l lg:border-border lg:px-10 xl:px-12">
+        <section className="flex min-h-0 items-center justify-center bg-panel px-5 py-4 sm:px-8 lg:border-l lg:border-panel-border lg:px-10 xl:px-12">
           <div className="w-full max-w-xl">
-            <div className="mb-5 flex items-center gap-4 lg:hidden">
+            <div className="mb-4 flex items-start justify-between gap-4 lg:hidden">
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.2em] text-muted">Operations Console</p>
-                <h1 className="text-2xl font-extrabold tracking-tight text-primary">CCTV Planner</h1>
+                <div className="flex items-center gap-3">
+                  <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-camera-marker text-camera-marker-foreground">
+                    <Camera className="h-5 w-5" />
+                  </span>
+                  <h1 className="text-2xl font-semibold tracking-normal text-text-primary">CCTV Planner</h1>
+                </div>
+                <p className="mt-1 text-sm text-text-secondary">Sign in to continue.</p>
               </div>
+              <ThemeSelector />
+            </div>
+            <div className="mb-4 hidden justify-end lg:flex xl:hidden">
+              <ThemeSelector />
             </div>
 
             <LoginCard>
-              <div className="mb-7 text-center xl:mb-9">
-                <h2 className="text-3xl font-extrabold tracking-tight text-primary xl:text-4xl">Welcome back</h2>
-                <p className="mt-3 text-base leading-7 text-muted xl:mt-4 xl:text-lg">Sign in to continue to your workspace.</p>
+              <div className="mb-6 text-center xl:mb-8">
+                <h2 className="text-3xl font-semibold tracking-normal text-text-primary xl:text-4xl">Welcome back</h2>
+                <p className="mt-3 text-base leading-7 text-text-secondary">
+                  Sign in to continue to your workspace.
+                </p>
               </div>
 
               <LoginForm />
             </LoginCard>
 
-            <p className="mt-6 text-center text-xs font-medium tracking-wide text-muted">
-              CCTV Planner - Secure Access Portal
-            </p>
+            <p className="mt-4 text-center text-xs font-medium tracking-wide text-text-muted">CCTV Planner</p>
           </div>
         </section>
       </div>
