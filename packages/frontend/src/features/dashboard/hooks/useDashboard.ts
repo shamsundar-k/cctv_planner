@@ -6,7 +6,6 @@ import type { ProjectRecord } from '../../../types/projects.types'
 
 export type ModalState =
   | { type: 'none' }
-  | { type: 'create' }
   | { type: 'delete'; project: ProjectRecord }
 
 function applyFiltersAndSort(

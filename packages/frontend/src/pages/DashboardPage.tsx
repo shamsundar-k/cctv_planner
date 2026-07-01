@@ -6,19 +6,20 @@
  * All logic lives in useDashboard; all UI components live under features/.
  */
 import { useCallback } from 'react'
+import { useNavigate } from 'react-router'
 import type { ProjectRecord } from '../types/projects.types'
 import Navbar from '../features/navigation/component/Navbar'
 import { useDashboard } from '../features/dashboard/hooks/useDashboard'
 import DashboardErrorBanner from '../features/dashboard/components/DashboardErrorBanner'
 import ProjectToolbar from '../features/dashboard/components/ProjectToolbar'
 import ProjectList from '../features/dashboard/components/ProjectList'
-import CreateProjectModal from '../features/projects/components/CreateProjectModal'
 import DeleteProjectModal from '../features/projects/components/DeleteProjectModal'
 
 export default function DashboardPage() {
+  const navigate = useNavigate()
   const { filtered, isLoading, isError, isFetching, refetch, dataUpdatedAt, modal, setModal, isAdmin, pageTitle } = useDashboard()
 
-  const handleOpenCreate = useCallback(() => setModal({ type: 'create' }), [setModal])
+  const handleOpenCreate = useCallback(() => navigate('/projects/new'), [navigate])
   const handleCloseModal = useCallback(() => setModal({ type: 'none' }), [setModal])
   const handleDelete = useCallback(
     (project: ProjectRecord) => setModal({ type: 'delete', project }),
@@ -51,9 +52,6 @@ export default function DashboardPage() {
         />
       </main>
 
-      {modal.type === 'create' && (
-        <CreateProjectModal onClose={handleCloseModal} />
-      )}
       {modal.type === 'delete' && (
         <DeleteProjectModal project={modal.project} onClose={handleCloseModal} />
       )}

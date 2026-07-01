@@ -8,7 +8,7 @@
  *   onRefresh, isFetching, dataUpdatedAt }) — Renders:
  *   - Page title heading (e.g. "All Projects" or "My Projects").
  *   - "+ Create Project" button (also triggered by Ctrl+N / Cmd+N keyboard
- *     shortcut) — calls `onCreateClick`.
+ *     shortcut) — calls `onCreateClick` to open the create page.
  *   - A local debounced search input (300 ms) that syncs with the Zustand
  *     `searchQuery` store. Includes a clear (✕) button when non-empty.
  *     Syncs from the Navbar search input via a store subscription.
