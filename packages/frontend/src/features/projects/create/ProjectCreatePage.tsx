@@ -12,23 +12,25 @@ export default function ProjectCreatePage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-canvas to-card/40">
+    <div className="min-h-screen bg-background text-text-primary">
       <Navbar />
-      <main className="px-10 py-8 max-w-3xl mx-auto">
-        <Link
-          to="/"
-          className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-primary
-          transition-colors mb-4 no-underline"
-        >
-          <ChevronLeft size={16} />
-          Dashboard
-        </Link>
+      <main className="w-full px-4 py-3 lg:px-8 lg:py-4 lg:h-[calc(100vh-4rem)] flex flex-col">
+        <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <Link
+              to="/"
+              className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary
+              transition-colors mb-2 no-underline"
+            >
+              <ChevronLeft size={16} />
+              Dashboard
+            </Link>
 
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-primary m-0">
-            Create New Project
-          </h1>
-          <p className="text-sm text-muted/70 mt-1 m-0">
+            <h1 className="text-2xl font-bold text-primary m-0">
+              Create New Project
+            </h1>
+          </div>
+          <p className="text-sm text-text-secondary m-0 sm:text-right">
             Set up the project workspace and initial map view.
           </p>
         </div>

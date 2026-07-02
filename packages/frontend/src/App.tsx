@@ -22,7 +22,7 @@ import AcceptInvitePage from "./pages/AcceptInvitePage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
 import PublicOnlyRoute from "./components/PublicOnlyRoute";
-import DashboardPage from "./pages/DashboardPage";
+import { DashboardPage } from "./features/dashboard";
 import AdminPage from "./pages/AdminPage";
 import AdminCamerasPage from "./pages/AdminCamerasPage";
 import AdminCameraEditPage from "./pages/AdminCameraEditPage";

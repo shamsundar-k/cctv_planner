@@ -20,12 +20,12 @@ interface EmptyStateProps {
 
 export default function EmptyState({ onCreateClick }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center py-20 px-10 bg-card border border-border rounded-xl text-center">
+    <div className="flex flex-col items-center justify-center py-20 px-10 bg-panel border border-panel-border rounded-lg text-center">
       {/* Target icon */}
-      <Target size={64} aria-hidden="true" className="mb-6 opacity-30 text-blue-400" />
+      <Target size={64} aria-hidden="true" className="mb-6 opacity-70 text-camera-marker" />
 
-      <h2 className="text-2xl font-bold text-primary mb-3">No Projects Yet</h2>
-      <p className="text-sm text-muted mb-8 max-w-[400px] leading-relaxed">
+      <h2 className="text-2xl font-bold text-text-primary mb-3">No Projects Yet</h2>
+      <p className="text-sm text-text-muted mb-8 max-w-[400px] leading-relaxed">
         Create your first CCTV survey project to get started. Plan camera placements, define coverage
         zones, and generate reports.
       </p>
@@ -33,13 +33,13 @@ export default function EmptyState({ onCreateClick }: EmptyStateProps) {
       <div className="flex gap-4">
         <button
           onClick={onCreateClick}
-          className="h-10 px-5 bg-accent hover:bg-accent-hover text-on-accent border-none rounded-md text-sm font-semibold cursor-pointer transition-colors"
+          className="h-10 px-5 bg-primary hover:bg-primary-hover text-primary-foreground border-none rounded-md text-sm font-semibold cursor-pointer transition-colors"
         >
           + Create Project
         </button>
         <a
           href="#"
-          className="h-10 px-5 bg-transparent hover:bg-surface/20 text-accent border border-accent/50 rounded-md text-sm font-semibold cursor-pointer no-underline flex items-center transition-colors"
+          className="h-10 px-5 bg-transparent hover:bg-divider/60 text-primary border border-primary/50 rounded-md text-sm font-semibold cursor-pointer no-underline flex items-center transition-colors"
         >
           View Documentation
         </a>

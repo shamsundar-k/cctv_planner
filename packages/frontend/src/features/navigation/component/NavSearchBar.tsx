@@ -13,7 +13,7 @@ export default function NavSearchBar() {
         onChange={(e) => handleSearchChange(e.target.value)}
         onFocus={() => setSearchFocused(true)}
         onBlur={() => setSearchFocused(false)}
-        className={`w-full h-9 px-4 text-sm rounded-lg outline-none transition-all border text-primary ${searchFocused ? 'ring-1 bg-surface/25 border-primary/50' : 'bg-surface/15 border-surface/25'}`}
+        className={`w-full h-9 px-4 text-sm rounded-lg outline-none transition-all border text-text-primary placeholder:text-text-subtle ${searchFocused ? 'ring-1 ring-primary/20 bg-background border-primary' : 'bg-background border-panel-border'}`}
       />
     </div>
   )

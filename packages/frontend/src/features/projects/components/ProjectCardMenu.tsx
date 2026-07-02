@@ -26,22 +26,22 @@ export default function ProjectCardMenu({ project, onDelete }: ProjectCardMenuPr
       <button
         aria-label="More options"
         onClick={() => setMenuOpen((o) => !o)}
-        className="bg-transparent border-none cursor-pointer text-lg px-1 leading-none rounded transition-colors text-muted/70 hover:bg-surface/20"
+        className="bg-transparent border-none cursor-pointer text-lg px-1 leading-none rounded transition-colors text-text-muted hover:bg-divider/60 hover:text-text-primary"
       >
         ···
       </button>
       {menuOpen && (
-        <div className="absolute top-[calc(100%+4px)] right-0 rounded-xl shadow-2xl min-w-[160px] z-10 py-1 overflow-hidden bg-card border border-surface/30">
+        <div className="absolute top-[calc(100%+4px)] right-0 rounded-lg shadow-2xl min-w-[160px] z-10 py-1 overflow-hidden bg-panel border border-panel-border">
           <button
-            className="block w-full text-left bg-transparent border-none px-3.5 py-2.5 text-sm cursor-not-allowed opacity-40 text-muted"
+            className="block w-full text-left bg-transparent border-none px-3.5 py-2.5 text-sm cursor-not-allowed opacity-40 text-text-muted"
             disabled
             title="Archive coming soon"
           >
             Archive Project
           </button>
-          <div className="my-1 border-t border-surface/20" />
+          <div className="my-1 border-t border-divider" />
           <button
-            className="block w-full text-left bg-transparent border-none px-3.5 py-2.5 text-sm cursor-pointer transition-colors text-accent hover:bg-accent/10"
+            className="block w-full text-left bg-transparent border-none px-3.5 py-2.5 text-sm cursor-pointer transition-colors text-error hover:bg-error/10"
             onClick={() => { setMenuOpen(false); onDelete(project) }}
           >
             Delete Project

@@ -13,7 +13,7 @@ interface ProjectCardProps {
 
 function ProjectCard({ project, onDelete }: ProjectCardProps) {
   return (
-    <div className="rounded-xl p-6 flex flex-col gap-2.5 shadow-md hover:shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:-translate-y-1 transition-all duration-200 cursor-default backdrop-blur-sm bg-card/70 border border-surface/25">
+    <div className="rounded-lg p-6 flex flex-col gap-2.5 shadow-md hover:shadow-[0_8px_32px_rgba(15,23,42,0.18)] hover:-translate-y-1 transition-all duration-200 cursor-default bg-panel border border-panel-border">
       <ProjectCardHeader project={project} onDelete={onDelete} />
 
       <ProjectCardMeta

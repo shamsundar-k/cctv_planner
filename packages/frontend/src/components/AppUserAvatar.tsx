@@ -51,12 +51,11 @@ export default function AppUserAvatar({ exitProjectPath }: AppUserAvatarProps) {
         className="flex items-center gap-1.5 bg-transparent border-none cursor-pointer p-0"
       >
         <div
-          className="w-8 h-8 rounded-full text-[13px] font-bold flex items-center justify-center select-none ring-2 ring-white/10"
-          style={{ background: 'var(--theme-accent)', color: 'var(--theme-accent-text)' }}
+          className="w-8 h-8 rounded-full text-[13px] font-bold flex items-center justify-center select-none bg-primary text-primary-foreground ring-2 ring-panel-border"
         >
           {initials}
         </div>
-        <ChevronDown size={12} aria-hidden="true" style={{ color: 'var(--theme-text-secondary)' }} />
+        <ChevronDown size={12} aria-hidden="true" className="text-text-muted" />
       </button>
       {menuOpen && (
         <UserMenu onClose={() => setMenuOpen(false)} exitProjectPath={exitProjectPath} />

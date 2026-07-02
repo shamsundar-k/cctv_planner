@@ -18,6 +18,7 @@
  *   skeleton placeholder matching the approximate dimensions of a ProjectCard.
  */
 import type { ProjectRecord } from '../../../types/projects.types'
+import type { CSSProperties } from 'react'
 import ProjectCard from '../../projects/components/ProjectCard'
 import EmptyState from './EmptyState'
 
@@ -30,7 +31,7 @@ interface ProjectListProps {
 
 function SkeletonCard() {
   return (
-    <div className="bg-slate-800 border border-slate-700 rounded-xl h-[220px] animate-pulse" />
+    <div className="h-[220px] animate-pulse rounded-lg border border-panel-border bg-panel" />
   )
 }
 
@@ -41,7 +42,7 @@ export default function ProjectList({
   onCreateClick,
 }: ProjectListProps) {
   const gridCls = 'grid gap-8 w-full'
-  const gridStyle: React.CSSProperties = {
+  const gridStyle: CSSProperties = {
     gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 380px))',
   }
 

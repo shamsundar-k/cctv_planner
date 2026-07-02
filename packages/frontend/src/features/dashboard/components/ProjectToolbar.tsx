@@ -147,21 +147,21 @@ export default function ProjectToolbar({
         { value: 'archived', label: 'Archived' },
       ]
 
-  const btnCls = 'h-9 px-3.5 border border-surface/30 rounded-lg text-sm bg-surface/10 text-primary/80 cursor-pointer flex items-center gap-1.5 whitespace-nowrap hover:bg-surface/25 hover:text-primary transition-colors'
-  const dropdownCls = 'absolute top-[calc(100%+4px)] left-0 bg-card border border-surface/30 rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] min-w-[200px] z-50 py-1 overflow-hidden'
-  const menuItemCls = (active: boolean) => `flex items-center gap-2 w-full text-left bg-transparent border-none px-3.5 py-2.5 text-sm text-primary/80 cursor-pointer hover:bg-surface/20 hover:text-primary transition-colors ${active ? 'font-bold' : 'font-normal'}`
+  const btnCls = 'h-9 px-3.5 border border-panel-border rounded-lg text-sm bg-panel text-text-secondary cursor-pointer flex items-center gap-1.5 whitespace-nowrap hover:bg-divider/60 hover:text-text-primary transition-colors'
+  const dropdownCls = 'absolute top-[calc(100%+4px)] left-0 bg-panel border border-panel-border rounded-lg shadow-[0_12px_32px_rgba(15,23,42,0.18)] min-w-[200px] z-50 py-1 overflow-hidden'
+  const menuItemCls = (active: boolean) => `flex items-center gap-2 w-full text-left bg-transparent border-none px-3.5 py-2.5 text-sm text-text-secondary cursor-pointer hover:bg-divider/60 hover:text-text-primary transition-colors ${active ? 'font-bold' : 'font-normal'}`
 
   return (
     <div className="mb-8">
       {/* Title row */}
-      <h1 className="text-[32px] font-extrabold text-primary mb-5 tracking-tight">{pageTitle}</h1>
+      <h1 className="text-[32px] font-extrabold text-text-primary mb-5 tracking-tight">{pageTitle}</h1>
 
       {/* Controls row */}
       <div className="flex items-center gap-3 flex-wrap">
         {/* Create button */}
         <button
           onClick={onCreateClick}
-          className="h-9 px-4 bg-accent hover:bg-accent-hover hover:text-card text-on-accent border-none rounded-lg text-sm font-bold cursor-pointer transition-all shadow-md shadow-accent/20"
+          className="h-9 px-4 bg-primary hover:bg-primary-hover text-primary-foreground border-none rounded-lg text-sm font-bold cursor-pointer transition-colors shadow-md shadow-primary/20"
           title="Create Project (Ctrl+N)"
         >
           + Create Project
@@ -169,7 +169,7 @@ export default function ProjectToolbar({
 
         <Link
           to="/tools/3d-fov-visualiser"
-          className="h-9 px-4 border border-accent/40 rounded-lg text-sm font-bold text-accent bg-accent/10 hover:bg-accent/20 transition-colors flex items-center"
+          className="h-9 px-4 border border-primary/40 rounded-lg text-sm font-bold text-primary bg-primary/10 hover:bg-primary/20 transition-colors flex items-center"
         >
           3D fov visualiser
         </Link>
@@ -181,13 +181,13 @@ export default function ProjectToolbar({
             value={localSearch}
             placeholder="Search projects..."
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="h-9 w-64 pl-3 pr-8 border border-surface/30 rounded-lg text-sm bg-surface/10 text-primary placeholder-surface/50 outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-colors"
+            className="h-9 w-64 pl-3 pr-8 border border-panel-border rounded-lg text-sm bg-panel text-text-primary placeholder:text-text-muted outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/20 transition-colors"
           />
           {localSearch && (
             <button
               onClick={() => handleSearchChange('')}
               aria-label="Clear search"
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-muted/70 hover:text-primary text-base leading-none p-0"
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-text-muted hover:text-text-primary text-base leading-none p-0"
             >
               ✕
             </button>
@@ -211,7 +211,7 @@ export default function ProjectToolbar({
                   className={menuItemCls(filterType === opt.value)}
                   onClick={() => { setFilterType(opt.value); setFilterOpen(false) }}
                 >
-                  <span className="w-4 text-muted">{filterType === opt.value ? '✓' : ''}</span>
+                  <span className="w-4 text-text-muted">{filterType === opt.value ? '✓' : ''}</span>
                   {opt.label}
                 </button>
               ))}
@@ -236,7 +236,7 @@ export default function ProjectToolbar({
                   className={menuItemCls(sortBy === value)}
                   onClick={() => { setSortBy(value); setSortOpen(false) }}
                 >
-                  <span className="w-4 text-muted">{sortBy === value ? '✓' : ''}</span>
+                  <span className="w-4 text-text-muted">{sortBy === value ? '✓' : ''}</span>
                   {label}
                 </button>
               ))}
@@ -248,14 +248,14 @@ export default function ProjectToolbar({
         <button
           onClick={handleRefresh}
           aria-label="Refresh projects"
-          className="w-9 h-9 bg-transparent border border-surface/30 rounded-lg cursor-pointer flex items-center justify-center text-muted/70 hover:bg-surface/20 hover:text-primary transition-colors"
+          className="w-9 h-9 bg-panel border border-panel-border rounded-lg cursor-pointer flex items-center justify-center text-text-muted hover:bg-divider/60 hover:text-text-primary transition-colors"
         >
           <RefreshCw size={16} className={(spinning || isFetching) ? 'animate-spin' : ''} />
         </button>
       </div>
 
       {/* Metadata line */}
-      <p className="text-sm text-muted/70 mt-3">
+      <p className="text-sm text-text-muted mt-3">
         {filteredCount} project{filteredCount !== 1 ? 's' : ''}
         {dataUpdatedAt ? ` · Updated ${formatUpdatedAt(dataUpdatedAt)}` : ''}
       </p>

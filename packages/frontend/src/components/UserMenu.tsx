@@ -37,16 +37,16 @@ export default function UserMenu({ onClose, exitProjectPath }: UserMenuProps) {
     navigate('/login')
   }
 
-  const itemCls = 'block w-full text-left bg-transparent border-none px-4 py-2.5 text-sm cursor-pointer transition-colors text-primary hover:bg-surface/20'
+  const itemCls = 'block w-full text-left bg-transparent border-none px-4 py-2.5 text-sm cursor-pointer transition-colors text-text-primary hover:bg-background'
 
   return (
     <div
       ref={menuRef}
-      className="absolute top-[calc(100%+8px)] right-0 rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] min-w-[220px] z-[1000] overflow-hidden bg-card border border-surface/30"
+      className="absolute top-[calc(100%+8px)] right-0 rounded-xl shadow-[0_8px_32px_rgba(15,23,42,0.18)] min-w-[220px] z-[1000] overflow-hidden bg-panel border border-panel-border"
     >
-      <div className="px-4 pt-4 pb-3 border-b border-surface/20 bg-surface/10">
-        <div className="text-sm font-bold text-primary">{user?.fullName}</div>
-        <div className="text-xs mt-0.5 text-muted">{user?.email}</div>
+      <div className="px-4 pt-4 pb-3 border-b border-panel-border bg-background">
+        <div className="text-sm font-bold text-text-primary">{user?.fullName}</div>
+        <div className="text-xs mt-0.5 text-text-muted">{user?.email}</div>
       </div>
       <div className="py-1">
         <button className={itemCls} onClick={() => { navigate('/profile'); onClose() }}>
@@ -69,9 +69,9 @@ export default function UserMenu({ onClose, exitProjectPath }: UserMenuProps) {
           Help &amp; Documentation
         </button>
       </div>
-      <div className="border-t border-surface/20">
+      <div className="border-t border-panel-border">
         <button
-          className="block w-full text-left bg-transparent border-none px-4 py-2.5 text-sm cursor-pointer transition-colors text-accent hover:bg-accent/10"
+          className="block w-full text-left bg-transparent border-none px-4 py-2.5 text-sm cursor-pointer transition-colors text-primary hover:bg-background"
           onClick={handleLogout}
         >
           Logout
