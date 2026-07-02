@@ -12,12 +12,13 @@ export default function ProjectCreatePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-canvas to-card/40">
+    <div className="min-h-screen bg-linear-to-br from-canvas to-card/40">
       <Navbar />
       <main className="px-10 py-8 max-w-3xl mx-auto">
         <Link
           to="/"
-          className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-primary transition-colors mb-4 no-underline"
+          className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-primary
+          transition-colors mb-4 no-underline"
         >
           <ChevronLeft size={16} />
           Dashboard
