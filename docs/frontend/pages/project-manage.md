@@ -1,3 +1,4 @@
+```mermaid
 flowchart TD
   useNavigate -- hook --> ProjectManagePage
   useProjectManage -- hook --> ProjectManagePage
@@ -11,3 +12,5 @@ flowchart TD
   Tabs -- activeTab: map --> MapLocationTab
   useUpdateProject -- hook --> BasicInfoTab
   Project_API --> useUpdateProject
+
+```
