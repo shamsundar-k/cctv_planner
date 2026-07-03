@@ -7,10 +7,12 @@ export type PrimaryButtonSize =
   | "medium"
   | "large"
   | "xlarge";
+export type PrimaryButtonShape = "default" | "rounded";
 
 interface PrimaryButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: PrimaryButtonVariant;
   size?: PrimaryButtonSize;
+  shape?: PrimaryButtonShape;
   fullWidth?: boolean;
   leadingIcon?: ReactNode;
   trailingIcon?: ReactNode;
@@ -18,7 +20,7 @@ interface PrimaryButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const baseClasses =
-  "inline-flex items-center justify-center gap-2 rounded-md font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:bg-disabled disabled:text-disabled-foreground disabled:shadow-none disabled:hover:bg-disabled";
+  "inline-flex items-center justify-center gap-2 font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:bg-disabled disabled:text-disabled-foreground disabled:shadow-none disabled:hover:bg-disabled";
 
 const variantClasses: Record<PrimaryButtonVariant, string> = {
   solid:
@@ -39,9 +41,15 @@ const sizeClasses: Record<PrimaryButtonSize, string> = {
   xlarge: "h-14 px-4 text-base",
 };
 
+const shapeClasses: Record<PrimaryButtonShape, string> = {
+  default: "rounded-md",
+  rounded: "rounded-full",
+};
+
 export default function PrimaryButton({
   variant = "solid",
   size = "medium",
+  shape = "default",
   fullWidth = false,
   leadingIcon,
   trailingIcon,
@@ -56,6 +64,7 @@ export default function PrimaryButton({
     baseClasses,
     variantClasses[variant],
     sizeClasses[size],
+    shapeClasses[shape],
     fullWidth ? "w-full" : "",
     className,
   ]

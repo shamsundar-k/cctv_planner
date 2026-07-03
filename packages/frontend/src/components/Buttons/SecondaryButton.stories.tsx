@@ -128,6 +128,13 @@ export const XLarge: Story = {
   },
 };
 
+export const Rounded: Story = {
+  args: {
+    shape: "rounded",
+    children: "Cancel",
+  },
+};
+
 export const Loading: Story = {
   args: {
     loading: true,
@@ -176,6 +183,9 @@ export const ThemeMatrix: Story = {
             </SecondaryButton>
             <SecondaryButton variant="outline" tone="neutral" size="xlarge">
               Continue
+            </SecondaryButton>
+            <SecondaryButton variant="outline" tone="neutral" shape="rounded">
+              Cancel
             </SecondaryButton>
             <SecondaryButton variant="soft" tone="danger">
               Remove

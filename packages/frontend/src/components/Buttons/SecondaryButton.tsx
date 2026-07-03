@@ -7,11 +7,13 @@ export type SecondaryButtonSize =
   | "medium"
   | "large"
   | "xlarge";
+export type SecondaryButtonShape = "default" | "rounded";
 export type SecondaryButtonTone = "neutral" | "danger";
 
 interface SecondaryButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: SecondaryButtonVariant;
   size?: SecondaryButtonSize;
+  shape?: SecondaryButtonShape;
   tone?: SecondaryButtonTone;
   fullWidth?: boolean;
   leadingIcon?: ReactNode;
@@ -20,7 +22,7 @@ interface SecondaryButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const baseClasses =
-  "inline-flex items-center justify-center gap-2 rounded-md font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/35 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:bg-disabled disabled:text-disabled-foreground disabled:shadow-none disabled:hover:bg-disabled";
+  "inline-flex items-center justify-center gap-2 font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/35 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:bg-disabled disabled:text-disabled-foreground disabled:shadow-none disabled:hover:bg-disabled";
 
 const neutralVariantClasses: Record<SecondaryButtonVariant, string> = {
   solid:
@@ -52,9 +54,15 @@ const sizeClasses: Record<SecondaryButtonSize, string> = {
   xlarge: "h-14 px-4 text-base",
 };
 
+const shapeClasses: Record<SecondaryButtonShape, string> = {
+  default: "rounded-md",
+  rounded: "rounded-full",
+};
+
 export default function SecondaryButton({
   variant = "outline",
   size = "medium",
+  shape = "default",
   tone = "neutral",
   fullWidth = false,
   leadingIcon,
@@ -71,6 +79,7 @@ export default function SecondaryButton({
     baseClasses,
     toneClasses[variant],
     sizeClasses[size],
+    shapeClasses[shape],
     fullWidth ? "w-full" : "",
     className,
   ]

@@ -91,6 +91,13 @@ export const XLarge: Story = {
   },
 };
 
+export const Rounded: Story = {
+  args: {
+    shape: "rounded",
+    children: "Continue",
+  },
+};
+
 export const Loading: Story = {
   args: {
     loading: true,
@@ -144,6 +151,7 @@ export const ThemeMatrix: Story = {
             <PrimaryButton variant="solid" size="xlarge">
               Sign in
             </PrimaryButton>
+            <PrimaryButton shape="rounded">Continue</PrimaryButton>
             <PrimaryButton loading>Saving</PrimaryButton>
             <PrimaryButton disabled>Disabled</PrimaryButton>
           </div>
