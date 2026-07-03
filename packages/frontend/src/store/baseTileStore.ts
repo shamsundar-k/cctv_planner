@@ -1,7 +1,7 @@
 // src/store/baseTileStore.ts
 
 import { create } from 'zustand';
-import { BASE_MAPS, DEFAULT_BASE_MAP, type BaseMapKey } from '../config/mapConfig';
+import { DEFAULT_BASE_MAP, type BaseMapKey } from '../config/mapConfig';
 
 interface BaseTileState {
     activeBaseMap: BaseMapKey;
