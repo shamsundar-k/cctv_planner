@@ -1,4 +1,4 @@
-import { formatRelativeTime } from '../utils/projectCardFormat'
+import { formatRelativeTime } from './projectCardFormat'
 
 interface ProjectCardTimestampsProps {
   createdAt: string

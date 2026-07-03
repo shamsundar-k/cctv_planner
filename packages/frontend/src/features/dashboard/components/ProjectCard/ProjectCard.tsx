@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import type { ProjectRecord } from '../../../types/projects.types'
+import type { ProjectRecord } from '../../../../types/projects.types'
 import ProjectCardHeader from './ProjectCardHeader'
 import ProjectCardMeta from './ProjectCardMeta'
 import ProjectCardDescription from './ProjectCardDescription'

@@ -12,14 +12,10 @@ function applyFiltersAndSort(
   projects: ProjectRecord[],
   {
     searchQuery,
-    filterType,
     sortBy,
-    currentUserId,
   }: {
     searchQuery: string
-    filterType: string
     sortBy: string
-    currentUserId: string
   }
 ): ProjectRecord[] {
   let result = [...projects]
@@ -28,11 +24,6 @@ function applyFiltersAndSort(
   if (searchQuery.trim()) {
     const q = searchQuery.toLowerCase()
     result = result.filter((p) => p.name.toLowerCase().includes(q))
-  }
-
-  // Filter type (only 'mine' needs processing; 'archived' requires backend support)
-  if (filterType === 'mine') {
-    result = result.filter((p) => p.created_by_id === currentUserId)
   }
 
   // Sort
@@ -46,10 +37,6 @@ function applyFiltersAndSort(
         return a.name.localeCompare(b.name)
       case 'name_desc':
         return b.name.localeCompare(a.name)
-      case 'created_desc':
-        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      case 'created_asc':
-        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
       default:
         return 0
     }
@@ -60,7 +47,7 @@ function applyFiltersAndSort(
 
 export function useDashboard() {
   const user = useAuthStore((s) => s.user)
-  const { filterType, sortBy, searchQuery } = useProjectStore()
+  const { sortBy, searchQuery } = useProjectStore()
   const { data: projects = [], isLoading, isError, isFetching, refetch, dataUpdatedAt } = useProjects()
   const [modal, setModal] = useState<ModalState>({ type: 'none' })
 
@@ -68,11 +55,9 @@ export function useDashboard() {
     () =>
       applyFiltersAndSort(projects, {
         searchQuery,
-        filterType,
         sortBy,
-        currentUserId: user?.id ?? '',
       }),
-    [projects, searchQuery, filterType, sortBy, user?.id]
+    [projects, searchQuery, sortBy]
   )
 
   const isAdmin = user?.role === 'admin'
