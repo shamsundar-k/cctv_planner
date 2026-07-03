@@ -1,7 +1,12 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 export type PrimaryButtonVariant = "solid" | "soft" | "outline" | "ghost";
-export type PrimaryButtonSize = "small" | "medium" | "large";
+export type PrimaryButtonSize =
+  | "compact"
+  | "small"
+  | "medium"
+  | "large"
+  | "xlarge";
 
 interface PrimaryButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: PrimaryButtonVariant;
@@ -27,9 +32,11 @@ const variantClasses: Record<PrimaryButtonVariant, string> = {
 };
 
 const sizeClasses: Record<PrimaryButtonSize, string> = {
+  compact: "h-9 px-4 text-sm",
   small: "h-8 px-3 text-xs",
   medium: "h-10 px-4 text-sm",
   large: "h-12 px-5 text-base",
+  xlarge: "h-14 px-4 text-base",
 };
 
 export default function PrimaryButton({

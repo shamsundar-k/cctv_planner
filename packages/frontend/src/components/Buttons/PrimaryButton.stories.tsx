@@ -62,6 +62,13 @@ export const Small: Story = {
   },
 };
 
+export const Compact: Story = {
+  args: {
+    size: "compact",
+    children: "Create",
+  },
+};
+
 export const Medium: Story = {
   args: {
     size: "medium",
@@ -73,6 +80,14 @@ export const Large: Story = {
   args: {
     size: "large",
     children: "Done",
+  },
+};
+
+export const XLarge: Story = {
+  args: {
+    size: "xlarge",
+    fullWidth: true,
+    children: "Sign in",
   },
 };
 
@@ -111,6 +126,9 @@ export const ThemeMatrix: Story = {
         >
           <h3 className="mb-3 text-sm font-semibold">{theme.label}</h3>
           <div className="flex flex-wrap items-center gap-2">
+            <PrimaryButton variant="solid" size="compact">
+              Create
+            </PrimaryButton>
             <PrimaryButton variant="solid" size="small">
               Save
             </PrimaryButton>
@@ -122,6 +140,9 @@ export const ThemeMatrix: Story = {
             </PrimaryButton>
             <PrimaryButton variant="ghost" size="large">
               Done
+            </PrimaryButton>
+            <PrimaryButton variant="solid" size="xlarge">
+              Sign in
             </PrimaryButton>
             <PrimaryButton loading>Saving</PrimaryButton>
             <PrimaryButton disabled>Disabled</PrimaryButton>

@@ -99,6 +99,13 @@ export const Small: Story = {
   },
 };
 
+export const Compact: Story = {
+  args: {
+    size: "compact",
+    children: "Cancel",
+  },
+};
+
 export const Medium: Story = {
   args: {
     size: "medium",
@@ -111,6 +118,13 @@ export const Large: Story = {
     size: "large",
     children: "Delete",
     tone: "danger",
+  },
+};
+
+export const XLarge: Story = {
+  args: {
+    size: "xlarge",
+    children: "Continue",
   },
 };
 
@@ -142,6 +156,9 @@ export const ThemeMatrix: Story = {
         >
           <h3 className="mb-3 text-sm font-semibold">{theme.label}</h3>
           <div className="flex flex-wrap items-center gap-2">
+            <SecondaryButton variant="outline" tone="neutral" size="compact">
+              Cancel
+            </SecondaryButton>
             <SecondaryButton variant="outline" tone="neutral" size="small">
               Cancel
             </SecondaryButton>
@@ -156,6 +173,9 @@ export const ThemeMatrix: Story = {
             </SecondaryButton>
             <SecondaryButton variant="solid" tone="danger" leadingIcon={<Trash2 size={16} aria-hidden="true" />}>
               Delete
+            </SecondaryButton>
+            <SecondaryButton variant="outline" tone="neutral" size="xlarge">
+              Continue
             </SecondaryButton>
             <SecondaryButton variant="soft" tone="danger">
               Remove

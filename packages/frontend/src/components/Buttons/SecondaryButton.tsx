@@ -1,7 +1,12 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 export type SecondaryButtonVariant = "solid" | "soft" | "outline" | "ghost";
-export type SecondaryButtonSize = "small" | "medium" | "large";
+export type SecondaryButtonSize =
+  | "compact"
+  | "small"
+  | "medium"
+  | "large"
+  | "xlarge";
 export type SecondaryButtonTone = "neutral" | "danger";
 
 interface SecondaryButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -40,9 +45,11 @@ const dangerVariantClasses: Record<SecondaryButtonVariant, string> = {
 };
 
 const sizeClasses: Record<SecondaryButtonSize, string> = {
+  compact: "h-9 px-4 text-sm",
   small: "h-8 px-3 text-xs",
   medium: "h-10 px-4 text-sm",
   large: "h-12 px-5 text-base",
+  xlarge: "h-14 px-4 text-base",
 };
 
 export default function SecondaryButton({

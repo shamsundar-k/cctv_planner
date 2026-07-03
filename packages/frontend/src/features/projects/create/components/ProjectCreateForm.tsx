@@ -7,6 +7,7 @@
  */
 import { useEffect, useRef, useState } from "react";
 import { useCreateProject } from "@/hooks/useProjects";
+import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
 import { useToast } from "@/components/ui/Toast";
 import ProjectLocationPicker from "@/features/projects/components/ProjectLocationPicker";
 import type { ProjectRecord } from "@/types/projects.types";
@@ -251,24 +252,23 @@ export default function ProjectCreateForm({
       </div>
 
       <div className="flex justify-end gap-3 px-5 py-3 lg:px-6 border-t border-panel-border bg-background">
-        <button
+        <SecondaryButton
           type="button"
           onClick={onCancel}
-          className="h-9 px-4 bg-panel hover:bg-background text-text-secondary hover:text-text-primary border border-panel-border rounded-lg text-sm font-semibold cursor-pointer transition-colors"
+          variant="outline"
+          size="compact"
         >
           Cancel
-        </button>
-        <button
+        </SecondaryButton>
+        <PrimaryButton
           type="submit"
           disabled={!canSubmit}
-          className={`h-9 px-5 border-none rounded-lg text-sm font-bold transition-all ${
-            canSubmit
-              ? "bg-primary hover:bg-primary-hover text-primary-foreground cursor-pointer shadow-md shadow-primary/20"
-              : "bg-disabled text-disabled-foreground cursor-not-allowed"
-          }`}
+          loading={isPending}
+          size="compact"
+          className="px-5 font-bold"
         >
           {isPending ? "Creating..." : "Create Project"}
-        </button>
+        </PrimaryButton>
       </div>
     </form>
   );

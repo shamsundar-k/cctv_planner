@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router'
+import { PrimaryButton } from '@/components/Buttons'
 import { useAuthStore } from '../stores/authStore'
 import FormField from './FormField'
 import LoginErrorBanner from './LoginErrorBanner'
@@ -54,13 +55,15 @@ export default function LoginForm() {
 
       {error && <LoginErrorBanner message={error} />}
 
-      <button
+      <PrimaryButton
         type="submit"
-        disabled={loading}
-        className="mt-1 min-h-14 rounded-md bg-primary px-4 text-base font-bold tracking-wide text-primary-foreground shadow-lg shadow-black/10 transition-colors hover:bg-primary-hover active:bg-primary disabled:cursor-not-allowed disabled:bg-disabled disabled:text-disabled-foreground"
+        loading={loading}
+        size="xlarge"
+        fullWidth
+        className="mt-1 tracking-wide shadow-lg shadow-black/10 active:bg-primary"
       >
         {loading ? 'Signing in...' : 'Sign in'}
-      </button>
+      </PrimaryButton>
     </form>
   )
 }
