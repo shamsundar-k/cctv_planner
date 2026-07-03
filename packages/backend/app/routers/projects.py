@@ -71,17 +71,9 @@ def _to_project_record(p: ProjectDocument, camera_count: int = 0) -> ProjectReco
 async def list_projects(
     current_user: User = Depends(get_current_user),
 ) -> list[ProjectRecord]:
-    is_admin = current_user.system_role == "admin"
-
-    if is_admin:
-        # Admin sees all projects
-        projects = await ProjectDocument.find_all().to_list()
-    else:
-        # Regular user: created projects
-        owned = await ProjectDocument.find(
-            ProjectDocument.created_by.id == current_user.id  # type: ignore[union-attr]
-        ).to_list()
-        projects = owned
+    projects = await ProjectDocument.find(
+        ProjectDocument.created_by.id == current_user.id  # type: ignore[union-attr]
+    ).to_list()
 
     # Fetch counts per project (<100 projects per spec so N queries is acceptable)
     result = []

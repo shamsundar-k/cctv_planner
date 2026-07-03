@@ -1,13 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useState } from 'react'
 import client from '../../../api/client'
-import type { AdminUser, AdminProject } from './admin.types'
+import type { AdminProjectStats, AdminUser } from './admin.types'
 
 // ── Query keys ─────────────────────────────────────────────────────────────────
 
 export const adminKeys = {
   users: ['admin', 'users'] as const,
-  projects: ['admin', 'projects'] as const,
+  projectStats: ['admin', 'projects', 'stats'] as const,
 }
 
 // ── Hooks ──────────────────────────────────────────────────────────────────────
@@ -25,11 +25,11 @@ export function useAllUsers() {
   })
 }
 
-export function useAllProjects() {
+export function useProjectStats() {
   return useQuery({
-    queryKey: adminKeys.projects,
-    queryFn: async (): Promise<AdminProject[]> => {
-      const res = await client.get<AdminProject[]>('/projects')
+    queryKey: adminKeys.projectStats,
+    queryFn: async (): Promise<AdminProjectStats> => {
+      const res = await client.get<AdminProjectStats>('/admin/projects/stats')
       return res.data
     },
     staleTime: 2 * 60 * 1000,
@@ -64,32 +64,6 @@ export function useDeleteUser() {
   })
 }
 
-export function useDeleteProject() {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: async (projectId: string): Promise<void> => {
-      await client.delete(`/projects/${projectId}`)
-    },
-    onMutate: async (projectId) => {
-      await queryClient.cancelQueries({ queryKey: adminKeys.projects })
-      const snapshot = queryClient.getQueryData<AdminProject[]>(adminKeys.projects)
-      queryClient.setQueryData<AdminProject[]>(adminKeys.projects, (prev) =>
-        prev ? prev.filter((p) => p.id !== projectId) : [],
-      )
-      return { snapshot }
-    },
-    onError: (_err, _projectId, context) => {
-      if (context?.snapshot) {
-        queryClient.setQueryData(adminKeys.projects, context.snapshot)
-      }
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: adminKeys.projects })
-    },
-    retry: 0,
-  })
-}
-
 // ── Debounced search hooks ─────────────────────────────────────────────────────
 
 function useDebounce<T>(value: T, delay = 300): T {
@@ -114,19 +88,6 @@ export function useSearchUsers(query: string) {
         u.full_name.toLowerCase().includes(q),
     )
   }, [users, debouncedQuery])
-
-  return { data: results, ...rest }
-}
-
-export function useSearchProjects(query: string) {
-  const debouncedQuery = useDebounce(query)
-  const { data: projects = [], ...rest } = useAllProjects()
-
-  const results = useMemo(() => {
-    const q = debouncedQuery.trim().toLowerCase()
-    if (!q) return projects
-    return projects.filter((p) => p.name.toLowerCase().includes(q))
-  }, [projects, debouncedQuery])
 
   return { data: results, ...rest }
 }

@@ -5,7 +5,6 @@ import AdminHeader from './AdminHeader'
 import AdminStatCards from './AdminStatCards'
 import AdminTabNav from './AdminTabNav'
 import UsersTab from './UsersTab'
-import ProjectsTab from './ProjectsTab'
 import CameraManagementTab from './CameraManagementTab'
 import DeleteModal from './DeleteModal'
 import InvitesTab from '../../invites/component/InvitesTab'
@@ -24,7 +23,7 @@ export default function AdminDashboard() {
 
       <AdminStatCards
         usersValue={data.usersLoading ? '—' : data.filteredUsers.length}
-        projectsValue={data.allProjects.length}
+        projectsValue={data.projectStatsLoading ? '—' : (data.projectStats?.total_projects ?? 0)}
         camerasValue={data.totalCameraModels}
         invitesValue={data.invitesLoading ? '—' : data.adminInvites.length}
       />
@@ -42,16 +41,6 @@ export default function AdminDashboard() {
           userSearch={data.userSearch}
           onSearchChange={data.setUserSearch}
           onDeleteUser={(id, name) => actions.setDeleteModal({ open: true, type: 'user', id, name })}
-        />
-      )}
-
-      {actions.activeTab === 'projects' && (
-        <ProjectsTab
-          projects={data.filteredProjects}
-          projectsLoading={data.projectsLoading}
-          projectSearch={data.projectSearch}
-          onSearchChange={data.setProjectSearch}
-          onDeleteProject={(id, name) => actions.setDeleteModal({ open: true, type: 'project', id, name })}
         />
       )}
 

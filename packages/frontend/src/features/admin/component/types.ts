@@ -1,5 +1,5 @@
-export type Tab = 'users' | 'projects' | 'cameras' | 'invites'
+export type Tab = 'users' | 'cameras' | 'invites'
 
 export type DeleteModalState =
   | { open: false }
-  | { open: true; type: 'user' | 'project' | 'invite'; id: string; name: string }
+  | { open: true; type: 'user' | 'invite'; id: string; name: string }

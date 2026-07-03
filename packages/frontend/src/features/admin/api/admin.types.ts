@@ -6,10 +6,6 @@ export interface AdminUser {
   created_at: string
 }
 
-export interface AdminProject {
-  id: string
-  name: string
-  created_by_id: string
-  camera_count: number
-  created_at: string
+export interface AdminProjectStats {
+  total_projects: number
 }

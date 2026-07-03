@@ -9,21 +9,25 @@ from beanie.operators import In
 from bson.dbref import DBRef
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.core.config import settings
-from app.core.deps import require_admin
-from app.api_models.user import UserRecord
-from app.db_schemas.user import User
-from app.models.invite_token import InviteToken
-from app.schemas.admin import (
+from app.api_models.admin import (
     InviteListItem,
     InviteRequest,
     InviteResponse,
+    ProjectStats,
 )
+from app.api_models.user import UserRecord
+from app.core.config import settings
+from app.core.deps import require_admin
+from app.db_schemas.project import Project as ProjectDocument
+from app.db_schemas.user import User
+from app.models.invite_token import InviteToken
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
 
-@router.post("/invite", response_model=InviteResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/invite", response_model=InviteResponse, status_code=status.HTTP_201_CREATED
+)
 async def create_invite(
     body: InviteRequest,
     admin: User = Depends(require_admin),
@@ -53,7 +57,9 @@ async def create_invite(
     await invite.insert()
 
     invite_url = f"{settings.FRONTEND_BASE_URL}/accept-invite?token={raw}"
-    return InviteResponse(id=str(invite.id), invite_url=invite_url, expires_at=expires_at)
+    return InviteResponse(
+        id=str(invite.id), invite_url=invite_url, expires_at=expires_at
+    )
 
 
 @router.get("/invites", response_model=list[InviteListItem])
@@ -71,11 +77,13 @@ async def list_invites(_: User = Depends(require_admin)) -> list[InviteListItem]
         return []
 
     # invited_by is stored as a DBRef by Beanie; extract the referenced ObjectIds.
-    user_ids = list({
-        doc["invited_by"].id
-        for doc in raw_docs
-        if isinstance(doc.get("invited_by"), DBRef)
-    })
+    user_ids = list(
+        {
+            doc["invited_by"].id
+            for doc in raw_docs
+            if isinstance(doc.get("invited_by"), DBRef)
+        }
+    )
 
     # Single batch query for all inviting users (User has no Link fields → no aggregation).
     users = await User.find(In(User.id, user_ids)).to_list()
@@ -104,7 +112,9 @@ async def revoke_invite(
 ) -> None:
     invite = await InviteToken.get(invite_id)
     if invite is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invite not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Invite not found"
+        )
     await invite.delete()
 
 
@@ -123,6 +133,12 @@ async def list_users(_: User = Depends(require_admin)) -> list[UserRecord]:
     ]
 
 
+@router.get("/projects/stats", response_model=ProjectStats)
+async def get_project_stats(_: User = Depends(require_admin)) -> ProjectStats:
+    total_projects = await ProjectDocument.find_all().count()
+    return ProjectStats(total_projects=total_projects)
+
+
 @router.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(
     user_id: PydanticObjectId,
@@ -135,5 +151,7 @@ async def delete_user(
         )
     user = await User.get(user_id)
     if user is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
     await user.delete()

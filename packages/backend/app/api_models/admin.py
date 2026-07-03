@@ -22,3 +22,6 @@ class InviteListItem(BaseModel):
     created_at: datetime
     expires_at: datetime
 
+
+class ProjectStats(BaseModel):
+    total_projects: int
