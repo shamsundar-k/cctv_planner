@@ -1,4 +1,4 @@
-import type { ProjectRecord } from '../../../types/projects.types'
+import type { ProjectRecord } from '../../../../types/projects.types'
 import ProjectCardMenu from './ProjectCardMenu'
 
 interface ProjectCardHeaderProps {

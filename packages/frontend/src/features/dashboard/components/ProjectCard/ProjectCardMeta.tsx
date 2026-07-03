@@ -1,5 +1,5 @@
-import type { ProjectRecord } from '../../../types/projects.types'
-import { formatCoord } from '../utils/projectCardFormat'
+import type { ProjectRecord } from '../../../../types/projects.types'
+import { formatCoord } from './projectCardFormat'
 
 interface ProjectCardMetaProps {
   cameraCount: number

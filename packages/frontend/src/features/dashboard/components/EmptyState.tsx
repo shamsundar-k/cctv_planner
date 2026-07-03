@@ -1,33 +1,25 @@
-/*
- * FILE SUMMARY — src/features/dashboard/components/EmptyState.tsx
- *
- * Illustrated empty-state panel shown when the user has no projects (or no
- * projects match the current filter/search).
- *
- * EmptyState({ onCreateClick }) — Renders a centred card containing:
- *   - A decorative SVG target/crosshair icon at reduced opacity.
- *   - A heading "No Projects Yet" and a descriptive paragraph explaining the
- *     purpose of the application.
- *   - A "+" Create Project button that calls the `onCreateClick` prop to open
- *     the CreateProjectModal in DashboardPage.
- *   - A "View Documentation" link (currently a placeholder "#" href).
- */
-import { Target } from 'lucide-react'
+import { Target } from "lucide-react";
 
 interface EmptyStateProps {
-  onCreateClick: () => void
+  onCreateClick: () => void;
 }
 
 export default function EmptyState({ onCreateClick }: EmptyStateProps) {
   return (
     <div className="flex flex-col items-center justify-center py-20 px-10 bg-panel border border-panel-border rounded-lg text-center">
       {/* Target icon */}
-      <Target size={64} aria-hidden="true" className="mb-6 opacity-70 text-camera-marker" />
+      <Target
+        size={64}
+        aria-hidden="true"
+        className="mb-6 opacity-70 text-camera-marker"
+      />
 
-      <h2 className="text-2xl font-bold text-text-primary mb-3">No Projects Yet</h2>
+      <h2 className="text-2xl font-bold text-text-primary mb-3">
+        No Projects Yet
+      </h2>
       <p className="text-sm text-text-muted mb-8 max-w-[400px] leading-relaxed">
-        Create your first CCTV survey project to get started. Plan camera placements, define coverage
-        zones, and generate reports.
+        Create your first CCTV survey project to get started. Plan camera
+        placements, define coverage zones, and generate reports.
       </p>
 
       <div className="flex gap-4">
@@ -45,5 +37,5 @@ export default function EmptyState({ onCreateClick }: EmptyStateProps) {
         </a>
       </div>
     </div>
-  )
+  );
 }
