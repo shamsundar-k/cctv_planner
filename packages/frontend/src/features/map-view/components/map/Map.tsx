@@ -15,7 +15,6 @@ interface MapProps {
 export default function Map({ center = [51.5, -0.09], zoom = 13, children }: MapProps) {
   const mapDivRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<L.Map | null>(null)
-
   const [mapReady, setMapReady] = useState(false)
 
   useEffect(() => {
@@ -35,10 +34,11 @@ export default function Map({ center = [51.5, -0.09], zoom = 13, children }: Map
   rotateMode: false,
 });
 
-    setMapReady(true)
+    const readyFrame = window.requestAnimationFrame(() => setMapReady(true))
     console.log('Map initialized')
 
     return () => {
+      window.cancelAnimationFrame(readyFrame)
       mapInstanceRef.current?.remove()
       mapInstanceRef.current = null
     }
