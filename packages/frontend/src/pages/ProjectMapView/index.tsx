@@ -1,5 +1,6 @@
 import { useMapView } from "@/features/map-view/hooks/useMapView";
 import MapNavbar from "@/features/map-view/components/MapNavbar/MapNavbar";
+import CollapsibleSidebar from "@/features/navigation/component/CollapsibleSidebar";
 import Map from "@/features/map-view/components/map/Map";
 import BaseTile from "@/features/map-view/components/map/BaseTile";
 import MapModeOverlay from "@/features/map-view/components/map/MapModeOverlay";
@@ -21,7 +22,7 @@ export default function ProjectMapView() {
 
   if (isLoading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-slate-900 text-slate-400 text-sm">
+      <div className="h-screen flex items-center justify-center bg-background text-text-muted text-sm">
         Loading project…
       </div>
     );
@@ -29,26 +30,28 @@ export default function ProjectMapView() {
 
   if (isError || !project) {
     return (
-      <div className="h-screen flex items-center justify-center bg-slate-900 text-red-400 text-sm">
+      <div className="h-screen flex items-center justify-center bg-background text-error text-sm">
         Failed to load project.
       </div>
     );
   }
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden bg-slate-900">
+    <div className="h-screen flex flex-col overflow-hidden bg-background">
       <MapNavbar projectId={id} projectName={project.name} />
 
       <div className="flex-1 flex overflow-hidden relative">
-        {/*<LeftSidebar projectId={id} />*/}
-        <Map zoom={defaultZoom} center={center}>
-          <BaseTile />
-          <MapLayersControl />
-          <MapActionsToolbar />
-          <MapModeOverlay />
-          {/*{cameraLayerVisible && <CameraLayer projectId={id} />}*/}
-          {/*{fovLayerVisible && <FovLayer />}*/}
-        </Map>
+        <CollapsibleSidebar projectId={id} />
+        <div className="min-w-0 flex-1">
+          <Map zoom={defaultZoom} center={center}>
+            <BaseTile />
+            <MapLayersControl />
+            <MapActionsToolbar />
+            <MapModeOverlay />
+            {/*{cameraLayerVisible && <CameraLayer projectId={id} />}*/}
+            {/*{fovLayerVisible && <FovLayer />}*/}
+          </Map>
+        </div>
         <CameraPanel projectId={id} />
       </div>
     </div>
