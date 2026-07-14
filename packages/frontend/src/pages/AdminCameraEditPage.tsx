@@ -9,29 +9,29 @@ export default function AdminCameraEditPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-canvas">
+      <div className="min-h-screen bg-background text-text-primary">
         <Navbar />
-        <div className="px-10 py-8 text-muted text-sm">Loading…</div>
+        <main className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 lg:px-10"><div className="h-5 w-48 animate-pulse rounded bg-divider" /><div className="mt-7 h-8 w-72 max-w-full animate-pulse rounded bg-divider" /><div className="mt-8 h-32 animate-pulse rounded-xl border border-panel-border bg-panel" /></main>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-canvas">
+    <div className="min-h-screen bg-background text-text-primary">
       <Navbar />
-      <div className="px-10 py-8 max-w-5xl mx-auto">
+      <main className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
         <Link
           to="/admin/manage/camera_specs"
-          className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-primary transition-colors mb-4 no-underline"
+          className="mb-5 inline-flex items-center gap-1.5 rounded-md text-sm font-medium text-text-muted no-underline transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
         >
           <ChevronLeft size={16} />
           Camera Specifications
         </Link>
 
-        <h1 className="text-[26px] font-bold text-primary m-0 mb-8">Edit Camera Specification</h1>
+        <div className="mb-8 border-b border-divider pb-6"><h1 className="m-0 text-2xl font-bold tracking-tight text-text-primary sm:text-[28px]">Edit Camera Specification</h1><p className="mb-0 mt-1.5 text-sm text-text-muted">Update camera identity, imaging, lens, sensor, and IR details.</p></div>
 
         <CameraEditForm {...formProps} />
-      </div>
+      </main>
     </div>
   )
 }

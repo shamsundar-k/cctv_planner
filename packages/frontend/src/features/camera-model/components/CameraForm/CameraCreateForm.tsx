@@ -4,6 +4,8 @@ import LensSection from './LensSection'
 import SensorSection from './SensorSection'
 import AdvancedSection from './AdvancedSection'
 import FormActions from './FormActions'
+import CameraImageSection from './CameraImageSection'
+import type { CameraImageInputState } from '../../hooks/useCameraImageInput'
 
 interface Props {
   form: CameraSpecForm
@@ -14,6 +16,7 @@ interface Props {
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void
   isPending: boolean
   isFixed: boolean
+  image: CameraImageInputState
 }
 
 export default function CameraCreateForm({
@@ -25,10 +28,12 @@ export default function CameraCreateForm({
   handleSubmit,
   isPending,
   isFixed,
+  image,
 }: Props) {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <IdentitySection form={form} errors={errors} set={set} />
+      <CameraImageSection image={image} />
       <LensSection
         form={form}
         errors={errors}

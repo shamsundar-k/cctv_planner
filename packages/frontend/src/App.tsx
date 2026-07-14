@@ -60,6 +60,13 @@ function App() {
             {/* Admin-only routes */}
             <Route element={<AdminRoute />}>
               <Route path="/admin/manage" element={<AdminPage />} />
+              <Route path="/admin/manage/users" element={<AdminPage />} />
+              <Route path="/admin/manage/projects" element={<AdminPage />} />
+              <Route path="/admin/manage/invites" element={<AdminPage />} />
+              <Route
+                path="/admin/manage/camera-models"
+                element={<AdminCamerasPage />}
+              />
               <Route
                 path="/admin/manage/camera_specs"
                 element={<AdminCamerasPage />}

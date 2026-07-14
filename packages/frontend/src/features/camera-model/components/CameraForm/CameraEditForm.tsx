@@ -1,9 +1,11 @@
-import type { CameraSpecForm } from '@/types/camera'
+import type { CameraSpecForm, CameraSpecRecord } from '@/types/camera'
 import IdentitySection from './IdentitySection'
 import LensSection from './LensSection'
 import SensorSection from './SensorSection'
 import AdvancedSection from './AdvancedSection'
 import FormActions from './FormActions'
+import CameraImageSection from './CameraImageSection'
+import type { CameraImageInputState } from '../../hooks/useCameraImageInput'
 
 interface Props {
   form: CameraSpecForm
@@ -14,6 +16,8 @@ interface Props {
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void
   isPending: boolean
   isFixed: boolean
+  camera?: CameraSpecRecord
+  image: CameraImageInputState
 }
 
 export default function CameraEditForm({
@@ -25,10 +29,13 @@ export default function CameraEditForm({
   handleSubmit,
   isPending,
   isFixed,
+  camera,
+  image,
 }: Props) {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <IdentitySection form={form} errors={errors} set={set} />
+      <CameraImageSection camera={camera} image={image} />
       <LensSection
         form={form}
         errors={errors}

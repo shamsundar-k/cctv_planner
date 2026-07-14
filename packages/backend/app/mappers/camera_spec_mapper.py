@@ -12,6 +12,9 @@ def to_camera_spec_record(camera_spec: CameraSpecification) -> CameraSpecRecord:
         lens_spec=camera_spec.lens_spec,
         sensor_spec=camera_spec.sensor_spec,
         ir_range=camera_spec.ir_range,
+        image_storage_key=camera_spec.image_storage_key,
+        image_version=camera_spec.image_version,
+        image_updated_at=camera_spec.image_updated_at,
         created_at=camera_spec.created_at,
         updated_at=camera_spec.updated_at,
     )

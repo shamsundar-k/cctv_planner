@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -13,6 +15,14 @@ class Settings(BaseSettings):
     FIRST_ADMIN_EMAIL: str 
     FIRST_ADMIN_PASSWORD: str 
     FRONTEND_BASE_URL: str = "http://localhost:5173"
+    CAMERA_IMAGE_ROOT: Path = Path("app/static/camera-images")
+    CAMERA_IMAGE_MAX_UPLOAD_BYTES: int = 5 * 1024 * 1024
+    CAMERA_IMAGE_MAX_SOURCE_WIDTH: int = 2000
+    CAMERA_IMAGE_MAX_SOURCE_HEIGHT: int = 2000
+    CAMERA_IMAGE_MIN_SOURCE_WIDTH: int = 64
+    CAMERA_IMAGE_MIN_SOURCE_HEIGHT: int = 64
+    CAMERA_IMAGE_OUTPUT_WIDTH: int = 600
+    CAMERA_IMAGE_OUTPUT_HEIGHT: int = 600
 
 
 settings = Settings()

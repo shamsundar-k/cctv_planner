@@ -48,12 +48,9 @@ export default function InviteGenerateCard({
   }
 
   return (
-    <div
-      className="rounded-xl p-6"
-      style={{ background: 'color-mix(in srgb, var(--theme-bg-card) 80%, transparent)', border: '1px solid color-mix(in srgb, var(--theme-surface) 25%, transparent)' }}
-    >
-      <h2 className="text-base font-bold mt-0 mb-2" style={{ color: 'var(--theme-text-primary)' }}>Generate Invite Link</h2>
-      <p className="text-[13px] mb-5" style={{ color: 'var(--theme-text-secondary)' }}>
+    <div className="rounded-xl border border-panel-border bg-panel p-6 shadow-sm">
+      <h2 className="mb-2 mt-0 text-base font-bold text-text-primary">Generate Invite Link</h2>
+      <p className="mb-5 text-[13px] text-text-muted">
         Send a 72-hour invite link to a new user's email address.
       </p>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
@@ -63,54 +60,39 @@ export default function InviteGenerateCard({
             value={inviteEmail}
             onChange={(e) => { setInviteEmail(e.target.value); setInviteEmailError('') }}
             placeholder="user@example.com"
-            className="w-full h-10 px-3 text-sm rounded-lg outline-none box-border"
-            style={{
-              background: 'color-mix(in srgb, var(--theme-surface) 10%, transparent)',
-              border: `1px solid ${inviteEmailError ? '#ef4444' : 'color-mix(in srgb, var(--theme-surface) 30%, transparent)'}`,
-              color: 'var(--theme-text-primary)',
-            }}
+            className={`box-border h-10 w-full rounded-lg border bg-background px-3 text-sm text-text-primary outline-none transition-colors placeholder:text-text-subtle focus:ring-2 ${inviteEmailError ? 'border-error focus:border-error focus:ring-error/20' : 'border-panel-border hover:border-primary/50 focus:border-primary focus:ring-primary/20'}`}
           />
           {inviteEmailError && (
-            <p className="text-xs text-red-400 mt-1 mb-0">{inviteEmailError}</p>
+            <p className="mb-0 mt-1 text-xs text-error">{inviteEmailError}</p>
           )}
         </div>
         <button
           type="submit"
           disabled={generateInvitePending}
-          className="h-10 border-none rounded-lg text-sm font-bold cursor-pointer flex items-center justify-center gap-2 transition-all disabled:cursor-not-allowed disabled:opacity-50"
-          style={{ background: 'var(--theme-accent)', color: 'var(--theme-accent-text)' }}
-          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--theme-accent-hover)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--theme-bg-base)' }}
-          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--theme-accent)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--theme-accent-text)' }}
+          className="flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg border border-primary bg-primary text-sm font-bold text-primary-foreground transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:bg-disabled disabled:text-disabled-foreground"
         >
           {generateInvitePending ? <><Spinner /> Generating…</> : 'Generate Invite'}
         </button>
       </form>
 
       {latestCreatedInvite && (
-        <div
-          className="mt-4 p-4 rounded-xl"
-          style={{ background: 'color-mix(in srgb, var(--theme-surface) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--theme-surface) 20%, transparent)' }}
-        >
-          <p className="text-xs mb-2" style={{ color: 'var(--theme-text-secondary)' }}>
+        <div className="mt-4 rounded-xl border border-panel-border bg-background p-4">
+          <p className="mb-2 text-xs text-text-muted">
             Latest invite for{' '}
-            <span style={{ color: 'var(--theme-text-primary)' }}>{latestCreatedInvite.email}</span>:
+            <span className="text-text-primary">{latestCreatedInvite.email}</span>:
           </p>
           <div className="flex items-center gap-2">
-            <span className="flex-1 text-xs overflow-hidden text-ellipsis whitespace-nowrap font-mono" style={{ color: 'var(--theme-text-secondary)' }}>
+            <span className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap font-mono text-xs text-text-muted">
               {latestCreatedInvite.invite_url}
             </span>
             <button
               onClick={() => onCopyInvite(latestCreatedInvite.invite_url, latestCreatedInvite.id)}
-              className="px-2.5 py-1 text-xs border-none rounded-lg cursor-pointer shrink-0 transition-all font-semibold"
-              style={{
-                background: copiedId === latestCreatedInvite.id ? 'color-mix(in srgb, var(--theme-accent-hover) 60%, transparent)' : 'color-mix(in srgb, var(--theme-surface) 25%, transparent)',
-                color: 'var(--theme-text-primary)',
-              }}
+              className={`shrink-0 cursor-pointer rounded-lg border px-2.5 py-1 text-xs font-semibold transition-colors ${copiedId === latestCreatedInvite.id ? 'border-success/30 bg-success/15 text-success' : 'border-panel-border bg-divider text-text-primary hover:border-primary/40'}`}
             >
               {copiedId === latestCreatedInvite.id ? '✓ Copied' : 'Copy'}
             </button>
           </div>
-          <p className="text-[11px] mt-2 mb-0 opacity-60" style={{ color: 'var(--theme-text-secondary)' }}>
+          <p className="mb-0 mt-2 text-[11px] text-text-muted">
             Copy this link now — it won't be shown again.
           </p>
         </div>

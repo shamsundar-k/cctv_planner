@@ -17,6 +17,9 @@ class CameraSpecification(Document):
     lens_spec: CameraLensSpec
     sensor_spec: CameraSensorSpec
     ir_range: float = Field(..., ge=0)
+    image_storage_key: str | None = None
+    image_version: int = Field(default=0, ge=0)
+    image_updated_at: datetime | None = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 

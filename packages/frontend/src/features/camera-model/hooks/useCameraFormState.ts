@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import type { CameraSpecForm, CameraSpecRecord } from '@/types/camera'
 import { emptyForm } from '../components/CameraForm/cameraFormHelpers'
 
@@ -73,7 +73,7 @@ export function useCameraFormState() {
     return Object.keys(e).length === 0
   }
 
-  function initFrom(existing: CameraSpecRecord) {
+  const initFrom = useCallback((existing: CameraSpecRecord) => {
     const sensorSize = existing.sensor_spec.sensor_size ?? null
     setForm({
       name: existing.name,
@@ -92,7 +92,7 @@ export function useCameraFormState() {
       resolution_v: existing.sensor_spec.resolution.vertical,
       sensor_size: sensorSize,
     })
-  }
+  }, [])
 
   return {
     form,

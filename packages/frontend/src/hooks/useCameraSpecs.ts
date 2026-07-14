@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import type { CameraSpec, CameraSpecRecord, CameraSpecUpdate } from '../types/camera'
+import type { CameraSpecCreate, CameraSpecRecord, CameraSpecUpdate } from '../types/camera'
 import {
   createCameraSpec,
   deleteCameraSpec,
@@ -34,7 +34,7 @@ export function useCameraSpec(id: string) {
 export function useCreateCameraSpec() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (body: CameraSpec): Promise<CameraSpecRecord> => createCameraSpec(body),
+    mutationFn: (body: CameraSpecCreate): Promise<CameraSpecRecord> => createCameraSpec(body),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: cameraSpecKeys.all })
     },

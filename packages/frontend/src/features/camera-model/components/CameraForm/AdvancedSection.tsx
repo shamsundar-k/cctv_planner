@@ -14,7 +14,7 @@ interface Props {
 export default function AdvancedSection({ form, errors, set }: Props) {
   return (
     <CollapsibleSection title="IR">
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Field
           label="IR Range"
           tooltip="Effective IR illuminator range — 0 means no built-in IR"
@@ -25,12 +25,12 @@ export default function AdvancedSection({ form, errors, set }: Props) {
               type="number"
               min={0}
               step={1}
-              className={`${inputClass} pr-8 ${errors.ir_range ? 'border-red-400' : ''}`}
+              className={`${inputClass} pr-8 ${errors.ir_range ? 'border-error focus:border-error focus:ring-error/20' : ''}`}
               value={form.ir_range}
               onChange={(e) => set('ir_range', parseNumberInput(e.target.value))}
             />
           </InputWithUnit>
-          {errors.ir_range && <p className="text-xs text-red-500 mt-1 mb-0">{errors.ir_range}</p>}
+          {errors.ir_range && <p className="mb-0 mt-1 text-xs text-error">{errors.ir_range}</p>}
         </Field>
       </div>
     </CollapsibleSection>

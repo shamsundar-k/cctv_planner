@@ -1,5 +1,5 @@
 import client from '../../api/client'
-import type { CameraSpec, CameraSpecRecord, CameraSpecUpdate } from '../../types/camera'
+import type { CameraSpecCreate, CameraSpecRecord, CameraSpecUpdate } from '../../types/camera'
 
 export async function fetchAllCameraSpecs(): Promise<CameraSpecRecord[]> {
   const res = await client.get<CameraSpecRecord[]>('/camera-specs')
@@ -11,7 +11,7 @@ export async function fetchCameraSpec(id: string): Promise<CameraSpecRecord> {
   return res.data
 }
 
-export async function createCameraSpec(body: CameraSpec): Promise<CameraSpecRecord> {
+export async function createCameraSpec(body: CameraSpecCreate): Promise<CameraSpecRecord> {
   const res = await client.post<CameraSpecRecord>('/camera-specs', body)
   return res.data
 }

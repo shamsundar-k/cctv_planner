@@ -1,2 +1,2 @@
 export const inputClass =
-  'w-full h-9 px-3 text-sm bg-card border border-border rounded-lg text-primary placeholder:text-muted outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-colors'
+  'h-10 w-full rounded-lg border border-panel-border bg-background px-3 text-sm text-text-primary outline-none transition-colors placeholder:text-text-subtle hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:border-panel-border disabled:bg-disabled disabled:text-disabled-foreground'

@@ -51,6 +51,10 @@ class CameraSpec(BaseModel):
     }
 
 
+class CameraSpecCreate(CameraSpec):
+    id: str | None = Field(None, pattern=r"^[0-9a-fA-F]{24}$")
+
+
 class CameraSpecUpdate(BaseModel):
     name: str | None = Field(None, min_length=1)
     manufacturer: str | None = Field(None, min_length=1)
@@ -63,5 +67,8 @@ class CameraSpecUpdate(BaseModel):
 
 class CameraSpecRecord(CameraSpec):
     id: str
+    image_storage_key: str | None = None
+    image_version: int = 0
+    image_updated_at: datetime | None = None
     created_at: datetime
     updated_at: datetime

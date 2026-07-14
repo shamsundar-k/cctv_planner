@@ -39,6 +39,10 @@ export interface CameraSpec {
   ir_range: number
 }
 
+export interface CameraSpecCreate extends CameraSpec {
+  id: string
+}
+
 export interface CameraSpecUpdate {
   name?: string | null
   manufacturer?: string | null
@@ -51,6 +55,9 @@ export interface CameraSpecUpdate {
 
 export interface CameraSpecRecord extends CameraSpec {
   id: string
+  image_storage_key?: string | null
+  image_version: number
+  image_updated_at?: string | null
   created_at: string
   updated_at: string
 }

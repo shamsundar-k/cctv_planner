@@ -23,12 +23,12 @@ export default function SensorSection({ form, errors, set }: Props) {
               type="number"
               min={1}
               step={1}
-              className={`${inputClass} pr-8 ${errors.resolution_h ? 'border-red-400' : ''}`}
+              className={`${inputClass} pr-8 ${errors.resolution_h ? 'border-error focus:border-error focus:ring-error/20' : ''}`}
               value={form.resolution_h}
               onChange={(e) => set('resolution_h', parseIntegerInput(e.target.value))}
             />
           </InputWithUnit>
-          {errors.resolution_h && <p className="text-xs text-red-500 mt-1 mb-0">{errors.resolution_h}</p>}
+          {errors.resolution_h && <p className="mb-0 mt-1 text-xs text-error">{errors.resolution_h}</p>}
         </Field>
 
         <Field label="Resolution V *">
@@ -37,26 +37,26 @@ export default function SensorSection({ form, errors, set }: Props) {
               type="number"
               min={1}
               step={1}
-              className={`${inputClass} pr-8 ${errors.resolution_v ? 'border-red-400' : ''}`}
+              className={`${inputClass} pr-8 ${errors.resolution_v ? 'border-error focus:border-error focus:ring-error/20' : ''}`}
               value={form.resolution_v}
               onChange={(e) => set('resolution_v', parseIntegerInput(e.target.value))}
             />
           </InputWithUnit>
-          {errors.resolution_v && <p className="text-xs text-red-500 mt-1 mb-0">{errors.resolution_v}</p>}
+          {errors.resolution_v && <p className="mb-0 mt-1 text-xs text-error">{errors.resolution_v}</p>}
         </Field>
 
         <Field label="Megapixels">
           <div className="h-9 flex items-center gap-1">
-            <span className="text-base font-semibold text-primary">
+            <span className="text-base font-semibold text-text-primary">
               {calcMegapixels(form.resolution_h, form.resolution_v)}
             </span>
-            <span className="text-xs text-muted">MP</span>
+            <span className="text-xs text-text-muted">MP</span>
           </div>
         </Field>
 
         <Field label="Aspect Ratio">
           <div className="h-9 flex items-center">
-            <span className="text-base font-semibold text-primary">
+            <span className="text-base font-semibold text-text-primary">
               {deriveAspectRatioFromResolution(form.resolution_h, form.resolution_v)}
             </span>
           </div>

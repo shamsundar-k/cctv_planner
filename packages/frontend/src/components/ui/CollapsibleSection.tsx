@@ -10,14 +10,14 @@ interface Props {
 export default function CollapsibleSection({ title, children, defaultOpen = true }: Props) {
   const [open, setOpen] = useState(defaultOpen)
   return (
-    <section className="border border-border rounded-xl overflow-hidden bg-card shadow-sm">
+    <section className="overflow-hidden rounded-xl border border-panel-border bg-panel shadow-sm">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center justify-between px-5 py-3 bg-surface hover:bg-border/30 transition-colors border-b border-border"
+        className="flex w-full items-center justify-between border-b border-panel-border bg-divider/60 px-5 py-3 text-left transition-colors hover:bg-divider focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-primary" aria-expanded={open}
       >
-        <h2 className="text-[11px] font-semibold text-muted uppercase tracking-widest m-0">{title}</h2>
-        <ChevronDown size={16} className={`text-muted transition-transform ${open ? 'rotate-180' : ''}`} />
+        <h2 className="text-[11px] font-semibold text-text-muted uppercase tracking-widest m-0">{title}</h2>
+        <ChevronDown size={16} className={`text-text-muted transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
       {open && <div className="p-5">{children}</div>}
     </section>

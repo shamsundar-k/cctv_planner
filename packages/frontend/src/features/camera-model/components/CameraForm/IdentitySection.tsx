@@ -13,35 +13,35 @@ interface Props {
 export default function IdentitySection({ form, errors, set }: Props) {
   return (
     <CollapsibleSection title="Identity">
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Field label="Name *">
           <input
-            className={`${inputClass} ${errors.name ? 'border-red-400 focus:border-red-400 focus:ring-red-400' : ''}`}
+            className={`${inputClass} ${errors.name ? 'border-error focus:border-error focus:ring-error/20' : ''}`}
             value={form.name}
             onChange={(e) => set('name', e.target.value)}
             placeholder="Name"
           />
-          {errors.name && <p className="text-xs text-red-500 mt-1 mb-0">{errors.name}</p>}
+          {errors.name && <p className="mb-0 mt-1 text-xs text-error">{errors.name}</p>}
         </Field>
 
         <Field label="Manufacturer">
           <input
-            className={`${inputClass} ${errors.manufacturer ? 'border-red-400 focus:border-red-400 focus:ring-red-400' : ''}`}
+            className={`${inputClass} ${errors.manufacturer ? 'border-error focus:border-error focus:ring-error/20' : ''}`}
             value={form.manufacturer}
             onChange={(e) => set('manufacturer', e.target.value)}
             placeholder="Manufacturer"
           />
-          {errors.manufacturer && <p className="text-xs text-red-500 mt-1 mb-0">{errors.manufacturer}</p>}
+          {errors.manufacturer && <p className="mb-0 mt-1 text-xs text-error">{errors.manufacturer}</p>}
         </Field>
 
         <Field label="Model">
           <input
-            className={`${inputClass} ${errors.model ? 'border-red-400 focus:border-red-400 focus:ring-red-400' : ''}`}
+            className={`${inputClass} ${errors.model ? 'border-error focus:border-error focus:ring-error/20' : ''}`}
             value={form.model}
             onChange={(e) => set('model', e.target.value)}
             placeholder="Model"
           />
-          {errors.model && <p className="text-xs text-red-500 mt-1 mb-0">{errors.model}</p>}
+          {errors.model && <p className="mb-0 mt-1 text-xs text-error">{errors.model}</p>}
         </Field>
 
         <Field label="Camera Type">

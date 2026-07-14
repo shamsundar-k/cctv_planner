@@ -11,13 +11,13 @@ export default function CameraCardActions({ camera, onDelete }: Props) {
     <div className="flex gap-2 mt-auto pt-1">
       <Link
         to={`/admin/manage/camera_specs/${camera.id}`}
-        className="flex-1 text-center px-3 py-1.5 text-xs font-medium bg-surface hover:bg-accent/20 text-primary rounded-md no-underline transition-colors"
+        className="flex-1 rounded-md border border-primary/25 bg-primary/10 px-3 py-1.5 text-center text-xs font-semibold text-primary no-underline transition-colors hover:border-primary/40 hover:bg-primary/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
       >
         Edit
       </Link>
       <button
         onClick={() => onDelete(camera)}
-        className="flex-1 px-3 py-1.5 text-xs font-medium bg-transparent text-red-500 border border-red-500/20 hover:bg-red-500/10 hover:border-red-500 rounded-md cursor-pointer transition-colors"
+        className="flex-1 cursor-pointer rounded-md border border-error/35 bg-error/10 px-3 py-1.5 text-xs font-semibold text-error transition-colors hover:border-error/60 hover:bg-error/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-error"
       >
         Delete
       </button>

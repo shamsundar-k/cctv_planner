@@ -18,7 +18,7 @@ import AdminDashboard from '../features/admin/component/AdminDashboard'
 
 export default function AdminPage() {
   return (
-    <div style={{ minHeight: '100vh', background: '#0f172a' }}>
+    <div className="min-h-screen bg-background text-text-primary">
       <Navbar />
       <AdminDashboard />
     </div>

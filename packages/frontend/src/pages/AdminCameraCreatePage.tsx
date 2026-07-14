@@ -8,21 +8,28 @@ export default function AdminCameraCreatePage() {
   const formProps = useAdminCameraCreate()
 
   return (
-    <div className="min-h-screen bg-canvas">
+    <div className="min-h-screen bg-background text-text-primary">
       <Navbar />
-      <div className="px-10 py-8 max-w-5xl mx-auto">
+      <main className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
         <Link
           to="/admin/manage/camera_specs"
-          className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-primary transition-colors mb-4 no-underline"
+          className="mb-5 inline-flex items-center gap-1.5 rounded-md text-sm font-medium text-text-muted no-underline transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
         >
-          <ChevronLeft size={16} />
+          <ChevronLeft size={16} aria-hidden="true" />
           Camera Specifications
         </Link>
 
-        <h1 className="text-[26px] font-bold text-primary m-0 mb-8">Add Camera Specification</h1>
+        <div className="mb-8 border-b border-divider pb-6">
+          <h1 className="m-0 text-2xl font-bold tracking-tight text-text-primary sm:text-[28px]">
+            Add Camera Specification
+          </h1>
+          <p className="mb-0 mt-1.5 text-sm text-text-muted">
+            Add a camera model with its identity, image, lens, sensor, and IR details.
+          </p>
+        </div>
 
         <CameraCreateForm {...formProps} />
-      </div>
+      </main>
     </div>
   )
 }

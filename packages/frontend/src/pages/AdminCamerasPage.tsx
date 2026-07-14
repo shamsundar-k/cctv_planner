@@ -9,12 +9,12 @@ export default function AdminCamerasPage() {
   const { cameras, isLoading } = useCameraSpecList()
 
   return (
-    <div className="min-h-screen bg-canvas">
+    <div className="min-h-screen bg-background text-text-primary">
       <Navbar />
-      <div className="px-10 py-8">
+      <main className="mx-auto w-full max-w-[1440px] px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
         <Link
           to="/admin/manage"
-          className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-primary transition-colors mb-4 no-underline"
+          className="mb-5 inline-flex items-center gap-1.5 rounded-md text-sm font-medium text-text-muted no-underline transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
         >
           <ChevronLeft size={16} />
           Admin Dashboard
@@ -22,7 +22,7 @@ export default function AdminCamerasPage() {
 
         <CameraListHeader />
         <CameraGrid cameras={cameras} isLoading={isLoading} />
-      </div>
+      </main>
     </div>
   )
 }

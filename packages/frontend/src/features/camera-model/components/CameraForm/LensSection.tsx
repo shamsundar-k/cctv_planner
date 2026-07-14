@@ -36,7 +36,7 @@ export default function LensSection({ form, errors, set, setForm, handleLensType
                 type="number"
                 min={0.1}
                 step={0.1}
-                className={`${inputClass} pr-10 ${errors.focal_length_min ? 'border-red-400' : ''}`}
+                className={`${inputClass} pr-10 ${errors.focal_length_min ? 'border-error focus:border-error focus:ring-error/20' : ''}`}
                 value={form.focal_length_min}
                 onChange={(e) => {
                   const v = parseNumberInput(e.target.value)
@@ -48,7 +48,7 @@ export default function LensSection({ form, errors, set, setForm, handleLensType
                 }}
               />
             </InputWithUnit>
-            {errors.focal_length_min && <p className="text-xs text-red-500 mt-1 mb-0">{errors.focal_length_min}</p>}
+            {errors.focal_length_min && <p className="mb-0 mt-1 text-xs text-error">{errors.focal_length_min}</p>}
           </Field>
 
           <Field label={isFixed ? 'Focal Length Max — auto-synced' : 'Focal Length Max'}>
@@ -58,12 +58,12 @@ export default function LensSection({ form, errors, set, setForm, handleLensType
                 min={0.1}
                 step={0.1}
                 disabled={isFixed}
-                className={`${inputClass} pr-10 ${errors.focal_length_max ? 'border-red-400' : ''} disabled:opacity-50 disabled:bg-surface`}
+                className={`${inputClass} pr-10 ${errors.focal_length_max ? 'border-error focus:border-error focus:ring-error/20' : ''}`}
                 value={form.focal_length_max}
                 onChange={(e) => set('focal_length_max', parseNumberInput(e.target.value))}
               />
             </InputWithUnit>
-            {errors.focal_length_max && <p className="text-xs text-red-500 mt-1 mb-0">{errors.focal_length_max}</p>}
+            {errors.focal_length_max && <p className="mb-0 mt-1 text-xs text-error">{errors.focal_length_max}</p>}
           </Field>
         </div>
 
@@ -80,12 +80,12 @@ export default function LensSection({ form, errors, set, setForm, handleLensType
                 max={179}
                 step={0.1}
                 disabled={isFixed}
-                className={`${inputClass} pr-8 ${errors.h_fov_max ? 'border-red-400' : ''} disabled:opacity-50 disabled:bg-surface`}
+                className={`${inputClass} pr-8 ${errors.h_fov_max ? 'border-error focus:border-error focus:ring-error/20' : ''}`}
                 value={form.h_fov_max}
                 onChange={(e) => set('h_fov_max', parseNumberInput(e.target.value))}
               />
             </InputWithUnit>
-            {errors.h_fov_max && <p className="text-xs text-red-500 mt-1 mb-0">{errors.h_fov_max}</p>}
+            {errors.h_fov_max && <p className="mb-0 mt-1 text-xs text-error">{errors.h_fov_max}</p>}
           </Field>
 
           <Field
@@ -99,7 +99,7 @@ export default function LensSection({ form, errors, set, setForm, handleLensType
                 min={0.1}
                 max={179}
                 step={0.1}
-                className={`${inputClass} pr-8 ${errors.h_fov_min ? 'border-red-400' : ''}`}
+                className={`${inputClass} pr-8 ${errors.h_fov_min ? 'border-error focus:border-error focus:ring-error/20' : ''}`}
                 value={form.h_fov_min}
                 onChange={(e) => {
                   const v = parseNumberInput(e.target.value)
@@ -111,7 +111,7 @@ export default function LensSection({ form, errors, set, setForm, handleLensType
                 }}
               />
             </InputWithUnit>
-            {errors.h_fov_min && <p className="text-xs text-red-500 mt-1 mb-0">{errors.h_fov_min}</p>}
+            {errors.h_fov_min && <p className="mb-0 mt-1 text-xs text-error">{errors.h_fov_min}</p>}
           </Field>
         </div>
 
@@ -128,12 +128,12 @@ export default function LensSection({ form, errors, set, setForm, handleLensType
                 max={179}
                 step={0.1}
                 disabled={isFixed}
-                className={`${inputClass} pr-8 ${errors.v_fov_max ? 'border-red-400' : ''} disabled:opacity-50 disabled:bg-surface`}
+                className={`${inputClass} pr-8 ${errors.v_fov_max ? 'border-error focus:border-error focus:ring-error/20' : ''}`}
                 value={form.v_fov_max}
                 onChange={(e) => set('v_fov_max', parseNumberInput(e.target.value))}
               />
             </InputWithUnit>
-            {errors.v_fov_max && <p className="text-xs text-red-500 mt-1 mb-0">{errors.v_fov_max}</p>}
+            {errors.v_fov_max && <p className="mb-0 mt-1 text-xs text-error">{errors.v_fov_max}</p>}
           </Field>
 
           <Field
@@ -147,7 +147,7 @@ export default function LensSection({ form, errors, set, setForm, handleLensType
                 min={0.1}
                 max={179}
                 step={0.1}
-                className={`${inputClass} pr-8 ${errors.v_fov_min ? 'border-red-400' : ''}`}
+                className={`${inputClass} pr-8 ${errors.v_fov_min ? 'border-error focus:border-error focus:ring-error/20' : ''}`}
                 value={form.v_fov_min}
                 onChange={(e) => {
                   const v = parseNumberInput(e.target.value)
@@ -159,7 +159,7 @@ export default function LensSection({ form, errors, set, setForm, handleLensType
                 }}
               />
             </InputWithUnit>
-            {errors.v_fov_min && <p className="text-xs text-red-500 mt-1 mb-0">{errors.v_fov_min}</p>}
+            {errors.v_fov_min && <p className="mb-0 mt-1 text-xs text-error">{errors.v_fov_min}</p>}
           </Field>
         </div>
       </div>
