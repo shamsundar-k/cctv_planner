@@ -20,17 +20,7 @@ export default function MapLayersControl() {
   ]
 
   return (
-    <div
-      className="absolute right-3 flex flex-col gap-1.5 p-1.5 rounded-xl"
-      style={{
-        top: '50%',
-        transform: 'translateY(-50%)',
-        zIndex: 1000,
-        background: 'color-mix(in srgb, var(--theme-bg-card) 80%, transparent)',
-        border: '1px solid color-mix(in srgb, var(--theme-surface) 25%, transparent)',
-        backdropFilter: 'blur(8px)',
-      }}
-    >
+    <div className="absolute right-3 top-1/2 z-[1000] flex -translate-y-1/2 flex-col gap-1.5 rounded-lg border border-panel-border bg-panel/90 p-1.5 shadow-lg backdrop-blur-md">
       {buttons.map(({ key, icon, label }) => (
         <div key={key} className="relative">
           <ToolbarButton

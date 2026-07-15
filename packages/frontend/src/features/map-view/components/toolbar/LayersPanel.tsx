@@ -1,4 +1,4 @@
-import { X, Check } from 'lucide-react'
+import { Check, X } from 'lucide-react'
 import { LAYERS, useLayerVisibilityStore } from '@/store/layerVisibilityStore'
 
 interface Props {
@@ -6,54 +6,37 @@ interface Props {
 }
 
 export default function LayersPanel({ onClose }: Props) {
-  const visible = useLayerVisibilityStore((s) => s.visible)
-  const toggleLayer = useLayerVisibilityStore((s) => s.toggleLayer)
+  const visible = useLayerVisibilityStore((state) => state.visible)
+  const toggleLayer = useLayerVisibilityStore((state) => state.toggleLayer)
 
   return (
-    <div
-      className="rounded-xl p-3 w-[180px] shadow-xl"
-      style={{
-        background: 'var(--theme-bg-card)',
-        border: '1px solid color-mix(in srgb, var(--theme-surface) 25%, transparent)',
-      }}
-    >
-      <div className="flex items-center justify-between mb-2.5">
-        <span
-          className="text-[11px] font-bold uppercase tracking-wider"
-          style={{ color: 'var(--theme-text-secondary)' }}
-        >
-          Layers
-        </span>
+    <div className="w-[180px] rounded-lg border border-panel-border bg-panel p-3 shadow-xl">
+      <div className="mb-2.5 flex items-center justify-between">
+        <span className="text-[11px] font-bold uppercase text-text-secondary">Layers</span>
         <button
+          type="button"
           onClick={onClose}
-          className="transition-colors p-0.5 rounded hover:text-[var(--theme-text-primary)]"
-          style={{ color: 'var(--theme-text-secondary)' }}
-          aria-label="Close panel"
+          className="rounded-md p-1 text-text-secondary transition-colors hover:bg-background hover:text-text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          aria-label="Close layers panel"
         >
-          <X size={13} />
+          <X size={14} aria-hidden />
         </button>
       </div>
 
-      <div className="flex flex-col gap-1.5">
+      <div className="grid gap-1">
         {LAYERS.map(({ key, label }) => (
-          <label key={key} className="flex items-center gap-2 cursor-pointer">
-            <div
-              onClick={() => toggleLayer(key)}
-              className="w-3.5 h-3.5 rounded flex items-center justify-center flex-shrink-0 transition-all"
-              style={{
-                background: visible[key] ? 'var(--theme-accent)' : 'transparent',
-                border: `1.5px solid ${visible[key] ? 'var(--theme-accent)' : 'color-mix(in srgb, var(--theme-surface) 60%, transparent)'}`,
-              }}
-            >
-              {visible[key] && <Check size={8} stroke="var(--theme-accent-text)" strokeWidth={1.5} />}
-            </div>
-            <span
-              className="text-[12px] transition-colors"
-              style={{ color: visible[key] ? 'var(--theme-text-primary)' : 'var(--theme-text-secondary)' }}
-            >
-              {label}
+          <button
+            type="button"
+            key={key}
+            onClick={() => toggleLayer(key)}
+            className="flex min-h-9 items-center gap-2 rounded-md px-1.5 text-left text-xs text-text-secondary transition-colors hover:bg-background hover:text-text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            aria-pressed={visible[key]}
+          >
+            <span className={`grid size-4 shrink-0 place-items-center rounded border ${visible[key] ? 'border-primary bg-primary text-primary-foreground' : 'border-panel-border bg-background'}`}>
+              {visible[key] && <Check size={10} strokeWidth={2} aria-hidden />}
             </span>
-          </label>
+            {label}
+          </button>
         ))}
       </div>
     </div>

@@ -78,16 +78,18 @@ export default function PlaceCameraOverlay() {
 
         map.on('click', handler)
         return () => { map.off('click', handler) }
-    }, [mapRef, projectId])
+    }, [mapRef, projectId, selectedCameraModel])
 
     return (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] flex items-center gap-2.5 px-4 py-2 rounded-xl bg-card/55 border border-accent/40 backdrop-blur-md shadow-lg text-sm whitespace-nowrap">
-            <span className="font-semibold text-primary">Camera Insert Mode : {selectedCameraModel?.name}</span>
+        <div className="absolute left-1/2 top-4 z-[1000] flex -translate-x-1/2 items-center gap-2.5 whitespace-nowrap rounded-lg border border-primary/40 bg-panel/90 px-4 py-2 text-sm shadow-lg backdrop-blur-md">
+            <span className="font-semibold text-text-primary">Camera Insert Mode: {selectedCameraModel?.name}</span>
             <button
+                type="button"
                 onClick={() => setActiveTool('pan')}
-                className="ml-1 flex items-center justify-center rounded-md p-0.5 text-muted hover:text-primary hover:bg-surface/40 transition-colors"
+                aria-label="Exit camera insert mode"
+                className="ml-1 flex items-center justify-center rounded-md p-1 text-text-secondary transition-colors hover:bg-background hover:text-text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             >
-                <X size={14} />
+                <X size={14} aria-hidden />
             </button>
         </div>
     )

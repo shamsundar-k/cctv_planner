@@ -14,18 +14,18 @@ export default function ModelDropdown({ models, selected, onSelect }: ModelDropd
 
     return (
         <div className="flex flex-col gap-1.5">
-            <label className="text-[10px] font-bold uppercase tracking-widest pl-1 text-muted">
+            <label className="pl-1 text-[10px] font-bold uppercase text-text-muted">
                 Model
             </label>
             <select
                 value={selected?.id ?? ''}
                 onChange={handleChange}
                 disabled={models.length === 0}
-                className="w-full rounded-lg px-3 py-2 text-[13px] font-medium outline-none transition-all backdrop-blur-sm cursor-pointer text-primary bg-surface/20 border border-surface/30 disabled:opacity-40 disabled:cursor-not-allowed"
+                className="w-full cursor-pointer rounded-lg border border-panel-border bg-background px-3 py-2 text-[13px] font-medium text-text-primary outline-none transition-colors hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/15 disabled:cursor-not-allowed disabled:bg-disabled disabled:text-disabled-foreground"
             >
-                <option value="" className="bg-card text-primary">Select a model</option>
+                <option value="" className="bg-panel text-text-primary">Select a model</option>
                 {models.map((m) => (
-                    <option key={m.id} value={m.id} className="bg-card text-primary">
+                    <option key={m.id} value={m.id} className="bg-panel text-text-primary">
                         {m.name}
                     </option>
                 ))}

@@ -6,9 +6,10 @@ interface UserMenuProps {
   onClose: () => void
   /** If provided, an "Exit Project" item is shown that navigates to this path. */
   exitProjectPath?: string
+  placement?: 'bottom-end' | 'right-end'
 }
 
-export default function UserMenu({ onClose, exitProjectPath }: UserMenuProps) {
+export default function UserMenu({ onClose, exitProjectPath, placement = 'bottom-end' }: UserMenuProps) {
   const navigate = useNavigate()
   const menuRef = useRef<HTMLDivElement>(null)
   const user = useAuthStore((s) => s.user)
@@ -42,32 +43,25 @@ export default function UserMenu({ onClose, exitProjectPath }: UserMenuProps) {
   return (
     <div
       ref={menuRef}
-      className="absolute top-[calc(100%+8px)] right-0 rounded-xl shadow-[0_8px_32px_rgba(15,23,42,0.18)] min-w-[220px] z-[1000] overflow-hidden bg-panel border border-panel-border"
+      className={`absolute z-[3200] min-w-[220px] overflow-hidden rounded-lg border border-panel-border bg-panel shadow-[0_8px_32px_rgba(15,23,42,0.18)] ${
+        placement === 'right-end' ? 'bottom-0 left-[calc(100%+12px)]' : 'right-0 top-[calc(100%+8px)]'
+      }`}
     >
       <div className="px-4 pt-4 pb-3 border-b border-panel-border bg-background">
         <div className="text-sm font-bold text-text-primary">{user?.fullName}</div>
         <div className="text-xs mt-0.5 text-text-muted">{user?.email}</div>
       </div>
       <div className="py-1">
-        <button className={itemCls} onClick={() => { navigate('/profile'); onClose() }}>
-          My Profile
-        </button>
         {exitProjectPath && (
           <button className={itemCls} onClick={() => { navigate(exitProjectPath); onClose() }}>
             Exit Project
           </button>
         )}
-        <button className={itemCls} onClick={() => { navigate('/settings'); onClose() }}>
-          Settings
-        </button>
         {isAdmin && (
           <button className={itemCls} onClick={() => { navigate('/admin/manage'); onClose() }}>
             Manage App
           </button>
         )}
-        <button className={itemCls} onClick={() => { navigate('/docs'); onClose() }}>
-          Help &amp; Documentation
-        </button>
       </div>
       <div className="border-t border-panel-border">
         <button

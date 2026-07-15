@@ -5,9 +5,10 @@ import UserMenu from './UserMenu'
 
 interface AppUserAvatarProps {
   exitProjectPath?: string
+  menuPlacement?: 'bottom-end' | 'right-end'
 }
 
-export default function AppUserAvatar({ exitProjectPath }: AppUserAvatarProps) {
+export default function AppUserAvatar({ exitProjectPath, menuPlacement = 'bottom-end' }: AppUserAvatarProps) {
   const user = useAuthStore((s) => s.user)
   const [menuOpen, setMenuOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -58,7 +59,11 @@ export default function AppUserAvatar({ exitProjectPath }: AppUserAvatarProps) {
         <ChevronDown size={12} aria-hidden="true" className="text-text-muted" />
       </button>
       {menuOpen && (
-        <UserMenu onClose={() => setMenuOpen(false)} exitProjectPath={exitProjectPath} />
+        <UserMenu
+          onClose={() => setMenuOpen(false)}
+          exitProjectPath={exitProjectPath}
+          placement={menuPlacement}
+        />
       )}
     </div>
   )

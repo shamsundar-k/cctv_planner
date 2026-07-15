@@ -25,27 +25,27 @@ export default function CameraBrief({ model }: Props) {
             : `${focalLength.min} mm – ${focalLength.max} mm`
 
     return (
-        <div className="rounded-xl border-2 border-border bg-surface/10 backdrop-blur-sm overflow-hidden">
+        <div className="overflow-hidden rounded-lg border border-panel-border bg-background">
             {/* Header strip */}
-            <div className="flex items-center justify-between gap-2 px-4 py-2.5 border-b border-surface/20 bg-surface/10">
+            <div className="flex items-center justify-between gap-2 border-b border-panel-border bg-panel px-4 py-2.5">
                 <div className="flex items-center gap-2 min-w-0">
 
-                    <span className="text-[11px] font-bold  tracking-[0.15em] text-muted ">
+                    <span className="text-[11px] font-bold text-text-muted">
                         Manufacturer:
                     </span>
-                    <span className="text-[11px] font-medium text-primary">
+                    <span className="text-[11px] font-medium text-text-primary">
                         {model.manufacturer}
                     </span>
                 </div>
-                <span className="shrink-0 rounded-md bg-accent px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider text-primary shadow-sm">
+                <span className="shrink-0 rounded-md border border-primary/25 bg-primary/10 px-2 py-0.5 text-[8px] font-bold uppercase text-primary">
                     {CAMERA_TYPE_LABEL[model.camera_type]}
                 </span>
             </div>
 
             {/* Model  */}
             <div className="px-4 pt-3 pb-2.5">
-                <p className="text-[13px] font-semibold text-primary leading-tight truncate">
-                    <span className="text-muted">Model:</span> {model.model}
+                <p className="truncate text-[13px] font-semibold leading-tight text-text-primary">
+                    <span className="text-text-muted">Model:</span> {model.model}
                 </p>
 
             </div>
@@ -68,10 +68,10 @@ export default function CameraBrief({ model }: Props) {
 function Spec({ label, value, sub }: { label: string; value: string; sub?: string }) {
     return (
         <div className="flex flex-col gap-0.5">
-            <span className="text-[9px] font-bold uppercase tracking-widest text-muted">{label}</span>
-            <span className="text-[12px] font-medium text-primary leading-tight">
+            <span className="text-[9px] font-bold uppercase text-text-muted">{label}</span>
+            <span className="text-[12px] font-medium leading-tight text-text-primary">
                 {value}
-                {sub && <span className="text-muted ml-1">({sub})</span>}
+                {sub && <span className="ml-1 text-text-muted">({sub})</span>}
             </span>
         </div>
     )

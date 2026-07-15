@@ -27,19 +27,15 @@ export default function CameraPanel({ projectId }: CameraPanelProps) {
 
   return (
     <aside
-      className="shrink-0 flex flex-col overflow-hidden transition-[width] duration-200"
-      style={{
-        width: selectedCameraId ? 312 : 0,
-        background: 'var(--theme-bg-card)',
-        borderLeft: '1px solid color-mix(in srgb, var(--theme-surface) 20%, transparent)',
-      }}
+      className="flex shrink-0 flex-col overflow-hidden border-l border-panel-border bg-panel transition-[width] duration-200"
+      style={{ width: selectedCameraId ? 312 : 0 }}
       aria-hidden={!selectedCameraId}
     >
       {selectedCameraId && form && camera && (
-        <div className="flex flex-col h-full w-[312px]">
+        <div className="flex h-full w-[312px] flex-col">
           <PanelHeader saveStatus={saveStatus} onClose={clearSelection} />
           <CameraInfoSection
-            modelName={cameraModel?.name ?? '—'}
+            modelName={cameraModel?.name ?? '-'}
             lat={camera.location.latitude}
             lng={camera.location.longitude}
           />

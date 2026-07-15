@@ -7,12 +7,12 @@ function PlaceCameraIcon() {
   return (
     <span className="relative inline-flex items-center justify-center">
       <Camera size={15} />
-      <Plus size={8} strokeWidth={3} className="absolute -top-1 -right-1 text-accent" />
+      <Plus size={8} strokeWidth={3} className="absolute -right-1 -top-1" />
     </span>
   )
 }
 
-const DIVIDER = <div className="w-px h-4 mx-0.5 shrink-0 bg-surface/40" />
+const DIVIDER = <div className="mx-0.5 h-5 w-px shrink-0 bg-divider" />
 
 export default function MapActionsToolbar() {
   const selectedCameraModel = useSelectedCameraModelStore((s) => s.selectedCameraModel)
@@ -22,7 +22,7 @@ export default function MapActionsToolbar() {
   const placeCameraTooltip = selectedCameraModel ? selectedCameraModel.name : 'Select a camera model'
 
   return (
-    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[1000] flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-card/80 border border-surface/25 backdrop-blur-[8px] shadow-xl">
+    <div className="absolute bottom-4 left-1/2 z-[1000] flex -translate-x-1/2 items-center gap-1 rounded-lg border border-panel-border bg-panel/90 p-1.5 shadow-xl backdrop-blur-md">
       <MapActionButton
         icon={<PlaceCameraIcon />}
         label="Place Camera"

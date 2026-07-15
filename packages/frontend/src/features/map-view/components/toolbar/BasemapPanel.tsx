@@ -1,41 +1,27 @@
-import { X, Check } from 'lucide-react'
-import { BASE_MAPS, type BaseMapKey } from '../../../../config/mapConfig'
-import { useBaseTileStore } from '../../../../store/baseTileStore'
+import { Check, X } from 'lucide-react'
+import { BASE_MAPS, type BaseMapKey } from '@/config/mapConfig'
+import { useBaseTileStore } from '@/store/baseTileStore'
 
 interface Props {
   onClose: () => void
 }
 
 export default function BasemapPanel({ onClose }: Props) {
-  const activeBaseMap = useBaseTileStore((s) => s.activeBaseMap)
-  const setBaseMap = useBaseTileStore((s) => s.setBaseMap)
-
-  const entries = Object.entries(BASE_MAPS) as [BaseMapKey, typeof BASE_MAPS[BaseMapKey]][]
+  const activeBaseMap = useBaseTileStore((state) => state.activeBaseMap)
+  const setBaseMap = useBaseTileStore((state) => state.setBaseMap)
+  const entries = Object.entries(BASE_MAPS) as [BaseMapKey, (typeof BASE_MAPS)[BaseMapKey]][]
 
   return (
-    <div
-      className="rounded-xl p-3 w-[212px] shadow-xl"
-      style={{
-        background: 'var(--theme-bg-card)',
-        border: '1px solid color-mix(in srgb, var(--theme-surface) 25%, transparent)',
-      }}
-    >
-      <div className="flex items-center justify-between mb-2.5">
-        <span
-          className="text-[11px] font-bold uppercase tracking-wider"
-          style={{ color: 'var(--theme-text-secondary)' }}
-        >
-          Base Map
-        </span>
+    <div className="w-[212px] rounded-lg border border-panel-border bg-panel p-3 shadow-xl">
+      <div className="mb-2.5 flex items-center justify-between">
+        <span className="text-[11px] font-bold uppercase text-text-secondary">Base Map</span>
         <button
+          type="button"
           onClick={onClose}
-          className="transition-colors p-0.5 rounded"
-          style={{ color: 'var(--theme-text-secondary)' }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--theme-text-primary)')}
-          onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--theme-text-secondary)')}
-          aria-label="Close panel"
+          className="rounded-md p-1 text-text-secondary transition-colors hover:bg-background hover:text-text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          aria-label="Close base map panel"
         >
-          <X size={13} />
+          <X size={14} aria-hidden />
         </button>
       </div>
 
@@ -44,33 +30,18 @@ export default function BasemapPanel({ onClose }: Props) {
           const isActive = key === activeBaseMap
           return (
             <button
+              type="button"
               key={key}
               onClick={() => setBaseMap(key)}
-              className="rounded-lg overflow-hidden text-left transition-all"
-              style={{
-                outline: isActive
-                  ? '2px solid var(--theme-accent)'
-                  : '1px solid color-mix(in srgb, var(--theme-surface) 30%, transparent)',
-                outlineOffset: '0px',
-              }}
+              className={`overflow-hidden rounded-lg border bg-background text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+                isActive ? 'border-primary ring-1 ring-primary' : 'border-panel-border hover:border-primary/50'
+              }`}
+              aria-pressed={isActive}
             >
-              <img
-                src={tile.image}
-                alt={tile.label}
-                className="w-full h-12 object-cover block"
-                draggable={false}
-              />
-              <div
-                className="px-1.5 py-1 flex items-center justify-between gap-1"
-                style={{ background: 'color-mix(in srgb, var(--theme-surface) 10%, transparent)' }}
-              >
-                <span
-                  className="text-[11px] font-semibold truncate"
-                  style={{ color: 'var(--theme-text-primary)' }}
-                >
-                  {tile.label}
-                </span>
-                {isActive && <Check size={10} style={{ color: 'var(--theme-accent)', flexShrink: 0 }} />}
+              <img src={tile.image} alt="" className="block h-12 w-full object-cover" draggable={false} />
+              <div className="flex items-center justify-between gap-1 px-1.5 py-1">
+                <span className="truncate text-[11px] font-semibold text-text-primary">{tile.label}</span>
+                {isActive && <Check size={11} className="shrink-0 text-primary" aria-hidden />}
               </div>
             </button>
           )

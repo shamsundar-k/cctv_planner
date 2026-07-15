@@ -9,34 +9,23 @@ interface Props {
 
 export default function ToolbarButton({ icon, label, isActive, onClick }: Props) {
   return (
-    <div className="relative group">
+    <div className="group relative">
       <button
+        type="button"
         onClick={onClick}
-        className="w-8 h-8 flex items-center justify-center rounded-md cursor-pointer border transition-all"
-        style={{
-          background: 'var(--theme-bg-card)',
-          borderColor: isActive
-            ? 'var(--theme-accent)'
-            : 'color-mix(in srgb, var(--theme-surface) 30%, transparent)',
-        }}
+        className={`flex size-9 items-center justify-center rounded-lg border transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+          isActive
+            ? 'border-primary bg-primary/10 text-primary'
+            : 'border-panel-border bg-panel text-text-secondary hover:border-primary/50 hover:bg-background hover:text-text-primary'
+        }`}
         aria-label={label}
         aria-pressed={isActive}
       >
-        <span style={{ color: isActive ? 'var(--theme-accent)' : 'var(--theme-text-secondary)' }}>
-          {icon}
-        </span>
+        {icon}
       </button>
 
-      {/* Tooltip — only when panel is closed */}
       {!isActive && (
-        <div
-          className="absolute right-[calc(100%+6px)] top-1/2 -translate-y-1/2 px-2 py-1 rounded text-[11px] whitespace-nowrap pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150"
-          style={{
-            background: 'color-mix(in srgb, var(--theme-bg-base) 90%, transparent)',
-            color: 'var(--theme-text-primary)',
-            border: '1px solid color-mix(in srgb, var(--theme-surface) 25%, transparent)',
-          }}
-        >
+        <div className="pointer-events-none absolute right-[calc(100%+6px)] top-1/2 -translate-y-1/2 whitespace-nowrap rounded-md border border-panel-border bg-panel px-2 py-1 text-[11px] font-medium text-text-primary opacity-0 shadow-lg transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
           {label}
         </div>
       )}

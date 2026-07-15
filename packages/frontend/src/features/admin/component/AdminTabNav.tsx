@@ -14,42 +14,29 @@ interface AdminTabNavProps {
 
 export default function AdminTabNav({ activeTab, onTabChange, inviteCount }: AdminTabNavProps) {
   return (
-    <div
-      className="flex mb-7 overflow-x-auto border-b"
-      style={{ borderColor: 'color-mix(in srgb, var(--theme-surface) 20%, transparent)' }}
-    >
-      {TABS.map(({ id, label }) => (
-        <button
-          key={id}
-          onClick={() => onTabChange(id)}
-          className="px-5 py-2.5 text-sm font-semibold bg-transparent border-none cursor-pointer whitespace-nowrap transition-all border-b-2 -mb-px"
-          style={{
-            color: activeTab === id ? 'var(--theme-text-primary)' : 'color-mix(in srgb, var(--theme-text-secondary) 70%, transparent)',
-            borderBottomColor: activeTab === id ? 'var(--theme-accent)' : 'transparent',
-            textDecoration: activeTab === id ? 'underline' : 'none',
-            textDecorationColor: 'var(--theme-accent)',
-            textUnderlineOffset: '6px',
-            textDecorationThickness: '2px',
-          }}
-          onMouseEnter={e => { if (activeTab !== id) e.currentTarget.style.color = 'var(--theme-text-primary)' }}
-          onMouseLeave={e => { if (activeTab !== id) e.currentTarget.style.color = 'color-mix(in srgb, var(--theme-text-secondary) 70%, transparent)' }}
-        >
-          {label}
-          {id === 'invites' && inviteCount > 0 && (
-            <span
-              className="ml-2 px-1.5 py-0.5 text-[11px] font-bold rounded-full"
-              style={{
-                background: activeTab === id
-                  ? 'var(--theme-accent)'
-                  : 'color-mix(in srgb, var(--theme-accent) 15%, transparent)',
-                color: activeTab === id ? 'var(--theme-accent-text)' : 'var(--theme-accent)',
-              }}
-            >
-              {inviteCount}
-            </span>
-          )}
-        </button>
-      ))}
+    <div className="mb-7 flex overflow-x-auto border-b border-panel-border">
+      {TABS.map(({ id, label }) => {
+        const isActive = activeTab === id
+        return (
+          <button
+            type="button"
+            key={id}
+            onClick={() => onTabChange(id)}
+            className={`-mb-px whitespace-nowrap border-x-0 border-t-0 border-b-2 bg-transparent px-5 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+              isActive
+                ? 'border-primary text-text-primary'
+                : 'border-transparent text-text-secondary hover:border-panel-border hover:text-text-primary'
+            }`}
+          >
+            {label}
+            {id === 'invites' && inviteCount > 0 && (
+              <span className={`ml-2 rounded-full px-1.5 py-0.5 text-[11px] font-bold ${isActive ? 'bg-primary text-primary-foreground' : 'bg-primary/10 text-primary'}`}>
+                {inviteCount}
+              </span>
+            )}
+          </button>
+        )
+      })}
     </div>
   )
 }
