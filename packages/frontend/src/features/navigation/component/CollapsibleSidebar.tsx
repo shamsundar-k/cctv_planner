@@ -18,6 +18,7 @@ import AppUserAvatar from '@/components/AppUserAvatar'
 import ModelSelectorPanel from '@/features/camera-selector/component/ModelSelectorPanel'
 import { useSaveAction } from '@/features/map-view/hooks/useSaveAction'
 import PlacedCameraList from '@/features/map-view/components/workspace-sidebar/PlacedCameraList'
+import { COLLAPSED_SIDEBAR_WIDTH } from '@/features/navigation/sidebarLayout'
 import { themeOptions, type Theme } from '@/styles/theme'
 import { useTheme } from '@/styles/useTheme'
 
@@ -26,7 +27,7 @@ type WorkspacePanelId = 'catalog' | 'cameras' | 'settings' | 'project'
 interface NavigationItem {
   id: WorkspacePanelId
   label: string
-  icon: ComponentType<{ size?: number; strokeWidth?: number; 'aria-hidden'?: boolean }>
+  icon: ComponentType<{ size?: number; strokeWidth?: number; className?: string; 'aria-hidden'?: boolean }>
 }
 
 interface CollapsibleSidebarProps {
@@ -35,7 +36,7 @@ interface CollapsibleSidebarProps {
 }
 
 const SIDEBAR_WIDTH = {
-  collapsed: 72,
+  collapsed: COLLAPSED_SIDEBAR_WIDTH,
   expanded: 240,
 }
 
@@ -104,7 +105,7 @@ function NavigationButton({
       } ${isCollapsed ? 'justify-center px-0' : ''}`}
     >
       {isActive && <span className="absolute left-0 top-2 h-7 w-1 rounded-r-full bg-primary" aria-hidden />}
-      <Icon size={21} strokeWidth={2} aria-hidden />
+      <Icon className="size-6 shrink-0" size={24} strokeWidth={2.25} aria-hidden />
       <span
         className={`overflow-hidden whitespace-nowrap transition-[opacity,width] duration-150 ${
           isCollapsed ? 'w-0 opacity-0' : 'w-40 opacity-100'
@@ -289,8 +290,8 @@ export default function CollapsibleSidebar({ projectId, projectName }: Collapsib
       </nav>
 
       <div className="border-t border-panel-border px-3 py-3">
-        <div className={`mb-2 flex h-11 items-center ${isCollapsed ? 'justify-center' : 'justify-end px-2'}`}>
-          <AppUserAvatar menuPlacement="right-end" />
+        <div className={`mb-2 flex items-center ${isCollapsed ? 'h-11 justify-center' : ''}`}>
+          <AppUserAvatar menuPlacement="right-end" showDetails={!isCollapsed} />
         </div>
         <button
           type="button"
@@ -301,7 +302,7 @@ export default function CollapsibleSidebar({ projectId, projectName }: Collapsib
             isCollapsed ? 'justify-center px-0' : ''
           }`}
         >
-          <ToggleIcon size={20} strokeWidth={2} aria-hidden />
+          <ToggleIcon className="size-6 shrink-0" size={24} strokeWidth={2.25} aria-hidden />
           <span
             className={`overflow-hidden whitespace-nowrap transition-[opacity,width] duration-150 ${
               isCollapsed ? 'w-0 opacity-0' : 'w-40 opacity-100'
