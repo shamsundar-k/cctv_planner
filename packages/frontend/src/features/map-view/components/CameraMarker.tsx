@@ -1,4 +1,4 @@
-import { useEffect, type RefObject } from 'react'
+import { useEffect } from 'react'
 import L from 'leaflet'
 import { useCameraStore } from '@/store/cameraStore'
 import { useCameraLayerStore } from '@/store/cameraLayerSlice'
@@ -38,19 +38,18 @@ function buildCameraIcon(colour: string, selected: boolean, bearing: number, lab
 
 interface CameraMarkerProps {
   cameraId: string
-  groupRef: RefObject<L.LayerGroup | null>
+  group: L.LayerGroup
   zoom: number
 }
 
-export default function CameraMarker({ cameraId, groupRef, zoom }: CameraMarkerProps) {
+export default function CameraMarker({ cameraId, group, zoom }: CameraMarkerProps) {
   const camera = useCameraStore((s) => s.cameraRecords[cameraId]?.camera)
   const isSelected = useCameraLayerStore((s) => s.selectedCameraId === cameraId)
   const selectCamera = useCameraLayerStore((s) => s.selectCamera)
   const updateCamera = useCameraStore((s) => s.updateCamera)
 
   useEffect(() => {
-    const group = groupRef.current
-    if (!group || !camera) return
+    if (!camera) return
 
     const marker = L.marker([camera.location.latitude, camera.location.longitude], {
       icon: buildCameraIcon(camera.color, isSelected, camera.bearing, camera.label, zoom),
@@ -77,7 +76,7 @@ export default function CameraMarker({ cameraId, groupRef, zoom }: CameraMarkerP
     return () => {
       marker.remove()
     }
-  }, [camera, isSelected, cameraId, selectCamera, updateCamera, zoom])
+  }, [camera, group, isSelected, cameraId, selectCamera, updateCamera, zoom])
 
   return null
 }

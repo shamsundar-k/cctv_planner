@@ -7,6 +7,8 @@ import MapModeOverlay from '@/features/map-view/components/map/MapModeOverlay'
 import { MapActionsToolbar } from '@/features/map-view/components/map-actions'
 import CameraPanel from '@/features/map-view/components/CameraPanel'
 import MapLayersControl from '@/features/map-view/components/toolbar/MapLayersControl'
+import CameraLayer from '@/features/map-view/components/layers/CameraLayer'
+import FovLayer from '@/features/map-view/components/layers/FovLayer'
 
 export default function ProjectMapView() {
   const { id, project, isLoading, isError, center, defaultZoom } = useMapView()
@@ -38,6 +40,8 @@ export default function ProjectMapView() {
       <div className="min-w-0 flex-1">
         <Map zoom={defaultZoom} center={center}>
           <BaseTile />
+          <FovLayer />
+          <CameraLayer />
           <MapLayersControl />
           <MapActionsToolbar />
           <MapModeOverlay />
