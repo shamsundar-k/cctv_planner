@@ -5,6 +5,7 @@ import tonerThumb from '../assets/basemap-thumbs/stamen_toner.jpg'
 import satelliteThumb from '../assets/basemap-thumbs/alidade_satellite.jpg'
 
 export type BasemapStyle = 'alidade_smooth' | 'alidade_smooth_dark' | 'stamen_toner' | 'alidade_satellite'
+export type BasemapLabelTone = 'light' | 'dark'
 
 const TILE_ATTRIBUTION =
     '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a> ' +
@@ -21,31 +22,35 @@ export function buildTileUrl(style: BasemapStyle, apiKey: string | undefined): s
 
 export const BASE_MAPS: Record<
     BasemapStyle,
-    { label: string; attribution: string; get_url: () => string; image: string }
+    { label: string; attribution: string; get_url: () => string; image: string; labelTone: BasemapLabelTone }
 > = {
     alidade_smooth: {
         label: 'Smooth',
         attribution: TILE_ATTRIBUTION,
         get_url: () => buildTileUrl('alidade_smooth', STADIA_API_KEY),
         image: smoothThumb,
+        labelTone: 'dark',
     },
     alidade_smooth_dark: {
         label: 'Dark',
         attribution: TILE_ATTRIBUTION,
         get_url: () => buildTileUrl('alidade_smooth_dark', STADIA_API_KEY),
         image: darkThumb,
+        labelTone: 'light',
     },
     stamen_toner: {
         label: 'Toner',
         attribution: TILE_ATTRIBUTION,
         get_url: () => buildTileUrl('stamen_toner', STADIA_API_KEY),
         image: tonerThumb,
+        labelTone: 'dark',
     },
     alidade_satellite: {
         label: 'Satellite',
         attribution: TILE_ATTRIBUTION,
         get_url: () => buildTileUrl('alidade_satellite', STADIA_API_KEY),
         image: satelliteThumb,
+        labelTone: 'light',
     },
 }
 

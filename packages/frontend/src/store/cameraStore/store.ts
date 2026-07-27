@@ -196,7 +196,7 @@ export const useCameraStore = create<CameraStoreState>()(
         }
 
         // Fire all three operation types in parallel
-        await Promise.allSettled([
+        const results = await Promise.allSettled([
 
           // POST — new cameras (isNew: true)
           ...toPost.map(async (record) => {
@@ -207,6 +207,7 @@ export const useCameraStore = create<CameraStoreState>()(
               get().markSaved(uid)
             } catch (e) {
               get().markFailed(uid, errorMessage(e))
+              throw e
             }
           }),
 
@@ -219,6 +220,7 @@ export const useCameraStore = create<CameraStoreState>()(
               get().markSaved(uid)
             } catch (e) {
               get().markFailed(uid, errorMessage(e))
+              throw e
             }
           }),
 
@@ -230,9 +232,13 @@ export const useCameraStore = create<CameraStoreState>()(
             } catch (e) {
               // markDeleted not called — uid stays in deletedCameras for retry
               console.error(`DELETE failed for camera ${uid}:`, e)
+              throw e
             }
           }),
         ])
+
+        const failed = results.find((result) => result.status === 'rejected')
+        if (failed?.status === 'rejected') throw failed.reason
       },
     }),
     { name: 'CameraStore' },

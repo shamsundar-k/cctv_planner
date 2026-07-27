@@ -1,7 +1,6 @@
 import { useCameraPanel } from './useCameraPanel'
 import PanelHeader from './PanelHeader'
-import CameraInfoSection from './CameraInfoSection'
-import DoriMetricsSection from './DoriMetricsSection'
+import CameraDetailsSection from './CameraDetailsSection'
 import CameraForm from './CameraForm'
 import PanelFooter from './PanelFooter'
 
@@ -23,24 +22,22 @@ export default function CameraPanel({ projectId }: CameraPanelProps) {
     setField,
     handleDelete,
     parseNullableNumber,
+    setTargetWidth,
+    focalRange,
+    targetWidthRange,
   } = useCameraPanel(projectId)
 
   return (
     <aside
       className="flex shrink-0 flex-col overflow-hidden border-l border-panel-border bg-panel transition-[width] duration-200"
-      style={{ width: selectedCameraId ? 312 : 0 }}
+      style={{ width: selectedCameraId ? 380 : 0 }}
       aria-hidden={!selectedCameraId}
     >
       {selectedCameraId && form && camera && (
-        <div className="flex h-full w-[312px] flex-col">
+        <div className="flex h-full w-[380px] flex-col">
           <PanelHeader saveStatus={saveStatus} onClose={clearSelection} />
-          <CameraInfoSection
-            modelName={cameraModel?.name ?? '-'}
-            lat={camera.location.latitude}
-            lng={camera.location.longitude}
-          />
-          <DoriMetricsSection metrics={fovMetrics} />
-          <CameraForm form={form} setField={setField} parseNullableNumber={parseNullableNumber} />
+          <CameraDetailsSection camera={camera} model={cameraModel} metrics={fovMetrics} />
+          <CameraForm form={form} setField={setField} parseNullableNumber={parseNullableNumber} setTargetWidth={setTargetWidth} focalRange={focalRange} targetWidthRange={targetWidthRange} />
           <PanelFooter
             confirmDelete={confirmDelete}
             onRequestDelete={() => setConfirmDelete(true)}

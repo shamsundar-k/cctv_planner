@@ -28,7 +28,7 @@ function buildCoverageArea(camera: CameraPlacement, cameraSpec: CameraSpecRecord
         h_fov_tele: cameraSpec.lens_spec.h_fov.min,
         v_fov_wide: cameraSpec.lens_spec.v_fov.max,
         v_fov_tele: cameraSpec.lens_spec.v_fov.min,
-        focal_length_chosen: cameraSpec.lens_spec.focal_length.min,
+        focal_length_chosen: camera.target_data.focal_length ?? cameraSpec.lens_spec.focal_length.min,
     }
 
     const result = computeFovCartesian(params)
@@ -66,6 +66,7 @@ export function generateDefaultCamera(cameraSpec: CameraSpecRecord, position: ge
         target_data: {
             distance: cameraSpec.ir_range > 0 ? cameraSpec.ir_range : 40,
             height: 1.5,
+            focal_length: cameraSpec.lens_spec.focal_length.min,
         },
     }
 

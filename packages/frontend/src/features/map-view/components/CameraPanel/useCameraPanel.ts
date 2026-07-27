@@ -24,7 +24,7 @@ function recomputeCoverageArea(
     h_fov_tele: cameraModel.lens_spec.h_fov.min,
     v_fov_wide: cameraModel.lens_spec.v_fov.max,
     v_fov_tele: cameraModel.lens_spec.v_fov.min,
-    focal_length_chosen: cameraModel.lens_spec.focal_length.min,
+    focal_length_chosen: form.focal_length,
   }
 
   const result = computeFovCartesian(params)
@@ -81,24 +81,37 @@ export function useCameraPanel(projectId: string) {
       h_fov_tele: cameraModel.lens_spec.h_fov.min,
       v_fov_wide: cameraModel.lens_spec.v_fov.max,
       v_fov_tele: cameraModel.lens_spec.v_fov.min,
-      focal_length_chosen: cameraModel.lens_spec.focal_length.min,
+      focal_length_chosen: form.focal_length,
     }
     return computeFovCartesian(params)
   }, [form, cameraModel])
 
   useEffect(() => {
-    if (!camera) { setForm(null); return }
-    setForm({
+    if (!camera) {
+      // Form state follows the externally selected camera.
+      setForm(null)
+      return
+    }
+    const focalLength = camera.target_data.focal_length ?? cameraModel?.lens_spec.focal_length.min ?? 1
+    const nextForm: FormValues = {
       label: camera.label,
       color: camera.color,
       height: camera.height,
       bearing: camera.bearing,
       target_distance: camera.target_data.distance,
       target_height: camera.target_data.height,
-    })
+      target_width: 0,
+      focal_length: focalLength,
+    }
+    const initialFov = recomputeCoverageArea(nextForm, camera, cameraModel)
+    nextForm.target_width = initialFov?.result.w_target ?? 0
+    // Form state follows the externally selected camera/model pair.
+    setForm(nextForm)
     setConfirmDelete(false)
+    // Only reset the draft when selection/model identity changes; camera field
+    // updates are already applied optimistically by setField.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [camera?.uid])
+  }, [camera?.uid, cameraModel?.id])
 
   useEffect(() => {
     if (selectedCameraId && !uids.includes(selectedCameraId)) clearSelection()
@@ -114,30 +127,68 @@ export function useCameraPanel(projectId: string) {
   function setField<K extends keyof FormValues>(key: K, value: FormValues[K]) {
     if (!form || !camera || !selectedCameraId) return
     const next = { ...form, [key]: value }
-    setForm(next)
 
     const patch: Partial<CameraPlacement> = {}
 
-    if (key === 'target_distance' || key === 'target_height') {
+    if (key === 'target_distance' || key === 'target_height' || key === 'focal_length') {
       patch.target_data = {
         ...camera.target_data,
         distance: next.target_distance === '' ? camera.target_data.distance : next.target_distance,
         height: next.target_height,
+        focal_length: next.focal_length,
       }
     } else {
       Object.assign(patch, { [key]: value })
     }
 
-    const fovFields: (keyof FormValues)[] = ['height', 'target_distance', 'target_height', 'bearing']
+    const fovFields: (keyof FormValues)[] = ['height', 'target_distance', 'target_height', 'bearing', 'focal_length']
     if (fovFields.includes(key)) {
       const fovResult = recomputeCoverageArea(next, camera, cameraModel)
       if (fovResult) {
         patch.coverage_area = fovResult.coverage_area
+        next.target_width = fovResult.result.w_target ?? 0
       }
     }
 
+    setForm(next)
     updateCamera(selectedCameraId, patch)
   }
+
+  function setTargetWidth(value: number) {
+    if (!form || !camera || !cameraModel || !selectedCameraId || form.target_distance === '') return
+    const { min, max } = cameraModel.lens_spec.focal_length
+    let low = min
+    let high = max
+
+    for (let index = 0; index < 32; index += 1) {
+      const candidate = (low + high) / 2
+      const result = recomputeCoverageArea({ ...form, focal_length: candidate }, camera, cameraModel)
+      const width = result?.result.w_target
+      if (width == null) break
+      if (width > value) low = candidate
+      else high = candidate
+    }
+
+    const focalLength = min === max ? min : (low + high) / 2
+    const next = { ...form, focal_length: focalLength }
+    const fovResult = recomputeCoverageArea(next, camera, cameraModel)
+    next.target_width = fovResult?.result.w_target ?? value
+    setForm(next)
+    updateCamera(selectedCameraId, {
+      target_data: { ...camera.target_data, focal_length: focalLength },
+      coverage_area: fovResult?.coverage_area ?? camera.coverage_area,
+    })
+  }
+
+  const focalRange = cameraModel?.lens_spec.focal_length ?? null
+  const targetWidthRange = useMemo(() => {
+    if (!form || !camera || !cameraModel) return null
+    const { min, max } = cameraModel.lens_spec.focal_length
+    const wide = recomputeCoverageArea({ ...form, focal_length: min }, camera, cameraModel)?.result.w_target
+    const tele = recomputeCoverageArea({ ...form, focal_length: max }, camera, cameraModel)?.result.w_target
+    if (wide == null || tele == null) return null
+    return { min: Math.min(wide, tele), max: Math.max(wide, tele) }
+  }, [camera, cameraModel, form])
 
   function handleDelete() {
     if (!selectedCameraId) return
@@ -162,6 +213,9 @@ export function useCameraPanel(projectId: string) {
     confirmDelete,
     setConfirmDelete,
     setField,
+    setTargetWidth,
+    focalRange,
+    targetWidthRange,
     handleDelete,
     parseNullableNumber,
   }

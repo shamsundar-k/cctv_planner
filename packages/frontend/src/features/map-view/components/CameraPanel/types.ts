@@ -5,4 +5,6 @@ export interface FormValues {
   bearing: number
   target_distance: number | ''
   target_height: number
+  target_width: number
+  focal_length: number
 }

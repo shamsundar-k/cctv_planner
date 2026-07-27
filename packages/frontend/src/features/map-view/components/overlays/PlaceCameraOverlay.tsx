@@ -5,6 +5,7 @@ import { useMapContext } from '@/context/MapContext'
 import { useMapActionsStore } from '@/store/mapActionsSlice'
 import { useSelectedCameraModelStore } from '@/store/selectedCameraModelSlice'
 import { useCameraStore } from '@/store/cameraStore'
+import { useCameraLayerStore } from '@/store/cameraLayerSlice'
 import { generateDefaultCamera } from '@/lib/cameraGenerator'
 
 // Lucide Crosshair geometry scaled from 24×24 → 32×32 (factor 4/3).
@@ -70,9 +71,8 @@ export default function PlaceCameraOverlay() {
                 projectId,
             )
             if (localCamera) {
-                console.log('Placing camera:', localCamera.uid, 'at', localCamera.location.latitude, localCamera.location.longitude) // Debug log
                 useCameraStore.getState().addCamera(localCamera)
-                console.log('Camera store:', useCameraStore.getState()) // Debug log
+                useCameraLayerStore.getState().selectCamera(localCamera.uid)
             }
         }
 

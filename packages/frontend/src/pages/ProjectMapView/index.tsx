@@ -43,7 +43,7 @@ export default function ProjectMapView() {
           <FovLayer />
           <CameraLayer />
           <MapLayersControl />
-          <MapActionsToolbar />
+          <MapActionsToolbar projectId={id} />
           <MapModeOverlay />
         </Map>
       </div>

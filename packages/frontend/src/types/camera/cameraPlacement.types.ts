@@ -10,6 +10,7 @@ export interface CoverageArea {
 export interface TargetData {
   distance: number
   height: number
+  focal_length?: number | null
 }
 
 export interface CameraPlacement {
