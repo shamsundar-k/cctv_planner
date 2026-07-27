@@ -43,14 +43,8 @@ export default function PlaceCameraOverlay() {
     useEffect(() => {
         const container = mapRef.current?.getContainer()
         if (!container) return
-        container.classList.add('camera-placement-mode')
-        container.style.setProperty('--camera-placement-cursor', RETICLE_CURSOR)
         container.style.cursor = RETICLE_CURSOR
-        return () => {
-            container.classList.remove('camera-placement-mode')
-            container.style.removeProperty('--camera-placement-cursor')
-            container.style.cursor = ''
-        }
+        return () => { container.style.cursor = '' }
     }, [mapRef])
 
     // ESC → reset to pan

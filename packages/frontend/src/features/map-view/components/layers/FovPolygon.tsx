@@ -15,7 +15,12 @@ export default function FovPolygon({ cameraId, layer }: FovPolygonProps) {
   useEffect(() => {
     if (!camera) return
 
-    const fovPoly = L.polygon([], { weight: 1.5, opacity: 0.7, fillOpacity: 0.18 })
+    const fovPoly = L.polygon([], {
+      weight: 1.5,
+      opacity: 0.7,
+      fillOpacity: 0.18,
+      interactive: false,
+    })
 
     const fovLatLngs: L.LatLngExpression[] | null = camera.coverage_area
       ? camera.coverage_area.points.map((point) => [point.latitude, point.longitude])

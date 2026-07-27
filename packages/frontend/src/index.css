@@ -1,11 +1,3 @@
 /* Global Tailwind entry point and runtime CCTV theme token mapping. */
 @import "tailwindcss";
-
 @import "./styles/cctv-themes.css";
-
-/* Keep the insert reticle over Leaflet paths and markers, which define their own cursors. */
-.leaflet-container.camera-placement-mode,
-.leaflet-container.camera-placement-mode .leaflet-interactive,
-.leaflet-container.camera-placement-mode .leaflet-marker-icon {
-  cursor: var(--camera-placement-cursor) !important;
-}
