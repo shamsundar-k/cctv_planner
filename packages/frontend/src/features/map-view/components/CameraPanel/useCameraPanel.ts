@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useAllCameraSpecs } from '@/hooks/useCameraSpecs'
 import { useCameraStore } from '@/store/cameraStore'
 import { useCameraLayerStore } from '@/store/cameraLayerSlice'
+import { useSelectedCameraModelStore } from '@/store/selectedCameraModelSlice'
 import type { CameraPlacement, CameraSpecRecord, CoverageArea } from '@/types/camera'
 import type { fov_input_params, FovCartesian } from '@/lib/fovCalculations'
 import { computeFovCartesian, computeFovGeoCorners } from '@/lib/fovCalculations'
@@ -52,6 +53,7 @@ export function useCameraPanel(projectId: string) {
   void projectId
   const selectedCameraId = useCameraLayerStore((s) => s.selectedCameraId)
   const clearSelection = useCameraLayerStore((s) => s.clearSelection)
+  const setSelectedCameraModel = useSelectedCameraModelStore((s) => s.setSelectedCameraModel)
 
   const camera = useCameraStore((s) =>
     selectedCameraId ? s.cameraRecords[selectedCameraId]?.camera ?? null : null,
@@ -64,10 +66,16 @@ export function useCameraPanel(projectId: string) {
   )
 
   const { data: allCameraModels } = useAllCameraSpecs()
-  const cameraModel = allCameraModels?.find((cm) => cm.id === camera?.camera_spec_id) ?? null
+  const cameraSpecId = camera?.camera_spec_id ?? null
+  const cameraModel = allCameraModels?.find((cm) => cm.id === cameraSpecId) ?? null
 
   const [form, setForm] = useState<FormValues | null>(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
+
+  useEffect(() => {
+    if (!cameraSpecId) return
+    setSelectedCameraModel(cameraModel)
+  }, [cameraSpecId, cameraModel, setSelectedCameraModel])
 
   const fovMetrics = useMemo<FovCartesian | null>(() => {
     if (!form || !cameraModel || form.target_distance === '' || form.target_distance <= 0) return null

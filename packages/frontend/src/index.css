@@ -1,3 +1,18 @@
 /* Global Tailwind entry point and runtime CCTV theme token mapping. */
 @import "tailwindcss";
 @import "./styles/cctv-themes.css";
+
+.leaflet-tooltip.map-measurement-tooltip {
+    border: 1px solid color-mix(in srgb, var(--color-measurement-text), transparent 25%);
+    border-radius: 0.375rem;
+    background: var(--color-measurement-text);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 25%);
+    color: var(--color-measurement-text-foreground);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.5rem;
+}
+
+.leaflet-tooltip.map-measurement-tooltip::before {
+    display: none;
+}
