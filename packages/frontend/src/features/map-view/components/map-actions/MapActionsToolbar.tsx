@@ -1,4 +1,4 @@
-import { Camera, Plus, Ruler, Spline, Pentagon } from 'lucide-react'
+import { Camera, MousePointer2, Plus, Ruler, Spline, Pentagon } from 'lucide-react'
 import { useSelectedCameraModelStore } from '../../../../store/selectedCameraModelSlice'
 import { useMapActionsStore } from '../../../../store/mapActionsSlice'
 import MapActionButton from './MapActionButton'
@@ -29,19 +29,28 @@ export default function MapActionsToolbar({ projectId }: MapActionsToolbarProps)
   return (
     <div className="absolute bottom-4 left-1/2 z-[1000] flex -translate-x-1/2 items-center gap-1 rounded-lg border border-panel-border bg-panel/90 p-1.5 shadow-xl backdrop-blur-md">
       <MapActionButton
+        icon={<MousePointer2 size={15} />}
+        label="Select Camera"
+        isActive={activeTool === 'select'}
+        onClick={() => setActiveTool('select')}
+      />
+
+      {DIVIDER}
+
+      <MapActionButton
         icon={<PlaceCameraIcon />}
         label="Place Camera"
         tooltip={placeCameraTooltip}
         isActive={activeTool === 'place-camera'}
         disabled={selectedCameraModel === null}
-        onClick={() => setActiveTool(activeTool === 'place-camera' ? 'pan' : 'place-camera')}
+        onClick={() => setActiveTool(activeTool === 'place-camera' ? 'select' : 'place-camera')}
       />
 
       {DIVIDER}
 
-      <MapActionButton icon={<Ruler size={15} />} label="Measure Distance" onClick={() => setActiveTool(activeTool === 'measure' ? 'pan' : 'measure')} isActive={activeTool === 'measure'} />
-      <MapActionButton icon={<Spline size={15} />} label="Draw Line" onClick={() => setActiveTool(activeTool === 'draw-line' ? 'pan' : 'draw-line')} isActive={activeTool === 'draw-line'} />
-      <MapActionButton icon={<Pentagon size={15} />} label="Draw Polygon" onClick={() => setActiveTool(activeTool === 'draw-polygon' ? 'pan' : 'draw-polygon')} isActive={activeTool === 'draw-polygon'} />
+      <MapActionButton icon={<Ruler size={15} />} label="Measure Distance" onClick={() => setActiveTool(activeTool === 'measure' ? 'select' : 'measure')} isActive={activeTool === 'measure'} />
+      <MapActionButton icon={<Spline size={15} />} label="Draw Line" onClick={() => setActiveTool(activeTool === 'draw-line' ? 'select' : 'draw-line')} isActive={activeTool === 'draw-line'} />
+      <MapActionButton icon={<Pentagon size={15} />} label="Draw Polygon" onClick={() => setActiveTool(activeTool === 'draw-polygon' ? 'select' : 'draw-polygon')} isActive={activeTool === 'draw-polygon'} />
 
       {DIVIDER}
 

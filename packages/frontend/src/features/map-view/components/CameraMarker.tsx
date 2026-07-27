@@ -3,6 +3,7 @@ import L from 'leaflet'
 import { useCameraStore } from '@/store/cameraStore'
 import { useCameraLayerStore } from '@/store/cameraLayerSlice'
 import { useBaseTileStore } from '@/store/baseTileStore'
+import { useMapActionsStore } from '@/store/mapActionsSlice'
 import { BASE_MAPS, type BasemapLabelTone } from '@/config/mapConfig'
 import { moveCoverageArea } from '@/features/map-view/utils/coverageArea'
 
@@ -72,6 +73,7 @@ export default function CameraMarker({ cameraId, group, zoom }: CameraMarkerProp
   const selectCamera = useCameraLayerStore((s) => s.selectCamera)
   const updateCamera = useCameraStore((s) => s.updateCamera)
   const activeBaseMap = useBaseTileStore((s) => s.activeBaseMap)
+  const isSelectMode = useMapActionsStore((s) => s.activeTool === 'select')
 
   useEffect(() => {
     if (!camera) return
@@ -85,14 +87,16 @@ export default function CameraMarker({ cameraId, group, zoom }: CameraMarkerProp
         zoom,
         BASE_MAPS[activeBaseMap].labelTone,
       ),
-      draggable: true,
+      interactive: isSelectMode,
+      draggable: isSelectMode,
     }).addTo(group)
 
-    // Click — always select, no toggle
-    marker.on('click', (e: L.LeafletMouseEvent) => {
-      e.originalEvent.stopPropagation()
-      selectCamera(cameraId)
-    })
+    if (isSelectMode) {
+      marker.on('click', (e: L.LeafletMouseEvent) => {
+        e.originalEvent.stopPropagation()
+        selectCamera(cameraId)
+      })
+    }
 
     // Drag end — write new position to store
     marker.on('dragend', () => {
@@ -110,7 +114,7 @@ export default function CameraMarker({ cameraId, group, zoom }: CameraMarkerProp
     return () => {
       marker.remove()
     }
-  }, [activeBaseMap, camera, group, isSelected, cameraId, selectCamera, updateCamera, zoom])
+  }, [activeBaseMap, camera, group, isSelectMode, isSelected, cameraId, selectCamera, updateCamera, zoom])
 
   return null
 }

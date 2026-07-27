@@ -8,7 +8,7 @@ export default function BottomToolbar() {
   const activeTool = useMapActionsStore((s) => s.activeTool)
   const setActiveTool = useMapActionsStore((s) => s.setActiveTool)
 
-  const resetTool = useCallback(() => setActiveTool('pan'), [setActiveTool])
+  const resetTool = useCallback(() => setActiveTool('select'), [setActiveTool])
   useToolbarKeyboard(resetTool)
 
   return (

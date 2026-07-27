@@ -10,7 +10,7 @@ interface MapActionsState {
 }
 
 export const useMapActionsStore = create<MapActionsState>((set) => ({
-  activeTool: 'pan',
+  activeTool: 'select',
   setActiveTool: (tool) => set({ activeTool: tool }),
   currentZoom: 13,
   setZoom: (zoom) => set({ currentZoom: zoom }),

@@ -47,10 +47,10 @@ export default function PlaceCameraOverlay() {
         return () => { container.style.cursor = '' }
     }, [mapRef])
 
-    // ESC → reset to pan
+    // ESC → reset to select
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') setActiveTool('pan')
+            if (e.key === 'Escape') setActiveTool('select')
         }
         window.addEventListener('keydown', handleKeyDown)
         return () => window.removeEventListener('keydown', handleKeyDown)
@@ -85,7 +85,7 @@ export default function PlaceCameraOverlay() {
             <span className="font-semibold text-text-primary">Camera Insert Mode: {selectedCameraModel?.name}</span>
             <button
                 type="button"
-                onClick={() => setActiveTool('pan')}
+                onClick={() => setActiveTool('select')}
                 aria-label="Exit camera insert mode"
                 className="ml-1 flex items-center justify-center rounded-md p-1 text-text-secondary transition-colors hover:bg-background hover:text-text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             >
