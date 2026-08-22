@@ -52,17 +52,35 @@ let nextId = 0
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<ToastItem[]>([])
+  const timersRef = useRef(new Map<number, ReturnType<typeof setTimeout>>())
 
   const showToast = useCallback((message: string, type: ToastType = 'info') => {
     const id = ++nextId
     setToasts((prev) => [...prev, { id, type, message }])
-    setTimeout(() => {
+
+    const timer = setTimeout(() => {
+      timersRef.current.delete(id)
       setToasts((prev) => prev.filter((t) => t.id !== id))
     }, 3500)
+
+    timersRef.current.set(id, timer)
   }, [])
 
   const dismiss = useCallback((id: number) => {
+    const timer = timersRef.current.get(id)
+    if (timer) {
+      clearTimeout(timer)
+      timersRef.current.delete(id)
+    }
     setToasts((prev) => prev.filter((t) => t.id !== id))
+  }, [])
+
+  useEffect(() => {
+    const timers = timersRef.current
+    return () => {
+      timers.forEach((timer) => clearTimeout(timer))
+      timers.clear()
+    }
   }, [])
 
   return (
@@ -103,9 +121,10 @@ function ToastContainer({
         flexDirection: 'column',
         gap: 10,
         pointerEvents: 'none',
+        width: 'min(400px, calc(100vw - 48px))',
       }}
       aria-live="polite"
-      aria-atomic="false"
+      aria-atomic="true"
     >
       {toasts.map((toast) => (
         <ToastMessage key={toast.id} toast={toast} onDismiss={onDismiss} />
@@ -143,21 +162,18 @@ function ToastMessage({
   onDismiss: (id: number) => void
 }) {
   const [visible, setVisible] = useState(false)
-  const mountedRef = useRef(false)
-
   useEffect(() => {
-    if (!mountedRef.current) {
-      mountedRef.current = true
-      // Trigger slide-in on next frame
-      requestAnimationFrame(() => setVisible(true))
-    }
+    // Trigger slide-in on the next frame, and avoid updating state after unmount.
+    const frame = requestAnimationFrame(() => setVisible(true))
+    return () => cancelAnimationFrame(frame)
   }, [])
 
   const s = TYPE_STYLES[toast.type]
 
   return (
     <div
-      role="alert"
+      role={toast.type === 'error' ? 'alert' : 'status'}
+      aria-atomic="true"
       style={{
         display: 'flex',
         alignItems: 'center',
@@ -167,8 +183,7 @@ function ToastMessage({
         border: `1px solid ${s.border}`,
         borderRadius: 8,
         boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
-        minWidth: 280,
-        maxWidth: 400,
+        width: '100%',
         pointerEvents: 'auto',
         transform: visible ? 'translateX(0)' : 'translateX(120%)',
         opacity: visible ? 1 : 0,
@@ -215,6 +230,8 @@ function ToastMessage({
         }}
         onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = '#1a1a1a')}
         onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = '#999')}
+        onFocus={(e) => ((e.currentTarget as HTMLElement).style.color = '#1a1a1a')}
+        onBlur={(e) => ((e.currentTarget as HTMLElement).style.color = '#999')}
       >
         ✕
       </button>
