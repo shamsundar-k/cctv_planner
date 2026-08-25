@@ -30,12 +30,14 @@
  */
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { decodeJwt } from '../../../utils/jwt'
 
 export interface AuthUser {
   id: string
   email: string
   fullName: string
   role: 'admin' | 'user'
+  mustChangePassword: boolean
 }
 
 interface AuthState {
@@ -57,7 +59,19 @@ export const useAuthStore = create<AuthState>()(
       setAuth: (user, accessToken, refreshToken) =>
         set({ user, accessToken, refreshToken }),
       setAccessToken: (accessToken) => set({ accessToken }),
-      setTokens: (accessToken, refreshToken) => set({ accessToken, refreshToken }),
+      setTokens: (accessToken, refreshToken) =>
+        set((state) => ({
+          accessToken,
+          refreshToken,
+          user: state.user
+            ? {
+                ...state.user,
+                mustChangePassword: Boolean(
+                  decodeJwt(accessToken).must_change_password,
+                ),
+              }
+            : null,
+        })),
       clearAuth: () => set({ user: null, accessToken: null, refreshToken: null }),
     }),
     {

@@ -23,4 +23,5 @@ class UserCreate(UserBase):
 
 class UserRecord(UserBase):
     id: str
+    must_change_password: bool = False
     created_at: datetime

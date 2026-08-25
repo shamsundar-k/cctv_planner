@@ -18,9 +18,14 @@ import { useAuthStore } from '../features/auth'
 
 export default function ProtectedRoute() {
   const accessToken = useAuthStore((s) => s.accessToken)
+  const mustChangePassword = useAuthStore((s) => s.user?.mustChangePassword)
 
   if (!accessToken) {
     return <Navigate to="/login" replace />
+  }
+
+  if (mustChangePassword) {
+    return <Navigate to="/change-password" replace />
   }
 
   return <Outlet />

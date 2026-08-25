@@ -7,8 +7,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from redis.asyncio import Redis
 
 from app.core.database import get_redis
-from app.core.deps import get_current_user
+from app.core.deps import get_authenticated_user
 from app.core.security import (
+    DEFAULT_RESET_PASSWORD,
     create_access_token,
     create_refresh_token,
     hash_password,
@@ -16,10 +17,17 @@ from app.core.security import (
 )
 from app.core.config import settings
 from app.models.invite_token import InviteToken
+from app.models.password_reset_request import (
+    PasswordResetRequest as PasswordResetRequestDocument,
+    PasswordResetStatus,
+)
 from app.api_models.auth import (
     AcceptInvitePreview,
     AcceptInviteRequest,
     LoginRequest,
+    MessageResponse,
+    PasswordChangeRequest,
+    PasswordResetRequestCreate,
     RefreshRequest,
     TokenResponse,
 )
@@ -30,6 +38,9 @@ from app.db_schemas.user import User
 router = APIRouter(prefix="/auth", tags=["auth"])
 logger = logging.getLogger(__name__)
 _REFRESH_TTL = settings.JWT_REFRESH_TTL_DAYS * 86_400  # seconds
+_RESET_REQUEST_MESSAGE = (
+    "If an account exists for that email, its password reset request has been sent."
+)
 
 
 def _token_key(raw_token: str) -> str:
@@ -37,10 +48,39 @@ def _token_key(raw_token: str) -> str:
     return f"refresh:{token_hash}"
 
 
+def _refresh_value(user: User) -> str:
+    return f"{user.id}:{user.token_version}"
+
+
+def _parse_refresh_value(value: str) -> tuple[str, int]:
+    if ":" not in value:
+        return value, 0
+    user_id, raw_version = value.rsplit(":", 1)
+    try:
+        return user_id, int(raw_version)
+    except ValueError:
+        return "", -1
+
+
+async def _issue_tokens(user: User, redis: Redis) -> TokenResponse:
+    access_token = create_access_token(
+        str(user.id),
+        user.system_role.value,
+        user.token_version,
+        user.must_change_password,
+    )
+    refresh_token = create_refresh_token()
+    await redis.set(
+        _token_key(refresh_token),
+        _refresh_value(user),
+        ex=_REFRESH_TTL,
+    )
+    return TokenResponse(access_token=access_token, refresh_token=refresh_token)
+
+
 @router.post("/login", response_model=TokenResponse)
 async def login(body: LoginRequest, redis: Redis = Depends(get_redis)) -> TokenResponse:
-    #console log the email and password for debugging purposes
-    logger.info(f"Login attempt: email={body.email}")
+    logger.info("Login attempt: email=%s", body.email)
     
     user = await User.find_one(User.email == body.email)
     if user is None or not verify_password(body.password, user.hashed_password):
@@ -48,50 +88,96 @@ async def login(body: LoginRequest, redis: Redis = Depends(get_redis)) -> TokenR
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",
         )
-    logger.info(f"User found: {user}")
+    return await _issue_tokens(user, redis)
 
-    access_token = create_access_token(str(user.id), user.system_role.value)
-    refresh_token = create_refresh_token()
-    await redis.set(_token_key(refresh_token), str(user.id), ex=_REFRESH_TTL)
 
-    return TokenResponse(access_token=access_token, refresh_token=refresh_token)
+@router.post(
+    "/password-reset-requests",
+    response_model=MessageResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+async def create_password_reset_request(
+    body: PasswordResetRequestCreate,
+) -> MessageResponse:
+    user = await User.find_one({"email": str(body.email)})
+    if user is not None:
+        existing = await PasswordResetRequestDocument.find_one(
+            {
+                "user_id": user.id,
+                "status": PasswordResetStatus.pending.value,
+            }
+        )
+        if existing is None:
+            request = PasswordResetRequestDocument(
+                user_id=user.id,
+                email=user.email,
+            )
+            await request.insert()
+    return MessageResponse(message=_RESET_REQUEST_MESSAGE)
 
 
 @router.post("/refresh", response_model=TokenResponse)
 async def refresh(body: RefreshRequest, redis: Redis = Depends(get_redis)) -> TokenResponse:
-    logger.info(f"Refresh attempt: refresh_token={body.refresh_token}") 
+    logger.info("Refresh attempt")
     key = _token_key(body.refresh_token)
-    user_id = await redis.get(key)
-    if user_id is None:
+    stored_value = await redis.get(key)
+    if stored_value is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or expired refresh token",
         )
 
+    user_id, token_version = _parse_refresh_value(stored_value)
     user = await User.get(user_id)
-    if user is None:
+    if user is None or token_version != user.token_version:
+        await redis.delete(key)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found",
+            detail="Invalid or expired refresh token",
         )
 
     # Rotate: revoke old token, issue new pair
     await redis.delete(key)
-    access_token = create_access_token(str(user.id), user.system_role.value)
-    new_refresh_token = create_refresh_token()
-    await redis.set(_token_key(new_refresh_token), str(user.id), ex=_REFRESH_TTL)
-
-    return TokenResponse(access_token=access_token, refresh_token=new_refresh_token)
+    return await _issue_tokens(user, redis)
 
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
 async def logout(
     body: RefreshRequest,
     redis: Redis = Depends(get_redis),
-    _: User = Depends(get_current_user),
+    _: User = Depends(get_authenticated_user),
 ) -> None:
-    logger.info(f"Logout attempt: user_id={_.id}, refresh_token={body.refresh_token}")
+    logger.info("Logout attempt: user_id=%s", _.id)
     await redis.delete(_token_key(body.refresh_token))
+
+
+@router.post("/change-password", response_model=TokenResponse)
+async def change_password(
+    body: PasswordChangeRequest,
+    redis: Redis = Depends(get_redis),
+    user: User = Depends(get_authenticated_user),
+) -> TokenResponse:
+    if not verify_password(body.current_password, user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Current password is incorrect",
+        )
+    if body.new_password == DEFAULT_RESET_PASSWORD:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Choose a password other than the temporary password",
+        )
+    if body.new_password == body.current_password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="New password must be different from the current password",
+        )
+
+    user.hashed_password = hash_password(body.new_password)
+    user.must_change_password = False
+    user.token_version += 1
+    await user.save()
+    return await _issue_tokens(user, redis)
 
 
 @router.get("/accept-invite", response_model=AcceptInvitePreview)
@@ -136,8 +222,4 @@ async def accept_invite(
     invite.used = True
     await invite.save()
 
-    access_token = create_access_token(str(user.id), user.system_role.value)
-    refresh_token = create_refresh_token()
-    await redis.set(_token_key(refresh_token), str(user.id), ex=_REFRESH_TTL)
-
-    return TokenResponse(access_token=access_token, refresh_token=refresh_token)
+    return await _issue_tokens(user, redis)

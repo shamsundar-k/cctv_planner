@@ -1,13 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useState } from 'react'
 import client from '../../../api/client'
-import type { AdminProjectStats, AdminUser } from './admin.types'
+import type {
+  AdminPasswordResetRequest,
+  AdminProjectStats,
+  AdminUser,
+} from './admin.types'
 
 // ── Query keys ─────────────────────────────────────────────────────────────────
 
 export const adminKeys = {
   users: ['admin', 'users'] as const,
   projectStats: ['admin', 'projects', 'stats'] as const,
+  passwordResetRequests: ['admin', 'password-reset-requests'] as const,
 }
 
 // ── Hooks ──────────────────────────────────────────────────────────────────────
@@ -35,6 +40,50 @@ export function useProjectStats() {
     staleTime: 2 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
     retry: 2,
+  })
+}
+
+export function usePasswordResetRequests() {
+  return useQuery({
+    queryKey: adminKeys.passwordResetRequests,
+    queryFn: async (): Promise<AdminPasswordResetRequest[]> => {
+      const res = await client.get<AdminPasswordResetRequest[]>(
+        '/admin/password-reset-requests',
+      )
+      return res.data
+    },
+    staleTime: 30 * 1000,
+    gcTime: 5 * 60 * 1000,
+    retry: 1,
+  })
+}
+
+export function useResetRequestedPassword() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (requestId: string): Promise<void> => {
+      await client.post(`/admin/password-reset-requests/${requestId}/reset`)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: adminKeys.passwordResetRequests })
+      queryClient.invalidateQueries({ queryKey: adminKeys.users })
+    },
+    retry: 0,
+  })
+}
+
+export function useRejectPasswordResetRequest() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (requestId: string): Promise<void> => {
+      await client.post(`/admin/password-reset-requests/${requestId}/reject`)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: adminKeys.passwordResetRequests })
+    },
+    retry: 0,
   })
 }
 

@@ -12,9 +12,11 @@
  *   Used in LoginPage and AcceptInvitePage to extract the user's id and role
  *   immediately after login without an extra API call.
  */
-interface JwtPayload {
+export interface JwtPayload {
   sub: string
   role: string
+  ver?: number
+  must_change_password?: boolean
   exp: number
 }
 

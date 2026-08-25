@@ -14,6 +14,14 @@ class LoginRequest(BaseModel):
     password: str
 
 
+class PasswordResetRequestCreate(BaseModel):
+    email: EmailStr
+
+
+class MessageResponse(BaseModel):
+    message: str
+
+
 class RefreshRequest(BaseModel):
     refresh_token: str = Field(min_length=1)
 
@@ -53,6 +61,22 @@ class AcceptInviteRequest(BaseModel):
     @field_validator("password")
     @classmethod
     def password_must_fit_bcrypt_limit(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("password must not be blank")
+        if len(value.encode("utf-8")) > MAX_BCRYPT_PASSWORD_BYTES:
+            raise ValueError(
+                f"password must be at most {MAX_BCRYPT_PASSWORD_BYTES} bytes"
+            )
+        return value
+
+
+class PasswordChangeRequest(BaseModel):
+    current_password: str = Field(min_length=1)
+    new_password: str = Field(min_length=8)
+
+    @field_validator("current_password", "new_password")
+    @classmethod
+    def passwords_must_fit_bcrypt_limit(cls, value: str) -> str:
         if not value.strip():
             raise ValueError("password must not be blank")
         if len(value.encode("utf-8")) > MAX_BCRYPT_PASSWORD_BYTES:

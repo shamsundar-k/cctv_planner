@@ -14,6 +14,7 @@ from app.db_schemas.user import User
 from app.models.camera import Camera
 from app.models.camera_model import CameraModel
 from app.models.invite_token import InviteToken
+from app.models.password_reset_request import PasswordResetRequest
 
 from .config import settings
 
@@ -35,6 +36,7 @@ async def init_db() -> None:
         document_models=[
             User,
             InviteToken,
+            PasswordResetRequest,
             CameraModel,
             CameraSpecification,
             Project,

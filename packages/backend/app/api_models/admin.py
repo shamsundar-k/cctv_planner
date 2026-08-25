@@ -4,6 +4,8 @@ from datetime import datetime
 
 from pydantic import BaseModel, EmailStr
 
+from app.models.password_reset_request import PasswordResetStatus
+
 
 class InviteRequest(BaseModel):
     email: EmailStr
@@ -25,3 +27,11 @@ class InviteListItem(BaseModel):
 
 class ProjectStats(BaseModel):
     total_projects: int
+
+
+class PasswordResetListItem(BaseModel):
+    id: str
+    user_id: str
+    email: EmailStr
+    status: PasswordResetStatus
+    created_at: datetime

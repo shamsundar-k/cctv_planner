@@ -8,6 +8,7 @@ import AdminStatCards from './AdminStatCards'
 import UsersTab from './UsersTab'
 import DeleteModal from './DeleteModal'
 import InvitesTab from '../../invites/component/InvitesTab'
+import PasswordResetRequestsSection from './PasswordResetRequestsSection'
 
 export default function AdminDashboard() {
   const { pathname } = useLocation()
@@ -84,6 +85,19 @@ export default function AdminDashboard() {
         </section>
       </>
     )
+  } else if (section === 'password-resets') {
+    content = (
+      <>
+        {sectionHeader(
+          'Password Reset Requests',
+          'Review user requests and either reset the account to its temporary password or reject the request.',
+        )}
+        <PasswordResetRequestsSection
+          requests={data.passwordResetRequests}
+          isLoading={data.passwordResetRequestsLoading}
+        />
+      </>
+    )
   } else {
     content = (
       <>
@@ -93,6 +107,7 @@ export default function AdminDashboard() {
           projectsValue={data.projectStatsLoading ? '—' : (data.projectStats?.total_projects ?? 0)}
           camerasValue={data.totalCameraModels}
           invitesValue={data.invitesLoading ? '—' : data.adminInvites.length}
+          passwordResetsValue={data.passwordResetRequestsLoading ? '—' : data.passwordResetRequests.length}
         />
       </>
     )

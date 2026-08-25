@@ -9,3 +9,11 @@ export interface AdminUser {
 export interface AdminProjectStats {
   total_projects: number
 }
+
+export interface AdminPasswordResetRequest {
+  id: string
+  user_id: string
+  email: string
+  status: 'pending'
+  created_at: string
+}

@@ -35,6 +35,7 @@ export async function acceptInvite(
     email,
     fullName,
     role: payload.role as AuthUser['role'],
+    mustChangePassword: Boolean(payload.must_change_password),
   }
 
   return { user, accessToken: data.access_token, refreshToken: data.refresh_token, email }

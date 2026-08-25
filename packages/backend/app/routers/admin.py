@@ -14,13 +14,16 @@ from app.api_models.admin import (
     InviteRequest,
     InviteResponse,
     ProjectStats,
+    PasswordResetListItem,
 )
 from app.api_models.user import UserRecord
 from app.core.config import settings
 from app.core.deps import require_admin
+from app.core.security import DEFAULT_RESET_PASSWORD, hash_password
 from app.db_schemas.project import Project as ProjectDocument
 from app.db_schemas.user import User
 from app.models.invite_token import InviteToken
+from app.models.password_reset_request import PasswordResetRequest, PasswordResetStatus
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -127,10 +130,92 @@ async def list_users(_: User = Depends(require_admin)) -> list[UserRecord]:
             email=u.email,
             full_name=u.full_name,
             system_role=u.system_role,
+            must_change_password=u.must_change_password,
             created_at=u.created_at,
         )
         for u in users
     ]
+
+
+@router.get(
+    "/password-reset-requests",
+    response_model=list[PasswordResetListItem],
+)
+async def list_password_reset_requests(
+    _: User = Depends(require_admin),
+) -> list[PasswordResetListItem]:
+    requests = await PasswordResetRequest.find(
+        PasswordResetRequest.status == PasswordResetStatus.pending
+    ).sort("-created_at").to_list()
+    return [
+        PasswordResetListItem(
+            id=str(request.id),
+            user_id=str(request.user_id),
+            email=request.email,
+            status=request.status,
+            created_at=request.created_at,
+        )
+        for request in requests
+    ]
+
+
+async def _get_pending_password_reset_request(
+    request_id: PydanticObjectId,
+) -> PasswordResetRequest:
+    reset_request = await PasswordResetRequest.get(request_id)
+    if reset_request is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Password reset request not found",
+        )
+    if reset_request.status != PasswordResetStatus.pending:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Password reset request has already been resolved",
+        )
+    return reset_request
+
+
+@router.post(
+    "/password-reset-requests/{request_id}/reset",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def reset_requested_password(
+    request_id: PydanticObjectId,
+    admin: User = Depends(require_admin),
+) -> None:
+    reset_request = await _get_pending_password_reset_request(request_id)
+    user = await User.get(reset_request.user_id)
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found",
+        )
+
+    user.hashed_password = hash_password(DEFAULT_RESET_PASSWORD)
+    user.must_change_password = True
+    user.token_version += 1
+    await user.save()
+
+    reset_request.status = PasswordResetStatus.reset
+    reset_request.resolved_at = datetime.now(timezone.utc)
+    reset_request.resolved_by_id = admin.id
+    await reset_request.save()
+
+
+@router.post(
+    "/password-reset-requests/{request_id}/reject",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def reject_password_reset_request(
+    request_id: PydanticObjectId,
+    admin: User = Depends(require_admin),
+) -> None:
+    reset_request = await _get_pending_password_reset_request(request_id)
+    reset_request.status = PasswordResetStatus.rejected
+    reset_request.resolved_at = datetime.now(timezone.utc)
+    reset_request.resolved_by_id = admin.id
+    await reset_request.save()
 
 
 @router.get("/projects/stats", response_model=ProjectStats)

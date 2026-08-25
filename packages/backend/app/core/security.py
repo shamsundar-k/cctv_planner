@@ -21,7 +21,10 @@ from jose import JWTError, jwt
 
 from .config import settings
 import logging
-logger = logging.getLogger(__name__)    
+logger = logging.getLogger(__name__)
+
+DEFAULT_RESET_PASSWORD = "login@123"
+
 
 def hash_password(plain: str) -> str:
     """Hash a plain password using bcrypt with a randomly generated salt.
@@ -51,18 +54,31 @@ def verify_password(plain: str, hashed: str) -> bool:
     return is_valid
 
 
-def create_access_token(user_id: str, role: str) -> str:
+def create_access_token(
+    user_id: str,
+    role: str,
+    token_version: int = 0,
+    must_change_password: bool = False,
+) -> str:
     """Generate a JWT access token with user identity and expiration.
     
     Args:
         user_id: Unique user identifier
         role: User role for authorization (included in token payload)
+        token_version: Session generation used to invalidate older tokens
+        must_change_password: Whether normal API access must remain blocked
     
     Returns:
         Encoded JWT access token with expiration set via JWT_ACCESS_TTL_MINUTES config
     """
     expire = datetime.now(timezone.utc) + timedelta(minutes=settings.JWT_ACCESS_TTL_MINUTES)
-    payload = {"sub": user_id, "role": role, "exp": expire}
+    payload = {
+        "sub": user_id,
+        "role": role,
+        "ver": token_version,
+        "must_change_password": must_change_password,
+        "exp": expire,
+    }
     token = jwt.encode(payload, settings.JWT_SECRET, algorithm="HS256")
     logger.info("Access token created for user %s with role %s", user_id, role)
     return token

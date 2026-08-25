@@ -2,6 +2,7 @@ import { useState } from 'react'
 import {
   useSearchUsers,
   useProjectStats,
+  usePasswordResetRequests,
 } from '../api/admin'
 import { useAllInvites } from '../../invites/api/invites'
 import { useAllCameraSpecs } from '@/hooks/useCameraSpecs'
@@ -13,6 +14,10 @@ export function useAdminData() {
   const { data: projectStats, isLoading: projectStatsLoading } = useProjectStats()
   const { data: allCameraSpecs = [] } = useAllCameraSpecs()
   const { data: adminInvites = [], isLoading: invitesLoading } = useAllInvites()
+  const {
+    data: passwordResetRequests = [],
+    isLoading: passwordResetRequestsLoading,
+  } = usePasswordResetRequests()
 
   const totalCameraModels = allCameraSpecs.length
 
@@ -23,6 +28,8 @@ export function useAdminData() {
     projectStatsLoading,
     adminInvites,
     invitesLoading,
+    passwordResetRequests,
+    passwordResetRequestsLoading,
     totalCameraModels,
     userSearch,
     setUserSearch,

@@ -17,7 +17,11 @@
  *   - A wildcard fallback <Navigate to="/" replace /> for unknown URLs.
  */
 import { BrowserRouter, Routes, Route, Navigate } from "react-router";
-import { LoginPage } from "./features/auth";
+import {
+  LoginPage,
+  PasswordChangeRoute,
+  RequiredPasswordChangePage,
+} from "./features/auth";
 import AcceptInvitePage from "./pages/AcceptInvitePage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
@@ -46,6 +50,10 @@ function App() {
             <Route path="/accept-invite" element={<AcceptInvitePage />} />
           </Route>
 
+          <Route element={<PasswordChangeRoute />}>
+            <Route path="/change-password" element={<RequiredPasswordChangePage />} />
+          </Route>
+
           {/* Protected routes */}
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<DashboardPage />} />
@@ -63,6 +71,7 @@ function App() {
               <Route path="/admin/manage/users" element={<AdminPage />} />
               <Route path="/admin/manage/projects" element={<AdminPage />} />
               <Route path="/admin/manage/invites" element={<AdminPage />} />
+              <Route path="/admin/manage/password-resets" element={<AdminPage />} />
               <Route
                 path="/admin/manage/camera-models"
                 element={<AdminCamerasPage />}

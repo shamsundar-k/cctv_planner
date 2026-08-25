@@ -16,5 +16,8 @@ import { useAuthStore } from '../features/auth'
 
 export default function PublicOnlyRoute() {
   const accessToken = useAuthStore((s) => s.accessToken)
-  return accessToken ? <Navigate to="/" replace /> : <Outlet />
+  const mustChangePassword = useAuthStore((s) => s.user?.mustChangePassword)
+
+  if (!accessToken) return <Outlet />
+  return <Navigate to={mustChangePassword ? '/change-password' : '/'} replace />
 }

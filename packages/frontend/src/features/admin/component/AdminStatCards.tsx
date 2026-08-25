@@ -1,11 +1,12 @@
 import StatCard from './StatCard'
-import { Camera, FolderKanban, Mail, UsersRound } from 'lucide-react'
+import { Camera, FolderKanban, KeyRound, Mail, UsersRound } from 'lucide-react'
 
 interface AdminStatCardsProps {
   usersValue: number | string
   projectsValue: number | string
   camerasValue: number | string
   invitesValue: number | string
+  passwordResetsValue: number | string
 }
 
 export default function AdminStatCards({
@@ -13,9 +14,10 @@ export default function AdminStatCards({
   projectsValue,
   camerasValue,
   invitesValue,
+  passwordResetsValue,
 }: AdminStatCardsProps) {
   return (
-    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-5">
       <StatCard
         label="Users"
         value={usersValue}
@@ -43,6 +45,13 @@ export default function AdminStatCards({
         description="Create, copy, and revoke invitations for new users."
         icon={<Mail size={23} aria-hidden="true" />}
         to="/admin/manage/invites"
+      />
+      <StatCard
+        label="Password Resets"
+        value={passwordResetsValue}
+        description="Review pending password reset requests from users."
+        icon={<KeyRound size={23} aria-hidden="true" />}
+        to="/admin/manage/password-resets"
       />
     </div>
   )
