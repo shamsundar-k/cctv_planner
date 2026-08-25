@@ -5,7 +5,6 @@ from typing import Literal
 
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
-
 MAX_BCRYPT_PASSWORD_BYTES = 72
 
 

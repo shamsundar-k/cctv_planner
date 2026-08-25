@@ -11,6 +11,7 @@ from app.api_models.user import SystemRole
 from app.core import deps
 from app.models.password_reset_request import PasswordResetStatus
 from app.routers import admin, auth
+from app.services import auth_service, auth_token_service
 
 
 USER_ID = PydanticObjectId("66584aef0f5f3e6d8f8a1234")
@@ -54,9 +55,13 @@ def fake_user(**overrides: object) -> FakeRecord:
 async def test_unknown_email_gets_generic_reset_response(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setattr(auth.User, "find_one", AsyncMock(return_value=None))
+    monkeypatch.setattr(auth_service.User, "find_one", AsyncMock(return_value=None))
     find_request = AsyncMock()
-    monkeypatch.setattr(auth.PasswordResetRequestDocument, "find_one", find_request)
+    monkeypatch.setattr(
+        auth_service.PasswordResetRequestDocument,
+        "find_one",
+        find_request,
+    )
 
     result = await auth.create_password_reset_request(
         PasswordResetRequestCreate(email="unknown@example.com")
@@ -155,10 +160,18 @@ async def test_changing_temporary_password_clears_flag_and_rotates_version(
 ) -> None:
     user = fake_user(must_change_password=True)
     redis = FakeRedis()
-    monkeypatch.setattr(auth, "verify_password", Mock(return_value=True))
-    monkeypatch.setattr(auth, "hash_password", Mock(return_value="new-hash"))
-    monkeypatch.setattr(auth, "create_refresh_token", lambda: "new-refresh-token")
-    monkeypatch.setattr(auth, "create_access_token", lambda *args: "new-access-token")
+    monkeypatch.setattr(auth_service, "verify_password", Mock(return_value=True))
+    monkeypatch.setattr(auth_service, "hash_password", Mock(return_value="new-hash"))
+    monkeypatch.setattr(
+        auth_token_service,
+        "create_refresh_token",
+        lambda: "new-refresh-token",
+    )
+    monkeypatch.setattr(
+        auth_token_service,
+        "create_access_token",
+        lambda *args: "new-access-token",
+    )
 
     result = await auth.change_password(
         PasswordChangeRequest(
@@ -182,9 +195,13 @@ async def test_old_refresh_token_version_is_rejected(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     redis = FakeRedis()
-    key = auth._token_key("old-refresh")
+    key = auth_token_service.token_key("old-refresh")
     redis.values[key] = f"{USER_ID}:1"
-    monkeypatch.setattr(auth.User, "get", AsyncMock(return_value=fake_user()))
+    monkeypatch.setattr(
+        auth_token_service.User,
+        "get",
+        AsyncMock(return_value=fake_user()),
+    )
 
     with pytest.raises(HTTPException) as error:
         await auth.refresh(SimpleNamespace(refresh_token="old-refresh"), redis)
