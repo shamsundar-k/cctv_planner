@@ -6,28 +6,21 @@ import type {
 
 const DEFAULT_HORIZONTAL_RANGE_METRES = 50;
 const DEFAULT_TOP_VIEW_HALF_RANGE_METRES = 40;
-const CAMERA_MARGIN_METRES = 1;
+const TOP_VIEW_CAMERA_MARGIN_METRES = 10;
+const SIDE_VIEW_CAMERA_MARGIN_METRES = 10;
 const SIDE_VIEW_VERTICAL_RANGE_METRES = 15;
 
 export function deriveProjectionDomains(
   geometries: ProjectionGeometry[],
   installation: InstallationValues,
 ): ProjectionDomains {
-  const deadZone = Math.max(
-    ...geometries.map(({ calculation }) => calculation.d_near ?? 0),
-  );
-  const horizontalExtent = Math.max(
+  const topX: [number, number] = [
+    -TOP_VIEW_CAMERA_MARGIN_METRES,
     DEFAULT_HORIZONTAL_RANGE_METRES,
-    installation.targetDistance,
-    deadZone,
-  );
-  const overflowPadding =
-    horizontalExtent > DEFAULT_HORIZONTAL_RANGE_METRES
-      ? Math.max(horizontalExtent * 0.05, CAMERA_MARGIN_METRES)
-      : 0;
-  const x: [number, number] = [
-    -CAMERA_MARGIN_METRES,
-    horizontalExtent + overflowPadding,
+  ];
+  const sideX: [number, number] = [
+    -SIDE_VIEW_CAMERA_MARGIN_METRES,
+    DEFAULT_HORIZONTAL_RANGE_METRES,
   ];
 
   const halfSceneWidth = Math.max(
@@ -36,13 +29,29 @@ export function deriveProjectionDomains(
     ),
     0.5,
   );
-  const topViewHalfExtent = Math.max(
+  const topY: [number, number] = [
+    -DEFAULT_TOP_VIEW_HALF_RANGE_METRES,
     DEFAULT_TOP_VIEW_HALF_RANGE_METRES,
-    Math.ceil((halfSceneWidth * 1.1) / 5) * 5,
-  );
-  const topY: [number, number] = [-topViewHalfExtent, topViewHalfExtent];
+  ];
 
   const sideY: [number, number] = [0, SIDE_VIEW_VERTICAL_RANGE_METRES];
+  const sideContentTop = Math.max(
+    installation.mountingHeight,
+    ...geometries.map(({ verticalTarget }) => verticalTarget.topHeight),
+  );
 
-  return { x, topY, sideY };
+  return {
+    topX,
+    sideX,
+    topY,
+    sideY,
+    topContentBounds: {
+      x: [0, installation.targetDistance],
+      y: [-halfSceneWidth, halfSceneWidth],
+    },
+    sideContentBounds: {
+      x: [0, installation.targetDistance],
+      y: [0, sideContentTop],
+    },
+  };
 }

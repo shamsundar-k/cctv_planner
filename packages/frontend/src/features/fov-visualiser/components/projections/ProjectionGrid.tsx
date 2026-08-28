@@ -36,7 +36,6 @@ function formatTick(value: number): string {
 }
 
 export default function ProjectionGrid({
-  width,
   height,
   margins,
   innerWidth,
@@ -94,8 +93,8 @@ export default function ProjectionGrid({
         tickLabelProps={() => ({ ...tickLabel, textAnchor: "end", dx: -3 })}
       />
       <text
-        x={width - 8}
-        y={height - 6}
+        x={margins.left + innerWidth}
+        y={Math.min(height - 6, margins.top + innerHeight + 30)}
         textAnchor="end"
         fill="var(--app-text-muted)"
         fontSize={10}
@@ -103,8 +102,8 @@ export default function ProjectionGrid({
         m
       </text>
       <text
-        x={8}
-        y={12}
+        x={Math.max(8, margins.left - 34)}
+        y={Math.max(11, margins.top - 3)}
         fill="var(--app-text-muted)"
         fontSize={10}
       >

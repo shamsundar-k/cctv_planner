@@ -9,7 +9,10 @@ import {
 import { ParentSize } from "@visx/responsive";
 import { scaleLinear } from "@visx/scale";
 import { Zoom } from "@visx/zoom";
-import type { ProjectionDomain } from "../../types";
+import type {
+  ProjectionContentBounds,
+  ProjectionDomain,
+} from "../../types";
 import ProjectionGrid from "./ProjectionGrid";
 import ProjectionToolbar from "./ProjectionToolbar";
 
@@ -38,13 +41,16 @@ interface ProjectionPanelProps {
   yDomain: ProjectionDomain | null;
   geometryKey: string;
   emptyMessage: string;
+  contentBounds?: ProjectionContentBounds | null;
   lockYDomain?: boolean;
+  workspaceSize?: "single" | "split";
   children?: (context: ProjectionRenderContext) => ReactNode;
 }
 
 const FALLBACK_X_DOMAIN: ProjectionDomain = [-0.5, 10];
 const FALLBACK_Y_DOMAIN: ProjectionDomain = [-5, 5];
 const HEADER_HEIGHT = 40;
+const DOMAIN_GROWTH_STEP_METRES = 5;
 
 interface ZoomTransformReader {
   applyInverseToPoint: (point: { x: number; y: number }) => {
@@ -77,6 +83,119 @@ function visibleScale(
   });
 }
 
+function fitDomainsToAspect(
+  availableWidth: number,
+  availableHeight: number,
+  xDomain: ProjectionDomain,
+  yDomain: ProjectionDomain,
+) {
+  const xSpan = Math.max(Math.abs(xDomain[1] - xDomain[0]), Number.EPSILON);
+  const ySpan = Math.max(Math.abs(yDomain[1] - yDomain[0]), Number.EPSILON);
+  const panelAspectRatio = availableWidth / availableHeight;
+  const domainAspectRatio = xSpan / ySpan;
+  let adjustedXDomain: ProjectionDomain = xDomain;
+  let adjustedYDomain: ProjectionDomain = yDomain;
+
+  if (panelAspectRatio > domainAspectRatio) {
+    const expandedXSpan = ySpan * panelAspectRatio;
+    adjustedXDomain = [xDomain[0], xDomain[0] + expandedXSpan];
+  } else if (panelAspectRatio < domainAspectRatio) {
+    const expandedYSpan = xSpan / panelAspectRatio;
+
+    if (yDomain[0] === 0) {
+      adjustedYDomain = [0, expandedYSpan];
+    } else {
+      const yCentre = (yDomain[0] + yDomain[1]) / 2;
+      adjustedYDomain = [
+        yCentre - expandedYSpan / 2,
+        yCentre + expandedYSpan / 2,
+      ];
+    }
+  }
+
+  return { adjustedXDomain, adjustedYDomain };
+}
+
+function growUpperBoundary(value: number): number {
+  return (
+    Math.ceil((value - 1e-9) / DOMAIN_GROWTH_STEP_METRES) *
+    DOMAIN_GROWTH_STEP_METRES
+  );
+}
+
+function getPlotLayout(
+  width: number,
+  plotHeight: number,
+  xDomain: ProjectionDomain,
+  yDomain: ProjectionDomain,
+  contentBounds?: ProjectionContentBounds | null,
+) {
+  const baseMargins: ProjectionMargins = {
+    top: 14,
+    right: 20,
+    bottom: 34,
+    left: 42,
+  };
+  const availableWidth = Math.max(
+    width - baseMargins.left - baseMargins.right,
+    1,
+  );
+  const availableHeight = Math.max(
+    plotHeight - baseMargins.top - baseMargins.bottom,
+    1,
+  );
+
+  const initialLayout = fitDomainsToAspect(
+    availableWidth,
+    availableHeight,
+    xDomain,
+    yDomain,
+  );
+  let requestedXDomain = xDomain;
+  let requestedYDomain = yDomain;
+
+  if (contentBounds) {
+    const [, visibleXMax] = initialLayout.adjustedXDomain;
+    const [visibleYMin, visibleYMax] = initialLayout.adjustedYDomain;
+
+    if (contentBounds.x[1] > visibleXMax) {
+      requestedXDomain = [
+        xDomain[0],
+        growUpperBoundary(contentBounds.x[1]),
+      ];
+    }
+
+    if (yDomain[0] === 0 && contentBounds.y[1] > visibleYMax) {
+      requestedYDomain = [0, growUpperBoundary(contentBounds.y[1])];
+    } else if (
+      yDomain[0] !== 0 &&
+      (contentBounds.y[0] < visibleYMin || contentBounds.y[1] > visibleYMax)
+    ) {
+      const requiredHalfExtent = Math.max(
+        Math.abs(contentBounds.y[0]),
+        Math.abs(contentBounds.y[1]),
+      );
+      const grownHalfExtent = growUpperBoundary(requiredHalfExtent);
+      requestedYDomain = [-grownHalfExtent, grownHalfExtent];
+    }
+  }
+
+  const { adjustedXDomain, adjustedYDomain } = fitDomainsToAspect(
+    availableWidth,
+    availableHeight,
+    requestedXDomain,
+    requestedYDomain,
+  );
+
+  return {
+    margins: baseMargins,
+    innerWidth: availableWidth,
+    innerHeight: availableHeight,
+    adjustedXDomain,
+    adjustedYDomain,
+  };
+}
+
 export default function ProjectionPanel({
   title,
   description,
@@ -84,7 +203,9 @@ export default function ProjectionPanel({
   yDomain,
   geometryKey,
   emptyMessage,
+  contentBounds,
   lockYDomain = false,
+  workspaceSize = "split",
   children,
 }: ProjectionPanelProps) {
   const panelRef = useRef<HTMLElement>(null);
@@ -120,7 +241,9 @@ export default function ProjectionPanel({
         className={
           isFullscreen
             ? "h-[calc(100vh-32px)]"
-            : "h-[390px] sm:h-[420px] xl:h-[440px]"
+            : workspaceSize === "single"
+              ? "h-[calc(100vh-9rem)] min-h-[560px] max-h-[900px]"
+              : "h-[390px] sm:h-[420px] xl:h-[440px]"
         }
       >
         <ParentSize
@@ -129,32 +252,34 @@ export default function ProjectionPanel({
           initialSize={{ width: 800, height: 420 }}
         >
           {({ width, height }) => {
-          const plotHeight = Math.max(height - HEADER_HEIGHT, 240);
-          const margins: ProjectionMargins = {
-            top: 14,
-            right: 20,
-            bottom: 34,
-            left: 42,
-          };
-          const innerWidth = Math.max(width - margins.left - margins.right, 1);
-          const innerHeight = Math.max(
-            plotHeight - margins.top - margins.bottom,
-            1,
-          );
-          const activeXDomain = xDomain ?? FALLBACK_X_DOMAIN;
-          const activeYDomain = yDomain ?? FALLBACK_Y_DOMAIN;
-          const baseXScale = scaleLinear<number>({
-            domain: activeXDomain,
-            range: [0, innerWidth],
-          });
-          const baseYScale = scaleLinear<number>({
-            domain: activeYDomain,
-            range: [innerHeight, 0],
-          });
+            const plotHeight = Math.max(height - HEADER_HEIGHT, 240);
+            const activeXDomain = xDomain ?? FALLBACK_X_DOMAIN;
+            const activeYDomain = yDomain ?? FALLBACK_Y_DOMAIN;
+            const {
+              margins,
+              innerWidth,
+              innerHeight,
+              adjustedXDomain,
+              adjustedYDomain,
+            } = getPlotLayout(
+              width,
+              plotHeight,
+              activeXDomain,
+              activeYDomain,
+              contentBounds,
+            );
+            const baseXScale = scaleLinear<number>({
+              domain: adjustedXDomain,
+              range: [0, innerWidth],
+            });
+            const baseYScale = scaleLinear<number>({
+              domain: adjustedYDomain,
+              range: [innerHeight, 0],
+            });
 
-          return (
+            return (
             <Zoom<SVGSVGElement>
-              key={geometryKey}
+              key={`${geometryKey}:${workspaceSize}`}
               width={width}
               height={plotHeight}
               scaleXMin={0.5}
@@ -206,7 +331,7 @@ export default function ProjectionPanel({
                           zoom.scale({ scaleX: 1.25, scaleY: 1.25 })
                         }
                         onFullscreen={() => void toggleFullscreen()}
-                        onFit={zoom.reset}
+                        onReset={zoom.reset}
                       />
                     </header>
 
@@ -308,7 +433,7 @@ export default function ProjectionPanel({
                 );
               }}
             </Zoom>
-          );
+            );
           }}
         </ParentSize>
       </div>

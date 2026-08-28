@@ -115,20 +115,6 @@ export default function TopViewProjection({
         textAnchor="start"
       />
 
-      <text
-        x={(cameraX + targetX) / 2}
-        y={cameraY - 8}
-        textAnchor="middle"
-        fill="var(--app-primary)"
-        stroke="var(--app-background)"
-        strokeWidth={4}
-        paintOrder="stroke"
-        fontSize={10}
-        fontWeight={600}
-      >
-        Target {installation.targetDistance.toFixed(1)} m
-      </text>
-
       <g transform={`translate(${cameraX} ${cameraY})`}>
         <line
           x1={-22}

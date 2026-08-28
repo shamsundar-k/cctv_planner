@@ -6,7 +6,7 @@ interface ProjectionToolbarProps {
   onZoomOut: () => void;
   onZoomIn: () => void;
   onFullscreen: () => void;
-  onFit: () => void;
+  onReset: () => void;
 }
 
 const iconButtonClass =
@@ -18,7 +18,7 @@ export default function ProjectionToolbar({
   onZoomOut,
   onZoomIn,
   onFullscreen,
-  onFit,
+  onReset,
 }: ProjectionToolbarProps) {
   return (
     <div className="flex items-center gap-2" aria-label="Projection controls">
@@ -64,9 +64,9 @@ export default function ProjectionToolbar({
         type="button"
         className="h-8 rounded-lg border border-panel-border bg-panel px-3 text-sm font-medium text-text-secondary transition-colors enabled:hover:bg-divider/60 enabled:hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
         disabled={disabled}
-        onClick={onFit}
+        onClick={onReset}
       >
-        Fit
+        Reset
       </button>
     </div>
   );

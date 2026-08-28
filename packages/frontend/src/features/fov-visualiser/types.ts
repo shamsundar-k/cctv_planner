@@ -37,8 +37,16 @@ export interface ProjectionGeometry {
 
 export type ProjectionDomain = [number, number];
 
-export interface ProjectionDomains {
+export interface ProjectionContentBounds {
   x: ProjectionDomain;
+  y: ProjectionDomain;
+}
+
+export interface ProjectionDomains {
+  topX: ProjectionDomain;
+  sideX: ProjectionDomain;
   topY: ProjectionDomain;
   sideY: ProjectionDomain;
+  topContentBounds: ProjectionContentBounds;
+  sideContentBounds: ProjectionContentBounds;
 }

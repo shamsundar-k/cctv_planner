@@ -1,13 +1,10 @@
 import { ChevronLeft } from "lucide-react";
 import { Link } from "react-router";
-import Navbar from "../navigation/component/Navbar";
 import FovVisualiserLayout from "./components/FovVisualiserLayout";
 
 export default function FovVisualiserPage() {
   return (
     <div className="min-h-screen overflow-x-hidden bg-background text-text-primary">
-      <Navbar />
-
       <main className="w-full px-2 py-2 sm:px-3 sm:py-3 lg:px-4">
         <Link
           to="/"

@@ -196,25 +196,11 @@ export function useFovVisualiser() {
   }, [projectionGeometry]);
 
   const projectionDomains: ProjectionDomains | null = useMemo(
-    () => {
-      if (!selectedModel) return null;
-      const focal = selectedModel.lens_spec.focal_length;
-      const endpointFocals =
-        focal.min === focal.max ? [focal.min] : [focal.min, focal.max];
-      const endpointGeometries = endpointFocals
-        .map((focalLength) =>
-          buildProjectionGeometry(
-            calculateFov(selectedModel, installation, focalLength),
-            installation,
-          ),
-        )
-        .filter((geometry): geometry is ProjectionGeometry => geometry != null);
-
-      return endpointGeometries.length > 0
-        ? deriveProjectionDomains(endpointGeometries, installation)
-        : null;
-    },
-    [installation, selectedModel],
+    () =>
+      projectionGeometry
+        ? deriveProjectionDomains([projectionGeometry], installation)
+        : null,
+    [installation, projectionGeometry],
   );
 
   return {
