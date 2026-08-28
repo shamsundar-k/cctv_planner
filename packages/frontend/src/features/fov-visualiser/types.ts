@@ -50,3 +50,24 @@ export interface ProjectionDomains {
   topContentBounds: ProjectionContentBounds;
   sideContentBounds: ProjectionContentBounds;
 }
+
+export type DoriLevel = "identify" | "recognize" | "observe" | "detect";
+
+export interface DoriBoundary {
+  level: DoriLevel;
+  threshold: number;
+  maximumDistance: number;
+}
+
+export interface DoriRegion {
+  level: DoriLevel;
+  threshold: number;
+  startDistance: number;
+  endDistance: number;
+}
+
+export interface DoriOverlayGeometry {
+  boundaries: readonly DoriBoundary[];
+  regions: readonly DoriRegion[];
+  maxDrawableDistance: number;
+}

@@ -60,6 +60,15 @@
     --app-fov-fill: rgba(37, 99, 235, 0.22);
     --app-fov-border: #2563eb;
 
+    --app-dori-identify-fill: rgba(220, 38, 38, 0.2);
+    --app-dori-identify-border: #b91c1c;
+    --app-dori-recognize-fill: rgba(234, 88, 12, 0.2);
+    --app-dori-recognize-border: #c2410c;
+    --app-dori-observe-fill: rgba(202, 138, 4, 0.2);
+    --app-dori-observe-border: #a16207;
+    --app-dori-detect-fill: rgba(22, 163, 74, 0.18);
+    --app-dori-detect-border: #15803d;
+
     --app-blind-zone-fill: rgba(239, 68, 68, 0.22);
     --app-blind-zone-border: #ef4444;
 
@@ -135,6 +144,15 @@
     /* Coverage / Overlay */
     --app-fov-fill: rgba(59, 130, 246, 0.22);
     --app-fov-border: #3b82f6;
+
+    --app-dori-identify-fill: rgba(248, 113, 113, 0.22);
+    --app-dori-identify-border: #f87171;
+    --app-dori-recognize-fill: rgba(251, 146, 60, 0.22);
+    --app-dori-recognize-border: #fb923c;
+    --app-dori-observe-fill: rgba(250, 204, 21, 0.2);
+    --app-dori-observe-border: #facc15;
+    --app-dori-detect-fill: rgba(74, 222, 128, 0.2);
+    --app-dori-detect-border: #4ade80;
 
     --app-blind-zone-fill: rgba(248, 113, 113, 0.22);
     --app-blind-zone-border: #f87171;
@@ -212,6 +230,15 @@
     --app-fov-fill: rgba(30, 64, 175, 0.22);
     --app-fov-border: #1e40af;
 
+    --app-dori-identify-fill: rgba(190, 24, 93, 0.2);
+    --app-dori-identify-border: #be185d;
+    --app-dori-recognize-fill: rgba(234, 88, 12, 0.2);
+    --app-dori-recognize-border: #c2410c;
+    --app-dori-observe-fill: rgba(202, 138, 4, 0.2);
+    --app-dori-observe-border: #a16207;
+    --app-dori-detect-fill: rgba(5, 150, 105, 0.18);
+    --app-dori-detect-border: #047857;
+
     --app-blind-zone-fill: rgba(220, 38, 38, 0.22);
     --app-blind-zone-border: #dc2626;
 
@@ -288,6 +315,15 @@
     --app-fov-fill: rgba(22, 163, 74, 0.22);
     --app-fov-border: #16a34a;
 
+    --app-dori-identify-fill: rgba(220, 38, 38, 0.2);
+    --app-dori-identify-border: #b91c1c;
+    --app-dori-recognize-fill: rgba(234, 88, 12, 0.2);
+    --app-dori-recognize-border: #c2410c;
+    --app-dori-observe-fill: rgba(202, 138, 4, 0.2);
+    --app-dori-observe-border: #a16207;
+    --app-dori-detect-fill: rgba(8, 145, 178, 0.18);
+    --app-dori-detect-border: #0e7490;
+
     --app-blind-zone-fill: rgba(220, 38, 38, 0.22);
     --app-blind-zone-border: #dc2626;
 
@@ -363,6 +399,15 @@
     /* Coverage / Overlay */
     --app-fov-fill: rgba(0, 191, 255, 0.3);
     --app-fov-border: #00bfff;
+
+    --app-dori-identify-fill: rgba(255, 0, 255, 0.3);
+    --app-dori-identify-border: #ff00ff;
+    --app-dori-recognize-fill: rgba(255, 127, 0, 0.3);
+    --app-dori-recognize-border: #ff7f00;
+    --app-dori-observe-fill: rgba(255, 255, 0, 0.28);
+    --app-dori-observe-border: #ffff00;
+    --app-dori-detect-fill: rgba(0, 255, 255, 0.25);
+    --app-dori-detect-border: #00ffff;
 
     --app-blind-zone-fill: rgba(255, 0, 0, 0.3);
     --app-blind-zone-border: #ff4444;

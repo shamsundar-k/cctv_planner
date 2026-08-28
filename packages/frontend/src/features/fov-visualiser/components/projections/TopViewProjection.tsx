@@ -1,22 +1,28 @@
 import { useId } from "react";
 import type {
+  DoriOverlayGeometry,
   InstallationValues,
   ProjectionGeometry,
 } from "../../types";
 import AngleMarker from "./AngleMarker";
 import DimensionMarker from "./DimensionMarker";
 import type { ProjectionRenderContext } from "./ProjectionPanel";
+import TopViewDoriOverlay from "./TopViewDoriOverlay";
 
 interface TopViewProjectionProps {
   context: ProjectionRenderContext;
   geometry: ProjectionGeometry;
   installation: InstallationValues;
+  doriGeometry: DoriOverlayGeometry | null;
+  showDoriRegions: boolean;
 }
 
 export default function TopViewProjection({
   context,
   geometry,
   installation,
+  doriGeometry,
+  showDoriRegions,
 }: TopViewProjectionProps) {
   const rawId = useId();
   const markerId = `top-dimension-${rawId.replaceAll(":", "")}`;
@@ -57,6 +63,14 @@ export default function TopViewProjection({
         fill="var(--app-fov-fill)"
         stroke="none"
       />
+      {showDoriRegions && doriGeometry && (
+        <TopViewDoriOverlay
+          context={context}
+          geometry={doriGeometry}
+          horizontalFov={calculation.h_angle}
+          maximumDistance={installation.targetDistance}
+        />
+      )}
       <line
         x1={cameraX}
         y1={cameraY}

@@ -13,6 +13,7 @@ import type {
   ProjectionDomains,
   ProjectionGeometry,
 } from "../types";
+import { deriveDoriOverlayGeometry } from "../utils/doriGeometry";
 import { deriveVerticalTargetGeometry } from "../utils/projectionGeometry";
 import { deriveProjectionDomains } from "../utils/projectionDomains";
 
@@ -79,6 +80,7 @@ export function useFovVisualiser() {
   const [selectedManufacturer, setSelectedManufacturer] = useState("");
   const [selectedModelId, setSelectedModelId] = useState("");
   const [installation, setInstallation] = useState(DEFAULT_INSTALLATION);
+  const [showDoriRegions, setShowDoriRegions] = useState(true);
 
   const bulletCameras = useMemo(
     () =>
@@ -177,6 +179,14 @@ export function useFovVisualiser() {
       : null;
   }, [calculation, installation]);
 
+  const horizontalResolution =
+    selectedModel?.sensor_spec.resolution.horizontal ?? null;
+  const horizontalFov = projectionGeometry?.calculation.h_angle ?? null;
+  const doriGeometry = useMemo(
+    () => deriveDoriOverlayGeometry(horizontalResolution, horizontalFov),
+    [horizontalFov, horizontalResolution],
+  );
+
   const coverageResults: CoverageResults | null = useMemo(() => {
     if (
       !projectionGeometry ||
@@ -198,10 +208,18 @@ export function useFovVisualiser() {
   const projectionDomains: ProjectionDomains | null = useMemo(
     () =>
       projectionGeometry
-        ? deriveProjectionDomains([projectionGeometry], installation)
+        ? deriveProjectionDomains(
+            [projectionGeometry],
+            installation,
+            doriGeometry,
+          )
         : null,
-    [installation, projectionGeometry],
+    [doriGeometry, installation, projectionGeometry],
   );
+
+  const handleDoriVisibilityChange = useCallback((visible: boolean) => {
+    setShowDoriRegions(visible);
+  }, []);
 
   return {
     bulletCameras,
@@ -215,6 +233,8 @@ export function useFovVisualiser() {
     calculation,
     projectionGeometry,
     projectionDomains,
+    doriGeometry,
+    showDoriRegions,
     coverageResults,
     isLoading: cameraQuery.isLoading,
     isError: cameraQuery.isError,
@@ -225,6 +245,7 @@ export function useFovVisualiser() {
     onManufacturerChange: handleManufacturerChange,
     onModelChange: handleModelChange,
     onInstallationChange: handleInstallationChange,
+    onDoriVisibilityChange: handleDoriVisibilityChange,
     retry: cameraQuery.refetch,
   };
 }

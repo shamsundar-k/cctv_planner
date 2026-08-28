@@ -1,4 +1,5 @@
 import type {
+  DoriOverlayGeometry,
   InstallationValues,
   ProjectionDomains,
   ProjectionGeometry,
@@ -13,6 +14,7 @@ const SIDE_VIEW_VERTICAL_RANGE_METRES = 15;
 export function deriveProjectionDomains(
   geometries: ProjectionGeometry[],
   installation: InstallationValues,
+  doriGeometry: DoriOverlayGeometry | null = null,
 ): ProjectionDomains {
   const topX: [number, number] = [
     -TOP_VIEW_CAMERA_MARGIN_METRES,
@@ -28,6 +30,10 @@ export function deriveProjectionDomains(
       ({ calculation }) => (calculation.w_target ?? 0) / 2,
     ),
     0.5,
+  );
+  const sideMaximumDistance = Math.max(
+    installation.targetDistance,
+    doriGeometry?.maxDrawableDistance ?? 0,
   );
   const topY: [number, number] = [
     -DEFAULT_TOP_VIEW_HALF_RANGE_METRES,
@@ -50,7 +56,7 @@ export function deriveProjectionDomains(
       y: [-halfSceneWidth, halfSceneWidth],
     },
     sideContentBounds: {
-      x: [0, installation.targetDistance],
+      x: [0, sideMaximumDistance],
       y: [0, sideContentTop],
     },
   };

@@ -44,6 +44,7 @@ interface ProjectionPanelProps {
   contentBounds?: ProjectionContentBounds | null;
   lockYDomain?: boolean;
   workspaceSize?: "single" | "split";
+  fullscreenControls?: ReactNode;
   children?: (context: ProjectionRenderContext) => ReactNode;
 }
 
@@ -206,6 +207,7 @@ export default function ProjectionPanel({
   contentBounds,
   lockYDomain = false,
   workspaceSize = "split",
+  fullscreenControls,
   children,
 }: ProjectionPanelProps) {
   const panelRef = useRef<HTMLElement>(null);
@@ -334,6 +336,12 @@ export default function ProjectionPanel({
                         onReset={zoom.reset}
                       />
                     </header>
+
+                    {isFullscreen && fullscreenControls && (
+                      <div className="mb-2 shrink-0 rounded-lg border border-panel-border bg-background px-3 py-2">
+                        {fullscreenControls}
+                      </div>
+                    )}
 
                     <div className="min-h-0 flex-1 overflow-hidden rounded-lg border border-panel-border bg-background">
                       <svg

@@ -5,6 +5,8 @@ import SelectedCameraCard from "./SelectedCameraCard";
 import ProjectionPanel from "./projections/ProjectionPanel";
 import SideViewProjection from "./projections/SideViewProjection";
 import TopViewProjection from "./projections/TopViewProjection";
+import DoriLegend from "./dori/DoriLegend";
+import DoriVisibilityToggle from "./dori/DoriVisibilityToggle";
 import { useFovVisualiser } from "../hooks/useFovVisualiser";
 
 type ProjectionView = "top" | "side" | "split";
@@ -30,6 +32,18 @@ export default function FovVisualiserLayout() {
       ? "Adjust the camera or target height to produce valid ground coverage."
       : "Select a camera model to display this projection.";
   const projectionGeometry = visualiser.projectionGeometry;
+  const doriControls = (showLegend: boolean) => (
+    <div className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2">
+      <DoriVisibilityToggle
+        checked={visualiser.showDoriRegions}
+        disabled={visualiser.doriGeometry == null}
+        onChange={visualiser.onDoriVisibilityChange}
+      />
+      {showLegend &&
+        visualiser.showDoriRegions &&
+        visualiser.doriGeometry && <DoriLegend />}
+    </div>
+  );
 
   const topProjection = (workspaceSize: "single" | "split") => (
     <ProjectionPanel
@@ -41,6 +55,7 @@ export default function FovVisualiserLayout() {
       geometryKey={`top:${geometryKey}`}
       emptyMessage={projectionMessage}
       workspaceSize={workspaceSize}
+      fullscreenControls={doriControls(true)}
       children={
         projectionGeometry
           ? (context) => (
@@ -48,6 +63,8 @@ export default function FovVisualiserLayout() {
                 context={context}
                 geometry={projectionGeometry}
                 installation={visualiser.installation}
+                doriGeometry={visualiser.doriGeometry}
+                showDoriRegions={visualiser.showDoriRegions}
               />
             )
           : undefined
@@ -66,6 +83,7 @@ export default function FovVisualiserLayout() {
       emptyMessage={projectionMessage}
       lockYDomain
       workspaceSize={workspaceSize}
+      fullscreenControls={doriControls(true)}
       children={
         projectionGeometry
           ? (context) => (
@@ -73,6 +91,8 @@ export default function FovVisualiserLayout() {
                 context={context}
                 geometry={projectionGeometry}
                 installation={visualiser.installation}
+                doriGeometry={visualiser.doriGeometry}
+                showDoriRegions={visualiser.showDoriRegions}
               />
             )
           : undefined
@@ -114,7 +134,7 @@ export default function FovVisualiserLayout() {
       </aside>
 
       <section className="min-w-0" aria-label="Field of view projections">
-        <div className="mb-2.5 flex items-center rounded-xl border border-panel-border bg-panel p-1.5 shadow-sm">
+        <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-panel-border bg-panel p-1.5 shadow-sm">
           <div
             className="flex items-center rounded-lg bg-background p-1"
             role="tablist"
@@ -141,7 +161,14 @@ export default function FovVisualiserLayout() {
               );
             })}
           </div>
+          <div className="px-1.5">{doriControls(false)}</div>
         </div>
+
+        {visualiser.showDoriRegions && visualiser.doriGeometry && (
+          <div className="mb-2.5 rounded-xl border border-panel-border bg-panel px-3 py-2 shadow-sm">
+            <DoriLegend />
+          </div>
+        )}
 
         <div role="tabpanel">
           {activeView === "top" && topProjection("single")}

@@ -1,16 +1,20 @@
 import { useId } from "react";
 import type {
+  DoriOverlayGeometry,
   InstallationValues,
   ProjectionGeometry,
 } from "../../types";
 import AngleMarker from "./AngleMarker";
 import DimensionMarker from "./DimensionMarker";
 import type { ProjectionRenderContext } from "./ProjectionPanel";
+import SideViewDoriOverlay from "./SideViewDoriOverlay";
 
 interface SideViewProjectionProps {
   context: ProjectionRenderContext;
   geometry: ProjectionGeometry;
   installation: InstallationValues;
+  doriGeometry: DoriOverlayGeometry | null;
+  showDoriRegions: boolean;
 }
 
 function toRadians(degrees: number): number {
@@ -29,6 +33,8 @@ export default function SideViewProjection({
   context,
   geometry,
   installation,
+  doriGeometry,
+  showDoriRegions,
 }: SideViewProjectionProps) {
   const rawId = useId();
   const markerId = `side-dimension-${rawId.replaceAll(":", "")}`;
@@ -114,6 +120,14 @@ export default function SideViewProjection({
         fill="var(--app-fov-fill)"
         stroke="none"
       />
+      {showDoriRegions && doriGeometry && (
+        <SideViewDoriOverlay
+          context={context}
+          doriGeometry={doriGeometry}
+          projectionGeometry={geometry}
+          mountingHeight={installation.mountingHeight}
+        />
+      )}
       <line
         x1={cameraX}
         y1={cameraY}
