@@ -35,6 +35,7 @@ import ProjectManagePage from "./pages/ProjectManagePage";
 import { ProjectCreatePage } from "./features/projects/create";
 import ProjectMapViewPage from "./pages/ProjectMapView";
 import ThreeDFovVisualiserPage from "./pages/ThreeDFovVisualiserPage";
+import { FovVisualiserPage } from "./features/fov-visualiser";
 import { ToastProvider } from "./components/ui/Toast";
 import UITest from "./pages/UITest";
 
@@ -60,6 +61,10 @@ function App() {
             <Route
               path="/tools/3d-fov-visualiser"
               element={<ThreeDFovVisualiserPage />}
+            />
+            <Route
+              path="/tools/fov-visualiser"
+              element={<FovVisualiserPage />}
             />
             <Route path="/projects/new" element={<ProjectCreatePage />} />
             <Route path="/project/manage/:id" element={<ProjectManagePage />} />

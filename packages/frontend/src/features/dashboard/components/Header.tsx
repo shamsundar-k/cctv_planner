@@ -121,10 +121,10 @@ export default function Header({
         </button>
 
         <Link
-          to="/tools/3d-fov-visualiser"
+          to="/tools/fov-visualiser"
           className="h-9 px-4 border border-primary/40 rounded-lg text-sm font-bold text-primary bg-primary/10 hover:bg-primary/20 transition-colors flex items-center"
         >
-          3D fov visualiser
+          FOV visualiser
         </Link>
 
         {/* Search */}
