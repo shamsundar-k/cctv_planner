@@ -26,7 +26,8 @@ export default function BaseTile() {
 
   useEffect(() => {
     if (!tileLayerRef.current) return
-    tileLayerRef.current.setUrl(BASE_MAPS[activeBaseMap].get_url())
+    const baseMap = BASE_MAPS[activeBaseMap]
+    tileLayerRef.current.setUrl(baseMap.get_url())
     console.log('BaseTile updated')
   }, [activeBaseMap])
 

@@ -3,9 +3,22 @@ import smoothThumb from '../assets/basemap-thumbs/alidade_smooth.jpg'
 import darkThumb from '../assets/basemap-thumbs/alidade_smooth_dark.jpg'
 import tonerThumb from '../assets/basemap-thumbs/stamen_toner.jpg'
 import satelliteThumb from '../assets/basemap-thumbs/alidade_satellite.jpg'
+import offlineMapsThumb from '../assets/basemap-thumbs/offline-maps.svg'
 
-export type BasemapStyle = 'alidade_smooth' | 'alidade_smooth_dark' | 'stamen_toner' | 'alidade_satellite'
+export type BasemapStyle =
+    | 'alidade_smooth'
+    | 'alidade_smooth_dark'
+    | 'stamen_toner'
+    | 'alidade_satellite'
+    | 'offline_maps'
 export type BasemapLabelTone = 'light' | 'dark'
+export interface BasemapDefinition {
+    label: string
+    attribution: string
+    get_url: () => string
+    image: string
+    labelTone: BasemapLabelTone
+}
 
 const TILE_ATTRIBUTION =
     '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a> ' +
@@ -13,6 +26,8 @@ const TILE_ATTRIBUTION =
     '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 
 const STADIA_API_KEY = import.meta.env.VITE_STADIA_MAPS_API_KEY as string | undefined
+const MARTIN_TILE_SERVER_URL =
+    (import.meta.env.VITE_MARTIN_TILE_SERVER_URL as string | undefined)?.replace(/\/$/, '') ?? 'http://localhost:3000'
 
 export function buildTileUrl(style: BasemapStyle, apiKey: string | undefined): string {
     const r = '{r}'
@@ -22,7 +37,7 @@ export function buildTileUrl(style: BasemapStyle, apiKey: string | undefined): s
 
 export const BASE_MAPS: Record<
     BasemapStyle,
-    { label: string; attribution: string; get_url: () => string; image: string; labelTone: BasemapLabelTone }
+    BasemapDefinition
 > = {
     alidade_smooth: {
         label: 'Smooth',
@@ -51,6 +66,13 @@ export const BASE_MAPS: Record<
         get_url: () => buildTileUrl('alidade_satellite', STADIA_API_KEY),
         image: satelliteThumb,
         labelTone: 'light',
+    },
+    offline_maps: {
+        label: 'Offline maps',
+        attribution: '&copy; OpenStreetMap contributors',
+        get_url: () => `${MARTIN_TILE_SERVER_URL}/style/bangalore/{z}/{x}/{y}.png`,
+        image: offlineMapsThumb,
+        labelTone: 'dark',
     },
 }
 
