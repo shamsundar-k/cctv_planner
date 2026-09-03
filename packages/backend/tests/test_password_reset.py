@@ -1,15 +1,22 @@
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, Mock
+from datetime import UTC, datetime, timedelta
 
 from beanie import PydanticObjectId
 from fastapi import HTTPException
 from fastapi.security import HTTPAuthorizationCredentials
 import pytest
 
-from app.api_models.auth import PasswordChangeRequest, PasswordResetRequestCreate
+from app.api_models.auth import (
+    PasswordChangeRequest,
+    PasswordResetRequestCreate,
+    RefreshRequest,
+    TokenResponse,
+)
 from app.api_models.user import SystemRole
 from app.core import deps
 from app.models.password_reset_request import PasswordResetStatus
+from app.models.refresh_token import RefreshToken
 from app.routers import admin, auth
 from app.services import auth_service, auth_token_service
 
@@ -24,18 +31,26 @@ class FakeRecord(SimpleNamespace):
         self.saved = True
 
 
-class FakeRedis:
+class FakeRefreshTokenCollection:
     def __init__(self) -> None:
-        self.values: dict[str, str] = {}
+        self.values: dict[str, dict[str, object]] = {}
 
-    async def get(self, key: str) -> str | None:
-        return self.values.get(key)
+    async def find_one_and_delete(self, query: dict[str, str]) -> dict[str, object] | None:
+        return self.values.pop(query["token_hash"], None)
 
-    async def set(self, key: str, value: str, **_: object) -> None:
-        self.values[key] = value
+    async def delete_one(self, query: dict[str, str]) -> None:
+        self.values.pop(query["token_hash"], None)
 
-    async def delete(self, key: str) -> None:
-        self.values.pop(key, None)
+
+def use_fake_refresh_token_collection(
+    monkeypatch: pytest.MonkeyPatch,
+    collection: FakeRefreshTokenCollection,
+) -> None:
+    monkeypatch.setattr(
+        RefreshToken,
+        "get_pymongo_collection",
+        classmethod(lambda _: collection),
+    )
 
 
 def fake_user(**overrides: object) -> FakeRecord:
@@ -159,7 +174,15 @@ async def test_changing_temporary_password_clears_flag_and_rotates_version(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     user = fake_user(must_change_password=True)
-    redis = FakeRedis()
+    inserted_tokens: list[object] = []
+
+    class FakeRefreshTokenDocument:
+        def __init__(self, **values: object) -> None:
+            self.__dict__.update(values)
+
+        async def insert(self) -> None:
+            inserted_tokens.append(self)
+
     monkeypatch.setattr(auth_service, "verify_password", Mock(return_value=True))
     monkeypatch.setattr(auth_service, "hash_password", Mock(return_value="new-hash"))
     monkeypatch.setattr(
@@ -172,13 +195,13 @@ async def test_changing_temporary_password_clears_flag_and_rotates_version(
         "create_access_token",
         lambda *args: "new-access-token",
     )
+    monkeypatch.setattr(auth_token_service, "RefreshToken", FakeRefreshTokenDocument)
 
     result = await auth.change_password(
         PasswordChangeRequest(
             current_password="login@123",
             new_password="a-new-secure-password",
         ),
-        redis,
         user,
     )
 
@@ -188,15 +211,25 @@ async def test_changing_temporary_password_clears_flag_and_rotates_version(
     assert user.saved is True
     assert result.access_token == "new-access-token"
     assert result.refresh_token == "new-refresh-token"
-    assert list(redis.values.values()) == [f"{USER_ID}:3"]
+    assert len(inserted_tokens) == 1
+    stored_token = inserted_tokens[0]
+    assert stored_token.token_hash == auth_token_service.token_hash("new-refresh-token")
+    assert stored_token.user_id == USER_ID
+    assert stored_token.token_version == 3
 
 
 async def test_old_refresh_token_version_is_rejected(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    redis = FakeRedis()
-    key = auth_token_service.token_key("old-refresh")
-    redis.values[key] = f"{USER_ID}:1"
+    collection = FakeRefreshTokenCollection()
+    token_hash = auth_token_service.token_hash("old-refresh")
+    collection.values[token_hash] = {
+        "token_hash": token_hash,
+        "user_id": USER_ID,
+        "token_version": 1,
+        "expires_at": datetime.now(UTC) + timedelta(days=1),
+    }
+    use_fake_refresh_token_collection(monkeypatch, collection)
     monkeypatch.setattr(
         auth_token_service.User,
         "get",
@@ -204,7 +237,65 @@ async def test_old_refresh_token_version_is_rejected(
     )
 
     with pytest.raises(HTTPException) as error:
-        await auth.refresh(SimpleNamespace(refresh_token="old-refresh"), redis)
+        await auth.refresh(RefreshRequest(refresh_token="old-refresh"))
 
     assert error.value.status_code == 401
-    assert key not in redis.values
+    assert token_hash not in collection.values
+
+
+async def test_valid_refresh_token_is_consumed_and_rotated(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    collection = FakeRefreshTokenCollection()
+    old_hash = auth_token_service.token_hash("old-refresh")
+    collection.values[old_hash] = {
+        "token_hash": old_hash,
+        "user_id": USER_ID,
+        "token_version": 2,
+        "expires_at": datetime.now(UTC) + timedelta(days=1),
+    }
+    use_fake_refresh_token_collection(monkeypatch, collection)
+    expected_tokens = TokenResponse(
+        access_token="replacement-access-token",
+        refresh_token="replacement-refresh-token",
+    )
+    issue_tokens = AsyncMock(return_value=expected_tokens)
+    monkeypatch.setattr(auth_token_service.User, "get", AsyncMock(return_value=fake_user()))
+    monkeypatch.setattr(auth_token_service, "issue_tokens", issue_tokens)
+
+    result = await auth_token_service.rotate_tokens("old-refresh")
+
+    assert result == expected_tokens
+    assert old_hash not in collection.values
+    issue_tokens.assert_awaited_once()
+
+
+async def test_logout_revokes_refresh_token(monkeypatch: pytest.MonkeyPatch) -> None:
+    collection = FakeRefreshTokenCollection()
+    token_hash = auth_token_service.token_hash("logout-refresh")
+    collection.values[token_hash] = {"token_hash": token_hash}
+    use_fake_refresh_token_collection(monkeypatch, collection)
+
+    await auth_token_service.revoke_token("logout-refresh")
+
+    assert token_hash not in collection.values
+
+
+async def test_expired_refresh_token_is_rejected_before_ttl_cleanup(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    collection = FakeRefreshTokenCollection()
+    token_hash = auth_token_service.token_hash("expired-refresh")
+    collection.values[token_hash] = {
+        "token_hash": token_hash,
+        "user_id": USER_ID,
+        "token_version": 2,
+        "expires_at": datetime.now(UTC) - timedelta(seconds=1),
+    }
+    use_fake_refresh_token_collection(monkeypatch, collection)
+
+    with pytest.raises(HTTPException) as error:
+        await auth_token_service.rotate_tokens("expired-refresh")
+
+    assert error.value.status_code == 401
+    assert token_hash not in collection.values

@@ -5,7 +5,6 @@ import logging
 from datetime import UTC, datetime
 
 from fastapi import HTTPException, status
-from redis.asyncio import Redis
 
 from app.api_models.auth import (
     AcceptInvitePreview,
@@ -33,7 +32,7 @@ RESET_REQUEST_MESSAGE = (
 INVALID_INVITE_DETAIL = "Token invalid or expired"
 
 
-async def authenticate(body: LoginRequest, redis: Redis) -> TokenResponse:
+async def authenticate(body: LoginRequest) -> TokenResponse:
     logger.info("Login attempt: email=%s", body.email)
     user = await User.find_one(User.email == body.email)
     if user is None or not verify_password(body.password, user.hashed_password):
@@ -41,7 +40,7 @@ async def authenticate(body: LoginRequest, redis: Redis) -> TokenResponse:
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",
         )
-    return await issue_tokens(user, redis)
+    return await issue_tokens(user)
 
 
 async def request_password_reset(
@@ -64,23 +63,21 @@ async def request_password_reset(
     return MessageResponse(message=RESET_REQUEST_MESSAGE)
 
 
-async def refresh_session(refresh_token: str, redis: Redis) -> TokenResponse:
+async def refresh_session(refresh_token: str) -> TokenResponse:
     logger.info("Refresh attempt")
-    return await rotate_tokens(refresh_token, redis)
+    return await rotate_tokens(refresh_token)
 
 
 async def logout_session(
     refresh_token: str,
-    redis: Redis,
     user: User,
 ) -> None:
     logger.info("Logout attempt: user_id=%s", user.id)
-    await revoke_token(refresh_token, redis)
+    await revoke_token(refresh_token)
 
 
 async def update_password(
     body: PasswordChangeRequest,
-    redis: Redis,
     user: User,
 ) -> TokenResponse:
     if not verify_password(body.current_password, user.hashed_password):
@@ -103,7 +100,7 @@ async def update_password(
     user.must_change_password = False
     user.token_version += 1
     await user.save()
-    return await issue_tokens(user, redis)
+    return await issue_tokens(user)
 
 
 async def get_invite_preview(token: str) -> AcceptInvitePreview:
@@ -114,7 +111,6 @@ async def get_invite_preview(token: str) -> AcceptInvitePreview:
 
 async def register_invited_user(
     body: AcceptInviteRequest,
-    redis: Redis,
 ) -> TokenResponse:
     invite = await _get_valid_invite(body.token)
     existing = await User.find_one(User.email == invite.email)
@@ -134,7 +130,7 @@ async def register_invited_user(
 
     invite.used = True
     await invite.save()
-    return await issue_tokens(user, redis)
+    return await issue_tokens(user)
 
 
 async def _get_valid_invite(raw_token: str) -> InviteToken:

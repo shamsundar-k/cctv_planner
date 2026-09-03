@@ -1,11 +1,9 @@
-"""MongoDB (Motor + Beanie) and Redis connection lifecycle: init_db, close_db, and get_redis dependency."""
+"""MongoDB (Motor + Beanie) connection lifecycle."""
 
 import logging
 
 import motor.motor_asyncio
-import redis.asyncio as aioredis
 from beanie import init_beanie
-from fastapi import HTTPException, status
 
 from app.db_schemas.camera_placement import CameraPlacementDocument
 from app.db_schemas.camera_specification import CameraSpecification
@@ -15,17 +13,17 @@ from app.models.camera import Camera
 from app.models.camera_model import CameraModel
 from app.models.invite_token import InviteToken
 from app.models.password_reset_request import PasswordResetRequest
+from app.models.refresh_token import RefreshToken
 
 from .config import settings
 
 logger = logging.getLogger(__name__)
 
 motor_client: motor.motor_asyncio.AsyncIOMotorClient | None = None
-redis_client: aioredis.Redis | None = None
 
 
 async def init_db() -> None:
-    global motor_client, redis_client
+    global motor_client
 
     # MongoDB via Motor + Beanie
     motor_client = motor.motor_asyncio.AsyncIOMotorClient(settings.MONGO_URI)
@@ -37,6 +35,7 @@ async def init_db() -> None:
             User,
             InviteToken,
             PasswordResetRequest,
+            RefreshToken,
             CameraModel,
             CameraSpecification,
             Project,
@@ -47,23 +46,7 @@ async def init_db() -> None:
     )
     logger.info("MongoDB connected: %s", db.name)
 
-    # Redis
-    redis_client = aioredis.from_url(settings.REDIS_URL, decode_responses=True)
-    await redis_client.ping()
-    logger.info("Redis connected")
-
 
 async def close_db() -> None:
     if motor_client:
         motor_client.close()
-    if redis_client:
-        await redis_client.aclose()
-
-
-async def get_redis() -> aioredis.Redis:
-    if redis_client is None:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Redis not available",
-        )
-    return redis_client

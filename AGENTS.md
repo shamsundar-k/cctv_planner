@@ -30,4 +30,4 @@ Backend tests use `pytest` with `pytest-asyncio` configured in `packages/backend
 
 ## Security & Configuration Tips
 
-Do not commit secrets. Copy `.env.example` locally and set `MONGO_URI`, `REDIS_URL`, JWT settings, admin bootstrap credentials, and Vite API/map keys outside version control.
+Do not commit secrets. Copy `.env.example` locally and set `MONGO_URI`, JWT settings, admin bootstrap credentials, and Vite API/map keys outside version control.

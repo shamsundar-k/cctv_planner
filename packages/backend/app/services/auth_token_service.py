@@ -1,39 +1,25 @@
 """Refresh-token persistence and access/refresh token issuance."""
 
 import hashlib
+from datetime import UTC, datetime, timedelta
 
 from fastapi import HTTPException, status
-from redis.asyncio import Redis
 
 from app.api_models.auth import TokenResponse
 from app.core.config import settings
 from app.core.security import create_access_token, create_refresh_token
 from app.db_schemas.user import User
+from app.models.refresh_token import RefreshToken
 
 REFRESH_TTL_SECONDS = settings.JWT_REFRESH_TTL_DAYS * 86_400
 
 
-def token_key(raw_token: str) -> str:
-    """Return the Redis key for a refresh token without storing the raw token."""
-    token_hash = hashlib.sha256(raw_token.encode()).hexdigest()
-    return f"refresh:{token_hash}"
+def token_hash(raw_token: str) -> str:
+    """Hash a refresh token so its raw value is never persisted."""
+    return hashlib.sha256(raw_token.encode()).hexdigest()
 
 
-def _refresh_value(user: User) -> str:
-    return f"{user.id}:{user.token_version}"
-
-
-def _parse_refresh_value(value: str) -> tuple[str, int]:
-    if ":" not in value:
-        return value, 0
-    user_id, raw_version = value.rsplit(":", 1)
-    try:
-        return user_id, int(raw_version)
-    except ValueError:
-        return "", -1
-
-
-async def issue_tokens(user: User, redis: Redis) -> TokenResponse:
+async def issue_tokens(user: User) -> TokenResponse:
     access_token = create_access_token(
         str(user.id),
         user.system_role.value,
@@ -41,32 +27,42 @@ async def issue_tokens(user: User, redis: Redis) -> TokenResponse:
         user.must_change_password,
     )
     refresh_token = create_refresh_token()
-    await redis.set(
-        token_key(refresh_token),
-        _refresh_value(user),
-        ex=REFRESH_TTL_SECONDS,
+    now = datetime.now(UTC)
+    session = RefreshToken(
+        token_hash=token_hash(refresh_token),
+        user_id=user.id,
+        token_version=user.token_version,
+        expires_at=now + timedelta(seconds=REFRESH_TTL_SECONDS),
     )
+    await session.insert()
     return TokenResponse(access_token=access_token, refresh_token=refresh_token)
 
 
-async def rotate_tokens(refresh_token: str, redis: Redis) -> TokenResponse:
-    key = token_key(refresh_token)
-    stored_value = await redis.get(key)
-    if stored_value is None:
+async def rotate_tokens(refresh_token: str) -> TokenResponse:
+    """Atomically consume a refresh token and issue its single replacement."""
+    session = await RefreshToken.get_pymongo_collection().find_one_and_delete(
+        {"token_hash": token_hash(refresh_token)}
+    )
+    if session is None:
         raise _invalid_refresh_token()
 
-    user_id, token_version = _parse_refresh_value(stored_value)
-    user = await User.get(user_id)
-    if user is None or token_version != user.token_version:
-        await redis.delete(key)
+    expires_at = session["expires_at"]
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=UTC)
+    if expires_at <= datetime.now(UTC):
         raise _invalid_refresh_token()
 
-    await redis.delete(key)
-    return await issue_tokens(user, redis)
+    user = await User.get(session["user_id"])
+    if user is None or session["token_version"] != user.token_version:
+        raise _invalid_refresh_token()
+
+    return await issue_tokens(user)
 
 
-async def revoke_token(refresh_token: str, redis: Redis) -> None:
-    await redis.delete(token_key(refresh_token))
+async def revoke_token(refresh_token: str) -> None:
+    await RefreshToken.get_pymongo_collection().delete_one(
+        {"token_hash": token_hash(refresh_token)}
+    )
 
 
 def _invalid_refresh_token() -> HTTPException:

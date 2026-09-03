@@ -1,4 +1,4 @@
-"""FastAPI application entry point: lifespan wiring (DB + Redis), router registration, and health check."""
+"""FastAPI application entry point: MongoDB lifespan wiring and router registration."""
 
 from contextlib import asynccontextmanager
 import logging
