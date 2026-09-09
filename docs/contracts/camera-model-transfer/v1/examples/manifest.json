@@ -1,0 +1,9 @@
+{
+  "format": "cctv-planner-camera-model",
+  "schema_version": 1,
+  "source_id": "66584aef0f5f3e6d8f8a1234",
+  "model_file": "model.json",
+  "image_file": "image.webp",
+  "image_source": "custom",
+  "image_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+}

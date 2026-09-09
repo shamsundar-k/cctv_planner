@@ -114,6 +114,38 @@ def test_create_model_rejects_invalid_client_generated_id(invalid_id: str) -> No
         CameraSpecCreate(id=invalid_id, **valid_camera_spec_payload())
 
 
+def test_create_model_requires_client_generated_id() -> None:
+    with pytest.raises(ValidationError) as error:
+        CameraSpecCreate(**valid_camera_spec_payload())
+
+    assert any(item["loc"] == ("id",) and item["type"] == "missing" for item in error.value.errors())
+
+
+async def test_create_preserves_client_generated_id(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    class FakeCameraSpecification:
+        @classmethod
+        async def get(cls, camera_spec_id: PydanticObjectId) -> None:
+            return None
+
+        def __init__(self, *, id: PydanticObjectId, **data: object) -> None:
+            self.id = id
+            self.data = data
+
+        async def insert(self) -> None:
+            return None
+
+    body = CameraSpecCreate(id=str(CAMERA_SPEC_ID), **valid_camera_spec_payload())
+    monkeypatch.setattr(camera_spec, "CameraSpecification", FakeCameraSpecification)
+    monkeypatch.setattr(camera_spec, "to_camera_spec_record", lambda value: value)
+
+    created = await camera_spec.create_camera_spec(body)
+
+    assert created.id == CAMERA_SPEC_ID
+    assert "id" not in created.data
+
+
 async def test_create_rejects_duplicate_client_generated_id(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

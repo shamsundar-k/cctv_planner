@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "manifest.schema.json",
+  "title": "CCTV Planner camera model export manifest v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "schema_version",
+    "model_file",
+    "image_file",
+    "image_source",
+    "image_sha256"
+  ],
+  "properties": {
+    "format": {
+      "const": "cctv-planner-camera-model"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "source_id": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{24}$"
+    },
+    "model_file": {
+      "const": "model.json"
+    },
+    "image_file": {
+      "const": "image.webp"
+    },
+    "image_source": {
+      "type": "string",
+      "enum": ["custom", "default"]
+    },
+    "image_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

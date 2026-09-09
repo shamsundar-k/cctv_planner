@@ -31,12 +31,16 @@ class CameraSpecImageService:
         max_source_size: tuple[int, int],
         min_source_size: tuple[int, int],
         output_size: tuple[int, int],
+        max_decoded_pixels: int | None = None,
     ) -> None:
         self.root = root.resolve()
         self.max_upload_bytes = max_upload_bytes
         self.max_source_size = max_source_size
         self.min_source_size = min_source_size
         self.output_size = output_size
+        self.max_decoded_pixels = max_decoded_pixels or (
+            max_source_size[0] * max_source_size[1]
+        )
 
     def storage_key(self, camera_spec_id: str) -> str:
         self._validate_camera_spec_id(camera_spec_id)
@@ -77,6 +81,10 @@ class CameraSpecImageService:
                 if width > max_width or height > max_height:
                     raise CameraImageValidationError(
                         f"Image dimensions cannot exceed {max_width} x {max_height} pixels"
+                    )
+                if width * height > self.max_decoded_pixels:
+                    raise CameraImageValidationError(
+                        f"Image cannot exceed {self.max_decoded_pixels} decoded pixels"
                     )
 
                 source.load()
@@ -144,6 +152,7 @@ camera_spec_image_service = CameraSpecImageService(
         settings.CAMERA_IMAGE_MAX_SOURCE_WIDTH,
         settings.CAMERA_IMAGE_MAX_SOURCE_HEIGHT,
     ),
+    max_decoded_pixels=settings.CAMERA_IMAGE_MAX_DECODED_PIXELS,
     min_source_size=(
         settings.CAMERA_IMAGE_MIN_SOURCE_WIDTH,
         settings.CAMERA_IMAGE_MIN_SOURCE_HEIGHT,

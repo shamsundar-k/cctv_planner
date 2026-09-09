@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "model.schema.json",
+  "title": "CCTV Planner portable camera specification v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "name",
+    "manufacturer",
+    "model",
+    "camera_type",
+    "lens_spec",
+    "sensor_spec",
+    "ir_range"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "manufacturer": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "model": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "camera_type": {
+      "type": "string",
+      "enum": ["dome", "bullet", "ptz"]
+    },
+    "lens_spec": {
+      "$ref": "#/$defs/lensSpec"
+    },
+    "sensor_spec": {
+      "$ref": "#/$defs/sensorSpec"
+    },
+    "ir_range": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 10000
+    }
+  },
+  "$defs": {
+    "positiveRange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["min", "max"],
+      "properties": {
+        "min": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1000
+        },
+        "max": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1000
+        }
+      }
+    },
+    "fovRange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["min", "max"],
+      "properties": {
+        "min": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 180
+        },
+        "max": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 180
+        }
+      }
+    },
+    "lensSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lens_type", "focal_length", "h_fov", "v_fov"],
+      "properties": {
+        "lens_type": {
+          "type": "string",
+          "enum": ["fixed", "varifocal"]
+        },
+        "focal_length": {
+          "$ref": "#/$defs/positiveRange"
+        },
+        "h_fov": {
+          "$ref": "#/$defs/fovRange"
+        },
+        "v_fov": {
+          "$ref": "#/$defs/fovRange"
+        }
+      }
+    },
+    "resolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["horizontal", "vertical"],
+      "properties": {
+        "horizontal": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100000
+        },
+        "vertical": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100000
+        }
+      }
+    },
+    "sensorSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["resolution"],
+      "properties": {
+        "resolution": {
+          "$ref": "#/$defs/resolution"
+        },
+        "megapixel": {
+          "anyOf": [
+            {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 1000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sensor_size": {
+          "type": ["string", "null"],
+          "maxLength": 100
+        }
+      }
+    }
+  }
+}

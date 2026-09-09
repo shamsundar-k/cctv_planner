@@ -52,7 +52,7 @@ class CameraSpec(BaseModel):
 
 
 class CameraSpecCreate(CameraSpec):
-    id: str | None = Field(None, pattern=r"^[0-9a-fA-F]{24}$")
+    id: str = Field(..., pattern=r"^[0-9a-fA-F]{24}$")
 
 
 class CameraSpecUpdate(BaseModel):

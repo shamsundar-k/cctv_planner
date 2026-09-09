@@ -98,6 +98,20 @@ def test_rejects_upload_over_byte_limit(tmp_path: Path) -> None:
         service.normalize(image_bytes("PNG"))
 
 
+def test_rejects_excessive_decoded_pixel_count(tmp_path: Path) -> None:
+    service = CameraSpecImageService(
+        tmp_path,
+        max_upload_bytes=1024 * 1024,
+        max_source_size=(1000, 1000),
+        min_source_size=(1, 1),
+        output_size=(100, 100),
+        max_decoded_pixels=9_999,
+    )
+
+    with pytest.raises(CameraImageValidationError, match="decoded pixels"):
+        service.normalize(image_bytes("PNG", size=(100, 100)))
+
+
 def test_store_uses_specification_id_and_replaces_atomically(
     service: CameraSpecImageService,
 ) -> None:

@@ -1,5 +1,6 @@
 import { Link } from 'react-router'
 import type { CameraSpecRecord } from '@/types/camera'
+import CameraExportButton from '../CameraExportButton'
 
 interface Props {
   camera: CameraSpecRecord
@@ -15,6 +16,7 @@ export default function CameraCardActions({ camera, onDelete }: Props) {
       >
         Edit
       </Link>
+      <CameraExportButton cameraSpecId={camera.id} />
       <button
         onClick={() => onDelete(camera)}
         className="flex-1 cursor-pointer rounded-md border border-error/35 bg-error/10 px-3 py-1.5 text-xs font-semibold text-error transition-colors hover:border-error/60 hover:bg-error/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-error"

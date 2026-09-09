@@ -1,0 +1,30 @@
+{
+  "name": "Dome 2MP",
+  "manufacturer": "Hikvision",
+  "model": "DS-2CD1123G0-I",
+  "camera_type": "dome",
+  "lens_spec": {
+    "lens_type": "fixed",
+    "focal_length": {
+      "min": 2.8,
+      "max": 2.8
+    },
+    "h_fov": {
+      "min": 105.0,
+      "max": 105.0
+    },
+    "v_fov": {
+      "min": 56.0,
+      "max": 56.0
+    }
+  },
+  "sensor_spec": {
+    "resolution": {
+      "horizontal": 1920,
+      "vertical": 1080
+    },
+    "megapixel": 2.0,
+    "sensor_size": "1/2.8 inch"
+  },
+  "ir_range": 30.0
+}

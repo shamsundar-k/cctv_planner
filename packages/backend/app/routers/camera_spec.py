@@ -2,18 +2,35 @@ from datetime import datetime, timezone
 import logging
 
 from beanie import PydanticObjectId
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
-from fastapi.responses import FileResponse
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
+from fastapi.responses import FileResponse, Response
+from pydantic import ValidationError
 from pymongo.errors import DuplicateKeyError
 from starlette.concurrency import run_in_threadpool
-from app.core.deps import get_current_user
+from app.core.deps import get_current_user, require_admin
 from app.db_schemas.user import User
 from app.api_models.camera.camera_spec import CameraSpec, CameraSpecCreate, CameraSpecRecord, CameraSpecUpdate
+from app.api_models.camera_spec_import import (
+    CameraSpecImportIdMapping,
+    CameraSpecImportPreviewResponse,
+    CameraSpecImportResponse,
+)
 from app.db_schemas.camera_specification import CameraSpecification
 from app.mappers.camera_spec_mapper import to_camera_spec_record
 from app.services.camera_spec_image_service import (
     CameraImageValidationError,
     camera_spec_image_service,
+)
+from app.services.camera_spec_export_service import (
+    CameraSpecExportImageError,
+    CameraSpecExportNotFoundError,
+    camera_spec_export_service,
+)
+from app.services.camera_spec_import_service import (
+    CameraSpecImportConflictError,
+    CameraSpecImportStorageError,
+    CameraSpecImportValidationError,
+    camera_spec_import_service,
 )
 
 logger = logging.getLogger(__name__)
@@ -35,18 +52,15 @@ async def list_camera_specs(current_user: User = Depends(get_current_user),) -> 
 
 @router.post("", response_model=CameraSpecRecord, status_code=status.HTTP_201_CREATED)
 async def create_camera_spec(body: CameraSpecCreate, current_user: User = Depends(get_current_user),) -> CameraSpecRecord:
-    if body.id is not None and await CameraSpecification.get(PydanticObjectId(body.id)) is not None:
+    camera_spec_id = PydanticObjectId(body.id)
+    if await CameraSpecification.get(camera_spec_id) is not None:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Camera specification ID already exists",
         )
 
     camera_spec_data = body.model_dump(exclude={"id"})
-    camera_spec = (
-        CameraSpecification(id=PydanticObjectId(body.id), **camera_spec_data)
-        if body.id is not None
-        else CameraSpecification(**camera_spec_data)
-    )
+    camera_spec = CameraSpecification(id=camera_spec_id, **camera_spec_data)
 
     try:
         await camera_spec.insert()
@@ -57,6 +71,100 @@ async def create_camera_spec(body: CameraSpecCreate, current_user: User = Depend
         )
 
     return to_camera_spec_record(camera_spec)
+
+
+@router.post("/import/preview", response_model=CameraSpecImportPreviewResponse)
+async def preview_camera_spec_import(
+    archive: UploadFile = File(...),
+    current_user: User = Depends(require_admin),
+) -> CameraSpecImportPreviewResponse:
+    try:
+        content = await archive.read(camera_spec_import_service.max_archive_bytes + 1)
+    finally:
+        await archive.close()
+    try:
+        return await camera_spec_import_service.preview(content)
+    except CameraSpecImportValidationError as exc:
+        logger.warning("Rejected camera specification import preview: %s", exc)
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            detail={
+                "valid": False,
+                "errors": exc.errors,
+                "warnings": [],
+            },
+        ) from exc
+
+
+@router.post(
+    "/import",
+    response_model=CameraSpecImportResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+async def import_camera_spec(
+    archive: UploadFile = File(...),
+    id_mapping: str = Form(...),
+    current_user: User = Depends(require_admin),
+) -> CameraSpecImportResponse:
+    try:
+        try:
+            mapping = CameraSpecImportIdMapping.model_validate_json(id_mapping)
+        except ValidationError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail="ID mapping is invalid",
+            ) from exc
+        content = await archive.read(camera_spec_import_service.max_archive_bytes + 1)
+    finally:
+        await archive.close()
+
+    try:
+        return await camera_spec_import_service.execute(content, mapping)
+    except CameraSpecImportValidationError as exc:
+        logger.warning("Rejected camera specification import: %s", exc)
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            detail={
+                "valid": False,
+                "errors": exc.errors,
+                "warnings": [],
+            },
+        ) from exc
+    except CameraSpecImportConflictError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=str(exc),
+        ) from exc
+    except CameraSpecImportStorageError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Camera specification import could not be completed",
+        ) from exc
+
+
+@router.get("/{camera_spec_id}/export", response_class=Response)
+async def export_camera_spec(
+    camera_spec_id: PydanticObjectId,
+    current_user: User = Depends(require_admin),
+) -> Response:
+    try:
+        archive = await camera_spec_export_service.export(camera_spec_id)
+    except CameraSpecExportNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Camera specification not found",
+        )
+    except CameraSpecExportImageError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Camera image is unavailable",
+        ) from exc
+
+    return Response(
+        content=archive.content,
+        media_type="application/zip",
+        headers={"Content-Disposition": f'attachment; filename="{archive.filename}"'},
+    )
 
 
 @router.get("/{camera_spec_id}", response_model=CameraSpecRecord)
