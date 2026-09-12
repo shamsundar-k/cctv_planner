@@ -7,6 +7,7 @@ from beanie import init_beanie
 
 from app.db_schemas.camera_placement import CameraPlacementDocument
 from app.db_schemas.camera_specification import CameraSpecification
+from app.db_schemas.map_drawing import MapDrawingDocument
 from app.db_schemas.project import Project
 from app.db_schemas.user import User
 from app.models.camera import Camera
@@ -40,8 +41,8 @@ async def init_db() -> None:
             CameraSpecification,
             Project,
             CameraPlacementDocument,
+            MapDrawingDocument,
             Camera,
-            
         ],
     )
     logger.info("MongoDB connected: %s", db.name)
