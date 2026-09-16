@@ -12,6 +12,7 @@ from app.api_models.project import (
 )
 from app.core.deps import get_current_user
 from app.db_schemas.camera_placement import CameraPlacementDocument
+from app.db_schemas.map_drawing import MapDrawingDocument
 from app.db_schemas.project import Project as ProjectDocument
 from app.db_schemas.user import User
 
@@ -166,4 +167,5 @@ async def delete_project(
     await CameraPlacementDocument.find(
         CameraPlacementDocument.project.id == project.id  # type: ignore[union-attr]
     ).delete()
+    await MapDrawingDocument.find({"project.$id": project.id}).delete()
     await project.delete()
