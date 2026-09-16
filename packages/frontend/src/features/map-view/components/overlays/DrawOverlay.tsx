@@ -2,6 +2,13 @@ import { useEffect } from 'react'
 import L from 'leaflet'
 import { useMapContext } from '@/context/MapContext'
 import { useMapActionsStore, type ActiveTool } from '@/store/mapActionsSlice'
+import { useCameraLayerStore } from '@/store/cameraLayerSlice'
+import {
+    createLocalDrawing,
+    lineShapeFromPoints,
+    polygonShapeFromRings,
+    useMapDrawingStore,
+} from '@/features/map-drawing'
 import MapToolBanner from './MapToolBanner'
 
 interface DrawOverlayProps {
@@ -31,6 +38,8 @@ const DRAW_CONFIG = {
 export default function DrawOverlay({ tool }: DrawOverlayProps) {
     const { mapRef } = useMapContext()
     const setActiveTool = useMapActionsStore((state) => state.setActiveTool)
+    const addDrawing = useMapDrawingStore((state) => state.addDrawing)
+    const selectDrawing = useMapDrawingStore((state) => state.selectDrawing)
     const config = DRAW_CONFIG[tool]
 
     useEffect(() => {
@@ -38,9 +47,29 @@ export default function DrawOverlay({ tool }: DrawOverlayProps) {
         if (!map) return
 
         const handleCreate: L.PM.CreateEventHandler = (event) => {
-            if (event.shape === config.shape) {
-                setActiveTool('select')
+            if (event.shape !== config.shape || !(event.layer instanceof L.Polyline)) return
+
+            const latLngs = event.layer.getLatLngs()
+            const shape = event.shape === 'Line'
+                && latLngs.every((point) => point instanceof L.LatLng)
+                ? lineShapeFromPoints(latLngs)
+                : event.shape === 'Polygon'
+                    && latLngs.every(
+                        (ring) => Array.isArray(ring)
+                            && ring.every((point) => point instanceof L.LatLng),
+                    )
+                    ? polygonShapeFromRings(latLngs as L.LatLng[][])
+                    : null
+
+            event.layer.remove()
+            if (shape) {
+                const drawing = createLocalDrawing(shape)
+                if (addDrawing(drawing)) {
+                    useCameraLayerStore.getState().clearSelection()
+                    selectDrawing(drawing.uid)
+                }
             }
+            setActiveTool('select')
         }
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === 'Escape') {
@@ -76,7 +105,7 @@ export default function DrawOverlay({ tool }: DrawOverlayProps) {
             window.removeEventListener('keydown', handleKeyDown)
             map.pm.disableDraw(config.shape)
         }
-    }, [config, mapRef, setActiveTool])
+    }, [addDrawing, config, mapRef, selectDrawing, setActiveTool])
 
     return <MapToolBanner title={config.title} instructions={config.instructions} />
 }

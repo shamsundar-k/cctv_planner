@@ -30,7 +30,7 @@ export default function MapActionsToolbar({ projectId }: MapActionsToolbarProps)
     <div className="absolute bottom-4 left-1/2 z-[1000] flex -translate-x-1/2 items-center gap-1 rounded-lg border border-panel-border bg-panel/90 p-1.5 shadow-xl backdrop-blur-md">
       <MapActionButton
         icon={<MousePointer2 size={15} />}
-        label="Select Camera"
+        label="Select"
         isActive={activeTool === 'select'}
         onClick={() => setActiveTool('select')}
       />

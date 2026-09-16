@@ -6,6 +6,7 @@ import { useBaseTileStore } from '@/store/baseTileStore'
 import { useMapActionsStore } from '@/store/mapActionsSlice'
 import { BASE_MAPS, type BasemapLabelTone } from '@/config/mapConfig'
 import { moveCoverageArea } from '@/features/map-view/utils/coverageArea'
+import { useMapDrawingStore } from '@/features/map-drawing'
 
 const BASE_SIZE = 32
 const BASE_ZOOM = 18
@@ -94,6 +95,7 @@ export default function CameraMarker({ cameraId, group, zoom }: CameraMarkerProp
     if (isSelectMode) {
       marker.on('click', (e: L.LeafletMouseEvent) => {
         e.originalEvent.stopPropagation()
+        useMapDrawingStore.getState().clearSelection()
         selectCamera(cameraId)
       })
     }

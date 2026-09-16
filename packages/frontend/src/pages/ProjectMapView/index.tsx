@@ -9,6 +9,7 @@ import CameraPanel from '@/features/map-view/components/CameraPanel'
 import MapLayersControl from '@/features/map-view/components/toolbar/MapLayersControl'
 import CameraLayer from '@/features/map-view/components/layers/CameraLayer'
 import FovLayer from '@/features/map-view/components/layers/FovLayer'
+import { DrawingLayer, DrawingPanel } from '@/features/map-drawing'
 
 export default function ProjectMapView() {
   const { id, project, isLoading, isError, center, defaultZoom } = useMapView()
@@ -41,6 +42,7 @@ export default function ProjectMapView() {
         <Map zoom={defaultZoom} center={center}>
           <BaseTile />
           <FovLayer />
+          <DrawingLayer />
           <CameraLayer />
           <MapLayersControl />
           <MapActionsToolbar projectId={id} />
@@ -48,6 +50,7 @@ export default function ProjectMapView() {
         </Map>
       </div>
       <CameraPanel projectId={id} />
+      <DrawingPanel />
     </div>
   )
 }

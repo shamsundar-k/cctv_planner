@@ -7,6 +7,7 @@ import { useSelectedCameraModelStore } from '@/store/selectedCameraModelSlice'
 import { useCameraStore } from '@/store/cameraStore'
 import { useCameraLayerStore } from '@/store/cameraLayerSlice'
 import { generateDefaultCamera } from '@/lib/cameraGenerator'
+import { useMapDrawingStore } from '@/features/map-drawing'
 
 // Lucide Crosshair geometry scaled from 24×24 → 32×32 (factor 4/3).
 // Hardcoded so we don't rely on Lucide's internal __iconNode property.
@@ -72,6 +73,7 @@ export default function PlaceCameraOverlay() {
             )
             if (localCamera) {
                 useCameraStore.getState().addCamera(localCamera)
+                useMapDrawingStore.getState().clearSelection()
                 useCameraLayerStore.getState().selectCamera(localCamera.uid)
             }
         }

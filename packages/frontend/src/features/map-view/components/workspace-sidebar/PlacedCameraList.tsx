@@ -1,6 +1,7 @@
 import { Camera, Eye, EyeOff } from 'lucide-react'
 import { useCameraLayerStore } from '@/store/cameraLayerSlice'
 import { useCameraStore } from '@/store/cameraStore'
+import { useMapDrawingStore } from '@/features/map-drawing'
 
 export default function PlacedCameraList() {
   const uids = useCameraStore((state) => state.uids)
@@ -54,7 +55,10 @@ export default function PlacedCameraList() {
               >
                 <button
                   type="button"
-                  onClick={() => selectCamera(isSelected ? null : camera.uid)}
+                  onClick={() => {
+                    useMapDrawingStore.getState().clearSelection()
+                    selectCamera(isSelected ? null : camera.uid)
+                  }}
                   className="flex min-w-0 flex-1 items-center gap-2 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                   aria-pressed={isSelected}
                 >

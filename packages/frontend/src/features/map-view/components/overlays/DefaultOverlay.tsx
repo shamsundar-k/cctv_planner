@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useMapContext } from '@/context/MapContext'
 import { useCameraLayerStore } from '@/store/cameraLayerSlice'
+import { useMapDrawingStore } from '@/features/map-drawing'
 
 /**
  * Active for `pan` and `select` tool modes.
@@ -16,6 +17,7 @@ export default function DefaultOverlay() {
 
         const handler = () => {
             useCameraLayerStore.getState().clearSelection()
+            useMapDrawingStore.getState().clearSelection()
         }
 
         map.on('click', handler)

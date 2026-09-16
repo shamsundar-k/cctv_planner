@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useCameraStore } from '../../../store/cameraStore'
 import { useToast } from '../../../components/ui/Toast'
+import { useMapDrawingStore } from '@/features/map-drawing'
 
 interface UseSaveActionReturn {
   isSaving: boolean
@@ -15,8 +16,11 @@ export function useSaveAction(projectId: string, onSave?: () => Promise<void>): 
   // tick forces re-render every 30 s so relative timestamp stays fresh
   const [, setTick] = useState(0)
 
-  const isDirty = useCameraStore((s) => s.getIsDirty())
-  const saveAll = useCameraStore((s) => s.saveAll)
+  const camerasAreDirty = useCameraStore((state) => state.getIsDirty())
+  const drawingsAreDirty = useMapDrawingStore((state) => state.getIsDirty())
+  const saveCameras = useCameraStore((state) => state.saveAll)
+  const saveDrawings = useMapDrawingStore((state) => state.saveAll)
+  const isDirty = camerasAreDirty || drawingsAreDirty
   const showToast = useToast()
 
   useEffect(() => {
@@ -28,7 +32,10 @@ export function useSaveAction(projectId: string, onSave?: () => Promise<void>): 
     if (isSaving) return
     setIsSaving(true)
     try {
-      await saveAll(projectId)
+      await Promise.all([
+        saveCameras(projectId),
+        saveDrawings(projectId),
+      ])
       await onSave?.()
       setLastSavedAt(new Date())
     } catch {
@@ -36,7 +43,7 @@ export function useSaveAction(projectId: string, onSave?: () => Promise<void>): 
     } finally {
       setIsSaving(false)
     }
-  }, [isSaving, saveAll, projectId, onSave, showToast])
+  }, [isSaving, saveCameras, saveDrawings, projectId, onSave, showToast])
 
   return { isSaving, isDirty, lastSavedAt, handleSave }
 }

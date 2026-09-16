@@ -38,7 +38,7 @@ export default function WorkspaceSaveButton({ projectId }: WorkspaceSaveButtonPr
       type="button"
       onClick={() => void handleSave()}
       disabled={!isDirty || isSaving}
-      title={isDirty ? 'Save all camera changes (Ctrl/Cmd + S)' : 'All camera changes are saved'}
+      title={isDirty ? 'Save all workspace changes (Ctrl/Cmd + S)' : 'All workspace changes are saved'}
       className={`inline-flex h-9 items-center gap-2 rounded-lg border px-3 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
         isDirty || isSaving
           ? 'border-primary bg-primary text-primary-foreground hover:bg-primary-hover disabled:border-primary disabled:bg-primary disabled:text-primary-foreground'
